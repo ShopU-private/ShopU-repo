@@ -16,6 +16,7 @@ pnpm-debug.log*
 Thumbs.db
 
 # Environment variables
+.env
 .env.local
 .env.development.local
 .env.test.local
@@ -42,3 +43,5 @@ coverage/
 # Optional: Mac system file
 .AppleDouble
 .LSOverride
+
+/app/generated/prisma
