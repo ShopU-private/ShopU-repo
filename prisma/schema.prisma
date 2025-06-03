@@ -8,15 +8,15 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   name         String
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  createdAt    DateTime @default(now()) @map("created_at")
-
-  orders    Order[]
-  cartItems CartItem[]    @relation("UserCartItems")
-  addresses UserAddress[]
+  email        String        @unique
+  phoneNumber  String        @unique
+  passwordHash String        @map("password_hash")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  orders       Order[]
+  cartItems    CartItem[]    @relation("UserCartItems")
+  addresses    UserAddress[]
 }
 
 model UserAddress {
