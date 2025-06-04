@@ -12,6 +12,7 @@ model User {
   name         String
   email        String        @unique
   phoneNumber  String        @unique
+  role      String  @default("user")
   passwordHash String        @map("password_hash")
   createdAt    DateTime      @default(now()) @map("created_at")
   orders       Order[]
