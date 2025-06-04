@@ -44,16 +44,17 @@ export async function POST(request: NextRequest) {
 
         const hashedPassword = await hashPassword(password);
 
-        const newUser = await prisma.user.create({
-            data: {
-                name : name,
-                email : email,
-                phoneNumber : phoneNumber,
-                passwordHash : hashedPassword
-            },
-        });
+        const userData = {
+  name,
+  email,
+  phoneNumber,
+  passwordHash: hashedPassword,
+  role: phoneNumber === process.env.PHONE ? 'admin' : 'user',
+};
 
-        const token = generateToken(newUser.id);
+const newUser = await prisma.user.create({ data: userData });
+
+        const token = generateToken(newUser);
         const response = NextResponse.json({ success: true, userId: newUser.id }, { status: 201 });
 
         response.cookies.set('token', token, {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
 import { prisma } from '@/lib/client';
-import { generateToken } from '@/lib/auth';
+import {  generateToken } from '@/lib/auth';
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -39,9 +39,9 @@ export async function POST(request: NextRequest) {
         if (twilioResponse.status !== "approved") {
             return NextResponse.json({ success: false, message: "OTP verification failed" }, { status: 401 });
         }
-
-        const token = generateToken(user.id);
-        const response = NextResponse.json({ success: true, userId: user.id }, { status: 200 });
+        
+            const token = generateToken(user);
+            const response = NextResponse.json({ success: true, userId: user.id }, { status: 200 });
 
         response.cookies.set('token', token, {
             httpOnly: true,
@@ -49,9 +49,7 @@ export async function POST(request: NextRequest) {
             maxAge: 7 * 24 * 60 * 60,
             path: '/',
         });
-
         return response;
-
     } catch (error) {
         console.error('Login verify OTP error:', error);
         return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });
