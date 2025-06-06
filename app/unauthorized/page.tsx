@@ -14,7 +14,7 @@ export default function UnauthorizedPage() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    width: '100%' ,
+    width: '100%',
     height: '100vh',
     backgroundColor: '#121212',
     color: '#f1f1f1',

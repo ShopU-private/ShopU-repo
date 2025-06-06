@@ -21,11 +21,9 @@ export function isAdmin(req: NextRequest): boolean {
 }
 
 export function generateToken(user: any): string {
-  return jwt.sign(
-    { userId: user.id, role: user.role, phoneNumber: user.phoneNumber },
-    JWT_SECRET,
-    { expiresIn: '7d' }
-  );
+  return jwt.sign({ userId: user.id, role: user.role, phoneNumber: user.phoneNumber }, JWT_SECRET, {
+    expiresIn: '7d',
+  });
 }
 
 export function verifyToken(token: string): TokenPayload {

@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { createUser, getUser } from '@/lib/app';
 export default async function Home() {
-  
   const user = await getUser();
   console.log(user);
 
