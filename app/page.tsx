@@ -1,7 +1,7 @@
-import Image from "next/image";
-import { createUser , getUser } from "@/lib/app";
+import Image from 'next/image';
+import { Prisma, prisma } from '../lib/client';
 export default async function Home() {
-  const user = await getUser(); 
+  let user = await prisma.user.findMany();
   console.log(user);
 
   return (
@@ -10,8 +10,13 @@ export default async function Home() {
       <ul>
         {user.map((user: any) => (
           <li key={user.id}>
-            <p><strong>Name:</strong> {user.name}</p>
-            <p><strong>Email:</strong> {user.email}</p>
+            <p>
+              <strong>Name:</strong> {user.phoneNumber}
+            </p>
+            <p>
+              <strong>Role:</strong> {user.role}
+            </p>
+
             <hr />
           </li>
         ))}
