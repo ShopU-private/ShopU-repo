@@ -12,12 +12,12 @@ export function middleware(req: NextRequest) {
   }
 
   try {
-    if (token) {
-      const decoded = verifyToken(token);
+    if(token){
+        const decoded = verifyToken(token);
 
-      if (adminRoutes && decoded.role !== 'admin') {
-        return NextResponse.redirect(new URL('/unauthorized', req.url));
-      }
+        if (adminRoutes && decoded.role !== 'admin') {
+            return NextResponse.redirect(new URL('/unauthorized', req.url));
+        }
     }
 
     return NextResponse.next();
@@ -26,6 +26,7 @@ export function middleware(req: NextRequest) {
   }
 }
 
+
 export const config = {
-  matcher: ['/admin/:path*'],
-};
+    matcher: ['/admin/:path*'],
+  };

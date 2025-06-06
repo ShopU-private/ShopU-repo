@@ -8,7 +8,6 @@ datasource db {
 }
 
 model User {
-<<<<<<< HEAD
   id                String        @id @default(uuid())
   name              String?
   email             String?       @unique
@@ -20,18 +19,6 @@ model User {
   orders            Order[]
   cartItems         CartItem[]    @relation("UserCartItems")
   addresses         UserAddress[]
-=======
-  id           Int           @id @default(autoincrement())
-  name         String
-  email        String        @unique
-  phoneNumber  String        @unique
-  role      String  @default("user")
-  passwordHash String        @map("password_hash")
-  createdAt    DateTime      @default(now()) @map("created_at")
-  orders       Order[]
-  cartItems    CartItem[]    @relation("UserCartItems")
-  addresses    UserAddress[]
->>>>>>> 0dcb071c85bcf80f8a3e0863feabb28a6c4ccf44
 }
 
 model UserAddress {
