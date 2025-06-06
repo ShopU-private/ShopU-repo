@@ -1,6 +1,9 @@
-import Image from "next/image";
-import { createUser , getUser } from "@/lib/app";
+import Image from 'next/image';
+import { Prisma, prisma } from '../lib/client';
 export default async function Home() {
+<<<<<<< HEAD
+  let user = await prisma.user.findMany();
+=======
   // await createUser({
   //   name: 'Vivek',
   //   email: 'vivek@n.edu',
@@ -22,6 +25,7 @@ export default async function Home() {
   //   },
   // });
   const user = await getUser(); 
+>>>>>>> 0dcb071c85bcf80f8a3e0863feabb28a6c4ccf44
   console.log(user);
 
   return (
@@ -30,9 +34,19 @@ export default async function Home() {
       <ul>
         {user.map((user: any) => (
           <li key={user.id}>
+<<<<<<< HEAD
+            <p>
+              <strong>Name:</strong> {user.phoneNumber}
+            </p>
+            <p>
+              <strong>Role:</strong> {user.role}
+            </p>
+
+=======
             <p><strong>Name:</strong> {user.name}</p>
             <p><strong>Email:</strong> {user.email}</p>
             
+>>>>>>> 0dcb071c85bcf80f8a3e0863feabb28a6c4ccf44
             <hr />
           </li>
         ))}

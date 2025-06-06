@@ -8,6 +8,19 @@ datasource db {
 }
 
 model User {
+<<<<<<< HEAD
+  id                String        @id @default(uuid())
+  name              String?
+  email             String?       @unique
+  phoneNumber       String        @unique
+  role              String        @default("user")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  idProfileComplete Boolean       @default(false)
+  
+  orders            Order[]
+  cartItems         CartItem[]    @relation("UserCartItems")
+  addresses         UserAddress[]
+=======
   id           Int           @id @default(autoincrement())
   name         String
   email        String        @unique
@@ -18,12 +31,13 @@ model User {
   orders       Order[]
   cartItems    CartItem[]    @relation("UserCartItems")
   addresses    UserAddress[]
+>>>>>>> 0dcb071c85bcf80f8a3e0863feabb28a6c4ccf44
 }
 
 model UserAddress {
-  id           Int     @id @default(autoincrement())
+  id           String  @id @default(uuid())
   user         User    @relation(fields: [userId], references: [id])
-  userId       Int
+  userId       String
   fullName     String  @map("full_name")
   phoneNumber  String  @map("phone_number")
   addressLine1 String  @map("address_line1")
@@ -33,52 +47,79 @@ model UserAddress {
   postalCode   String  @map("postal_code")
   country      String
   isDefault    Boolean @map("is_default")
-  Order        Order[]
+
+  orders       Order[]
+}
+
+model Category {
+  id            String        @id @default(uuid())
+  name          String        @unique
+  subCategories SubCategory[]
+}
+
+model SubCategory {
+  id          String        @id @default(uuid())
+  name        String
+  category    Category      @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  products    Product[]
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  price       Decimal
-  stock       Int
-  imageUrl    String   @map("image_url")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id           String       @id @default(uuid())
+  name         String
+  description  String
+  price        Decimal
+  stock        Int
+  imageUrl     String       @map("image_url")
+  isActive     Boolean      @default(true) @map("is_active")
+  createdAt    DateTime     @default(now()) @map("created_at")
 
-  cartItems  CartItem[]
-  orderItems OrderItem[]
+  subCategory  SubCategory  @relation(fields: [subCategoryId], references: [id])
+  subCategoryId String
+
+  cartItems    CartItem[]
+  orderItems   OrderItem[]
+  variants     ProductVariant[]
+}
+
+model ProductVariant {
+  id          String   @id @default(uuid())
+  product     Product  @relation(fields: [productId], references: [id])
+  productId   String
+  key         String   // e.g. "RAM" or "Color"
+  value       String   // e.g. "8GB" or "Red"
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   user      User     @relation("UserCartItems", fields: [userId], references: [id])
-  userId    Int
+  userId    String
   product   Product  @relation(fields: [productId], references: [id])
-  productId Int
+  productId String
   quantity  Int
   addedAt   DateTime @default(now()) @map("added_at")
 }
 
 model Order {
-  id          Int         @id @default(autoincrement())
+  id          String      @id @default(uuid())
   user        User        @relation(fields: [userId], references: [id])
-  userId      Int
+  userId      String
   address     UserAddress @relation(fields: [addressId], references: [id])
-  addressId   Int
+  addressId   String
   status      String
   totalAmount Decimal     @map("total_amount")
   createdAt   DateTime    @default(now()) @map("created_at")
 
-  orderItems OrderItem[]
+  orderItems  OrderItem[]
 }
 
 model OrderItem {
-  id        Int     @id @default(autoincrement())
-  order     Order   @relation(fields: [orderId], references: [id])
-  orderId   Int
-  product   Product @relation(fields: [productId], references: [id])
-  productId Int
+  id        String   @id @default(uuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
   quantity  Int
   price     Decimal
 }
