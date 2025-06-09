@@ -10,7 +10,6 @@ export async function GET(req: NextRequest) {
     let products;
 
     if (subCategoryId) {
-      // Filter by subCategoryId if available
       products = await prisma.product.findMany({
         where: { subCategoryId },
         include: {
@@ -19,11 +18,27 @@ export async function GET(req: NextRequest) {
               category: true,
             },
           },
-          variants: true,
+          variantTypes: {
+            include: {
+              values: true,
+            },
+          },
+          combinations: {
+            include: {
+              values: {
+                include: {
+                  variantValue: {
+                    include: {
+                      variantType: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       });
     } else if (categoryId) {
-      // Filter by categoryId → find all subCategories first
       products = await prisma.product.findMany({
         where: {
           subCategory: {
@@ -36,11 +51,27 @@ export async function GET(req: NextRequest) {
               category: true,
             },
           },
-          variants: true,
+          variantTypes: {
+            include: {
+              values: true,
+            },
+          },
+          combinations: {
+            include: {
+              values: {
+                include: {
+                  variantValue: {
+                    include: {
+                      variantType: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       });
     } else {
-      // No filter → return all products
       products = await prisma.product.findMany({
         include: {
           subCategory: {
@@ -48,7 +79,24 @@ export async function GET(req: NextRequest) {
               category: true,
             },
           },
-          variants: true,
+          variantTypes: {
+            include: {
+              values: true,
+            },
+          },
+          combinations: {
+            include: {
+              values: {
+                include: {
+                  variantValue: {
+                    include: {
+                      variantType: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       });
     }

@@ -6,7 +6,7 @@ import { verifyToken } from '@/lib/auth';
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get('token')?.value;
-    
+
     if (!token) {
       return NextResponse.json({ success: false, error: 'Please login first' }, { status: 401 });
     }
@@ -17,18 +17,18 @@ export async function GET(req: NextRequest) {
     // Count total items in cart (sum of quantities)
     const cartItems = await prisma.cartItem.findMany({
       where: { userId },
-      select: { quantity: true }
+      select: { quantity: true },
     });
 
     const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
     const uniqueItemCount = cartItems.length;
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       count: {
         items: itemCount,
-        uniqueItems: uniqueItemCount
-      } 
+        uniqueItems: uniqueItemCount,
+      },
     });
   } catch (error) {
     console.error('[GET /api/cart/count]', error);

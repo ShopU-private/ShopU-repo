@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import {prisma} from "@/lib/client";
-import { isAdmin } from "@/lib/auth";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/client';
+import { isAdmin } from '@/lib/auth';
+import { createCombinationSchema } from '@/lib/adminSchema';
 
 interface Params {
   params: { productsId: string };
@@ -8,9 +9,16 @@ interface Params {
 
 export async function POST(request: NextRequest, { params }: Params) {
   if (!isAdmin(request)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-  const { price, stock, imageUrl, variantValueIds } = await request.json();
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const body = await request.json();
+
+  const parsed = createCombinationSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
+  }
+
+  const { price, stock, imageUrl, variantValueIds } = parsed.data;
 
   if (
     !price ||
@@ -20,7 +28,7 @@ export async function POST(request: NextRequest, { params }: Params) {
     !Array.isArray(variantValueIds) ||
     variantValueIds.length === 0
   ) {
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
   const combination = await prisma.productVariantCombination.create({
@@ -42,7 +50,6 @@ export async function POST(request: NextRequest, { params }: Params) {
 
   return NextResponse.json(combination);
 }
-
 
 export async function GET(_req: Request, { params }: Params) {
   const combinations = await prisma.productVariantCombination.findMany({

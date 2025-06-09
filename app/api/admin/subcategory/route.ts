@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
+import { createSubCategorySchema } from '@/lib/adminSchema';
 
 export async function GET(req: NextRequest) {
   if (!isAdmin(req)) {
@@ -30,7 +31,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { name, categoryId } = await req.json();
+    const body = await req.json();
+    const parsed = createSubCategorySchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
+    }
+
+    const { name, categoryId } = parsed.data;
 
     if (!name || !categoryId) {
       return NextResponse.json(

@@ -7,7 +7,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   try {
     const cartItemId = params.id;
     const token = req.cookies.get('token')?.value;
-    
+
     if (!token) {
       return NextResponse.json({ success: false, error: 'Please login first' }, { status: 401 });
     }
@@ -28,8 +28,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const cartItem = await prisma.cartItem.findFirst({
       where: {
         id: cartItemId,
-        userId
-      }
+        userId,
+      },
     });
 
     if (!cartItem) {
@@ -40,7 +40,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const updatedCartItem = await prisma.cartItem.update({
       where: { id: cartItemId },
       data: { quantity },
-      include: { product: true }
+      include: { product: true },
     });
 
     return NextResponse.json({ success: true, cartItem: updatedCartItem });
@@ -58,7 +58,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   try {
     const cartItemId = params.id;
     const token = req.cookies.get('token')?.value;
-    
+
     if (!token) {
       return NextResponse.json({ success: false, error: 'Please login first' }, { status: 401 });
     }
@@ -70,8 +70,8 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     const cartItem = await prisma.cartItem.findFirst({
       where: {
         id: cartItemId,
-        userId
-      }
+        userId,
+      },
     });
 
     if (!cartItem) {
@@ -80,7 +80,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
     // Delete the cart item
     await prisma.cartItem.delete({
-      where: { id: cartItemId }
+      where: { id: cartItemId },
     });
 
     return NextResponse.json({ success: true, message: 'Item removed from cart' });

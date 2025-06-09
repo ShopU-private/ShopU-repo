@@ -20,28 +20,31 @@ export async function GET(req: NextRequest) {
           include: {
             variantTypes: {
               include: {
-                values: true
-              }
+                values: true,
+              },
             },
             combinations: {
               include: {
                 values: {
                   include: {
-                    variantValue: true
-                  }
-                }
-              }
-            }
-          }
-        }
+                    variantValue: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
-      orderBy: { addedAt: 'desc' }
+      orderBy: { addedAt: 'desc' },
     });
 
     return NextResponse.json({ success: true, cartItems });
   } catch (error) {
     console.error('[GET /api/cart]', error);
-    return NextResponse.json({ success: false, error: 'Failed to fetch cart items' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch cart items' },
+      { status: 500 }
+    );
   }
 }
 
@@ -67,22 +70,19 @@ export async function POST(req: NextRequest) {
 
     // Check if the product exists
     const product = await prisma.product.findUnique({
-      where: { id: productId }
+      where: { id: productId },
     });
 
     if (!product) {
-      return NextResponse.json(
-        { success: false, error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
     }
 
     // Check if the item is already in the cart
     const existingCartItem = await prisma.cartItem.findFirst({
       where: {
         userId,
-        productId
-      }
+        productId,
+      },
     });
 
     let cartItem;
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
       cartItem = await prisma.cartItem.update({
         where: { id: existingCartItem.id },
         data: { quantity: existingCartItem.quantity + quantity },
-        include: { product: true }
+        include: { product: true },
       });
     } else {
       // Add new item to cart
@@ -100,9 +100,9 @@ export async function POST(req: NextRequest) {
         data: {
           userId,
           productId,
-          quantity
+          quantity,
         },
-        include: { product: true }
+        include: { product: true },
       });
     }
 
