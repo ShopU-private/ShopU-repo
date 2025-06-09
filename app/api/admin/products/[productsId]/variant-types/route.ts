@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
+import { createVariantTypeSchema } from '@/lib/adminSchema';
 
 interface Params {
   params: { productsId: string };
@@ -10,7 +11,14 @@ export async function POST(request: NextRequest, { params }: Params) {
   if (!isAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const { name } = await request.json();
+  const body = await request.json();
+
+  const parsed = createVariantTypeSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
+  }
+
+  const { name } = parsed.data;
 
   if (!name) {
     return NextResponse.json({ error: 'Name required' }, { status: 400 });

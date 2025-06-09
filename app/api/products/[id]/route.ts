@@ -3,7 +3,7 @@ import { prisma } from '@/lib/client';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { id: productId } = await params;
+    const productId = params.id;
 
     if (!productId) {
       return NextResponse.json(
@@ -16,9 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       where: { id: productId },
       include: {
         subCategory: {
-          include: {
-            category: true,
-          },
+          include: { category: true },
         },
         variantTypes: {
           include: {
@@ -45,7 +43,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, product });
+    return NextResponse.json({ product });
   } catch (err) {
     console.error('[GET /api/products/[id]]', err);
     return NextResponse.json({ success: false, error: 'Failed to fetch product' }, { status: 500 });

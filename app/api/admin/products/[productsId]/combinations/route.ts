@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
+import { createCombinationSchema } from '@/lib/adminSchema';
 
 interface Params {
   params: { productsId: string };
@@ -10,7 +11,14 @@ export async function POST(request: NextRequest, { params }: Params) {
   if (!isAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const { price, stock, imageUrl, variantValueIds } = await request.json();
+  const body = await request.json();
+
+  const parsed = createCombinationSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
+  }
+
+  const { price, stock, imageUrl, variantValueIds } = parsed.data;
 
   if (
     !price ||

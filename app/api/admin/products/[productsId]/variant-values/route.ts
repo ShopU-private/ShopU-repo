@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
+import { createVariantValueSchema } from '@/lib/adminSchema';
 
 export async function POST(request: NextRequest) {
   if (!isAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const { value, variantTypeId } = await request.json();
+  const body = await request.json();
+
+  const parsed = createVariantValueSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
+  }
+
+  const { value, variantTypeId } = parsed.data;
 
   if (!value || !variantTypeId) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -28,7 +36,7 @@ export async function GET(request: NextRequest) {
   try {
     const variantValues = await prisma.variantValue.findMany({
       include: {
-        variantType: true, // optional: include related VariantType data
+        variantType: true,
       },
     });
 
