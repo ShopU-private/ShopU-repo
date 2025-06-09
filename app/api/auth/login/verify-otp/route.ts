@@ -47,10 +47,8 @@ export async function POST(request: NextRequest) {
     if (!user) {
       const userData = {
         id: uuidv4(),
-        name: '',
-        email: '',
         phoneNumber: phoneNumber,
-        role: phoneNumber == '8700095839' ? 'admin' : 'user',
+        role: 'user',
       };
 
       user = await prisma.user.create({

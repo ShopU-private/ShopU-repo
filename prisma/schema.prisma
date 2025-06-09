@@ -14,7 +14,7 @@ model User {
   phoneNumber       String        @unique
   role              String        @default("user")
   createdAt         DateTime      @default(now()) @map("created_at")
-  idProfileComplete Boolean       @default(false)
+  isProfileComplete Boolean       @default(false)
   
   orders            Order[]
   cartItems         CartItem[]    @relation("UserCartItems")
@@ -51,30 +51,58 @@ model SubCategory {
 }
 
 model Product {
-  id           String       @id @default(uuid())
+  id           String                     @id @default(uuid())
   name         String
   description  String
   price        Decimal
   stock        Int
-  imageUrl     String       @map("image_url")
-  isActive     Boolean      @default(true) @map("is_active")
-  createdAt    DateTime     @default(now()) @map("created_at")
-
-  subCategory  SubCategory  @relation(fields: [subCategoryId], references: [id])
+  imageUrl     String                     @map("image_url")
+  isActive     Boolean                    @default(true) @map("is_active")
+  createdAt    DateTime                   @default(now()) @map("created_at")
+  subCategory  SubCategory                @relation(fields: [subCategoryId], references: [id])
   subCategoryId String
+
+  variantTypes VariantType[]
+  combinations ProductVariantCombination[]
 
   cartItems    CartItem[]
   orderItems   OrderItem[]
-  variants     ProductVariant[]
 }
 
-model ProductVariant {
-  id          String   @id @default(uuid())
-  product     Product  @relation(fields: [productId], references: [id])
-  productId   String
-  key         String   // e.g. "RAM" or "Color"
-  value       String   // e.g. "8GB" or "Red"
+model VariantType {
+  id        String        @id @default(uuid())
+  name      String
+  product   Product       @relation(fields: [productId], references: [id])
+  productId String
+  values    VariantValue[]
 }
+
+model VariantValue {
+  id            String        @id @default(uuid())
+  value         String
+  variantType   VariantType   @relation(fields: [variantTypeId], references: [id])
+  variantTypeId String
+  combinationValues CombinationValue[]
+}
+
+model ProductVariantCombination {
+  id         String             @id @default(uuid())
+  product    Product            @relation(fields: [productId], references: [id])
+  productId  String
+  values     CombinationValue[]
+  price      Decimal
+  stock      Int
+  imageUrl   String
+}
+
+model CombinationValue {
+  id              String                  @id @default(uuid())
+  combination     ProductVariantCombination @relation(fields: [combinationId], references: [id])
+  combinationId   String
+  variantValue    VariantValue            @relation(fields: [variantValueId], references: [id])
+  variantValueId  String
+}
+
 
 model CartItem {
   id        String   @id @default(uuid())

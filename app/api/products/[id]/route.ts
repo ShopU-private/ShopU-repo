@@ -15,9 +15,28 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     const product = await prisma.product.findUnique({
       where: { id: productId },
       include: {
-        variants: true,
         subCategory: {
-          include: { category: true },
+          include: {
+            category: true,
+          },
+        },
+        variantTypes: {
+          include: {
+            values: true,
+          },
+        },
+        combinations: {
+          include: {
+            values: {
+              include: {
+                variantValue: {
+                  include: {
+                    variantType: true,
+                  },
+                },
+              },
+            },
+          },
         },
       },
     });
@@ -26,7 +45,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ product });
+    return NextResponse.json({ success: true, product });
   } catch (err) {
     console.error('[GET /api/products/[id]]', err);
     return NextResponse.json({ success: false, error: 'Failed to fetch product' }, { status: 500 });

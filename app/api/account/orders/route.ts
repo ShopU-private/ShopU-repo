@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
+    const userId = payload.id;
 
     const orders = await prisma.order.findMany({
       where: { userId },

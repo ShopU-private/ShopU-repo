@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { verifyToken } from '@/lib/auth';
+import { userAddressUpdateSchema } from '@/lib/schema/userAddress.schema';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
+    const userId = payload.id;
 
     const address = await prisma.userAddress.findFirst({
       where: {
@@ -42,10 +43,15 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
+    const userId = payload.id;
 
     const body = await req.json();
-    const { addressLine1, addressLine2, city, state, postalCode, country, isDefault } = body;
+
+    const parsed = userAddressUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      const errors = parsed.error.flatten().fieldErrors;
+      return NextResponse.json({ success: false, error: errors }, { status: 400 });
+    }
 
     const address = await prisma.userAddress.findFirst({
       where: { id: addressId, userId },
@@ -57,18 +63,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     const updated = await prisma.userAddress.update({
       where: { id: addressId },
-      data: {
-        addressLine1,
-        addressLine2,
-        city,
-        state,
-        postalCode,
-        country,
-        isDefault,
-      },
+      data: parsed.data,
     });
     //if curr address is default, update all other to false
-    if (updated && isDefault) {
+    if (parsed.data.isDefault) {
       await prisma.userAddress.updateMany({
         where: {
           userId,
@@ -95,7 +93,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
+    const userId = payload.id;
 
     const address = await prisma.userAddress.findFirst({
       where: { id: addressId, userId },
