@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
+    const userId = payload.id;
 
     if (!orderId) {
       return NextResponse.json({ success: false, error: 'Order ID is required' }, { status: 400 });

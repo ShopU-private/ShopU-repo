@@ -11,7 +11,8 @@ export async function GET(req: NextRequest) {
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
+
+    const userId = payload.id;
 
     const cartItems = await prisma.cartItem.findMany({
       where: { userId },
@@ -57,7 +58,8 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
+
+    const userId = payload.id;
 
     const { productId, quantity = 1 } = await req.json();
 

@@ -14,7 +14,7 @@ model User {
   phoneNumber       String        @unique
   role              String        @default("user")
   createdAt         DateTime      @default(now()) @map("created_at")
-  idProfileComplete Boolean       @default(false)
+  isProfileComplete Boolean       @default(false)
   
   orders            Order[]
   cartItems         CartItem[]    @relation("UserCartItems")

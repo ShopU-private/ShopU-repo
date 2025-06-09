@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
 
 type TokenPayload = {
-  userId: string;
+  id: string;
   role: string;
   phoneNumber: string;
 };
@@ -20,8 +20,8 @@ export function isAdmin(req: NextRequest): boolean {
   }
 }
 
-export function generateToken(user: any): string {
-  return jwt.sign({ userId: user.id, role: user.role, phoneNumber: user.phoneNumber }, JWT_SECRET, {
+export function generateToken(user: TokenPayload): string {
+  return jwt.sign({ id: user.id, role: user.role, phoneNumber: user.phoneNumber }, JWT_SECRET, {
     expiresIn: '7d',
   });
 }

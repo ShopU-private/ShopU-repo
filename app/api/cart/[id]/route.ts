@@ -13,7 +13,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
+
+    const userId = payload.id;
 
     const { quantity } = await req.json();
 
@@ -64,8 +65,8 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
 
+    const userId = payload.id;
     // Verify the cart item belongs to the user
     const cartItem = await prisma.cartItem.findFirst({
       where: {

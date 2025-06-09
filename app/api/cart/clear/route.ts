@@ -12,7 +12,9 @@ export async function DELETE(req: NextRequest) {
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
+
+    const userId = payload.id;
+
 
     // Delete all cart items for the user
     await prisma.cartItem.deleteMany({

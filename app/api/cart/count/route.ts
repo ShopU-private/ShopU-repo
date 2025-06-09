@@ -12,7 +12,8 @@ export async function GET(req: NextRequest) {
     }
 
     const payload = verifyToken(token);
-    const userId = payload.userId;
+
+    const userId = payload.id;
 
     // Count total items in cart (sum of quantities)
     const cartItems = await prisma.cartItem.findMany({
