@@ -3,7 +3,7 @@ import { prisma } from '@/lib/client';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { id: productId } = await params;
+    const productId = params.id;
 
     if (!productId) {
       return NextResponse.json(
@@ -15,9 +15,26 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     const product = await prisma.product.findUnique({
       where: { id: productId },
       include: {
-        variants: true,
         subCategory: {
           include: { category: true },
+        },
+        variantTypes: {
+          include: {
+            values: true,
+          },
+        },
+        combinations: {
+          include: {
+            values: {
+              include: {
+                variantValue: {
+                  include: {
+                    variantType: true,
+                  },
+                },
+              },
+            },
+          },
         },
       },
     });
