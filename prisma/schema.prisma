@@ -25,6 +25,8 @@ model UserAddress {
   id           String  @id @default(uuid())
   user         User    @relation(fields: [userId], references: [id])
   userId       String
+  fullName     String  @map("full_name")
+  phoneNumber  String  @map("phone_number")
   addressLine1 String  @map("address_line1")
   addressLine2 String? @map("address_line2")
   city         String

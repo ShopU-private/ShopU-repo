@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
     }
 
     const payload = verifyToken(token);
+
     const userId = payload.id;
 
     // Count total items in cart (sum of quantities)

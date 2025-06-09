@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
   try {
     const variantValues = await prisma.variantValue.findMany({
       include: {
-        variantType: true,
+        variantType: true, 
       },
     });
 
