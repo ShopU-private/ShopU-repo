@@ -19,6 +19,7 @@ model User {
   orders            Order[]
   cartItems         CartItem[]    @relation("UserCartItems")
   addresses         UserAddress[]
+  payments          Payment[]
 }
 
 model UserAddress {
@@ -127,6 +128,7 @@ model Order {
   createdAt   DateTime    @default(now()) @map("created_at")
 
   orderItems  OrderItem[]
+  payments    Payment[]
 }
 
 model OrderItem {
@@ -137,4 +139,25 @@ model OrderItem {
   productId String
   quantity  Int
   price     Decimal
+}
+
+// Payment model
+model Payment {
+  id               String   @id @default(cuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  orderId          String
+  amount           Float
+  currency         String   @default("INR")
+  status           String   // PENDING, COMPLETED, FAILED, CANCELLED, EXPIRED
+  provider         String   // CASHFREE, etc.
+  providerPaymentId String?
+  metadata         Json?
+  userId           String
+  
+  user             User     @relation(fields: [userId], references: [id])
+  order            Order    @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+  @@index([userId])
 }

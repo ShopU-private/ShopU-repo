@@ -26,6 +26,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
             product: true,
           },
         },
+        payments: true, // Include payment information
       },
     });
 
