@@ -67,7 +67,7 @@ model Product {
 
   variantTypes VariantType[]
   combinations ProductVariantCombination[]
-
+  productImage ProductImage[]
   cartItems    CartItem[]
   orderItems   OrderItem[]
 }
@@ -160,4 +160,13 @@ model Payment {
 
   @@index([orderId])
   @@index([userId])
+}
+
+model ProductImage {
+  id         String   @id @default(uuid())
+  url     String
+  key        String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  String
+  createdAt  DateTime @default(now())
 }

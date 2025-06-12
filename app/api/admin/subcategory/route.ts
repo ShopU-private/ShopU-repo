@@ -1,9 +1,8 @@
 // /api/admin/subcategory/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
-import { createSubCategorySchema } from '@/lib/adminSchema';
+import { createSubCategorySchema } from '@/lib/schema/adminSchema';
 
 export async function GET(req: NextRequest) {
   if (!isAdmin(req)) {

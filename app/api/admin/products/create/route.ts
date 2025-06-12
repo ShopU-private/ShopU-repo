@@ -2,7 +2,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
-import { createProductSchema } from '@/lib/adminSchema';
+import { createProductSchema } from '@/lib/schema/adminSchema';
 export async function POST(req: NextRequest) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

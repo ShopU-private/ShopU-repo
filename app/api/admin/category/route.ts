@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
-import { createCategorySchema } from '@/lib/adminSchema';
+import { createCategorySchema } from '@/lib/schema/adminSchema';
 
 export async function GET(request: NextRequest) {
   if (!isAdmin(request)) {

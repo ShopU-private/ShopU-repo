@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
-import { createCombinationSchema } from '@/lib/adminSchema';
+import { createCombinationSchema } from '@/lib/schema/adminSchema';
 
 interface Params {
   params: { productsId: string };
