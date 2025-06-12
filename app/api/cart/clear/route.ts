@@ -15,7 +15,6 @@ export async function DELETE(req: NextRequest) {
 
     const userId = payload.id;
 
-
     // Delete all cart items for the user
     await prisma.cartItem.deleteMany({
       where: { userId },

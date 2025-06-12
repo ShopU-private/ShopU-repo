@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
-import { createVariantValueSchema } from '@/lib/adminSchema';
+import { createVariantValueSchema } from '@/lib/schema/adminSchema';
 
 export async function POST(request: NextRequest) {
   if (!isAdmin(request)) {
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
   try {
     const variantValues = await prisma.variantValue.findMany({
       include: {
-        variantType: true, 
+        variantType: true,
       },
     });
 

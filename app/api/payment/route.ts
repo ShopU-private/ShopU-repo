@@ -14,23 +14,20 @@ export async function GET(req: NextRequest) {
     // Verify token and get user details
     const payload = verifyToken(token);
     const userId = payload.id;
-    
+
     // Get orderId from query parameters
     const url = new URL(req.url);
     const orderId = url.searchParams.get('orderId');
-    
+
     if (!orderId) {
-      return NextResponse.json(
-        { success: false, error: 'Order ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Order ID is required' }, { status: 400 });
     }
 
     // Verify the order belongs to the user
     const order = await prisma.order.findFirst({
-      where: { 
+      where: {
         id: orderId,
-        userId 
+        userId,
       },
     });
 
@@ -40,10 +37,10 @@ export async function GET(req: NextRequest) {
 
     // Fetch payment details
     const payment = await prisma.payment.findFirst({
-      where: { 
+      where: {
         orderId,
-        userId 
-      }
+        userId,
+      },
     });
 
     return NextResponse.json({ success: true, payment });

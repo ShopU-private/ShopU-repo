@@ -16,7 +16,7 @@ export async function DELETE(req: NextRequest) {
     const payload = verifyToken(token);
     const userIdToDelete = payload.id;
 
-        // Delete the user directly on cascade so all related data is also deleted                        
+    // Delete the user directly on cascade so all related data is also deleted
     await prisma.user.delete({
       where: { id: userIdToDelete },
     });
@@ -31,9 +31,6 @@ export async function DELETE(req: NextRequest) {
     return response;
   } catch (error) {
     console.error('[DELETE /api/account/delete]', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

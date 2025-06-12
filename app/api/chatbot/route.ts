@@ -100,25 +100,25 @@ export async function POST(request: NextRequest) {
     // Parse the request body
     const body = await request.json();
     const userMessage = body.message;
-    
+
     if (!userMessage) {
       return NextResponse.json(
         { error: 'Message is required in the request body' },
         { status: 400 }
       );
     }
-    
+
     // Check if the message is a 5-digit order ID
     const orderIdRegex = /^\d{5}$/;
     if (orderIdRegex.test(userMessage.trim())) {
       return NextResponse.json({
-        reply: `Order #${userMessage.trim()} is being processed and will be delivered soon. 🚚`
+        reply: `Order #${userMessage.trim()} is being processed and will be delivered soon. 🚚`,
       });
     }
-    
+
     // Configure Gemini model
     const model = genAI.getGenerativeModel({
-      model: "gemini-pro",
+      model: 'gemini-pro',
       safetySettings: [
         {
           category: HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -142,12 +142,14 @@ export async function POST(request: NextRequest) {
     const chat = model.startChat({
       history: [
         {
-          role: "user",
-          parts: [{ text: "Hi" }],
+          role: 'user',
+          parts: [{ text: 'Hi' }],
         },
         {
-          role: "model",
-          parts: [{ text: "Hello! Welcome to ShopU. How can I help you with your shopping today? 😊" }],
+          role: 'model',
+          parts: [
+            { text: 'Hello! Welcome to ShopU. How can I help you with your shopping today? 😊' },
+          ],
         },
       ],
       generationConfig: {
@@ -159,19 +161,13 @@ export async function POST(request: NextRequest) {
     });
 
     // Send system prompt and user message
-    const result = await chat.sendMessage(
-      `${systemPrompt}\n\nUser message: "${userMessage}"`
-    );
+    const result = await chat.sendMessage(`${systemPrompt}\n\nUser message: "${userMessage}"`);
     const response = result.response;
     const text = response.text();
 
     return NextResponse.json({ reply: text });
-
   } catch (error) {
     console.error('Chatbot error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process your request' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to process your request' }, { status: 500 });
   }
 }

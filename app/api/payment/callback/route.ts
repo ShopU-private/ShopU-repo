@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       providerPaymentId,
       status,
       provider = 'CASHFREE',
-      metadata = {}
+      metadata = {},
     } = await req.json();
 
     if (!orderId || !status) {
@@ -22,13 +22,13 @@ export async function POST(req: NextRequest) {
 
     // Find the payment
     const payment = await prisma.payment.findFirst({
-      where: { 
+      where: {
         orderId,
-        provider
+        provider,
       },
       include: {
-        order: true
-      }
+        order: true,
+      },
     });
 
     if (!payment) {
@@ -42,30 +42,30 @@ export async function POST(req: NextRequest) {
         status,
         providerPaymentId,
         metadata: {
-          ...payment.metadata || {},
+          ...(payment.metadata || {}),
           ...metadata,
-          completedAt: new Date().toISOString()
-        }
-      }
+          completedAt: new Date().toISOString(),
+        },
+      },
     });
 
     // If payment is successful, update order status
     if (status === 'COMPLETED' || status === 'SUCCESS') {
       await prisma.order.update({
         where: { id: orderId },
-        data: { status: 'paid' }
+        data: { status: 'paid' },
       });
     } else if (status === 'FAILED') {
       await prisma.order.update({
         where: { id: orderId },
-        data: { status: 'payment_failed' }
+        data: { status: 'payment_failed' },
       });
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Payment status updated',
-      payment: updatedPayment
+      payment: updatedPayment,
     });
   } catch (error) {
     console.error('[POST /api/payment/callback]', error);
