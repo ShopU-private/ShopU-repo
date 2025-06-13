@@ -8,7 +8,6 @@ export default async function Home() {
 
   return (
     <div>
-      {/* <h1>Users</h1> */}
       <Header/>
       <ChatBot />
       <ul>
@@ -20,7 +19,6 @@ export default async function Home() {
             <p>
               <strong>Role:</strong> {user.role}
             </p>
-
             <hr />
           </li>
         ))}

@@ -3,11 +3,32 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, ShoppingCart, User, MapPin, Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import Logo from "../../public/Shop U Logo-02.jpg";
+import LoginModal from './LoginModal';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLocationOpen, setIsLocationOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const locationRef = useRef<HTMLDivElement>(null);
+
+  const checkLoginStatus = async() => {
+    try {
+      const res = await fetch('/api/account/is-logged-in');
+      const data = await res.json();
+      setIsLoggedIn(data.loggedIn);
+    } catch {
+      setIsLoggedIn(false);
+    }
+  };
+
+
+  // Check login status when modal closes
+  useEffect(() => {
+    if (!isLoginModalOpen) {
+      checkLoginStatus();
+    }
+  }, [isLoginModalOpen]);
 
   const categories = [
     'All Products',
@@ -105,10 +126,22 @@ const Header = () => {
 
           {/* Right Actions */}
           <div className="flex items-center space-x-4">
-            <button className="hidden md:flex items-center space-x-1 px-4 py-2 text-gray-700 hover:text-teal-600 transition-colors">
-              <User className="w-5 h-5" />
-              <span className="text-sm">Login</span>
-            </button>
+            {isLoggedIn ? (
+              <button 
+                className="hidden md:flex items-center space-x-1 px-4 py-2 text-gray-700 hover:text-teal-600 transition-colors"
+              >
+                <User className="w-5 h-5" />
+                <span className="text-sm">Account</span>
+              </button>
+            ) : (
+              <button 
+                onClick={() => setIsLoginModalOpen(true)}
+                className="hidden md:flex items-center space-x-1 px-4 py-2 text-gray-700 hover:text-teal-600 transition-colors"
+              >
+                <User className="w-5 h-5" />
+                <span className="text-sm">Login</span>
+              </button>
+            )}
 
             <button className="relative p-2 text-gray-700 hover:text-teal-600 transition-colors">
               <ShoppingCart className="w-6 h-6" />
@@ -160,10 +193,25 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t">
           <div className="px-4 py-2 space-y-2">
-            <button className="flex items-center space-x-2 w-full text-left p-2 hover:bg-gray-100 rounded">
-              <User className="w-5 h-5" />
-              <span>Login / Sign Up</span>
-            </button>
+            {isLoggedIn ? (
+              <button 
+                className="flex items-center space-x-2 w-full text-left p-2 hover:bg-gray-100 rounded"
+              >
+                <User className="w-5 h-5" />
+                <span>Account</span>
+              </button>
+            ) : (
+              <button 
+                onClick={() => {
+                  setIsLoginModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 w-full text-left p-2 hover:bg-gray-100 rounded"
+              >
+                <User className="w-5 h-5" />
+                <span>Login</span>
+              </button>
+            )}
 
             <div className="border-t pt-2">
               <p className="text-sm font-medium text-gray-700 mb-2">Categories</p>
@@ -189,6 +237,12 @@ const Header = () => {
           </div>
         </div>
       )}
+
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+      />
     </nav>
   );
 };
