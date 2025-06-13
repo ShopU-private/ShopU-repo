@@ -15,19 +15,15 @@ model User {
   role              String        @default("user")
   createdAt         DateTime      @default(now()) @map("created_at")
   isProfileComplete Boolean       @default(false)
-  
-  orders            Order[]
   cartItems         CartItem[]    @relation("UserCartItems")
-  addresses         UserAddress[]
+  orders            Order[]
   payments          Payment[]
+  addresses         UserAddress[]
 }
 
 model UserAddress {
   id           String  @id @default(uuid())
-  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
-  fullName     String  @map("full_name")
-  phoneNumber  String  @map("phone_number")
   addressLine1 String  @map("address_line1")
   addressLine2 String? @map("address_line2")
   city         String
@@ -35,8 +31,10 @@ model UserAddress {
   postalCode   String  @map("postal_code")
   country      String
   isDefault    Boolean @map("is_default")
-
+  fullName     String  @map("full_name")
+  phoneNumber  String  @map("phone_number")
   orders       Order[]
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Category {
@@ -46,127 +44,112 @@ model Category {
 }
 
 model SubCategory {
-  id          String        @id @default(uuid())
-  name        String
-  category    Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId  String
-  products    Product[]
+  id         String    @id @default(uuid())
+  name       String
+  categoryId String
+  products   Product[]
+  category   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model Product {
-  id           String                     @id @default(uuid())
-  name         String
-  description  String
-  price        Decimal
-  stock        Int
-  imageUrl     String                     @map("image_url")
-  isActive     Boolean                    @default(true) @map("is_active")
-  createdAt    DateTime                   @default(now()) @map("created_at")
-  subCategory  SubCategory                @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  id            String                      @id @default(uuid())
+  name          String
+  description   String
+  price         Decimal
+  stock         Int
+  imageUrl      String                      @map("image_url")
+  isActive      Boolean                     @default(true) @map("is_active")
+  createdAt     DateTime                    @default(now()) @map("created_at")
   subCategoryId String
-
-  variantTypes VariantType[]
-  combinations ProductVariantCombination[]
-  productImage ProductImage[]
-  cartItems    CartItem[]
-  orderItems   OrderItem[]
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  subCategory   SubCategory                 @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  combinations  ProductVariantCombination[]
+  variantTypes  VariantType[]
 }
 
 model VariantType {
-  id        String        @id @default(uuid())
+  id        String         @id @default(uuid())
   name      String
-  product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
+  product   Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
   values    VariantValue[]
 }
 
 model VariantValue {
-  id            String        @id @default(uuid())
-  value         String
-  variantType   VariantType   @relation(fields: [variantTypeId], references: [id], onDelete: Cascade)
-  variantTypeId String
+  id                String             @id @default(uuid())
+  value             String
+  variantTypeId     String
   combinationValues CombinationValue[]
+  variantType       VariantType        @relation(fields: [variantTypeId], references: [id], onDelete: Cascade)
 }
 
 model ProductVariantCombination {
-  id         String             @id @default(uuid())
-  product    Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId  String
-  values     CombinationValue[]
-  price      Decimal
-  stock      Int
-  imageUrl   String
+  id        String             @id @default(uuid())
+  productId String
+  price     Decimal
+  stock     Int
+  imageUrl  String
+  values    CombinationValue[]
+  product   Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model CombinationValue {
-  id              String                  @id @default(uuid())
-  combination     ProductVariantCombination @relation(fields: [combinationId], references: [id], onDelete: Cascade)
-  combinationId   String
-  variantValue    VariantValue            @relation(fields: [variantValueId], references: [id])
-  variantValueId  String
+  id             String                    @id @default(uuid())
+  combinationId  String
+  variantValueId String
+  combination    ProductVariantCombination @relation(fields: [combinationId], references: [id], onDelete: Cascade)
+  variantValue   VariantValue              @relation(fields: [variantValueId], references: [id])
 }
-
 
 model CartItem {
   id        String   @id @default(uuid())
-  user      User     @relation("UserCartItems", fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
   quantity  Int
   addedAt   DateTime @default(now()) @map("added_at")
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserCartItems", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Order {
   id          String      @id @default(uuid())
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
-  address     UserAddress @relation(fields: [addressId], references: [id])
   addressId   String
   status      String
   totalAmount Decimal     @map("total_amount")
   createdAt   DateTime    @default(now()) @map("created_at")
-
+  address     UserAddress @relation(fields: [addressId], references: [id])
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderItems  OrderItem[]
   payments    Payment[]
 }
 
 model OrderItem {
-  id        String   @id @default(uuid())
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id        String  @id @default(uuid())
   orderId   String
-  product   Product  @relation(fields: [productId], references: [id])
   productId String
   quantity  Int
   price     Decimal
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
 }
 
-// Payment model
 model Payment {
-  id               String   @id @default(cuid())
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  orderId          String
-  amount           Float
-  currency         String   @default("INR")
-  status           String   // PENDING, COMPLETED, FAILED, CANCELLED, EXPIRED
-  provider         String   // CASHFREE, etc.
+  id                String   @id @default(cuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  orderId           String
+  amount            Float
+  currency          String   @default("INR")
+  status            String
+  provider          String
   providerPaymentId String?
-  metadata         Json?
-  userId           String
-  
-  user             User     @relation(fields: [userId], references: [id])
-  order            Order    @relation(fields: [orderId], references: [id])
+  metadata          Json?
+  userId            String
+  order             Order    @relation(fields: [orderId], references: [id])
+  user              User     @relation(fields: [userId], references: [id])
 
   @@index([orderId])
   @@index([userId])
-}
-
-model ProductImage {
-  id         String   @id @default(uuid())
-  url     String
-  key        String
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId  String
-  createdAt  DateTime @default(now())
 }
