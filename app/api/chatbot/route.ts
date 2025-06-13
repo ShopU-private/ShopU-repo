@@ -23,6 +23,7 @@ Please follow these guidelines:
 - If you don’t understand the question, respond with: "Sorry, I didn't quite understand that. Could you rephrase it?"
 - Keep responses short, helpful, and friendly.
 - Never make up product info unless the user mentions a specific item.
+- Do not answer programming, development, or technical implementation queries outside of the shopping context.
 
 Now, follow the responses below when relevant:
 
@@ -87,13 +88,14 @@ Now, follow the responses below when relevant:
 
 ---
 
-### 🤖 Unknown or unclear messages
+### 🤖 Unknown or Unclear Messages
 - **Gibberish or unrelated text?** → “Sorry, I didn't quite understand that. Could you rephrase it?”
 
 ---
 
 Only respond with helpful, accurate, and friendly replies based on the above. Never guess, exaggerate, or give wrong info. Be concise but polite. You are a helpful assistant for ShopU.
 `;
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -116,58 +118,113 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Configure Gemini model
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-pro',
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-      ],
-    });
+    // First try using the Google Generative AI SDK
+    try {
+      // Configure Gemini model with updated model name
+      const model = genAI.getGenerativeModel({
+        model: 'gemini-2.0-flash', 
+        safetySettings: [
+          {
+            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+            threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+            threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          },
+        ],
+      });
 
-    const chat = model.startChat({
-      history: [
-        {
-          role: 'user',
-          parts: [{ text: 'Hi' }],
+      const result = await model.generateContent({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: `${systemPrompt}\n\nUser message: "${userMessage}"` }],
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 150,
         },
-        {
-          role: 'model',
-          parts: [
-            { text: 'Hello! Welcome to ShopU. How can I help you with your shopping today? 😊' },
-          ],
-        },
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 150,
-      },
-    });
+      });
 
-    // Send system prompt and user message
-    const result = await chat.sendMessage(`${systemPrompt}\n\nUser message: "${userMessage}"`);
-    const response = result.response;
-    const text = response.text();
+      const response = result.response;
+      const text = response.text();
+      
+      return NextResponse.json({ reply: text });
+    } catch (sdkError) {
+      console.log('SDK approach failed, falling back to REST API:', sdkError);
+      
+      // Fallback to direct REST API call
+      try {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    {
+                      text: `${systemPrompt}\n\nUser message: "${userMessage}"`
+                    }
+                  ]
+                }
+              ],
+              generationConfig: {
+                temperature: 0.7,
+                topK: 40,
+                topP: 0.95,
+                maxOutputTokens: 150,
+              },
+            }),
+          }
+        );
 
-    return NextResponse.json({ reply: text });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`API error: ${JSON.stringify(errorData)}`);
+        }
+
+        const data = await response.json();
+        
+        // Extract the generated text from the response
+        const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (!generatedText) {
+          throw new Error('No generated text in the response');
+        }
+        
+        return NextResponse.json({ reply: generatedText });
+      } catch (restApiError) {
+        console.error('REST API fallback failed:', restApiError);
+        throw restApiError;
+      }
+    }
   } catch (error) {
     console.error('Chatbot error:', error);
-    return NextResponse.json({ error: 'Failed to process your request' }, { status: 500 });
+    
+    // Provide a more descriptive error in the console
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+    }
+    
+    // Return a user-friendly error
+    return NextResponse.json({ 
+      reply: "I'm sorry, I'm having trouble connecting right now. Please try again shortly."
+    }, { status: 200 }); // Return 200 to client with an error message they can display
   }
 }
