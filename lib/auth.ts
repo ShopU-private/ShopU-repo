@@ -1,6 +1,7 @@
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 import jwt from 'jsonwebtoken';
 import { NextRequest } from 'next/server';
+import { prisma } from './client';
 
 type TokenPayload = {
   id: string;
@@ -32,5 +33,15 @@ export function verifyToken(token: string): TokenPayload {
     return decoded;
   } catch (error) {
     throw new Error('Invalid token');
+  }
+}
+
+export async function getUserFromToken(token: string) {
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
+    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    return user;
+  } catch {
+    return null;
   }
 }

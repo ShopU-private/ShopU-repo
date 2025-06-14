@@ -29,3 +29,52 @@ export async function DELETE(
     return NextResponse.json({ error: 'Failed to delete combination' }, { status: 500 });
   }
 }
+
+export async function PUT(req: NextRequest, { params }: Params) {
+  if (!isAdmin(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const body = await req.json();
+  const parsed = createCombinationSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
+  }
+
+  const { price, stock, imageUrl, variantValueIds } = parsed.data;
+
+  try {
+    // First, remove old variant values (combinationValue)
+    await prisma.combinationValue.deleteMany({
+      where: { combinationId: params.combinationId },
+    });
+
+    // Then update the combination
+    const updatedCombination = await prisma.productVariantCombination.update({
+      where: { id: params.combinationId },
+      data: {
+        price,
+        stock,
+        imageUrl,
+        values: {
+          create: variantValueIds.map((id: string) => ({
+            variantValueId: id,
+          })),
+        },
+      },
+      include: {
+        values: {
+          include: {
+            variantValue: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(updatedCombination);
+  } catch (err) {
+    console.error('PUT error:', err);
+    return NextResponse.json({ error: 'Failed to update combination' }, { status: 500 });
+  }
+}

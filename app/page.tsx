@@ -5,6 +5,7 @@ import ChatBot from './components/ChatBot';
 import MedicineCard from './components/MedicineCard';
 import React, { useState, useEffect } from 'react';
 import { searchEventEmitter } from './components/MedicineCard';
+import Footer from './components/Footer';
 
 interface Medicine {
   id: string;
@@ -41,6 +42,7 @@ export default function Home() {
           <div className="mt-8 text-center text-gray-500">Search for medicines to see results</div>
         )}
       </main>
+      <Footer/>
       <ChatBot />
     </div>
   );
