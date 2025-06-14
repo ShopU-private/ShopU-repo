@@ -27,3 +27,13 @@ export async function POST(req: NextRequest) {
   });
   return NextResponse.json(product);
 }
+
+export async function GET() {
+  const products = await prisma.product.findMany({
+    include: {
+      variantTypes: true,
+      combinations: true,
+    },
+  });
+  return NextResponse.json(products);
+}

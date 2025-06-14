@@ -25,3 +25,25 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     );
   }
 }
+
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = params;
+  const body = await req.json();
+  const { name } = body;
+
+  if (!name || typeof name !== 'string') {
+    return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+  }
+
+  try {
+    const updated = await prisma.category.update({
+      where: { id },
+      data: { name },
+    });
+
+    return NextResponse.json(updated);
+  } catch (err) {
+    console.error('PUT /category error:', err);
+    return NextResponse.json({ error: 'Failed to update category' }, { status: 500 });
+  }
+}

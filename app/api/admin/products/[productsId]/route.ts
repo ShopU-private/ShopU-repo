@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
 import { UTApi } from 'uploadthing/server';
+import { updateProductSchema } from '@/lib/schema/adminSchema';
 export const utapi = new UTApi();
 interface Params {
   params: { productsId: string };
@@ -69,5 +70,29 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   } catch (error) {
     console.error('[DELETE /api/admin/products/[productsId]]', error);
     return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest, { params }: Params) {
+  if (!isAdmin(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const parsed = updateProductSchema.safeParse(await req.json());
+
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+
+  try {
+    const updatedProduct = await prisma.product.update({
+      where: { id: params.productsId },
+      data: parsed.data,
+    });
+
+    return NextResponse.json({ success: true, product: updatedProduct });
+  } catch (error) {
+    console.error('[PUT /api/admin/products/:productId]', error);
+    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
   }
 }
