@@ -32,11 +32,11 @@ const ChatBot: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!message.trim()) return;
-    
+
     const userMessage = { content: message, role: 'user' as const };
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setMessage('');
     setIsLoading(true);
 
@@ -55,10 +55,10 @@ const ChatBot: React.FC = () => {
 
       const data = await response.json();
       const botMessage = { content: data.reply, role: 'assistant' as const };
-      setMessages((prev) => [...prev, botMessage]);
+      setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
-      setMessages((prev) => [
+      setMessages(prev => [
         ...prev,
         { content: 'Sorry, I encountered an error. Please try again later.', role: 'assistant' },
       ]);
@@ -68,19 +68,39 @@ const ChatBot: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    <div className="fixed right-5 bottom-5 z-50">
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-teal-600 hover:bg-teal-700 transition-all duration-200 text-white rounded-full p-4 shadow-lg flex items-center justify-center"
+        className="flex items-center justify-center rounded-full bg-teal-600 p-4 text-white shadow-lg transition-all duration-200 hover:bg-teal-700"
       >
         {isOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
         )}
@@ -88,11 +108,21 @@ const ChatBot: React.FC = () => {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 sm:w-96 h-96 bg-white rounded-lg shadow-xl flex flex-col overflow-hidden border border-gray-200">
+        <div className="absolute right-0 bottom-16 flex h-96 w-80 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl sm:w-96">
           {/* Chat Header */}
-          <div className="bg-teal-600 text-white px-4 py-3 flex items-center">
+          <div className="flex items-center bg-teal-600 px-4 py-3 text-white">
             <div className="mr-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
               </svg>
             </div>
@@ -103,7 +133,7 @@ const ChatBot: React.FC = () => {
           </div>
 
           {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+          <div className="flex-1 overflow-y-auto bg-gray-50 p-4">
             {messages.map((msg, index) => (
               <div
                 key={index}
@@ -112,10 +142,10 @@ const ChatBot: React.FC = () => {
                 }`}
               >
                 <div
-                  className={`rounded-lg px-3 py-2 max-w-[80%] ${
+                  className={`max-w-[80%] rounded-lg px-3 py-2 ${
                     msg.role === 'user'
                       ? 'bg-teal-600 text-white'
-                      : 'bg-white border border-gray-200 text-gray-800'
+                      : 'border border-gray-200 bg-white text-gray-800'
                   }`}
                 >
                   {msg.content}
@@ -123,12 +153,18 @@ const ChatBot: React.FC = () => {
               </div>
             ))}
             {isLoading && (
-              <div className="flex justify-start mb-3">
-                <div className="bg-white border border-gray-200 text-gray-800 rounded-lg px-3 py-2">
+              <div className="mb-3 flex justify-start">
+                <div className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                    <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                    <div className="h-2 w-2 animate-bounce rounded-full bg-gray-300"></div>
+                    <div
+                      className="h-2 w-2 animate-bounce rounded-full bg-gray-300"
+                      style={{ animationDelay: '0.2s' }}
+                    ></div>
+                    <div
+                      className="h-2 w-2 animate-bounce rounded-full bg-gray-300"
+                      style={{ animationDelay: '0.4s' }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -137,20 +173,20 @@ const ChatBot: React.FC = () => {
           </div>
 
           {/* Message Form */}
-          <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200 bg-white">
+          <form onSubmit={handleSubmit} className="border-t border-gray-200 bg-white p-3">
             <div className="flex items-center">
               <input
                 type="text"
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:border-teal-500"
+                onChange={e => setMessage(e.target.value)}
+                className="flex-1 rounded-l-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:outline-none"
                 placeholder="Type a message..."
                 disabled={isLoading}
               />
               <button
                 type="submit"
                 disabled={isLoading || !message.trim()}
-                className="bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white rounded-r-lg px-4 py-2 transition-colors duration-200"
+                className="rounded-r-lg bg-teal-600 px-4 py-2 text-white transition-colors duration-200 hover:bg-teal-700 disabled:bg-teal-400"
               >
                 <Send size={20} />
               </button>
