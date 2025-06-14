@@ -96,7 +96,6 @@ Now, follow the responses below when relevant:
 Only respond with helpful, accurate, and friendly replies based on the above. Never guess, exaggerate, or give wrong info. Be concise but polite. You are a helpful assistant for ShopU.
 `;
 
-
 export async function POST(request: NextRequest) {
   try {
     // Parse the request body
@@ -122,7 +121,7 @@ export async function POST(request: NextRequest) {
     try {
       // Configure Gemini model with updated model name
       const model = genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash', 
+        model: 'gemini-2.0-flash',
         safetySettings: [
           {
             category: HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -146,9 +145,9 @@ export async function POST(request: NextRequest) {
       const result = await model.generateContent({
         contents: [
           {
-            role: "user",
+            role: 'user',
             parts: [{ text: `${systemPrompt}\n\nUser message: "${userMessage}"` }],
-          }
+          },
         ],
         generationConfig: {
           temperature: 0.7,
@@ -160,11 +159,11 @@ export async function POST(request: NextRequest) {
 
       const response = result.response;
       const text = response.text();
-      
+
       return NextResponse.json({ reply: text });
     } catch (sdkError) {
       console.log('SDK approach failed, falling back to REST API:', sdkError);
-      
+
       // Fallback to direct REST API call
       try {
         const response = await fetch(
@@ -179,10 +178,10 @@ export async function POST(request: NextRequest) {
                 {
                   parts: [
                     {
-                      text: `${systemPrompt}\n\nUser message: "${userMessage}"`
-                    }
-                  ]
-                }
+                      text: `${systemPrompt}\n\nUser message: "${userMessage}"`,
+                    },
+                  ],
+                },
               ],
               generationConfig: {
                 temperature: 0.7,
@@ -200,14 +199,14 @@ export async function POST(request: NextRequest) {
         }
 
         const data = await response.json();
-        
+
         // Extract the generated text from the response
         const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        
+
         if (!generatedText) {
           throw new Error('No generated text in the response');
         }
-        
+
         return NextResponse.json({ reply: generatedText });
       } catch (restApiError) {
         console.error('REST API fallback failed:', restApiError);
@@ -216,15 +215,18 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Chatbot error:', error);
-    
+
     // Provide a more descriptive error in the console
     if (error instanceof Error) {
       console.error('Error details:', error.message);
     }
-    
+
     // Return a user-friendly error
-    return NextResponse.json({ 
-      reply: "I'm sorry, I'm having trouble connecting right now. Please try again shortly."
-    }, { status: 200 }); // Return 200 to client with an error message they can display
+    return NextResponse.json(
+      {
+        reply: "I'm sorry, I'm having trouble connecting right now. Please try again shortly.",
+      },
+      { status: 200 }
+    ); // Return 200 to client with an error message they can display
   }
 }

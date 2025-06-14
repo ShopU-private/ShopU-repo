@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   try {
     const products = await prisma.product.findMany({
       where: {
-        AND: keywords.map((word) => ({
+        AND: keywords.map(word => ({
           OR: [
             { name: { contains: word, mode: 'insensitive' } },
             {
