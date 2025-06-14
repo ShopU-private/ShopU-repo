@@ -173,10 +173,9 @@ const Header = () => {
 
       {/* Categories Navigation */}
 
-      <div className="bg-gray-600 text-white hidden md:block">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center space-x-8 py-3 overflow-x-auto no-scrollbar">
-
+      <div className="hidden bg-gray-600 text-white md:block">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="no-scrollbar flex items-center space-x-8 overflow-x-auto py-3">
             {categories.map((category, index) => (
               <button
                 key={index}
