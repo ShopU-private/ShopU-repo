@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
               category: true,
             },
           },
+          productImage: true,
           variantTypes: {
             include: {
               values: true,
@@ -51,6 +52,7 @@ export async function GET(req: NextRequest) {
               category: true,
             },
           },
+          productImage: true,
           variantTypes: {
             include: {
               values: true,
@@ -79,6 +81,7 @@ export async function GET(req: NextRequest) {
               category: true,
             },
           },
+          productImage: true,
           variantTypes: {
             include: {
               values: true,

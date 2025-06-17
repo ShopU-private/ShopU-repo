@@ -11,14 +11,18 @@ export async function GET(req: NextRequest) {
     }
 
     const payload = verifyToken(token);
-
     const userId = payload.id;
 
+    // Optimize the query by selecting only needed fields
     const cartItems = await prisma.cartItem.findMany({
       where: { userId },
       include: {
         product: {
-          include: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            imageUrl: true,
             variantTypes: {
               include: {
                 values: true,
@@ -34,6 +38,15 @@ export async function GET(req: NextRequest) {
               },
             },
           },
+        },
+        medicine: {
+          select: {
+            id: true,
+            name: true, 
+            price: true,
+            manufacturerName: true,
+            packSizeLabel: true
+          }
         },
       },
       orderBy: { addedAt: 'desc' },
@@ -58,65 +71,163 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = verifyToken(token);
-
     const userId = payload.id;
+    
+    const { productId, medicineId, quantity = 1 } = await req.json();
 
-    const { productId, quantity = 1 } = await req.json();
-
-    if (!productId) {
+    if (!productId && !medicineId) {
       return NextResponse.json(
-        { success: false, error: 'Product ID is required' },
+        { success: false, error: 'Product ID or Medicine ID is required' },
         { status: 400 }
       );
     }
 
-    // Check if the product exists
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-    });
-
-    if (!product) {
-      return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+    if (productId && medicineId) {
+      return NextResponse.json(
+        { success: false, error: 'Cannot specify both product ID and medicine ID' },
+        { status: 400 }
+      );
     }
 
-    // Check if the item is already in the cart
-    const existingCartItem = await prisma.cartItem.findFirst({
-      where: {
-        userId,
-        productId,
-      },
-    });
+    // Handle medicine items
+    if (medicineId) {
+      // Transaction for better performance and atomicity
+      const result = await prisma.$transaction(async (prisma) => {
+        // Check if the medicine exists
+        const medicine = await prisma.medicine.findUnique({
+          where: { id: medicineId },
+          select: { id: true }
+        });
 
-    let cartItem;
+        if (!medicine) {
+          throw new Error('Medicine not found');
+        }
 
-    if (existingCartItem) {
-      // Update quantity if item already exists in cart
-      cartItem = await prisma.cartItem.update({
-        where: { id: existingCartItem.id },
-        data: { quantity: existingCartItem.quantity + quantity },
-        include: { product: true },
+        // Check if medicine is already in cart
+        const existingCartItem = await prisma.cartItem.findFirst({
+          where: {
+            userId,
+            medicineId,
+          },
+        });
+
+        let cartItem;
+        if (existingCartItem) {
+          cartItem = await prisma.cartItem.update({
+            where: { id: existingCartItem.id },
+            data: { quantity: existingCartItem.quantity + quantity },
+            include: { 
+              medicine: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  manufacturerName: true,
+                  packSizeLabel: true
+                }
+              } 
+            },
+          });
+        } else {
+          cartItem = await prisma.cartItem.create({
+            data: {
+              userId,
+              medicineId,
+              quantity,
+            },
+            include: { 
+              medicine: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  manufacturerName: true,
+                  packSizeLabel: true
+                }
+              } 
+            },
+          });
+        }
+        return cartItem;
       });
-    } else {
-      // Add new item to cart
-      cartItem = await prisma.cartItem.create({
-        data: {
-          userId,
-          productId,
-          quantity,
-        },
-        include: { product: true },
-      });
+
+      return NextResponse.json(
+        { success: true, message: 'Medicine added to cart', cartItem: result },
+        { status: 201 }
+      );
     }
 
-    return NextResponse.json(
-      { success: true, message: 'Item added to cart', cartItem },
-      { status: 201 }
-    );
+    // Handle product items
+    if (productId) {
+      // Transaction for better performance and atomicity
+      const result = await prisma.$transaction(async (prisma) => {
+        // Check if the product exists
+        const product = await prisma.product.findUnique({
+          where: { id: productId },
+          select: { id: true }
+        });
+
+        if (!product) {
+          throw new Error('Product not found');
+        }
+
+        // Check if product is already in cart
+        const existingCartItem = await prisma.cartItem.findFirst({
+          where: {
+            userId,
+            productId,
+          },
+        });
+
+        let cartItem;
+        if (existingCartItem) {
+          cartItem = await prisma.cartItem.update({
+            where: { id: existingCartItem.id },
+            data: { quantity: existingCartItem.quantity + quantity },
+            include: { 
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  imageUrl: true
+                }
+              } 
+            },
+          });
+        } else {
+          cartItem = await prisma.cartItem.create({
+            data: {
+              userId,
+              productId,
+              quantity,
+            },
+            include: { 
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  imageUrl: true
+                }
+              } 
+            },
+          });
+        }
+        return cartItem;
+      });
+
+      return NextResponse.json(
+        { success: true, message: 'Item added to cart', cartItem: result },
+        { status: 201 }
+      );
+    }
   } catch (error) {
     console.error('[POST /api/cart]', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart';
     return NextResponse.json(
-      { success: false, error: 'Failed to add item to cart' },
-      { status: 500 }
+      { success: false, error: errorMessage },
+      { status: error instanceof Error && error.message.includes('not found') ? 404 : 500 }
     );
   }
 }

@@ -86,13 +86,14 @@ model VariantValue {
 }
 
 model ProductVariantCombination {
-  id        String             @id @default(uuid())
-  productId String
-  price     Decimal
-  stock     Int
-  imageUrl  String
-  values    CombinationValue[]
-  product   Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id         String             @id @default(uuid())
+  productId  String
+  price      Decimal
+  stock      Int
+  imageUrl   String
+  values     CombinationValue[]
+  product    Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
 }
 
 model CombinationValue {
@@ -106,36 +107,43 @@ model CombinationValue {
 model CartItem {
   id        String   @id @default(uuid())
   userId    String
-  productId String
+  productId String?  // Make optional since we can have medicine items
+  medicineId String? // Add optional medicine reference
   quantity  Int
   addedAt   DateTime @default(now()) @map("added_at")
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  medicine  Medicine? @relation(fields: [medicineId], references: [id], onDelete: Cascade)
   user      User     @relation("UserCartItems", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Note: Ensure at application level that either productId OR medicineId is set, but not both
 }
 
 model Order {
-  id          String      @id @default(uuid())
-  userId      String
-  addressId   String
-  status      String
-  totalAmount Decimal     @map("total_amount")
-  createdAt   DateTime    @default(now()) @map("created_at")
-  address     UserAddress @relation(fields: [addressId], references: [id])
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orderItems  OrderItem[]
-  payments    Payment[]
+  id            String      @id @default(uuid())
+  userId        String
+  addressId     String
+  status        String
+  paymentMethod String      // Add payment method field
+  totalAmount   Decimal     @map("total_amount")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  address       UserAddress @relation(fields: [addressId], references: [id])
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems    OrderItem[]
+  payments      Payment[]
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Decimal
-  status        OrderStatus @default(PENDING)
-  reason        String?     // Reason for return/cancellation
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id])
+  id            String                     @id @default(uuid())
+  orderId       String
+  productId     String
+  combinationId String?                    // Add field for variant tracking
+  quantity      Int
+  price         Decimal
+  status        OrderStatus                @default(PENDING)
+  reason        String?                    // Reason for return/cancellation
+  order         Order                      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product       Product                    @relation(fields: [productId], references: [id])
+  combination   ProductVariantCombination? @relation(fields: [combinationId], references: [id])
 }
 
 enum OrderStatus {
@@ -185,6 +193,7 @@ model Medicine {
   composition2    String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  cartItems       CartItem[] // Add relation to cart items
 
   @@index([id])
   @@index([name])

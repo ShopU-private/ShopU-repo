@@ -18,6 +18,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         subCategory: {
           include: { category: true },
         },
+        productImage: true,
         variantTypes: {
           include: {
             values: true,

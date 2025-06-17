@@ -57,3 +57,10 @@ export const createCombinationSchema = z.object({
   imageUrl: z.string().url(),
   variantValueIds: z.array(z.string().uuid()).nonempty(),
 });
+
+export const updateCombinationSchema = z.object({
+  price: z.number().nonnegative().optional(),
+  stock: z.number().int().nonnegative().optional(),
+  imageUrl: z.string().url().optional(),
+  variantValueIds: z.array(z.string().uuid()).nonempty().optional(),
+});
