@@ -1,30 +1,25 @@
-"use client";
-import { Mail, Phone, MapPin } from "lucide-react";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaTwitter,
-} from "react-icons/fa";
+'use client';
+import { Mail, Phone, MapPin } from 'lucide-react';
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from 'react-icons/fa';
 
 export default function Footer() {
   return (
     <footer className="bg-gray-100 text-gray-800">
       {/* Newsletter Section */}
-      <div className="bg-gray-200 text-center py-10 px-6 sm:px-10 lg:px-20">
+      <div className="bg-gray-200 px-6 py-10 text-center sm:px-10 lg:px-20">
         <h2 className="text-xl font-semibold">Join our newsletter and get</h2>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="mt-1 text-sm text-gray-600">
           Join our email subscription now to get updates on promotions and coupons.
         </p>
-        <form className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-2 max-w-lg mx-auto">
+        <form className="mx-auto mt-6 flex max-w-lg flex-col items-center justify-center gap-2 sm:flex-row">
           <input
             type="email"
             placeholder="Your Email Address"
-            className="w-full sm:flex-1 px-4 py-3 rounded-full bg-gray-800 text-white placeholder-gray-300 border-none focus:outline-none text-center sm:text-left"
+            className="w-full rounded-full border-none bg-gray-800 px-4 py-3 text-center text-white placeholder-gray-300 focus:outline-none sm:flex-1 sm:text-left"
           />
           <button
             type="submit"
-            className="bg-gray-800 text-white px-6 py-3 rounded-full hover:bg-gray-700"
+            className="rounded-full bg-gray-800 px-6 py-3 text-white hover:bg-gray-700"
           >
             Subscribe
           </button>
@@ -32,22 +27,22 @@ export default function Footer() {
       </div>
 
       {/* Footer Grid */}
-      <div className="border-t py-10 px-6 sm:px-10 lg:px-20 grid gap-10 sm:grid-cols-2 md:grid-cols-4 text-sm text-center sm:text-left">
+      <div className="grid gap-10 border-t px-6 py-10 text-center text-sm sm:grid-cols-2 sm:px-10 sm:text-left md:grid-cols-4 lg:px-20">
         {/* ShopU Logo */}
         <div className="flex flex-col items-center sm:items-start">
           <img
             src="/logoGreen.png" // make sure it's a transparent PNG
             alt="Shopu Logo"
-            className="w-20 sm:w-24 md:w-28 h-auto object-contain"
+            className="h-auto w-20 object-contain sm:w-24 md:w-28"
           />
-          <div className="mt-4 space-y-2 text-gray-700 text-sm">
-            <p className="flex items-center justify-center sm:justify-start gap-2">
+          <div className="mt-4 space-y-2 text-sm text-gray-700">
+            <p className="flex items-center justify-center gap-2 sm:justify-start">
               <Phone size={16} /> 1233-777
             </p>
-            <p className="flex items-center justify-center sm:justify-start gap-2">
+            <p className="flex items-center justify-center gap-2 sm:justify-start">
               <Mail size={16} /> shopU@contact.com
             </p>
-            <p className="flex items-center justify-center sm:justify-start gap-2">
+            <p className="flex items-center justify-center gap-2 sm:justify-start">
               <MapPin size={16} /> Boring Road, Patna
             </p>
           </div>
@@ -55,7 +50,7 @@ export default function Footer() {
 
         {/* Categories */}
         <div>
-          <h3 className="font-semibold mb-3">Categories</h3>
+          <h3 className="mb-3 font-semibold">Categories</h3>
           <ul className="space-y-2 text-gray-600">
             <li>Baby Care</li>
             <li>Women Care</li>
@@ -66,7 +61,7 @@ export default function Footer() {
 
         {/* Health Concern */}
         <div>
-          <h3 className="font-semibold mb-3">Health Concern</h3>
+          <h3 className="mb-3 font-semibold">Health Concern</h3>
           <ul className="space-y-2 text-gray-600">
             <li>Diabetes Care</li>
             <li>Elderly Care</li>
@@ -78,7 +73,7 @@ export default function Footer() {
 
         {/* Account */}
         <div>
-          <h3 className="font-semibold mb-3">Account</h3>
+          <h3 className="mb-3 font-semibold">Account</h3>
           <ul className="space-y-2 text-gray-600">
             <li>Wishlist</li>
             <li>Cart</li>
@@ -89,7 +84,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom Footer */}
-      <div className="border-t py-6 px-6 sm:px-10 lg:px-20 flex flex-col sm:flex-row sm:justify-between items-center gap-4 text-sm text-gray-500">
+      <div className="flex flex-col items-center gap-4 border-t px-6 py-6 text-sm text-gray-500 sm:flex-row sm:justify-between sm:px-10 lg:px-20">
         <p>© 2025, All rights reserved</p>
 
         {/* Payment Icons */}
@@ -102,10 +97,10 @@ export default function Footer() {
 
         {/* Social Icons */}
         <div className="flex gap-4 text-gray-600">
-          <FaFacebookF className="hover:text-gray-800 cursor-pointer" />
-          <FaLinkedinIn className="hover:text-gray-800 cursor-pointer" />
-          <FaInstagram className="hover:text-gray-800 cursor-pointer" />
-          <FaTwitter className="hover:text-gray-800 cursor-pointer" />
+          <FaFacebookF className="cursor-pointer hover:text-gray-800" />
+          <FaLinkedinIn className="cursor-pointer hover:text-gray-800" />
+          <FaInstagram className="cursor-pointer hover:text-gray-800" />
+          <FaTwitter className="cursor-pointer hover:text-gray-800" />
         </div>
       </div>
     </footer>

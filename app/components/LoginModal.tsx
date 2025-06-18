@@ -7,9 +7,10 @@ import Logo from '../../public/Shop U Logo-02.jpg';
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onPhoneChange: (phone: string) => void;
 }
 
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose}: LoginModalProps) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [showOtpInput, setShowOtpInput] = useState(false);
@@ -52,7 +53,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
       if (data.success) {
         onClose();
-        window.location.reload();
       } else {
         setError(data.message || 'Invalid OTP');
       }
@@ -102,7 +102,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   type="tel"
                   id="phone"
                   value={phoneNumber}
-                  onChange={e => setPhoneNumber(e.target.value)}
+                  onChange={e => {
+                    setPhoneNumber(e.target.value);
+                  }}
                   className="w-full rounded-xl border border-gray-300 py-3 pr-4 pl-24 transition-all focus:border-transparent focus:ring-2 focus:ring-teal-500 focus:outline-none"
                   placeholder="Enter your phone number"
                 />
