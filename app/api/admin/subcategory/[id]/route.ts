@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
-import { z } from 'zod'; 
+import { z } from 'zod';
 import { updateSubCategorySchema } from '@/lib/schema/adminSchema';
 
 interface Params {

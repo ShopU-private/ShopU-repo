@@ -1,5 +1,4 @@
-//for testing purpose only
-import { prisma } from '@/lib/client';
+import { prisma } from '../lib/client.js';
 import * as fs from 'fs';
 import * as path from 'path';
 

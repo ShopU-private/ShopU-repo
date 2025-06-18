@@ -6,10 +6,11 @@ import Logo from '../../public/Shop U Logo-02.jpg';
 
 interface LoginModalProps {
   isOpen: boolean;
-  onCloseAction: () => void;
+  onClose: () => void;
+  onPhoneChange: (phone: string) => void;
 }
 
-export default function LoginModal({ isOpen, onCloseAction }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose}: LoginModalProps) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [showOtpInput, setShowOtpInput] = useState(false);
@@ -34,7 +35,6 @@ export default function LoginModal({ isOpen, onCloseAction }: LoginModalProps) {
         setError(data.message || 'Failed to send OTP');
       }
     } catch (err) {
-      console.error('Error sending OTP:', err);
       setError('Something went wrong. Please try again.');
     }
   };
@@ -52,13 +52,11 @@ export default function LoginModal({ isOpen, onCloseAction }: LoginModalProps) {
       const data = await response.json();
 
       if (data.success) {
-        onCloseAction();
-        window.location.reload();
+        onClose();
       } else {
         setError(data.message || 'Invalid OTP');
       }
     } catch (err) {
-      console.error('Error verifying OTP:', err);
       setError('Something went wrong. Please try again.');
     }
   };
@@ -69,7 +67,7 @@ export default function LoginModal({ isOpen, onCloseAction }: LoginModalProps) {
     <div className="animate-fadeIn fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <div className="animate-slideUp relative w-full max-w-md transform rounded-2xl bg-white p-8 shadow-2xl transition-all">
         <button
-          onClick={onCloseAction}
+          onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 transition-colors hover:text-gray-600"
         >
           <X className="h-6 w-6" />

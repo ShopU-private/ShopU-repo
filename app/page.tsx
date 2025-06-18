@@ -42,7 +42,7 @@ export default function Home() {
           <div className="mt-8 text-center text-gray-500">Search for medicines to see results</div>
         )}
       </main>
-      <Footer/>
+      <Footer />
       <ChatBot />
     </div>
   );

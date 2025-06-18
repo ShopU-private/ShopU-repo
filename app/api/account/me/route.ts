@@ -10,7 +10,8 @@ export async function GET(req: NextRequest) {
 
   try {
     const payload = verifyToken(token);
-    return NextResponse.json({ loggedIn: true, user: payload }, { status: 200 });
+
+    return NextResponse.json({ loggedIn: true, phoneNumber: payload.phoneNumber }, { status: 200 });
   } catch (err) {
     return NextResponse.json({ loggedIn: false }, { status: 200 });
   }
