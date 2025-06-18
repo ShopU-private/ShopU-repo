@@ -43,16 +43,46 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Only delivered orders can be returned' }, { status: 400 });
     }
 
-    // Update status
-    const updated = await prisma.orderItem.update({
-      where: { id: orderItemId },
-      data: {
-        status,
-        reason,
-      },
+    // Use a transaction to update status and restore stock
+    const result = await prisma.$transaction(async (tx) => {
+      // Update status
+      const updated = await tx.orderItem.update({
+        where: { id: orderItemId },
+        data: {
+          status,
+          reason,
+        },
+      });
+
+      // Restore stock quantity if the order is cancelled or returned
+      if (['CANCELLED', 'RETURNED'].includes(status)) {
+        if (orderItem.combinationId) {
+          // Restore variant stock
+          await tx.productVariantCombination.update({
+            where: { id: orderItem.combinationId },
+            data: {
+              stock: {
+                increment: orderItem.quantity,
+              },
+            },
+          });
+        } else if (orderItem.productId) {
+          // Restore product stock
+          await tx.product.update({
+            where: { id: orderItem.productId },
+            data: {
+              stock: {
+                increment: orderItem.quantity,
+              },
+            },
+          });
+        }
+      }
+
+      return updated;
     });
 
-    return NextResponse.json({ success: true, updated });
+    return NextResponse.json({ success: true, updated: result });
   } catch (err) {
     console.error('[ORDER STATUS UPDATE]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

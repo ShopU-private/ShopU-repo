@@ -23,10 +23,27 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         address: true,
         orderItems: {
           include: {
-            product: true,
+            product: {
+              include: {
+                productImage: true,
+              },
+            },
+            combination: {
+              include: {
+                values: {
+                  include: {
+                    variantValue: {
+                      include: {
+                        variantType: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
-        payments: true, // Include payment information
+        payments: true,
       },
     });
 

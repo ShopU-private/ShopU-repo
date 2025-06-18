@@ -1,6 +1,6 @@
 //card for testing
 
-import React from 'react';
+import React, { useState } from 'react';
 
 interface Medicine {
   id: string;
@@ -14,15 +14,66 @@ interface MedicineCardProps {
   medicine: Medicine;
 }
 
+
 const MedicineCard: React.FC<MedicineCardProps> = ({ medicine }) => {
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+  const addToCart = async () => {
+    try {
+      setIsAddingToCart(true);
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          medicineId: medicine.id, // Use medicineId instead of productId
+          quantity: 1,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsAdded(true);
+        // Emit cart update event
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+        
+        // Reset the "Added" state after 2 seconds
+        setTimeout(() => setIsAdded(false), 2000);
+      } else {
+        if (response.status === 401) {
+          alert('Please login to add items to cart');
+        } else {
+          alert(data.error || 'Failed to add item to cart');
+        }
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Failed to add item to cart');
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
   return (
     <div className="overflow-hidden rounded-lg bg-white p-4 shadow-md transition-shadow duration-300 hover:shadow-lg">
       <h3 className="mb-2 text-lg font-semibold text-gray-800">{medicine.name}</h3>
       <p className="mb-3 line-clamp-2 text-sm text-gray-600">{medicine.description}</p>
       <div className="flex items-center justify-between">
         <span className="text-xl font-bold text-teal-600">₹{medicine.price}</span>
-        <button className="rounded-md bg-teal-600 px-4 py-2 text-white transition-colors hover:bg-teal-700">
-          Add to Cart
+        <button 
+          onClick={addToCart}
+          disabled={isAddingToCart}
+          className={`rounded-md px-4 py-2 text-white transition-colors ${
+            isAdded 
+              ? 'bg-green-600 hover:bg-green-700' 
+              : isAddingToCart 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-teal-600 hover:bg-teal-700'
+          }`}
+        >
+          {isAddingToCart ? 'Adding...' : isAdded ? 'Added!' : 'Add to Cart'}
         </button>
       </div>
     </div>

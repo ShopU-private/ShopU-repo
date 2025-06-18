@@ -16,33 +16,70 @@ import Logo from '../../public/Shop U Logo-02.jpg';
 import LoginModal from './LoginModal';
 import Searchbar from './SearchBar';
 
+import { useLocation } from '../context/LocationContext';
+import { useCartModal } from '../context/CartModalContext';
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { 
+    location, 
+    setLocation, 
+    isLoadingLocation, 
+    setIsLoadingLocation,
+    locationError,
+    setLocationError 
+  } = useLocation();
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [location, setLocation] = useState<{ address: string; pincode: string } | null>(null);
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-  const [locationError, setLocationError] = useState<string | null>(null);
-  const [cartCount] = useState(3); // Mock cart count
+  const { openCartModal } = useCartModal();
+  const [cartCount, setCartCount] = useState(0);
+  const [isLoadingCart, setIsLoadingCart] = useState(false);
   const [pincode, setPincode] = useState('');
   const [isLoadingPincode, setIsLoadingPincode] = useState(false);
   const [showPincodeInput, setShowPincodeInput] = useState(false);
   const locationRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
   const [isMobileAccountMenuOpen, setIsMobileAccountMenuOpen] = useState(false);
+  const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
+  const fetchCartCount = async () => {
+    try {
+      setIsLoadingCart(true);
+      const response = await fetch('/api/cart/count');
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setCartCount(data.count.items);
+        }
+      } else if (response.status !== 401) {
+        // Don't show error for unauthorized (not logged in)
+        console.error('Failed to fetch cart count');
+      }
+    } catch (error) {
+      console.error('Error fetching cart count:', error);
+    } finally {
+      setIsLoadingCart(false);
+    }
+  };
 
+  // Check login status and fetch cart count
   const checkLoginStatus = async () => {
     try {
       const res = await fetch('/api/account/me');
       const data = await res.json();
       setIsLoggedIn(data.loggedIn);
       setPhoneNumber(data.phoneNumber);
+      if (data.loggedIn) {
+        fetchCartCount();
+      } else {
+        setCartCount(0);
+      }
     } catch {
       setIsLoggedIn(false);
+      setCartCount(0);
     }
   };
 
@@ -52,6 +89,23 @@ const Header = () => {
       checkLoginStatus();
     }
   }, [isLoginModalOpen]);
+
+  // Listen for cart updates
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      if (isLoggedIn) {
+        fetchCartCount();
+      }
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+  }, [isLoggedIn]);
+
+  // Initial load
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
 
   const categories = [
     'All Products',
@@ -445,13 +499,17 @@ const Header = () => {
             )}
 
             {/* Shopping Cart */}
-            <button className="relative rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 hover:text-teal-600">
+            <button onClick={openCartModal} className="relative rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 hover:text-teal-600">
               <ShoppingCart className="h-6 w-6" />
-              {cartCount > 0 && (
+              {isLoadingCart ? (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
+                  <Loader className="h-3 w-3 animate-spin text-teal-600" />
+                </span>
+              ) : cartCount > 0 ? (
                 <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
-              )}
+              ) : null}
             </button>
 
             {/* Mobile Menu Button */}

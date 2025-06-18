@@ -1,6 +1,12 @@
-'use client';
-import { Mail, Phone, MapPin } from 'lucide-react';
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from 'react-icons/fa';
+"use client";
+import { Mail, Phone, MapPin } from "lucide-react";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaTwitter,
+} from "react-icons/fa";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -76,7 +82,9 @@ export default function Footer() {
           <h3 className="mb-3 font-semibold">Account</h3>
           <ul className="space-y-2 text-gray-600">
             <li>Wishlist</li>
-            <li>Cart</li>
+            <li>
+              <Link href="/cart">Cart</Link>
+            </li>
             <li>Track Order</li>
             <li>Shipping Details</li>
           </ul>

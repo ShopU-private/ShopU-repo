@@ -102,9 +102,7 @@ export default function LoginModal({ isOpen, onClose}: LoginModalProps) {
                   type="tel"
                   id="phone"
                   value={phoneNumber}
-                  onChange={e => {
-                    setPhoneNumber(e.target.value);
-                  }}
+                  onChange={e => setPhoneNumber(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 py-3 pr-4 pl-24 transition-all focus:border-transparent focus:ring-2 focus:ring-teal-500 focus:outline-none"
                   placeholder="Enter your phone number"
                 />

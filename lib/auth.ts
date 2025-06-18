@@ -31,17 +31,28 @@ export function verifyToken(token: string): TokenPayload {
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
     return decoded;
-  } catch (error) {
+  } catch {
     throw new Error('Invalid token');
   }
 }
 
 export async function getUserFromToken(token: string) {
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
-    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    const payload = verifyToken(token);
+    const user = await prisma.user.findUnique({
+      where: { id: payload.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phoneNumber: true,
+        role: true,
+        isProfileComplete: true,
+      },
+    });
     return user;
-  } catch {
+  } catch (error) {
+    console.error('[getUserFromToken]', error);
     return null;
   }
 }
