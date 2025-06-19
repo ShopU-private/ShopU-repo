@@ -2,21 +2,34 @@
 import { useState } from 'react';
 import { X, Phone, Lock } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import Logo from '../../public/Shop U Logo-02.jpg';
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onPhoneChange: (phone: string) => void;
+  onPhoneChange?: (phone: string) => void;
 }
 
-export default function LoginModal({ isOpen, onClose}: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleSendOtp = async () => {
+    if (!phoneNumber || phoneNumber.length !== 10) {
+      setError('Enter a valid 10-digit phone number');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
     try {
       const response = await fetch('/api/auth/login/send-otp', {
         method: 'POST',
@@ -28,18 +41,29 @@ export default function LoginModal({ isOpen, onClose}: LoginModalProps) {
 
       const data = await response.json();
 
-      if (data.sent) {
+      if (data.success || data.sent) {
+        toast.success('OTP sent successfully!');
         setShowOtpInput(true);
         setError('');
       } else {
-        setError(data.message || 'Failed to send OTP');
+        toast.error(data.message || 'Failed to send OTP');
       }
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleVerifyOtp = async () => {
+    if (otp.length !== 6) {
+      setError('Enter the full 6-digit OTP');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
     try {
       const response = await fetch('/api/auth/login/verify-otp', {
         method: 'POST',
@@ -52,12 +76,16 @@ export default function LoginModal({ isOpen, onClose}: LoginModalProps) {
       const data = await response.json();
 
       if (data.success) {
+        toast.success('Login successful!');
         onClose();
+        router.push('/'); // redirect to home
       } else {
-        setError(data.message || 'Invalid OTP');
+        toast.error(data.message || 'Invalid OTP');
       }
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,17 +101,15 @@ export default function LoginModal({ isOpen, onClose}: LoginModalProps) {
           <X className="h-6 w-6" />
         </button>
 
-        <div className="mb-8">
-          <div className="flex flex-col items-center justify-center">
-            <Image
-              src={Logo}
-              alt="ShopU Logo"
-              className="mb-2 h-28 w-auto"
-              width={200}
-              height={112}
-            />
-            <p className="text-lg text-gray-600">Please login to continue shopping</p>
-          </div>
+        <div className="mb-8 flex flex-col items-center justify-center">
+          <Image
+            src={Logo}
+            alt="ShopU Logo"
+            className="mb-2 h-28 w-auto"
+            width={200}
+            height={112}
+          />
+          <p className="text-lg text-gray-600">Please login to continue shopping</p>
         </div>
 
         {!showOtpInput ? (
@@ -105,14 +131,16 @@ export default function LoginModal({ isOpen, onClose}: LoginModalProps) {
                   onChange={e => setPhoneNumber(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 py-3 pr-4 pl-24 transition-all focus:border-transparent focus:ring-2 focus:ring-teal-500 focus:outline-none"
                   placeholder="Enter your phone number"
+                  disabled={loading}
                 />
               </div>
             </div>
             <button
               onClick={handleSendOtp}
               className="w-full transform rounded-xl bg-teal-600 px-4 py-3 font-medium text-white shadow-lg shadow-teal-200 transition-all hover:scale-[1.02] hover:bg-teal-700 active:scale-[0.98]"
+              disabled={loading}
             >
-              Send OTP
+              {loading ? 'Sending OTP...' : 'Send OTP'}
             </button>
           </div>
         ) : (
@@ -132,15 +160,17 @@ export default function LoginModal({ isOpen, onClose}: LoginModalProps) {
                   value={otp}
                   onChange={e => setOtp(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 py-3 pr-4 pl-12 transition-all focus:border-transparent focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                  placeholder="Enter OTP"
+                  placeholder="Enter 6-digit OTP"
+                  disabled={loading}
                 />
               </div>
             </div>
             <button
               onClick={handleVerifyOtp}
               className="w-full transform rounded-xl bg-teal-600 px-4 py-3 font-medium text-white shadow-lg shadow-teal-200 transition-all hover:scale-[1.02] hover:bg-teal-700 active:scale-[0.98]"
+              disabled={loading}
             >
-              Verify OTP
+              {loading ? 'Verifying...' : 'Verify OTP'}
             </button>
           </div>
         )}

@@ -18,6 +18,7 @@ import Searchbar from './SearchBar';
 
 import { useLocation } from '../context/LocationContext';
 import { useCartModal } from '../context/CartModalContext';
+import Link from 'next/link';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -450,12 +451,12 @@ const Header = () => {
                       >
                         Wishlist
                       </a>
-                      <a
-                        href="#"
-                        className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
-                      >
-                        FAQ
-                      </a>
+                      <Link
+  href="/faq"
+  className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
+>
+  FAQ
+</Link>
                       <a
                         href="#"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
