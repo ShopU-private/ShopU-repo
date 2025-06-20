@@ -18,15 +18,18 @@ export default function PaymentMethodModal({ isOpen, onCloseAction, amount, orde
   const [isProcessing, setIsProcessing] = useState(false);
 
   if (!isOpen) return null;
-
   const handlePaymentSelection = async () => {
     setIsProcessing(true);
     
     try {
+      // Dispatch a custom event to close the cart modal
+      const closeCartEvent = new CustomEvent('closeCartModal');
+      window.dispatchEvent(closeCartEvent);
+      
       // If Cash on Delivery, simply redirect to order confirmation
       if (selectedMethod === 'cod') {
         router.push('/checkout/success?method=cod');
-        onCloseAction(); // Changed from onClose to onCloseAction
+        onCloseAction(); // Close the payment modal
         return;
       }
       
@@ -46,7 +49,9 @@ export default function PaymentMethodModal({ isOpen, onCloseAction, amount, orde
       const data = await response.json();
       
       if (data.success && data.paymentUrl) {
-        // Redirect to the payment URL
+        // First close the payment modal
+        onCloseAction();
+        // Then redirect to the payment URL
         window.location.href = data.paymentUrl;
       } else {
         console.error('Failed to initiate payment:', data.error);
