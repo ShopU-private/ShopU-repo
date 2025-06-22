@@ -5,6 +5,7 @@ import ChatBot from './components/ChatBot';
 import MedicineCard from './components/MedicineCard';
 import React, { useState, useEffect } from 'react';
 import { searchEventEmitter } from './components/MedicineCard';
+import ShopUCarousel from './components/ShopUCarousel';
 import Footer from './components/Footer';
 
 interface Medicine {
@@ -31,6 +32,7 @@ export default function Home() {
   return (
     <div>
       <Header />
+      <ShopUCarousel />
       <main className="container mx-auto px-4 py-8">
         {searchResults.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -42,6 +44,7 @@ export default function Home() {
           <div className="mt-8 text-center text-gray-500">Search for medicines to see results</div>
         )}
       </main>
+
       <Footer />
       <ChatBot />
     </div>
