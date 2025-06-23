@@ -1,7 +1,7 @@
 'use client';
 import Header from './components/Header';
 import ChatBot from './components/ChatBot';
-
+import HealthLayout from './components/ShopUHealthLayout';
 import MedicineCard from './components/MedicineCard';
 import React, { useState, useEffect } from 'react';
 import { searchEventEmitter } from './components/MedicineCard';
@@ -33,6 +33,7 @@ export default function Home() {
     <div>
       <Header />
       <ShopUCarousel />
+      <HealthLayout/>
       <main className="container mx-auto px-4 py-8">
         {searchResults.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
