@@ -9,7 +9,6 @@ import {
   X,
   Loader,
   ChevronDown,
-  Bell,
 } from 'lucide-react';
 import Image from 'next/image';
 import Logo from '../../public/Shop U Logo-02.jpg';

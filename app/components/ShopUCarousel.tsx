@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, MessageCircle } from 'lucide-react';
+import { useCart } from '../hooks/useCart';
 
 const ShopUCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isOrderingNow, setIsOrderingNow] = useState(false);
 
   const slides = [
     {
@@ -29,6 +31,8 @@ const ShopUCarousel = () => {
     }
   ];
 
+  const { addToCart } = useCart();
+
   // Auto-play functionality
   useEffect(() => {
     if (!isAutoPlaying) return;
@@ -43,6 +47,25 @@ const ShopUCarousel = () => {
   const goToSlide = (index:number) => {
     setCurrentSlide(index);
     setIsAutoPlaying(false);
+  };
+
+  const handleOrderNow = async () => {
+    setIsOrderingNow(true);
+    try {
+      // Add the current slide's product to the cart
+      const currentProduct = slides[currentSlide];
+      await addToCart({ 
+        productId: `promo_${currentProduct.id}`, 
+        quantity: 1 
+      });
+      // Dispatch cart updated event
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+      // You could also redirect to checkout or open cart modal here
+    } catch (error) {
+      console.error('Failed to place order:', error);
+    } finally {
+      setIsOrderingNow(false);
+    }
   };
 
   return (
@@ -114,8 +137,12 @@ const ShopUCarousel = () => {
           </div>
           <span className="text-gray-800 font-medium text-sm sm:text-base">Claim 5% Off on WhatsApp</span>
         </div>
-        <button className="bg-teal-600 hover:bg-teal-700 text-white px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm transition-colors w-full sm:w-auto">
-          Order now →
+        <button 
+          onClick={handleOrderNow}
+          disabled={isOrderingNow}
+          className="bg-teal-600 hover:bg-teal-700 text-white px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm transition-colors w-full sm:w-auto"
+        >
+          {isOrderingNow ? 'Adding...' : 'Order now →'}
         </button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, ChevronLeft, ChevronRight, Camera, Check } from 'lucide-react';
+import { useCart } from '../hooks/useCart';
 
 const DealOfTheWeek = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -11,6 +12,8 @@ const DealOfTheWeek = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(2); // default for desktop
+  const { addToCart } = useCart();
+  const [addingProductId, setAddingProductId] = useState<number | null>(null);
 
   // Update itemsPerPage on screen resize
   useEffect(() => {
@@ -37,7 +40,15 @@ const DealOfTheWeek = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const products = [
+  interface Product {
+    id: number;
+    name: string;
+    price: string;
+    features: string[];
+    isOnSale: boolean;
+  }
+  
+  const products: Product[] = [
     {
       id: 1,
       name: 'Moov Pain Relief Ointment',
@@ -78,6 +89,19 @@ const DealOfTheWeek = () => {
   const handlePrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const handleAddToCart = async (product: Product) => {
+    setAddingProductId(product.id);
+    try {
+      await addToCart({ productId: product.id.toString(), quantity: 1 });
+      // Dispatch cart updated event
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+    } catch (error) {
+      console.error('Failed to add product to cart:', error);
+    } finally {
+      setAddingProductId(null);
     }
   };
 
@@ -163,9 +187,19 @@ const DealOfTheWeek = () => {
                     </div>
                   ))}
                 </div>
-                <button className="bg-teal-600 text-white py-1.5 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-1 group">
-                  <Plus className="w-3 h-3 sm:w-4 sm:h-4 group-hover:rotate-90 transition-transform" />
-                  <span className="text-xs sm:text-sm">ADD</span>
+                <button
+                  onClick={() => handleAddToCart(product)}
+                  disabled={addingProductId === product.id}
+                  className="bg-teal-600 text-white py-1.5 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-1 group"
+                >
+                  {addingProductId === product.id ? (
+                    <span>Adding...</span>
+                  ) : (
+                    <>
+                      <Plus className="w-3 h-3 sm:w-4 sm:h-4 group-hover:rotate-90 transition-transform" />
+                      <span className="text-xs sm:text-sm">ADD</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -175,5 +209,5 @@ const DealOfTheWeek = () => {
     </div>
   );
 };
-
+  
 export default DealOfTheWeek;

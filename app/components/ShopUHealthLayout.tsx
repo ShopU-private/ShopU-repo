@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Heart, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
+import { useCart } from '../hooks/useCart';
 
 interface Product {
   id: number;
@@ -24,6 +25,8 @@ const ShopUHealthComponent: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [visibleCards, setVisibleCards] = useState(1);
+  const { addToCart } = useCart();
+  const [addingProductId, setAddingProductId] = useState<number | null>(null);
 
   const healthCategories: HealthCategory[] = [
     { id: 'diabetes', name: 'Diabetes Care', icon: '🩺' },
@@ -133,6 +136,19 @@ const ShopUHealthComponent: React.FC = () => {
       const maxSlides = Math.max(0, products.length - visibleCards);
       return prev <= 0 ? maxSlides : prev - 1;
     });
+  };
+
+  const handleAddToCart = async (product: Product) => {
+    setAddingProductId(product.id);
+    try {
+      await addToCart({ productId: product.id.toString(), quantity: 1 });
+      // Dispatch cart updated event to refresh cart count in the header
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+    } catch (error) {
+      console.error('Failed to add product to cart:', error);
+    } finally {
+      setAddingProductId(null);
+    }
   };
 
   return (
@@ -267,9 +283,19 @@ const ShopUHealthComponent: React.FC = () => {
                         </div>
 
                         {/* Add to Cart Button */}
-                          <button className="bg-teal-600 text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-1 group">
-                            <Plus className="w-3 h-3 sm:w-4 sm:h-4 group-hover:rotate-90 transition-transform" />
-                            <span className="text-xs sm:text-sm">ADD</span>
+                          <button 
+                            onClick={() => handleAddToCart(product)}
+                            disabled={addingProductId === product.id}
+                            className="bg-teal-600 text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-1 group"
+                          >
+                            {addingProductId === product.id ? (
+                              <span>Adding...</span>
+                            ) : (
+                              <>
+                                <Plus className="w-3 h-3 sm:w-4 sm:h-4 group-hover:rotate-90 transition-transform" />
+                                <span className="text-xs sm:text-sm">ADD</span>
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>
