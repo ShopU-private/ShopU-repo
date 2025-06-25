@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'ShopU',
   description: 'Your one-stop shop for all your needs',
+  icons: {
+    icon: '/Shop U Logo-02.jpg', 
+  },
 };
 
 export default function RootLayout({
