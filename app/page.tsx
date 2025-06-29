@@ -9,7 +9,11 @@ import ShopUCarousel from './components/ShopUCarousel';
 import DealOfTheWeek from './components/DealsOfTheWeek';
 import SpecialOffer from './components/SpecialOffer';
 import BabyCareSection from './components/BabyCareSection';
+import WomenCareSection from './components/WomenCareSection';
 import BrandSection from './components/ShopByBrand';
+import PersonalCareSection from './components/PersonalCareSection';
+import EverydayEssentialsSection from './components/EverydayEssentialsSection';
+import FeatureSection from './components/FeatureSection';
 import Footer from './components/Footer';
 
 interface Medicine {
@@ -42,6 +46,10 @@ export default function Home() {
       <SpecialOffer/>
       <BabyCareSection/>
       <BrandSection/>
+      <WomenCareSection/>
+      <PersonalCareSection/>
+      <EverydayEssentialsSection/>
+      <FeatureSection />
       <main className="container mx-auto px-4 py-8">
         {searchResults.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

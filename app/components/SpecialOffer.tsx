@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Package, Heart, Star } from 'lucide-react';
-
+import {  Package, Star } from 'lucide-react';
 const ShopUSpecialOffers = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedCard, setSelectedCard] = useState<number>(2); // Default to 2nd card
@@ -214,34 +213,7 @@ const ShopUSpecialOffers = () => {
           </div>
         </div>
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mt-12 sm:mt-16">
-          {[
-            {
-              icon: <ShoppingCart className="w-6 sm:w-8 h-6 sm:h-8 text-teal-600" />,
-              title: 'Fast Delivery',
-              desc: 'Get your orders delivered within 24 hours'
-            },
-            {
-              icon: <Package className="w-6 sm:w-8 h-6 sm:h-8 text-teal-600" />,
-              title: 'Quality Products',
-              desc: '100% authentic and tested products'
-            },
-            {
-              icon: <Heart className="w-6 sm:w-8 h-6 sm:h-8 text-teal-600" />,
-              title: 'Customer Care',
-              desc: '24/7 support for all your needs'
-            }
-          ].map((item, i) => (
-            <div key={i} className="text-center p-4 sm:p-6 bg-white rounded-xl sm:rounded-2xl shadow-lg">
-              <div className="w-12 sm:w-16 h-12 sm:h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                {item.icon}
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">{item.title}</h3>
-              <p className="text-sm sm:text-base text-gray-600">{item.desc}</p>
-            </div>
-          ))}
-        </div>
+     
       </main>
     </div>
   );
