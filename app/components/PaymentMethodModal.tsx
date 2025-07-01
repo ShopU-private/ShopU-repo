@@ -1,92 +1,504 @@
 'use client';
 
-import { useState } from 'react';
-import { X, Loader } from 'lucide-react';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { X, Loader, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useCart } from '@/app/hooks/useCart';
+import { useLocation } from '@/app/context/LocationContext';
+import {
+  VisaIcon,
+  MastercardIcon,
+  MaestroIcon,
+  AmexIcon,
+  UpiIcon,
+} from './ui/PaymentIcons';
+import {
+  mapPaymentStatusToOrderStatus
+} from '@/lib/payment-utils';
 
 interface PaymentMethodModalProps {
   isOpen: boolean;
-  onCloseAction: () => void; // Changed from onClose to onCloseAction
+  onCloseAction: () => void;
   amount: number;
-  orderId?: string;
+  selectedAddressId?: string;
 }
 
-export default function PaymentMethodModal({ isOpen, onCloseAction, amount, orderId }: PaymentMethodModalProps) {
-  const router = useRouter();
+declare global {
+  interface Window {
+    Razorpay: {
+      new (options: RazorpayOptions): RazorpayInstance;
+    };
+  }
+}
+
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  prefill?: {
+    name?: string;
+    email?: string;
+    contact?: string;
+  };
+  notes?: Record<string, string>;
+  theme?: {
+    color?: string;
+  };
+  handler?: (response: RazorpayResponse) => void;
+  modal?: {
+    ondismiss?: () => void;
+  };
+}
+
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayInstance {
+  open(): void;
+}
+
+export default function PaymentMethodModal({
+  isOpen,
+  onCloseAction,
+  amount,
+  selectedAddressId,
+}: PaymentMethodModalProps) {
+  const { cartItems, clearCart } = useCart();
+  const { location, setAddressId } = useLocation();
   const [selectedMethod, setSelectedMethod] = useState<string>('cod');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [addressDetails, setAddressDetails] = useState<any>(null);
+  const router = useRouter();
+
+  // Fetch the selected address details if we have an ID
+  useEffect(() => {
+    async function fetchAddressDetails() {
+      if (selectedAddressId) {
+        try {
+          const response = await fetch(`/api/addresses/${selectedAddressId}`);
+          const data = await response.json();
+
+          if (data.success) {
+            setAddressDetails(data.address);
+            // Make sure location context is updated with this address
+            setAddressId(selectedAddressId);
+          }
+        } catch (error) {
+          console.error('Failed to fetch address details:', error);
+        }
+      }
+    }
+
+    if (isOpen && selectedAddressId) {
+      fetchAddressDetails();
+    }
+  }, [isOpen, selectedAddressId, setAddressId]);
+
+  useEffect(() => {
+    setError(null);
+  }, [selectedMethod]);
+
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      document.body.appendChild(script);
+      return () => {
+        if (document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+      };
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setError(null);
+      setIsProcessing(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
-  const handlePaymentSelection = async () => {
-    setIsProcessing(true);
+
+  // Handle backdrop click - only close if clicking the backdrop itself AND not processing
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    // Don't close if we're processing a payment
+    if (isProcessing) {
+      return;
+    }
     
-    try {
-      // Dispatch a custom event to close the cart modal
-      const closeCartEvent = new CustomEvent('closeCartModal');
-      window.dispatchEvent(closeCartEvent);
-      
-      // If Cash on Delivery, simply redirect to order confirmation
-      if (selectedMethod === 'cod') {
-        router.push('/checkout/success?method=cod');
-        onCloseAction(); // Close the payment modal
+    // Only close if clicking the backdrop itself (not any child elements)
+    if (e.target === e.currentTarget) {
+      onCloseAction();
+    }
+  };
+
+  // Add a function to ensure Razorpay is loaded properly
+  const ensureRazorpayLoaded = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
         return;
       }
       
-      // For online payment methods, use cashfree
-      const response = await fetch('/api/payment/cashfree', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId: orderId || `order_${Date.now()}`,
-          amount: amount,
-          currency: 'INR'
-        }),
-      });
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
 
-      const data = await response.json();
+  const handlePaymentSelection = async (e: React.MouseEvent) => {
+    // Prevent all event propagation
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('Selected payment method:', selectedMethod);
+    setIsProcessing(true);
+    setError(null);
+    
+    try {
+      // Check if we have valid address info from either source
+      const hasValidAddress = (selectedAddressId && addressDetails) || (location && location.address);
+      console.log('Selected address ID:', selectedAddressId);
       
-      if (data.success && data.paymentUrl) {
-        // First close the payment modal
-        onCloseAction();
-        // Then redirect to the payment URL
-        window.location.href = data.paymentUrl;
+      if (!hasValidAddress) {
+        setError('Please select a delivery address first');
+        setIsProcessing(false);
+        return;
+      }
+      
+      if (!amount || amount <= 0) {
+        setError('Invalid order amount');
+        setIsProcessing(false);
+        return;
+      }
+      
+      if (!cartItems || cartItems.length === 0) {
+        setError('No items in cart');
+        setIsProcessing(false);
+        return;
+      }
+      
+      // Close the cart modal but NOT the payment modal
+      const closeCartEvent = new CustomEvent('closeCartModal');
+      window.dispatchEvent(closeCartEvent);
+      
+      // Prepare order items
+      const orderItems = cartItems.map(item => ({
+        productId: item.product?.id || item.productId,
+        medicineId: item.medicine?.id || item.medicineId,
+        quantity: item.quantity,
+        price: item.product?.price || item.medicine?.price || 0,
+        combinationId: item.combinationId || null
+      }));
+      
+      const validItems = orderItems.filter(
+        item => (item.productId || item.medicineId) && 
+        item.quantity > 0 && 
+        typeof item.price === 'number' && 
+        item.price > 0
+      );
+      
+      if (validItems.length === 0) {
+        setError('Invalid cart items');
+        setIsProcessing(false);
+        return;
+      }
+      
+      // Prepare the address data
+      let addressData;
+      if (selectedAddressId && addressDetails) {
+        addressData = { id: selectedAddressId };
       } else {
-        console.error('Failed to initiate payment:', data.error);
-        alert('Payment initiation failed. Please try again.');
+        addressData = {
+          fullAddress: location?.address,
+          pincode: location?.pincode
+        };
+      }
+      
+      // Create the order first
+      const orderResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          address: addressData,
+          totalAmount: amount,
+          paymentMethod: selectedMethod === 'cod' ? 'COD' : 'ONLINE',
+          items: validItems
+        })
+      });
+      
+      console.log('Order response:', orderResponse);
+      const orderData = await orderResponse.json();
+      
+      if (!orderData.success) {
+        throw new Error(orderData.error || 'Failed to create order');
+      }
+      
+      const createdOrderId = orderData.orderId || orderData.order?.id;
+      if (!createdOrderId) {
+        throw new Error('No order ID returned from API');
+      }
+      
+      // Handle COD orders
+      if (selectedMethod === 'cod') {
+        await clearCart();
+        onCloseAction();
+        router.push('/checkout/success?method=cod&orderId=' + createdOrderId);
+        return;
+      }
+      
+      // For online payments (card and UPI), initialize Razorpay
+      const response = await fetch('/api/payment/razorpay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: createdOrderId,
+          amount: amount,
+          currency: 'INR',
+          paymentMethod: selectedMethod
+        })
+      });
+      
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        console.error('Payment initiation failed:', data);
+        throw new Error(data.error || 'Payment initiation failed. Please try again.');
+      }
+      
+      // Ensure Razorpay is loaded
+      const isLoaded = await ensureRazorpayLoaded();
+      
+      if (!isLoaded || typeof window === 'undefined' || typeof window.Razorpay === 'undefined') {
+        throw new Error('Payment gateway not loaded. Please refresh and try again.');
+      }
+      
+      // Define RazorpayHandlerResponse interface for the payment response
+      interface RazorpayHandlerResponse {
+        razorpay_payment_id: string;
+        razorpay_order_id: string;
+        razorpay_signature: string;
+      }
+
+      // Create the options object with proper typing
+      const options: RazorpayOptions = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: data.name,
+        description: data.description,
+        order_id: data.order_id,
+        prefill: data.prefill || {},
+        notes: {
+          ...(data.notes || {}),
+          paymentMethod: selectedMethod
+        },
+        theme: data.theme || { color: '#0d9488' },
+        handler: function(response: RazorpayHandlerResponse) {
+          handlePaymentSuccess(response, createdOrderId);
+        },
+        modal: {
+          ondismiss: function() {
+            setIsProcessing(false);
+            handlePaymentCancellation(createdOrderId);
+          }
+        }
+      };
+      
+      console.log('Initializing Razorpay with options:', { ...options, key: '***hidden***' });
+      
+      // Initialize Razorpay
+      try {
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+        
+        // DON'T close the payment modal here - it will be closed in the success handler
+      } catch (razorpayError) {
+        console.error('Razorpay error:', razorpayError);
+        setError('Failed to open payment gateway. Please try again.');
+        setIsProcessing(false);
       }
     } catch (error) {
       console.error('Payment processing error:', error);
-      alert('Payment processing error. Please try again.');
-    } finally {
+      setError(error instanceof Error ? error.message : 'Payment processing error. Please try again.');
       setIsProcessing(false);
     }
   };
 
+  // Modify the handlePaymentSuccess function to properly handle the response
+  interface RazorpaySuccessResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  }
+
+  const handlePaymentSuccess = async (response: RazorpaySuccessResponse, orderId: string): Promise<void> => {
+    console.log('Payment successful:', response);
+    try {
+      // Update payment status via callback
+      const callbackResponse = await fetch('/api/payment/callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: orderId,
+          providerPaymentId: response.razorpay_payment_id,
+          status: 'SUCCESS',
+          provider: 'RAZORPAY',
+          metadata: {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+            paymentMethod: selectedMethod,
+            statusMapped: mapPaymentStatusToOrderStatus('SUCCESS', 'RAZORPAY')
+          }
+        })
+      });
+      
+      if (!callbackResponse.ok) {
+        console.error('Payment callback returned error:', await callbackResponse.json());
+        setError('Payment was processed but we could not update your order status. Please contact support.');
+        return;
+      }
+      
+      // Clear cart and close modal
+      await clearCart();
+      onCloseAction();
+      
+      // Redirect to success page
+      router.push('/checkout/success?method=online&orderId=' + orderId);
+    } catch (error) {
+      console.error('Payment callback error:', error);
+      // Still clear cart and redirect as payment was processed
+      await clearCart();
+      onCloseAction();
+      router.push('/checkout/success?method=online&orderId=' + orderId);
+    }
+  };
+
+  const handlePaymentCancellation = async (orderId: string) => {
+    try {
+      await fetch('/api/payment/callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: orderId,
+          status: 'CANCELLED',
+          provider: 'RAZORPAY',
+          metadata: {
+            cancelledAt: new Date().toISOString(),
+            reason: 'User cancelled payment',
+            paymentMethod: selectedMethod,
+            statusMapped: mapPaymentStatusToOrderStatus('CANCELLED', 'RAZORPAY')
+          },
+        }),
+      });
+    } catch (error) {
+      console.error('Payment cancellation error:', error);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="animate-slideUp relative w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" 
+      onClick={handleBackdropClick}
+    >
+      <div 
+        className="animate-slideUp relative w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl" 
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="relative p-4 border-b border-gray-200">
           <button
-            onClick={onCloseAction} // Changed from onClose to onCloseAction
+            onClick={onCloseAction}
             className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 p-1"
+            disabled={isProcessing}
           >
             <X className="h-5 w-5" />
           </button>
           <h2 className="text-lg font-medium text-gray-800">Payment Method</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Total: ₹{amount.toFixed(2)}
+          </p>
         </div>
 
         {/* Content */}
         <div className="p-4 space-y-4">
-          <p className="text-gray-600 mb-2">How would you like to pay?</p>
-          
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
+
+          {/* Address Info */}
+          <div
+            className={`border ${
+              (location?.address || (selectedAddressId && addressDetails))
+                ? 'border-green-100 bg-green-50'
+                : 'border-amber-100 bg-amber-50'
+            } rounded-lg p-3 mb-4`}
+          >
+            <div className="flex items-start gap-2">
+              <MapPin
+                className={`h-5 w-5 ${
+                  (location?.address || (selectedAddressId && addressDetails)) ? 'text-green-500' : 'text-amber-500'
+                } mt-0.5`}
+              />
+              <div>
+                <h4
+                  className={`text-sm font-medium ${
+                    (location?.address || (selectedAddressId && addressDetails)) ? 'text-green-700' : 'text-amber-700'
+                  }`}
+                >
+                  {(location?.address || (selectedAddressId && addressDetails))
+                    ? 'Delivery address selected'
+                    : 'No delivery address selected'}
+                </h4>
+                {addressDetails ? (
+                  <p className="text-xs text-green-600 mt-1">
+                    {addressDetails.fullName}, {addressDetails.addressLine1}, {addressDetails.city}
+                  </p>
+                ) : location?.address ? (
+                  <p className="text-xs text-green-600 mt-1">
+                    {location.address}
+                  </p>
+                ) : (
+                  <p className="text-xs text-amber-600 mt-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onCloseAction();
+                        router.push('/account/addresses?redirect=checkout');
+                      }}
+                      className="font-medium underline hover:text-amber-700"
+                      disabled={isProcessing}
+                    >
+                      Add a delivery address
+                    </button>{' '}
+                    to continue
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Payment Methods */}
+          <p className="text-gray-600 mb-2">How would you like to pay?</p>
           <div className="space-y-3">
-            {/* Credit/Debit Card */}
-            <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+            {/* Card */}
+            <label 
+              className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center">
                 <input
                   type="radio"
@@ -95,37 +507,23 @@ export default function PaymentMethodModal({ isOpen, onCloseAction, amount, orde
                   checked={selectedMethod === 'card'}
                   onChange={() => setSelectedMethod('card')}
                   className="h-4 w-4 text-teal-600"
+                  disabled={isProcessing}
                 />
-                <span className="ml-3 text-gray-700">Credit Or Debit</span>
+                <span className="ml-3 text-gray-700">Credit or Debit</span>
               </div>
               <div className="flex items-center space-x-1">
-                <Image src="/visa.png" alt="Visa" width={32} height={20} className="h-5 object-contain" />
-                <Image src="/mastercard.png" alt="Mastercard" width={32} height={20} className="h-5 object-contain" />
-                <Image src="/maestro.png" alt="Maestro" width={32} height={20} className="h-5 object-contain" />
-                <Image src="/amex.png" alt="American Express" width={32} height={20} className="h-5 object-contain" />
-              </div>
-            </label>
-
-            {/* PayPal */}
-            <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  name="payment-method"
-                  value="paypal"
-                  checked={selectedMethod === 'paypal'}
-                  onChange={() => setSelectedMethod('paypal')}
-                  className="h-4 w-4 text-teal-600"
-                />
-                <span className="ml-3 text-gray-700">Paypal</span>
-              </div>
-              <div>
-                <Image src="/paypal.png" alt="PayPal" width={70} height={20} className="h-6 object-contain" />
+                <VisaIcon className="h-5" />
+                <MastercardIcon className="h-5" />
+                <MaestroIcon className="h-5" />
+                <AmexIcon className="h-5" />
               </div>
             </label>
 
             {/* UPI */}
-            <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+            <label 
+              className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center">
                 <input
                   type="radio"
@@ -134,16 +532,18 @@ export default function PaymentMethodModal({ isOpen, onCloseAction, amount, orde
                   checked={selectedMethod === 'upi'}
                   onChange={() => setSelectedMethod('upi')}
                   className="h-4 w-4 text-teal-600"
+                  disabled={isProcessing}
                 />
                 <span className="ml-3 text-gray-700">UPI</span>
               </div>
-              <div>
-                <Image src="/upi.png" alt="UPI" width={70} height={20} className="h-6 object-contain" />
-              </div>
+              <UpiIcon className="h-6" />
             </label>
 
-            {/* Cash on Delivery */}
-            <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+            {/* COD */}
+            <label 
+              className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center">
                 <input
                   type="radio"
@@ -152,27 +552,34 @@ export default function PaymentMethodModal({ isOpen, onCloseAction, amount, orde
                   checked={selectedMethod === 'cod'}
                   onChange={() => setSelectedMethod('cod')}
                   className="h-4 w-4 text-teal-600"
+                  disabled={isProcessing}
                 />
-                <span className="ml-3 text-gray-700">Cash On Delivery</span>
+                <span className="ml-3 text-gray-700">Cash on Delivery</span>
               </div>
             </label>
           </div>
         </div>
 
-        {/* Footer - Confirm Button */}
+        {/* Confirm Button */}
         <div className="p-4 border-t border-gray-200">
           <button
             onClick={handlePaymentSelection}
-            disabled={isProcessing}
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center"
+            disabled={isProcessing || (!location?.address && !addressDetails)}
+            className={`w-full font-medium py-3 rounded-lg transition-colors flex items-center justify-center ${
+              (location?.address || addressDetails) && !isProcessing
+                ? 'bg-teal-600 hover:bg-teal-700 text-white'
+                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+            }`}
           >
             {isProcessing ? (
               <>
                 <Loader className="animate-spin mr-2 h-4 w-4" />
-                Processing...
+                {selectedMethod === 'cod'
+                  ? 'Placing Order...'
+                  : 'Processing Payment...'}
               </>
             ) : (
-              'Place Order'
+              `Place Order - ₹${amount.toFixed(2)}`
             )}
           </button>
         </div>

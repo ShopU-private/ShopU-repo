@@ -41,7 +41,14 @@ export async function GET(req: NextRequest) {
         orderId,
         userId,
       },
+      include: {
+        order: true, // Include order details for more comprehensive information
+      },
     });
+
+    if (!payment) {
+      return NextResponse.json({ success: false, error: 'Payment not found' }, { status: 404 });
+    }
 
     return NextResponse.json({ success: true, payment });
   } catch (error) {

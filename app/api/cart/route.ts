@@ -11,7 +11,21 @@ export async function GET(req: NextRequest) {
     }
 
     const payload = verifyToken(token);
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 401 });
+    }
+    
     const userId = payload.id;
+
+    // Verify user exists
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true }
+    });
+
+    if (!userExists) {
+      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
+    }
 
     // Optimize the query by selecting only needed fields
     const cartItems = await prisma.cartItem.findMany({
@@ -71,7 +85,21 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = verifyToken(token);
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 401 });
+    }
+    
     const userId = payload.id;
+    
+    // Verify user exists
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true }
+    });
+
+    if (!userExists) {
+      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
+    }
     
     const { productId, medicineId, quantity = 1 } = await req.json();
 
@@ -91,16 +119,18 @@ export async function POST(req: NextRequest) {
 
     // Handle medicine items
     if (medicineId) {
-      // Transaction for better performance and atomicity
-      const result = await prisma.$transaction(async (prisma) => {
-        // Check if the medicine exists
-        const medicine = await prisma.medicine.findUnique({
+      try {
+        // First check if the medicine exists without a transaction
+        const medicineExists = await prisma.medicine.findUnique({
           where: { id: medicineId },
           select: { id: true }
         });
 
-        if (!medicine) {
-          throw new Error('Medicine not found');
+        if (!medicineExists) {
+          return NextResponse.json(
+            { success: false, error: 'Medicine not found' },
+            { status: 404 }
+          );
         }
 
         // Check if medicine is already in cart
@@ -113,6 +143,7 @@ export async function POST(req: NextRequest) {
 
         let cartItem;
         if (existingCartItem) {
+          // Update existing cart item
           cartItem = await prisma.cartItem.update({
             where: { id: existingCartItem.id },
             data: { quantity: existingCartItem.quantity + quantity },
@@ -129,10 +160,11 @@ export async function POST(req: NextRequest) {
             },
           });
         } else {
+          // Create new cart item
           cartItem = await prisma.cartItem.create({
             data: {
               userId,
-              medicineId,
+              medicineId,  // Fixed: removed invalid syntax
               quantity,
             },
             include: { 
@@ -148,27 +180,34 @@ export async function POST(req: NextRequest) {
             },
           });
         }
-        return cartItem;
-      });
 
-      return NextResponse.json(
-        { success: true, message: 'Medicine added to cart', cartItem: result },
-        { status: 201 }
-      );
+        return NextResponse.json(
+          { success: true, message: 'Medicine added to cart', cartItem },
+          { status: 201 }
+        );
+      } catch (error) {
+        console.error('[POST /api/cart] Medicine error:', error);
+        return NextResponse.json(
+          { success: false, error: 'Failed to add medicine to cart' },
+          { status: 500 }
+        );
+      }
     }
 
     // Handle product items
     if (productId) {
-      // Transaction for better performance and atomicity
-      const result = await prisma.$transaction(async (prisma) => {
-        // Check if the product exists
-        const product = await prisma.product.findUnique({
+      try {
+        // Check if the product exists without a transaction
+        const productExists = await prisma.product.findUnique({
           where: { id: productId },
           select: { id: true }
         });
 
-        if (!product) {
-          throw new Error('Product not found');
+        if (!productExists) {
+          return NextResponse.json(
+            { success: false, error: 'Product not found' },
+            { status: 404 }
+          );
         }
 
         // Check if product is already in cart
@@ -181,6 +220,7 @@ export async function POST(req: NextRequest) {
 
         let cartItem;
         if (existingCartItem) {
+          // Update existing cart item
           cartItem = await prisma.cartItem.update({
             where: { id: existingCartItem.id },
             data: { quantity: existingCartItem.quantity + quantity },
@@ -196,6 +236,7 @@ export async function POST(req: NextRequest) {
             },
           });
         } else {
+          // Create new cart item
           cartItem = await prisma.cartItem.create({
             data: {
               userId,
@@ -214,20 +255,25 @@ export async function POST(req: NextRequest) {
             },
           });
         }
-        return cartItem;
-      });
 
-      return NextResponse.json(
-        { success: true, message: 'Item added to cart', cartItem: result },
-        { status: 201 }
-      );
+        return NextResponse.json(
+          { success: true, message: 'Item added to cart', cartItem },
+          { status: 201 }
+        );
+      } catch (error) {
+        console.error('[POST /api/cart] Product error:', error);
+        return NextResponse.json(
+          { success: false, error: 'Failed to add product to cart' },
+          { status: 500 }
+        );
+      }
     }
   } catch (error) {
-    console.error('[POST /api/cart]', error);
+    console.error('[POST /api/cart] General error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart';
     return NextResponse.json(
       { success: false, error: errorMessage },
-      { status: error instanceof Error && error.message.includes('not found') ? 404 : 500 }
+      { status: 500 }
     );
   }
 }

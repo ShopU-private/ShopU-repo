@@ -4,16 +4,75 @@ import { useState, useEffect } from 'react';
 import { useCart } from '@/app/hooks/useCart';
 import { Loader } from 'lucide-react';
 import Link from 'next/link';
-import PaymentMethodModal from '../components/PaymentMethodModal';
+import { useLocation } from '../context/LocationContext'; 
+import { useRouter } from 'next/navigation';
+import { logCheckoutEvent, validateAddressId } from '@/lib/checkout-utils';
 
 export default function CheckoutPage() {
   const { cartItems, isLoading } = useCart();
+  const { location, setAddressId } = useLocation();
   const [subtotal, setSubtotal] = useState(0);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const orderId = `order_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+  const router = useRouter();
+
+  interface Address {
+    id: string;
+    fullName: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    phoneNumber: string;
+    isDefault: boolean;
+  }
+
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>('');
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
 
   useEffect(() => {
-    // Calculate subtotal whenever cart items change
+    let addressesFromContext: Address[] = [];
+
+    if (location?.address) {
+      if (typeof location.address === 'object') {
+        addressesFromContext = [location.address as Address];
+      } else if (typeof location.address === 'string') {
+        // Create a normalized address object with required fields for API
+        addressesFromContext = [{
+          id: 'temp-address-id', // We'll replace this on the backend
+          fullName: 'Delivery Address',
+          addressLine1: location.address,
+          city: location.city || 'Unknown',
+          state: location.state || 'Unknown',
+          postalCode: location.pincode || '503301',
+          phoneNumber: '9999999999',
+          isDefault: true
+        }];
+      }
+    }
+
+    setAddresses(addressesFromContext);
+
+    if (addressesFromContext.length > 0) {
+      const defaultAddress = addressesFromContext.find(addr => addr.isDefault);
+      const selected = defaultAddress || addressesFromContext[0];
+      setSelectedAddressId(selected.id);
+      logCheckoutEvent(
+        defaultAddress ? 'Selected default address' : 'Selected first address',
+        selected.id
+      );
+    }
+
+    setIsLoadingAddresses(false);
+  }, [location?.address, location?.pincode, location?.city, location?.state]);
+
+  useEffect(() => {
+    if (selectedAddressId) {
+      logCheckoutEvent('Address selection changed', selectedAddressId);
+    }
+  }, [selectedAddressId]);
+
+  useEffect(() => {
     const total = cartItems.reduce((sum, item) => {
       const itemPrice = item.product?.price || item.medicine?.price || 0;
       return sum + (itemPrice * item.quantity);
@@ -21,7 +80,26 @@ export default function CheckoutPage() {
     setSubtotal(total);
   }, [cartItems]);
 
-  if (isLoading) {
+  const handleProceedToPayment = () => {
+    if (!validateAddressId(selectedAddressId)) {
+      alert('Please select a valid delivery address');
+      return;
+    }
+
+    setAddressId(selectedAddressId);
+
+    logCheckoutEvent('Proceeding to payment with address', selectedAddressId);
+
+    const totalAmount = subtotal + (subtotal > 500 ? 0 : 40);
+    if (totalAmount <= 0) {
+      alert('Invalid order amount');
+      return;
+    }
+
+    router.push(`/checkout/payment?addressId=${selectedAddressId}&amount=${totalAmount}`);
+  };
+
+  if (isLoading || isLoadingAddresses) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Loader className="h-8 w-8 animate-spin text-teal-600" />
@@ -54,7 +132,57 @@ export default function CheckoutPage() {
     <div className="min-h-[60vh] px-4 py-8">
       <div className="mx-auto max-w-4xl">
         <h1 className="mb-6 text-2xl font-bold text-gray-800">Checkout</h1>
-        
+
+        <div className="rounded-lg bg-white p-6 shadow-md mb-6">
+          <h2 className="mb-4 text-lg font-semibold">Delivery Address</h2>
+          {addresses.length === 0 ? (
+            <div className="text-center py-4">
+              <p className="mb-3 text-gray-600">No saved addresses found.</p>
+              <Link 
+                href="/account/addresses"
+                className="text-teal-600 hover:underline"
+              >
+                Add a new address
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {addresses.map(address => (
+                <div 
+                  key={address.id} 
+                  className={`border rounded-lg p-3 cursor-pointer ${selectedAddressId === address.id ? 'border-teal-600 bg-teal-50' : 'border-gray-200 hover:border-gray-300'}`}
+                  onClick={() => setSelectedAddressId(address.id)}
+                >
+                  <div className="flex items-start">
+                    <input
+                      type="radio"
+                      checked={selectedAddressId === address.id}
+                      onChange={() => setSelectedAddressId(address.id)}
+                      className="mt-1 h-4 w-4 text-teal-600"
+                    />
+                    <div className="ml-3">
+                      <p className="font-medium">{address.fullName}</p>
+                      <p className="text-sm text-gray-600">
+                        {address.addressLine1}
+                        {address.addressLine2 && `, ${address.addressLine2}`}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {address.city}, {address.state} {address.postalCode}
+                      </p>
+                      <p className="text-sm text-gray-600">{address.phoneNumber}</p>
+                      {address.isDefault && (
+                        <span className="inline-block mt-1 text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded">
+                          Default
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="rounded-lg bg-white p-6 shadow-md">
           <h2 className="mb-4 text-lg font-semibold">Your Order Summary</h2>
           <div className="space-y-1 mb-6">
@@ -71,13 +199,13 @@ export default function CheckoutPage() {
               <span>₹{(subtotal + (subtotal > 500 ? 0 : 40)).toFixed(2)}</span>
             </div>
           </div>
-          
+
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
             <p className="text-yellow-800">
               Please review your order details before proceeding to payment.
             </p>
           </div>
-          
+
           <div className="flex justify-between">
             <Link
               href="/"
@@ -86,22 +214,15 @@ export default function CheckoutPage() {
               Continue Shopping
             </Link>
             <button
-              className="rounded-lg bg-teal-600 px-6 py-2 text-white hover:bg-teal-700"
-              onClick={() => setIsPaymentModalOpen(true)}
+              className={`rounded-lg ${!selectedAddressId || addresses.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'} px-6 py-2 text-white`}
+              onClick={handleProceedToPayment}
+              disabled={!selectedAddressId || addresses.length === 0}
             >
               Proceed to Pay
             </button>
           </div>
         </div>
       </div>
-      
-      {/* Payment Method Modal */}
-      <PaymentMethodModal 
-        isOpen={isPaymentModalOpen}
-        onCloseAction={() => setIsPaymentModalOpen(false)} // Using onCloseAction instead of onClose
-        amount={subtotal + (subtotal > 500 ? 0 : 40)}
-        orderId={orderId}
-      />
     </div>
   );
 }

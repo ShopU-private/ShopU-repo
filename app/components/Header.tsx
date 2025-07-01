@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Search,
   ShoppingCart,
@@ -31,7 +31,7 @@ const Header = () => {
     isLoadingLocation, 
     setIsLoadingLocation,
     locationError,
-    setLocationError 
+    setLocationError = () => {} // Provide default empty function
   } = useLocation();
   const [phoneNumber, setPhoneNumber] = useState('');
   const { openCartModal } = useCartModal();
@@ -44,7 +44,7 @@ const Header = () => {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const [isMobileAccountMenuOpen, setIsMobileAccountMenuOpen] = useState(false);
   const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
-  const fetchCartCount = async () => {
+  const fetchCartCount = React.useCallback(async () => {
     try {
       setIsLoadingCart(true);
       const response = await fetch('/api/cart/count');
@@ -63,10 +63,10 @@ const Header = () => {
     } finally {
       setIsLoadingCart(false);
     }
-  };
+  }, []);
 
   // Check login status and fetch cart count
-  const checkLoginStatus = async () => {
+  const checkLoginStatus = useCallback(async () => {
     try {
       const res = await fetch('/api/account/me');
       const data = await res.json();
@@ -81,14 +81,14 @@ const Header = () => {
       setIsLoggedIn(false);
       setCartCount(0);
     }
-  };
+  }, [fetchCartCount]);
 
   // Check login status when modal closes
   useEffect(() => {
     if (!isLoginModalOpen) {
       checkLoginStatus();
     }
-  }, [isLoginModalOpen]);
+  }, [isLoginModalOpen, checkLoginStatus]);
 
   // Listen for cart updates
   useEffect(() => {
@@ -100,12 +100,12 @@ const Header = () => {
 
     window.addEventListener('cartUpdated', handleCartUpdate);
     return () => window.removeEventListener('cartUpdated', handleCartUpdate);
-  }, [isLoggedIn]);
+  }, [isLoggedIn, fetchCartCount]);
 
   // Initial load
   useEffect(() => {
     checkLoginStatus();
-  }, []);
+  }, [checkLoginStatus]);
 
   const categories = [
     'All Products',
@@ -136,12 +136,12 @@ const Header = () => {
   };
 
   const getUserLocation = () => {
-    setIsLoadingLocation(true);
+    if (setIsLoadingLocation) setIsLoadingLocation(true);
     setLocationError(null);
 
     if (!navigator.geolocation) {
       setLocationError('Geolocation is not supported by your browser');
-      setIsLoadingLocation(false);
+      if (setIsLoadingLocation) setIsLoadingLocation(false);
       return;
     }
 
@@ -168,13 +168,13 @@ const Header = () => {
           setLocationError('Failed to get your location details');
           console.error(error);
         } finally {
-          setIsLoadingLocation(false);
+          if (setIsLoadingLocation) setIsLoadingLocation(false);
         }
       },
       error => {
         console.error(error);
         setLocationError('Unable to retrieve your location');
-        setIsLoadingLocation(false);
+        if (setIsLoadingLocation) setIsLoadingLocation(false);
       },
       { enableHighAccuracy: true }
     );
@@ -278,7 +278,11 @@ const Header = () => {
                 <p className="text-xs text-gray-500">Deliver to</p>
                 <div className="flex items-center gap-1">
                   <p className="max-w-32 truncate text-sm font-medium text-gray-800">
-                    {location ? location.address.split(',')[0] : 'Select location'}
+                    {location
+                      ? typeof location.address === 'string'
+                        ? location.address.split(',')[0]
+                        : 'Select location'
+                      : 'Select location'}
                   </p>
                   <ChevronDown
                     className={`h-4 w-4 text-gray-400 transition-transform ${isLocationOpen ? 'rotate-180' : ''}`}
@@ -315,7 +319,13 @@ const Header = () => {
                         <div className="flex items-start gap-2">
                           <MapPin className="mt-0.5 h-4 w-4 text-teal-600" />
                           <div>
-                            <p className="font-medium text-gray-800">{location.address}</p>
+                            <p className="font-medium text-gray-800">
+                              {typeof location.address === 'string'
+                                ? location.address
+                                : typeof location.address === 'object'
+                                  ? `${location.address.fullName}, ${location.address.addressLine1}${location.address.addressLine2 ? ', ' + location.address.addressLine2 : ''}, ${location.address.city}, ${location.address.state}, ${location.address.postalCode}`
+                                  : ''}
+                            </p>
                             <p className="text-sm text-gray-600">PIN: {location.pincode}</p>
                           </div>
                         </div>
@@ -432,12 +442,12 @@ const Header = () => {
                       <p className="text-sm text-gray-600">{phoneNumber}</p>
                     </div>
                     <div className="py-2 space-y-1">
-                      <a
-                        href="#"
+                      <Link
+                        href="/orders"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
                       >
-                        My Order
-                      </a>
+                        My Orders
+                      </Link>
                       <a
                         href="#"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
@@ -451,11 +461,11 @@ const Header = () => {
                         Wishlist
                       </a>
                       <Link
-  href="/faq"
-  className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
->
-  FAQ
-</Link>
+                        href="/faq"
+                        className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
+                      >
+                        FAQ
+                      </Link>
                       <a
                         href="#"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
@@ -597,12 +607,12 @@ const Header = () => {
                   {/* Dropdown List Items */}
                   {isMobileAccountMenuOpen && (
                     <div className="py-2 space-y-1">
-                      <a
-                        href="#"
+                      <Link
+                        href="/orders"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
                       >
-                        My Order
-                      </a>
+                        My Orders
+                      </Link>
                       <a
                         href="#"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
@@ -677,7 +687,9 @@ const Header = () => {
                       {isLoadingLocation
                         ? 'Getting location...'
                         : location
-                          ? location.address
+                          ? typeof location.address === 'string'
+                            ? location.address
+                            : `${location.address.fullName}, ${location.address.addressLine1}${location.address.addressLine2 ? ', ' + location.address.addressLine2 : ''}, ${location.address.city}, ${location.address.state}, ${location.address.postalCode}`
                           : 'Select your location'}
                     </p>
                   </div>

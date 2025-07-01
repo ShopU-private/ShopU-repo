@@ -1,0 +1,430 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useCart } from '@/app/hooks/useCart';
+import { useLocation } from '@/app/context/LocationContext';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Loader, ChevronLeft, MapPin, CreditCard } from 'lucide-react';
+import {
+  VisaIcon,
+  MastercardIcon,
+  MaestroIcon,
+  AmexIcon,
+  UpiIcon,
+} from '@/app/components/ui/PaymentIcons';
+import { mapPaymentStatusToOrderStatus } from '@/lib/payment-utils';
+import { prepareOrderItems, validateCartItems, logCheckoutEvent } from '@/lib/checkout-utils';
+
+export default function PaymentPage() {
+  const { cartItems, clearCart, isLoading } = useCart();
+  const { location, addressId } = useLocation(); 
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const [selectedMethod, setSelectedMethod] = useState<string>('cod');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [amount, setAmount] = useState<number>(0);
+
+  const selectedAddressId = searchParams.get('addressId') || addressId;
+  const addressDetails = location; 
+  const isAddressLoading = false;
+console.log('Selected Address ID:', location);
+  // Calculate amount
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      const total = cartItems.reduce((sum, item) => {
+        const price = Number(item.product?.price || item.medicine?.price || 0);
+        return sum + price * item.quantity;
+      }, 0);
+      setAmount(total);
+    } else if (searchParams.get('amount')) {
+      setAmount(parseFloat(searchParams.get('amount') || '0'));
+    }
+  }, [cartItems, searchParams]);
+
+  // Redirect to /checkout if no address selected
+  useEffect(() => {
+    if (!isLoading && !isAddressLoading && !selectedAddressId) {
+      router.push('/checkout');
+    }
+  }, [isLoading, isAddressLoading, selectedAddressId, router]);
+
+  // Redirect to home if cart empty
+  useEffect(() => {
+    if (!isLoading && cartItems.length === 0 && !searchParams.get('amount')) {
+      router.push('/');
+    }
+  }, [isLoading, cartItems, router, searchParams]);
+
+  useEffect(() => {
+    setError(null);
+  }, [selectedMethod]);
+
+  // Add a function to ensure Razorpay is loaded properly
+  const ensureRazorpayLoaded = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePaymentProcessing = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      if (!selectedAddressId || !addressDetails) {
+        setError('Please select a delivery address first');
+        setIsProcessing(false);
+        return;
+      }
+
+      if (!amount || amount <= 0) {
+        setError('Invalid order amount');
+        setIsProcessing(false);
+        return;
+      }
+
+      if (!validateCartItems(cartItems)) {
+        setError('Invalid cart items. Please try adding items to your cart again.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Prepare validated order items
+      const validItems = prepareOrderItems(cartItems);
+      if (validItems.length === 0) {
+        setError('No valid items in cart');
+        setIsProcessing(false);
+        return;
+      }
+
+      const addressData = { id: selectedAddressId };
+
+      logCheckoutEvent('Processing payment', {
+        address: addressData,
+        totalAmount: amount,
+        paymentMethod: selectedMethod,
+        itemCount: validItems.length
+      });
+
+      const orderResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          address: addressData,
+          totalAmount: amount,
+          paymentMethod: selectedMethod === 'cod' ? 'COD' : 'ONLINE',
+          items: validItems
+        })
+      });
+
+      if (!orderResponse.ok) {
+        const errorData = await orderResponse.json();
+        throw new Error(errorData.error || `Order creation failed with status: ${orderResponse.status}`);
+      }
+
+      const orderData = await orderResponse.json();
+      if (!orderData.success) throw new Error(orderData.error || 'Order creation failed');
+
+      const createdOrderId = orderData.orderId || orderData.order?.id;
+      if (!createdOrderId) throw new Error('No order ID returned from API');
+
+      if (selectedMethod === 'cod') {
+        await clearCart();
+        router.push('/checkout/success?method=cod&orderId=' + createdOrderId);
+        return;
+      }
+
+      const response = await fetch('/api/payment/razorpay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: createdOrderId,
+          amount: amount,
+          currency: 'INR',
+          paymentMethod: selectedMethod
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Payment gateway error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || 'Payment gateway initiation failed');
+      }
+
+      // Ensure Razorpay is loaded
+      const isLoaded = await ensureRazorpayLoaded();
+      
+      if (!isLoaded || typeof window === 'undefined' || typeof window.Razorpay === 'undefined') {
+        throw new Error('Razorpay not loaded. Please refresh the page and try again.');
+      }
+
+      console.log('Initializing Razorpay with options:', { 
+        ...data, 
+        key: '***hidden***',
+        amount: data.amount,
+        order_id: data.order_id
+      });
+
+      interface RazorpayHandlerResponse {
+        razorpay_payment_id: string;
+        razorpay_order_id: string;
+        razorpay_signature: string;
+      }
+
+      const options = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: data.name || 'ShopU',
+        description: data.description || `Payment for order ${createdOrderId}`,
+        order_id: data.order_id,
+        prefill: data.prefill || {},
+        notes: {
+          ...(data.notes || {}),
+          paymentMethod: selectedMethod
+        },
+        theme: data.theme || { color: '#0d9488' },
+        handler: (response: RazorpayHandlerResponse) => {
+          handlePaymentSuccess(response, createdOrderId);
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+            handlePaymentCancellation(createdOrderId);
+          }
+        }
+      };
+
+      try {
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+      } catch (razorpayError) {
+        console.error('Razorpay initialization error:', razorpayError);
+        throw new Error('Could not open payment gateway. Please try again.');
+      }
+
+    } catch (error) {
+      console.error('Payment error:', error);
+      setError(error instanceof Error ? error.message : 'Payment processing failed. Please try again.');
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePaymentSuccess = async (response: any, orderId: string) => {
+    try {
+      await fetch('/api/payment/callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          providerPaymentId: response.razorpay_payment_id,
+          status: 'SUCCESS',
+          provider: 'RAZORPAY',
+          metadata: {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+            paymentMethod: selectedMethod,
+            statusMapped: mapPaymentStatusToOrderStatus('SUCCESS', 'RAZORPAY')
+          }
+        })
+      });
+
+      await clearCart();
+      router.push('/checkout/success?method=online&orderId=' + orderId);
+    } catch (error) {
+      console.error('Callback error:', error);
+      await clearCart();
+      router.push('/checkout/success?method=online&orderId=' + orderId);
+    }
+  };
+
+  const handlePaymentCancellation = async (orderId: string) => {
+    try {
+      await fetch('/api/payment/callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          status: 'CANCELLED',
+          provider: 'RAZORPAY',
+          metadata: {
+            cancelledAt: new Date().toISOString(),
+            reason: 'User cancelled payment',
+            paymentMethod: selectedMethod,
+            statusMapped: mapPaymentStatusToOrderStatus('CANCELLED', 'RAZORPAY')
+          }
+        })
+      });
+    } catch (error) {
+      console.error('Cancel error:', error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader className="h-8 w-8 animate-spin text-teal-600" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center">
+            <button onClick={() => router.back()} className="mr-4 rounded-full p-2 hover:bg-gray-100">
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <h1 className="text-xl font-bold text-gray-800">Checkout</h1>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="md:col-span-2 space-y-6">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+
+            {/* Address */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-lg font-medium text-gray-800 mb-4">Delivery Address</h2>
+              {addressDetails ? (
+                <div className="flex items-start gap-3 bg-teal-50 border border-teal-100 rounded-lg p-4">
+                  <MapPin className="h-5 w-5 text-teal-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium">{addressDetails.address}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-yellow-800">No delivery address selected.</p>
+                  <button onClick={() => router.push('/checkout')} className="mt-2 text-sm text-teal-600 hover:underline">
+                    Go back to select an address
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Payment Methods */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-lg font-medium text-gray-800 mb-4">Payment Method</h2>
+              <form onSubmit={handlePaymentProcessing}>
+                <div className="space-y-3 mb-6">
+                  {/* Card */}
+                  <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <div className="flex items-center">
+                      <input type="radio" name="payment-method" value="card" checked={selectedMethod === 'card'} onChange={() => setSelectedMethod('card')} className="h-4 w-4 text-teal-600" disabled={isProcessing} />
+                      <span className="ml-3 text-gray-700">Credit or Debit Card</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <VisaIcon className="h-5" />
+                      <MastercardIcon className="h-5" />
+                      <MaestroIcon className="h-5" />
+                      <AmexIcon className="h-5" />
+                    </div>
+                  </label>
+
+                  {/* UPI */}
+                  <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <div className="flex items-center">
+                      <input type="radio" name="payment-method" value="upi" checked={selectedMethod === 'upi'} onChange={() => setSelectedMethod('upi')} className="h-4 w-4 text-teal-600" disabled={isProcessing} />
+                      <span className="ml-3 text-gray-700">UPI</span>
+                    </div>
+                    <UpiIcon className="h-6" />
+                  </label>
+
+                  {/* COD */}
+                  <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <div className="flex items-center">
+                      <input type="radio" name="payment-method" value="cod" checked={selectedMethod === 'cod'} onChange={() => setSelectedMethod('cod')} className="h-4 w-4 text-teal-600" disabled={isProcessing} />
+                      <span className="ml-3 text-gray-700">Cash on Delivery</span>
+                    </div>
+                    <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Available</div>
+                  </label>
+                </div>
+
+                <button type="submit" disabled={isProcessing || !addressDetails} className={`w-full flex items-center justify-center gap-2 font-medium py-3 rounded-lg transition-colors ${addressDetails && !isProcessing ? 'bg-teal-600 hover:bg-teal-700 text-white' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}>
+                  {isProcessing ? (
+                    <>
+                      <Loader className="animate-spin mr-2 h-4 w-4" />
+                      {selectedMethod === 'cod' ? 'Placing Order...' : 'Processing Payment...'}
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="h-5 w-5" />
+                      Pay Now - ₹{amount.toFixed(2)}
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* Summary */}
+          <div className="md:col-span-1">
+            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+              <h2 className="text-lg font-medium text-gray-800 mb-4">Order Summary</h2>
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span>₹{amount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Shipping</span>
+                  <span className="text-teal-600">Free</span>
+                </div>
+                <div className="border-t border-gray-200 pt-3 mt-3">
+                  <div className="flex justify-between font-medium">
+                    <span>Total</span>
+                    <span className="text-lg">₹{amount.toFixed(2)}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Inclusive of all taxes</p>
+                </div>
+              </div>
+
+              {cartItems.length > 0 && (
+                <div className="border-t border-gray-200 pt-4 mt-4">
+                  <h3 className="text-sm font-medium text-gray-800 mb-2">Items</h3>
+                  <div className="space-y-2 max-h-60 overflow-auto pr-2">
+                    {cartItems.map((item) => {
+                      const name = item.product?.name || item.medicine?.name || 'Item';
+                      const price = Number(item.product?.price || item.medicine?.price || 0);
+                      return (
+                        <div key={item.id} className="flex justify-between text-sm">
+                          <span className="text-gray-600">{name} x {item.quantity}</span>
+                          <span>₹{(price * item.quantity).toFixed(2)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

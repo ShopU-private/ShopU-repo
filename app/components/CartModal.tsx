@@ -6,7 +6,6 @@ import { Loader, ChevronUp, ChevronDown, Trash2, X, ShoppingBag } from 'lucide-r
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useLocation } from '../context/LocationContext';
-import PaymentMethodModal from './PaymentMethodModal';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -14,25 +13,43 @@ interface CartModalProps {
 }
 
 export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
-  const { cartItems, isLoading, updateCartItem, removeFromCart } = useCart();
+  const { cartItems, isLoading, updateQuantity, removeItem } = useCart();
   const [itemTotal, setItemTotal] = useState(0);
   const [processingAction, setProcessingAction] = useState<{ [key: string]: string }>({});
   const router = useRouter();
   const { location } = useLocation();
   const deliveryAddress = location ? `${location.address}, PIN: ${location.pincode}` : "Please set delivery location";
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [orderId, setOrderId] = useState<string>('');
+  
   useEffect(() => {
     const total = cartItems.reduce((sum, item) => {
       const price = Number(item.product?.price || item.medicine?.price || 0);
       return sum + price * item.quantity;
     }, 0);
     setItemTotal(total);
-    // Generate a pseudo-random order ID
-    setOrderId(`order_${Date.now()}_${Math.floor(Math.random() * 1000)}`);
   }, [cartItems]);
   
-  // Listen for the custom closeCartModal event
+  useEffect(() => {
+    const loadDefaultAddressFromStorage = () => {
+      try {
+        const stored = localStorage.getItem('userLocation');
+
+        if (!stored) {
+          console.log('No userLocation found in localStorage');
+          return;
+        }
+
+        const parsed = JSON.parse(stored);
+        console.log('Loaded location from localStorage:', parsed);
+      } catch (error) {
+        console.error('Error reading userLocation from localStorage:', error);
+      }
+    };
+
+    if (isOpen) {
+      loadDefaultAddressFromStorage();
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     const handleCloseCartModal = () => {
       onCloseAction();
@@ -48,22 +65,32 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
   const handleUpdateQuantity = async (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     setProcessingAction((prev) => ({ ...prev, [id]: 'update' }));
-    await updateCartItem(id, newQuantity);
+    await updateQuantity(id, newQuantity);
     setProcessingAction((prev) => ({ ...prev, [id]: '' }));
   };
 
   const handleRemoveItem = async (id: string) => {
     setProcessingAction((prev) => ({ ...prev, [id]: 'remove' }));
-    await removeFromCart(id);
+    await removeItem(id);
     setProcessingAction((prev) => ({ ...prev, [id]: '' }));
   };
 
-  const handleProceedToCheckout = () => {
-    setIsPaymentModalOpen(true);
-  };
-
-  const closePaymentModal = () => {
-    setIsPaymentModalOpen(false);
+  const handleProceedToCheckout = (e: React.MouseEvent) => {
+    // Stop event propagation to prevent modal closing
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Close the cart modal
+    onCloseAction();
+    
+    // Navigate to the checkout/payment page
+    if (location && location.address) {
+      // Navigate to payment page with the current location
+      router.push(`/checkout/payment?amount=${itemTotal}`);
+    } else {
+      // If no address, redirect to checkout page to select address first
+      router.push('/checkout');
+    }
   };
   
   if (!isOpen) return null;
@@ -260,7 +287,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
                   onClick={handleProceedToCheckout}
                   className="w-full sm:w-auto bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white px-6 sm:px-8 py-3 sm:py-4 font-semibold rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                 >
-                  Proceed to Pay
+                  Proceed to Checkout
                   <ChevronUp className="transform rotate-90" size={18} />
                 </button>
               </div>
@@ -268,14 +295,6 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
           )}
         </div>
       </div>
-      
-      {/* Payment Method Modal */}
-      <PaymentMethodModal 
-        isOpen={isPaymentModalOpen}
-        onCloseAction={closePaymentModal}
-        amount={itemTotal}
-        orderId={orderId}
-      />
     </div>
   );
 }
