@@ -13,7 +13,7 @@ interface Props {
 
 const HealthCategoryGrid: React.FC<Props> = ({ title = "Shop By Health Concerns", healthCategories }) => {
   return (
-    <section className="mb-8">
+    <section className="mb-8 max-w-7xl mx-auto">
       <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">{title}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3">
         {healthCategories.map((category) => (

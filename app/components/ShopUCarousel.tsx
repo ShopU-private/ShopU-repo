@@ -69,7 +69,7 @@ const ShopUCarousel = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-2 sm:p-4 space-y-4">
+    <div className="max-w-7xl mx-auto p-2 sm:p-4 space-y-4 w-[90%]">
       {/* Main Carousel */}
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Carousel Banner */}

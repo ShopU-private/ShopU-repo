@@ -253,7 +253,7 @@ const Header = () => {
   return (
     <header className="bg-white shadow-lg">
       {/* Main Navbar */}
-      <div className="border-b border-gray-100 px-4 py-3">
+      <div className="border-b border-gray-100 px-4 py-3 max-w-7xl mx-auto">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex-shrink-0">
