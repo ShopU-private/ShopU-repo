@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Plus, ChevronLeft, ChevronRight, Camera, Check } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 
+interface Product {
+  id: number;
+  name: string;
+  price: string;
+  features: string[];
+  isOnSale: boolean;
+}
+
 const DealOfTheWeek = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 71,
@@ -12,8 +20,78 @@ const DealOfTheWeek = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(2); // default for desktop
-  const { addToCart } = useCart();
+  const { addItem } = useCart();
   const [addingProductId, setAddingProductId] = useState<number | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch products with deals/discounts
+  useEffect(() => {
+    const fetchDeals = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/products?discount=true&limit=4');
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Transform products to match the expected format
+          const dealsProducts: Product[] = data.products?.map((product: any) => ({
+            id: Number(product.id),
+            name: product.name,
+            price: `₹${product.price}`,
+            features: [
+              product.description?.split('.')[0] || 'Quality product',
+              product.subCategory?.name || 'Essential item',
+              `${product.discount || 20}% discount`,
+            ],
+            isOnSale: true,
+          })) || [];
+          
+          setProducts(dealsProducts);
+        } else {
+          throw new Error('Failed to fetch deals');
+        }
+      } catch (error) {
+        console.error('Error fetching deals:', error);
+        // Fallback products
+        setProducts([
+          {
+            id: 1,
+            name: 'Moov Pain Relief Ointment',
+            price: '₹165',
+            features: ['3 cleaning programs', 'Digital display', 'Memory for 1 user'],
+            isOnSale: true,
+          },
+          {
+            id: 2,
+            name: 'Vitamin C 500mg Sugarless',
+            price: '₹165',
+            features: ['3 cleaning programs', 'Digital display', 'Memory for 1 user'],
+            isOnSale: false,
+          },
+          {
+            id: 3,
+            name: 'Vicks Vaporub 10g',
+            price: '₹60',
+            features: ['Relieves cough', 'Soothes muscles', 'Fast action'],
+            isOnSale: true,
+          },
+          {
+            id: 4,
+            name: 'Dettol Antiseptic Liquid',
+            price: '₹99',
+            features: ['Kills 99.9% germs', 'Multipurpose', 'Safe for skin'],
+            isOnSale: true,
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchDeals();
+  }, []);
 
   // Update itemsPerPage on screen resize
   useEffect(() => {
@@ -40,45 +118,6 @@ const DealOfTheWeek = () => {
     return () => clearInterval(timer);
   }, []);
 
-  interface Product {
-    id: number;
-    name: string;
-    price: string;
-    features: string[];
-    isOnSale: boolean;
-  }
-  
-  const products: Product[] = [
-    {
-      id: 1,
-      name: 'Moov Pain Relief Ointment',
-      price: '₹165',
-      features: ['3 cleaning programs', 'Digital display', 'Memory for 1 user'],
-      isOnSale: true,
-    },
-    {
-      id: 2,
-      name: 'Vitamin C 500mg Sugarless',
-      price: '₹165',
-      features: ['3 cleaning programs', 'Digital display', 'Memory for 1 user'],
-      isOnSale: false,
-    },
-    {
-      id: 3,
-      name: 'Vicks Vaporub 10g',
-      price: '₹60',
-      features: ['Relieves cough', 'Soothes muscles', 'Fast action'],
-      isOnSale: true,
-    },
-    {
-      id: 4,
-      name: 'Dettol Antiseptic Liquid',
-      price: '₹99',
-      features: ['Kills 99.9% germs', 'Multipurpose', 'Safe for skin'],
-      isOnSale: true,
-    },
-  ];
-
   // Navigate one by one regardless of itemsPerPage
   const handleNext = () => {
     if (currentIndex + itemsPerPage < products.length) {
@@ -95,7 +134,7 @@ const DealOfTheWeek = () => {
   const handleAddToCart = async (product: Product) => {
     setAddingProductId(product.id);
     try {
-      await addToCart({ productId: product.id.toString(), quantity: 1 });
+      await addItem(product.id.toString(), null, 1);
       // Dispatch cart updated event
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (error) {
@@ -106,6 +145,29 @@ const DealOfTheWeek = () => {
   };
 
   const visibleProducts = products.slice(currentIndex, currentIndex + itemsPerPage);
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto p-4 sm:p-6 bg-white">
+        <div className="animate-pulse">
+          <div className="flex items-center justify-between mb-6 gap-4">
+            <div className="space-y-2">
+              <div className="h-6 bg-gray-200 rounded w-48"></div>
+              <div className="h-4 bg-gray-200 rounded w-24"></div>
+            </div>
+            <div className="flex space-x-2">
+              <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+              <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+            </div>
+          </div>
+          <div className="grid gap-6 grid-cols-2">
+            <div className="h-48 bg-gray-200 rounded-lg"></div>
+            <div className="h-48 bg-gray-200 rounded-lg"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 bg-white">

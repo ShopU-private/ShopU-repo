@@ -2,93 +2,51 @@
 
 import React, { useState } from 'react';
 import ProductCard from './ProductCard';
+import { useMedicines } from '../hooks/useProducts';
+import { useCart } from '../hooks/useCart';
 
-interface Product {
-  id: number;
+interface Medicine {
+  id: number | string;
   name: string;
   price: number;
   originalPrice?: number;
   discount?: number;
   rating: number;
   reviews: number;
-  image: string;
+  image?: string;
+  imageUrl?: string;
   category: string;
+  manufacturerName?: string;
+  packSizeLabel?: string;
 }
-
-const everydayEssentials: Product[] = [
-  {
-    id: 1,
-    name: 'Ultra-Dry Baby Diaper Pants | Superior Leak ...',
-    price: 130,
-    originalPrice: 260,
-    discount: 50,
-    rating: 4.3,
-    reviews: 40,
-    image: '/products/diaper.jpg',
-    category: 'Everyday Essentials',
-  },
-  {
-    id: 2,
-    name: 'Novology Gentle Face Cleanser Non-Foaming...',
-    price: 165,
-    originalPrice: 89,
-    discount: 42,
-    rating: 4.1,
-    reviews: 33,
-    image: '/products/facecleanser.jpg',
-    category: 'Everyday Essentials',
-  },
-  {
-    id: 3,
-    name: 'Zandu StriVeda Satavari Lactation Supplement',
-    price: 125,
-    originalPrice: 165,
-    discount: 24,
-    rating: 4.5,
-    reviews: 22,
-    image: '/products/zandu.jpg',
-    category: 'Everyday Essentials',
-  },
-  {
-    id: 4,
-    name: 'Himalaya Erina-EP Powder (For Pets)',
-    price: 51,
-    originalPrice: 96,
-    discount: 47,
-    rating: 4.6,
-    reviews: 18,
-    image: '/products/erina.jpg',
-    category: 'Everyday Essentials',
-  },
-  {
-    id: 5,
-    name: 'Dignity Magna Adult Unisex Diaper | Size XL',
-    price: 194,
-    originalPrice: 225,
-    discount: 13,
-    rating: 4.2,
-    reviews: 29,
-    image: '/products/magna.jpg',
-    category: 'Everyday Essentials',
-  },
-];
 
 const EverydayEssentialsSection = () => {
   const [favorites, setFavorites] = useState<number[]>([]);
-  const [addingIds, setAddingIds] = useState<number[]>([]);
+  const [addingIds, setAddingIds] = useState<(number | string)[]>([]);
+  const { addItem } = useCart();
 
-  const toggleFavorite = (productId: number) => {
+  const { medicines, loading, error } = useMedicines({ limit: 5 });
+
+  const toggleFavorite = (medicineId: number) => {
     setFavorites((prev) =>
-      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
+      prev.includes(medicineId)
+        ? prev.filter((id) => id !== medicineId)
+        : [...prev, medicineId]
     );
   };
 
-  const addToCart = (product: Product) => {
-    setAddingIds((prev) => [...prev, product.id]);
-    setTimeout(() => {
-      setAddingIds((prev) => prev.filter((id) => id !== product.id));
-      alert(`${product.name} added to cart!`);
-    }, 1000);
+  const handleAddToCart = async (medicine: Medicine) => {
+    setAddingIds((prev) => [...prev, medicine.id]);
+    try {
+      await addItem(null, medicine.id.toString(), 1);
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    } finally {
+      setTimeout(() => {
+        setAddingIds((prev) => prev.filter((id) => id !== medicine.id));
+      }, 1000);
+    }
   };
 
   return (
@@ -98,22 +56,48 @@ const EverydayEssentialsSection = () => {
           <h2 className="text-lg sm:text-xl font-bold text-gray-800">
             Everyday <span className="text-gray-500">Essentials</span>
           </h2>
-          <button className="text-sm text-teal-600 hover:underline font-medium">View All</button>
+          <button className="text-sm text-teal-600 hover:underline font-medium">
+            View All
+          </button>
         </div>
 
-        {/* Responsive layout */}
         <div className="flex overflow-x-auto gap-4 sm:grid sm:grid-cols-3 lg:grid-cols-5 sm:overflow-visible pb-2">
-          {everydayEssentials.map((product) => (
-            <div key={product.id} className="min-w-[180px] sm:min-w-0">
-              <ProductCard
-                product={product}
-                isFavorite={favorites.includes(product.id)}
-                onToggleFavorite={toggleFavorite}
-                onAddToCart={addToCart}
-                isAdding={addingIds.includes(product.id)}
-              />
+          {loading ? (
+            Array(5)
+              .fill(0)
+              .map((_, i) => (
+                <div key={i} className="min-w-[180px] sm:min-w-0 animate-pulse">
+                  <div className="bg-gray-200 h-[200px] rounded-lg mb-2"></div>
+                  <div className="bg-gray-200 h-4 rounded w-3/4 mb-2"></div>
+                  <div className="bg-gray-200 h-4 rounded w-1/2"></div>
+                </div>
+              ))
+          ) : error ? (
+            <div className="text-center w-full py-4 text-red-500">
+              Failed to load medicines. Please try again.
             </div>
-          ))}
+          ) : medicines.length === 0 ? (
+            <div className="text-center w-full py-4 text-gray-500">
+              No medicines found.
+            </div>
+          ) : (
+            medicines.map((medicine) => (
+              <div key={medicine.id} className="min-w-[180px] sm:min-w-0">
+                <ProductCard
+                  product={{
+                    ...medicine,
+                    name: `${medicine.name} (${medicine.packSizeLabel || 'Standard'})`,
+                    subtitle: medicine.manufacturerName,
+                    image: medicine.imageUrl || '/medicine-placeholder.jpg',
+                  }}
+                  isFavorite={favorites.includes(Number(medicine.id))}
+                  onToggleFavorite={() => toggleFavorite(Number(medicine.id))}
+                  onAddToCart={() => handleAddToCart(medicine)}
+                  isAdding={addingIds.includes(medicine.id)}
+                />
+              </div>
+            ))
+          )}
         </div>
       </div>
     </section>

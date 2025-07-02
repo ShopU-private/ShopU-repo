@@ -82,15 +82,9 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
     
     // Close the cart modal
     onCloseAction();
-    
-    // Navigate to the checkout/payment page
-    if (location && location.address) {
-      // Navigate to payment page with the current location
-      router.push(`/checkout/payment?amount=${itemTotal}`);
-    } else {
-      // If no address, redirect to checkout page to select address first
+    // Navigate to checkout page
       router.push('/checkout');
-    }
+   
   };
   
   if (!isOpen) return null;

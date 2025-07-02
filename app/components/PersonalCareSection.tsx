@@ -2,80 +2,34 @@
 
 import React, { useState } from 'react';
 import ProductCard from './ProductCard';
+import { useMedicines } from '../hooks/useProducts';
+import { useCart } from '../hooks/useCart';
 
 interface Product {
-  id: number;
+  id: number | string;
   name: string;
   price: number;
   originalPrice?: number;
   discount?: number;
   rating: number;
   reviews: number;
-  image: string;
+  image?: string;
+  imageUrl?: string;
   category: string;
+  manufacturerName?: string;
+  packSizeLabel?: string;
 }
-
-const personalCareProducts: Product[] = [
-  {
-    id: 1,
-    name: 'Dignity Spongee Soft and Smooth Baby..',
-    price: 130,
-    originalPrice: 260,
-    discount: 50,
-    rating: 4.2,
-    reviews: 22,
-    image: '/products/dignity.jpg',
-    category: 'Personal Care',
-  },
-  {
-    id: 2,
-    name: "Himalaya Baby Powder | Keeps Baby's Skin..",
-    price: 165,
-    originalPrice: 89,
-    discount: 42,
-    rating: 4.4,
-    reviews: 51,
-    image: '/products/himalaya.jpg',
-    category: 'Personal Care',
-  },
-  {
-    id: 3,
-    name: 'Sebamed Baby Cleansing Bar|pH 5.5 |Newborn',
-    price: 125,
-    originalPrice: 165,
-    discount: 24,
-    rating: 4.6,
-    reviews: 19,
-    image: '/products/sebamed.jpg',
-    category: 'Personal Care',
-  },
-  {
-    id: 4,
-    name: 'Econorm 250mg Probiotic Sachet for Children | For..',
-    price: 51,
-    originalPrice: 96,
-    discount: 47,
-    rating: 4.3,
-    reviews: 30,
-    image: '/products/econorm.jpg',
-    category: 'Personal Care',
-  },
-  {
-    id: 5,
-    name: 'Vicks BabyRub Balm | For 3 Months & Above',
-    price: 194,
-    originalPrice: 225,
-    discount: 13,
-    rating: 4.7,
-    reviews: 43,
-    image: '/products/vicks.jpg',
-    category: 'Personal Care',
-  },
-];
 
 const PersonalCareSection = () => {
   const [favorites, setFavorites] = useState<number[]>([]);
-  const [addingIds, setAddingIds] = useState<number[]>([]);
+  const [addingIds, setAddingIds] = useState<(number | string)[]>([]);
+  const { addItem } = useCart();
+
+  // Fetch medicines filtered by personal care type
+  const {  medicines, loading, error } = useMedicines({
+    type: 'allopathy', // Filter by medicine type
+    limit: 5,
+  });
 
   const toggleFavorite = (productId: number) => {
     setFavorites((prev) =>
@@ -83,12 +37,20 @@ const PersonalCareSection = () => {
     );
   };
 
-  const addToCart = (product: Product) => {
+  const handleAddToCart = async (product: Product) => {
     setAddingIds((prev) => [...prev, product.id]);
-    setTimeout(() => {
-      setAddingIds((prev) => prev.filter((id) => id !== product.id));
-      alert(`${product.name} added to cart!`);
-    }, 1000);
+
+    try {
+      // Use medicineId instead of productId for medicines
+      await addItem(null, product.id.toString(), 1);
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    } finally {
+      setTimeout(() => {
+        setAddingIds((prev) => prev.filter((id) => id !== product.id));
+      }, 1000);
+    }
   };
 
   return (
@@ -102,17 +64,43 @@ const PersonalCareSection = () => {
         </div>
 
         <div className="flex overflow-x-auto gap-4 sm:grid sm:grid-cols-3 lg:grid-cols-5 sm:overflow-visible pb-2">
-          {personalCareProducts.map((product) => (
-            <div key={product.id} className="min-w-[180px] sm:min-w-0">
-              <ProductCard
-                product={product}
-                isFavorite={favorites.includes(product.id)}
-                onToggleFavorite={toggleFavorite}
-                onAddToCart={addToCart}
-                isAdding={addingIds.includes(product.id)}
-              />
-            </div>
-          ))}
+          {loading ? (
+            // Loading skeleton
+            Array(5)
+              .fill(0)
+              .map((_, i) => (
+                <div key={i} className="min-w-[180px] sm:min-w-0 animate-pulse">
+                  <div className="bg-gray-200 h-[200px] rounded-lg mb-2"></div>
+                  <div className="bg-gray-200 h-4 rounded w-3/4 mb-2"></div>
+                  <div className="bg-gray-200 h-4 rounded w-1/2"></div>
+                </div>
+              ))
+          ) : error ? (
+            <div className="text-center w-full py-4 text-red-500">Failed to load products. Please try again.</div>
+          ) : medicines.length === 0 ? (
+            <div className="text-center w-full py-4 text-gray-500">No personal care medicines found.</div>
+          ) : (
+            medicines.map((medicine) => (
+              <div key={medicine.id} className="min-w-[180px] sm:min-w-0">
+                <ProductCard
+                  product={{
+                    ...medicine,
+                    id: Number(medicine.id),
+                    // Custom display for medicine cards
+                    name: `${medicine.name} (${medicine.packSizeLabel || 'Standard'})`,
+                    image: medicine.imageUrl || '/medicine-placeholder.jpg',
+                    rating: typeof medicine.rating === 'number' ? medicine.rating : 0,
+                  }}
+                  // Pass subtitle as a separate prop if ProductCard supports it, otherwise remove this line
+                  // subtitle={medicine.manufacturerName}
+                  isFavorite={favorites.includes(Number(medicine.id))}
+                  onToggleFavorite={() => toggleFavorite(Number(medicine.id))}
+                  onAddToCart={() => handleAddToCart(medicine)}
+                  isAdding={addingIds.includes(medicine.id)}
+                />
+              </div>
+            ))
+          )}
         </div>
       </div>
     </section>

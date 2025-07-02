@@ -6,109 +6,77 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const categoryId = searchParams.get('categoryId');
     const subCategoryId = searchParams.get('subCategoryId');
+    const limitParam = searchParams.get('limit');
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined;
 
-    let products;
+    let whereClause: any = {};
 
     if (subCategoryId) {
-      products = await prisma.product.findMany({
-        where: { subCategoryId },
-        include: {
-          subCategory: {
-            include: {
-              category: true,
-            },
-          },
-          productImage: true,
-          variantTypes: {
-            include: {
-              values: true,
-            },
-          },
-          combinations: {
-            include: {
-              values: {
-                include: {
-                  variantValue: {
-                    include: {
-                      variantType: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
+      whereClause = { subCategoryId };
     } else if (categoryId) {
-      products = await prisma.product.findMany({
-        where: {
-          subCategory: {
-            categoryId,
-          },
+      whereClause = {
+        subCategory: {
+          categoryId,
         },
-        include: {
-          subCategory: {
-            include: {
-              category: true,
-            },
-          },
-          productImage: true,
-          variantTypes: {
-            include: {
-              values: true,
-            },
-          },
-          combinations: {
-            include: {
-              values: {
-                include: {
-                  variantValue: {
-                    include: {
-                      variantType: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
-    } else {
-      products = await prisma.product.findMany({
-        include: {
-          subCategory: {
-            include: {
-              category: true,
-            },
-          },
-          productImage: true,
-          variantTypes: {
-            include: {
-              values: true,
-            },
-          },
-          combinations: {
-            include: {
-              values: {
-                include: {
-                  variantValue: {
-                    include: {
-                      variantType: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
+      };
     }
+
+    const products = await prisma.product.findMany({
+      where: whereClause,
+      take: limit,
+      include: {
+        subCategory: {
+          include: {
+            category: true,
+          },
+        },
+        productImage: true,
+        variantTypes: {
+          include: {
+            values: true,
+          },
+        },
+        combinations: {
+          include: {
+            values: {
+              include: {
+                variantValue: {
+                  include: {
+                    variantType: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
 
     return NextResponse.json({ products });
   } catch (err) {
     console.error(err);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch products' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const data = await req.json();
+    const product = await prisma.product.create({
+      data,
+      include: {
+        productImage: true,
+        subCategory: true,
+      },
+    });
+    return NextResponse.json({ product }, { status: 201 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create product' },
       { status: 500 }
     );
   }
