@@ -58,7 +58,7 @@ const BabyCareSection = () => {
   };
 
   return (
-    <section className="px-4 sm:px-6 lg:px-8 py-6">
+    <section className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
       {/* Section Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800 border-b-4 border-[var(--shopu-color,#008080)] pb-1">

@@ -11,8 +11,9 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-gray-100 text-gray-800">
+      <div className=" bg-gray-200 px-6 py-10 text-center sm:px-10 lg:px-20">
       {/* Newsletter Section */}
-      <div className="bg-gray-200 px-6 py-10 text-center sm:px-10 lg:px-20">
+      <div className="max-w-7xl mx-auto">
         <h2 className="text-xl font-semibold">Join our newsletter and get</h2>
         <p className="mt-1 text-sm text-gray-600">
           Join our email subscription now to get updates on promotions and coupons.
@@ -31,9 +32,11 @@ export default function Footer() {
           </button>
         </form>
       </div>
+      </div>
+
 
       {/* Footer Grid */}
-      <div className="grid gap-10 border-t px-6 py-10 text-center text-sm sm:grid-cols-2 sm:px-10 sm:text-left md:grid-cols-4 lg:px-20">
+      <div className="grid gap-10 border-t px-6 py-10 text-center text-sm sm:grid-cols-2 sm:px-10 sm:text-left md:grid-cols-4 lg:px-20 max-w-7xl mx-auto">
         {/* ShopU Logo */}
         <div className="flex flex-col items-center sm:items-start">
           <img
@@ -92,7 +95,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom Footer */}
-      <div className="flex flex-col items-center gap-4 border-t px-6 py-6 text-sm text-gray-500 sm:flex-row sm:justify-between sm:px-10 lg:px-20">
+      <div className="flex flex-col items-center gap-4 border-t px-6 py-6 text-sm text-gray-500 sm:flex-row sm:justify-between sm:px-10 lg:px-20 max-w-7xl mx-auto">
         <p>© 2025, All rights reserved</p>
 
         {/* Payment Icons */}
