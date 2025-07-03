@@ -63,9 +63,10 @@ export function validateAddressId(addressId: string | null | undefined): boolean
  * @param event Event name/description
  * @param data Optional data to log with the event
  */
-export function logCheckoutEvent(event: string, data?: any): void {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[Checkout] ${event}`, data || '');
+export function logCheckoutEvent(event: string, data?: unknown): void {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    console.log(`Checkout Event: ${event}`, data || '');
   }
-  // In production, this could be replaced with proper analytics tracking
+  // In production, you could send this to an analytics service
+  // Example: analyticsService.trackEvent(event, data);
 }
