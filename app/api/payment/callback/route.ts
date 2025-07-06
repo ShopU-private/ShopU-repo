@@ -25,10 +25,7 @@ export async function POST(req: NextRequest) {
     } = await req.json();
 
     if (!orderId) {
-      return NextResponse.json(
-        { success: false, error: 'Order ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Order ID is required' }, { status: 400 });
     }
 
     console.log(

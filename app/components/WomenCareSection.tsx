@@ -33,13 +33,13 @@ const WomenCareSection = () => {
   });
 
   const toggleFavorite = (productId: number) => {
-    setFavorites((prev) =>
-      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
+    setFavorites(prev =>
+      prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]
     );
   };
 
   const handleAddToCart = async (product: Product) => {
-    setAddingIds((prev) => [...prev, product.id]);
+    setAddingIds(prev => [...prev, product.id]);
 
     try {
       // Use medicineId parameter for medicines
@@ -49,41 +49,41 @@ const WomenCareSection = () => {
       console.error('Error adding to cart:', error);
     } finally {
       setTimeout(() => {
-        setAddingIds((prev) => prev.filter((id) => id !== product.id));
+        setAddingIds(prev => prev.filter(id => id !== product.id));
       }, 1000);
     }
   };
 
   return (
-    <section className="py-6 sm:py-8 bg-gray-50">
+    <section className="bg-gray-50 py-6 sm:py-8">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Women Care</h2>
-          <button className="text-teal-600 hover:underline text-sm font-medium">View All</button>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-800 sm:text-2xl">Women Care</h2>
+          <button className="text-sm font-medium text-teal-600 hover:underline">View All</button>
         </div>
 
-        <div className="flex overflow-x-auto gap-4 sm:grid sm:grid-cols-3 lg:grid-cols-5 sm:overflow-visible pb-2">
+        <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-5">
           {loading ? (
             // Loading skeleton
             Array(5)
               .fill(0)
               .map((_, i) => (
-                <div key={i} className="min-w-[250px] sm:min-w-0 animate-pulse">
-                  <div className="bg-gray-200 h-[200px] rounded-lg mb-2"></div>
-                  <div className="bg-gray-200 h-4 rounded w-3/4 mb-2"></div>
-                  <div className="bg-gray-200 h-4 rounded w-1/2"></div>
+                <div key={i} className="min-w-[250px] animate-pulse sm:min-w-0">
+                  <div className="mb-2 h-[200px] rounded-lg bg-gray-200"></div>
+                  <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
+                  <div className="h-4 w-1/2 rounded bg-gray-200"></div>
                 </div>
               ))
           ) : error ? (
-            <div className="text-center w-full py-4 text-red-500">
+            <div className="w-full py-4 text-center text-red-500">
               Failed to load women care products. Please try again.
             </div>
           ) : medicines.length === 0 ? (
-            <div className="text-center w-full py-4 text-gray-500">
+            <div className="w-full py-4 text-center text-gray-500">
               No women care products found.
             </div>
           ) : (
-            medicines.map((medicine) => {
+            medicines.map(medicine => {
               const normalizedProduct = {
                 ...medicine,
                 id: Number(medicine.id),

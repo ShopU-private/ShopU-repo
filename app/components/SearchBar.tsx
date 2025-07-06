@@ -18,60 +18,63 @@ export default function Searchbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [searchCache, setSearchCache] = useState<{[key: string]: MedicineResult}>({});
+  const [searchCache, setSearchCache] = useState<{ [key: string]: MedicineResult }>({});
 
   // Memoize the search function to avoid unnecessary rerenders
-  const handleSearch = useCallback(async (query: string) => {
-    setSearchQuery(query);
+  const handleSearch = useCallback(
+    async (query: string) => {
+      setSearchQuery(query);
 
-    // Clear previous timeout
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
+      // Clear previous timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
 
-    // Set a new timeout to debounce the search
-    searchTimeoutRef.current = setTimeout(async () => {
-      if (query.trim().length >= 3) {
-        // Check if the results are in the cache
-        if (searchCache[query.trim()]) {
-          searchEventEmitter.emit(searchCache[query.trim()]);
-          return;
-        }
+      // Set a new timeout to debounce the search
+      searchTimeoutRef.current = setTimeout(async () => {
+        if (query.trim().length >= 3) {
+          // Check if the results are in the cache
+          if (searchCache[query.trim()]) {
+            searchEventEmitter.emit(searchCache[query.trim()]);
+            return;
+          }
 
-        setIsSearching(true);
-        try {
-          const response = await fetch(
-            `/api/get-medicine?name=${encodeURIComponent(query)}&limit=30`
-          );
-          const data = await response.json();
-          if (data.success) {
-            const results = data.data.slice(0, 30);
-            searchEventEmitter.emit(results);
-            
-            // Store in cache
-            setSearchCache(prev => ({
-              ...prev,
-              [query.trim()]: results
-            }));
-          } else {
+          setIsSearching(true);
+          try {
+            const response = await fetch(
+              `/api/get-medicine?name=${encodeURIComponent(query)}&limit=30`
+            );
+            const data = await response.json();
+            if (data.success) {
+              const results = data.data.slice(0, 30);
+              searchEventEmitter.emit(results);
+
+              // Store in cache
+              setSearchCache(prev => ({
+                ...prev,
+                [query.trim()]: results,
+              }));
+            } else {
+              searchEventEmitter.emit([]);
+            }
+          } catch (error) {
+            console.error('Search error:', error);
             searchEventEmitter.emit([]);
           }
-        } catch (error) {
-          console.error('Search error:', error);
+          setIsSearching(false);
+        } else {
           searchEventEmitter.emit([]);
         }
-        setIsSearching(false);
-      } else {
-        searchEventEmitter.emit([]);
-      }
-    }, 300);
-  }, [searchCache]);
+      }, 300);
+    },
+    [searchCache]
+  );
 
   const clearSearch = () => {
     setSearchQuery('');
     searchEventEmitter.emit([]);
   };
-  
+
   // Clear cache when component unmounts or if it gets too large
   useEffect(() => {
     return () => {
@@ -84,7 +87,8 @@ export default function Searchbar() {
   // Limit cache size to prevent memory issues
   useEffect(() => {
     const cacheKeys = Object.keys(searchCache);
-    if (cacheKeys.length > 50) { // Limit cache to last 50 searches
+    if (cacheKeys.length > 50) {
+      // Limit cache to last 50 searches
       const newCache = { ...searchCache };
       delete newCache[cacheKeys[0]];
       setSearchCache(newCache);

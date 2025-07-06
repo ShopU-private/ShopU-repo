@@ -35,31 +35,31 @@ export async function GET(req: NextRequest) {
     if (!name && !type) {
       // Create a cache key for generic queries
       const cacheKey = `all_medicines_${limit}_${page}`;
-      
+
       // Check cache first
       if (searchCache.has(cacheKey)) {
         const cachedResult = searchCache.get(cacheKey);
         if (cachedResult && Date.now() - cachedResult.timestamp < CACHE_TTL) {
-          return NextResponse.json({ 
-            success: true, 
+          return NextResponse.json({
+            success: true,
             data: cachedResult.data,
-            cached: true
+            cached: true,
           });
         }
       }
-      
+
       const medicines = await prisma.medicine.findMany({
         take: limit,
         skip: offset,
-        orderBy: { name: 'asc' }
+        orderBy: { name: 'asc' },
       });
-      
+
       // Store in cache
       searchCache.set(cacheKey, {
         data: medicines,
         timestamp: Date.now(),
       });
-      
+
       return NextResponse.json({ success: true, data: medicines });
     }
 
@@ -72,18 +72,22 @@ export async function GET(req: NextRequest) {
       if (searchCache.has(cacheKey)) {
         const cachedResult = searchCache.get(cacheKey);
         if (cachedResult && Date.now() - cachedResult.timestamp < CACHE_TTL) {
-          return NextResponse.json({ 
-            success: true, 
+          return NextResponse.json({
+            success: true,
             data: cachedResult.data,
-            cached: true
+            cached: true,
           });
         }
       }
 
       // Optimize query by creating a basic search index within the query
       // Use startsWith for faster matching if appropriate
-      const searchTerms = name.trim().toLowerCase().split(/\s+/).filter(term => term.length > 1);
-      
+      const searchTerms = name
+        .trim()
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(term => term.length > 1);
+
       const medicines = await prisma.medicine.findMany({
         where: {
           OR: [
@@ -93,18 +97,18 @@ export async function GET(req: NextRequest) {
             { name: { startsWith: name, mode: 'insensitive' } },
             // Contains match for individual terms (slower but comprehensive)
             ...searchTerms.map(term => ({
-              name: { contains: term, mode: Prisma.QueryMode.insensitive }
-            }))
-          ]
+              name: { contains: term, mode: Prisma.QueryMode.insensitive },
+            })),
+          ],
         },
         take: limit,
         skip: offset,
         orderBy: [
           // Order by name ascending
           {
-            name: 'asc'
-          }
-        ]
+            name: 'asc',
+          },
+        ],
       });
 
       // Store in cache
@@ -112,44 +116,44 @@ export async function GET(req: NextRequest) {
         data: medicines,
         timestamp: Date.now(),
       });
-    
+
       return NextResponse.json({ success: true, data: medicines });
     }
-    
+
     // Handle filtering by type
     if (type) {
       const cacheKey = `type_${type.toLowerCase()}_${limit}_${page}`;
-      
+
       // Check cache first
       if (searchCache.has(cacheKey)) {
         const cachedResult = searchCache.get(cacheKey);
         if (cachedResult && Date.now() - cachedResult.timestamp < CACHE_TTL) {
-          return NextResponse.json({ 
-            success: true, 
+          return NextResponse.json({
+            success: true,
             data: cachedResult.data,
-            cached: true
+            cached: true,
           });
         }
       }
-      
+
       const medicines = await prisma.medicine.findMany({
         where: {
-          type: { contains: type, mode: 'insensitive' }
+          type: { contains: type, mode: 'insensitive' },
         },
         take: limit,
         skip: offset,
-        orderBy: { name: 'asc' }
+        orderBy: { name: 'asc' },
       });
-      
+
       // Store in cache
       searchCache.set(cacheKey, {
         data: medicines,
         timestamp: Date.now(),
       });
-      
+
       return NextResponse.json({ success: true, data: medicines });
     }
-    
+
     // Default response
     return NextResponse.json({ success: true, data: [] });
   } catch (error) {

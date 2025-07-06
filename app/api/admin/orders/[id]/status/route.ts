@@ -13,7 +13,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const { status } = await req.json();
 
     // Validate status
-    const validStatuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED', 'CANCELLED'];
+    const validStatuses = [
+      'PENDING',
+      'PROCESSING',
+      'SHIPPED',
+      'DELIVERED',
+      'COMPLETED',
+      'CANCELLED',
+    ];
     if (!validStatuses.includes(status)) {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }

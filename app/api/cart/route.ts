@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     if (!payload || !payload.id) {
       return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 401 });
     }
-    
+
     const userId = payload.id;
 
     // Use cached headers to allow browser caching
@@ -25,15 +25,15 @@ export async function GET(req: NextRequest) {
       // Generate an ETag based on user ID
       const eTag = `"cart-${userId}"`;
       const ifNoneMatch = req.headers.get('If-None-Match');
-      
+
       // Check if client has a valid cached version
       if (ifNoneMatch === eTag) {
-        return new NextResponse(null, { 
-          status: 304,  // Not Modified
+        return new NextResponse(null, {
+          status: 304, // Not Modified
           headers: {
-            'ETag': eTag,
-            'Cache-Control': 'private, max-age=60'
-          }
+            ETag: eTag,
+            'Cache-Control': 'private, max-age=60',
+          },
         });
       }
     }
@@ -58,11 +58,11 @@ export async function GET(req: NextRequest) {
         medicine: {
           select: {
             id: true,
-            name: true, 
+            name: true,
             price: true,
             manufacturerName: true,
-            packSizeLabel: true
-          }
+            packSizeLabel: true,
+          },
         },
       },
       orderBy: { addedAt: 'desc' },
@@ -70,14 +70,14 @@ export async function GET(req: NextRequest) {
 
     // Generate an ETag for caching
     const eTag = `"cart-${userId}"`;
-    
+
     return NextResponse.json(
       { success: true, cartItems },
-      { 
+      {
         headers: {
-          'ETag': eTag,
-          'Cache-Control': 'private, max-age=60'
-        }
+          ETag: eTag,
+          'Cache-Control': 'private, max-age=60',
+        },
       }
     );
   } catch (error) {
@@ -101,19 +101,19 @@ export async function POST(req: NextRequest) {
     if (!payload || !payload.id) {
       return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 401 });
     }
-    
+
     const userId = payload.id;
-    
+
     // Verify user exists
     const userExists = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true }
+      select: { id: true },
     });
 
     if (!userExists) {
       return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
-    
+
     const { productId, medicineId, quantity = 1 } = await req.json();
 
     if (!productId && !medicineId) {
@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
         // First check if the medicine exists without a transaction
         const medicineExists = await prisma.medicine.findUnique({
           where: { id: medicineId },
-          select: { id: true }
+          select: { id: true },
         });
 
         if (!medicineExists) {
@@ -160,16 +160,16 @@ export async function POST(req: NextRequest) {
           cartItem = await prisma.cartItem.update({
             where: { id: existingCartItem.id },
             data: { quantity: existingCartItem.quantity + quantity },
-            include: { 
+            include: {
               medicine: {
                 select: {
                   id: true,
                   name: true,
                   price: true,
                   manufacturerName: true,
-                  packSizeLabel: true
-                }
-              } 
+                  packSizeLabel: true,
+                },
+              },
             },
           });
         } else {
@@ -180,16 +180,16 @@ export async function POST(req: NextRequest) {
               medicineId,
               quantity,
             },
-            include: { 
+            include: {
               medicine: {
                 select: {
                   id: true,
                   name: true,
                   price: true,
                   manufacturerName: true,
-                  packSizeLabel: true
-                }
-              } 
+                  packSizeLabel: true,
+                },
+              },
             },
           });
         }
@@ -213,14 +213,11 @@ export async function POST(req: NextRequest) {
         // Check if the product exists without a transaction
         const productExists = await prisma.product.findUnique({
           where: { id: productId },
-          select: { id: true }
+          select: { id: true },
         });
 
         if (!productExists) {
-          return NextResponse.json(
-            { success: false, error: 'Product not found' },
-            { status: 404 }
-          );
+          return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
         }
 
         // Check if product is already in cart
@@ -237,15 +234,15 @@ export async function POST(req: NextRequest) {
           cartItem = await prisma.cartItem.update({
             where: { id: existingCartItem.id },
             data: { quantity: existingCartItem.quantity + quantity },
-            include: { 
+            include: {
               product: {
                 select: {
                   id: true,
                   name: true,
                   price: true,
-                  imageUrl: true
-                }
-              } 
+                  imageUrl: true,
+                },
+              },
             },
           });
         } else {
@@ -256,15 +253,15 @@ export async function POST(req: NextRequest) {
               productId,
               quantity,
             },
-            include: { 
+            include: {
               product: {
                 select: {
                   id: true,
                   name: true,
                   price: true,
-                  imageUrl: true
-                }
-              } 
+                  imageUrl: true,
+                },
+              },
             },
           });
         }
@@ -284,9 +281,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('[POST /api/cart] General error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart';
-    return NextResponse.json(
-      { success: false, error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }

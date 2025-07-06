@@ -25,7 +25,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log(`[Razorpay] Processing payment for orderId: ${orderId}, amount: ${amount}, method: ${paymentMethod}`);
+    console.log(
+      `[Razorpay] Processing payment for orderId: ${orderId}, amount: ${amount}, method: ${paymentMethod}`
+    );
 
     // Verify the order exists and belongs to the user
     const order = await prisma.order.findFirst({
@@ -35,8 +37,8 @@ export async function POST(req: NextRequest) {
       },
       include: {
         user: true,
-        address: true
-      }
+        address: true,
+      },
     });
 
     if (!order) {
@@ -58,24 +60,24 @@ export async function POST(req: NextRequest) {
 
     // Generate a unique receipt ID
     const receiptId = `receipt_${Date.now()}_${orderId.substring(0, 8)}`;
-    
+
     // Create Razorpay order using fetch to their API
     const razorpayResponse = await fetch('https://api.razorpay.com/v1/orders', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${Buffer.from(`${razorpayKeyId}:${razorpayKeySecret}`).toString('base64')}`
+        Authorization: `Basic ${Buffer.from(`${razorpayKeyId}:${razorpayKeySecret}`).toString('base64')}`,
       },
       body: JSON.stringify({
         amount: Math.round(parseFloat(amount.toString()) * 100), // Convert to paise
         currency,
         receipt: receiptId,
         notes: {
-          orderId: orderId
-        }
-      })
+          orderId: orderId,
+        },
+      }),
     });
-    
+
     if (!razorpayResponse.ok) {
       const errorData = await razorpayResponse.json();
       console.error(`[Razorpay] API error:`, errorData);
@@ -84,10 +86,10 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-    
+
     const razorpayData = await razorpayResponse.json();
     const razorpayOrderId = razorpayData.id;
-    
+
     if (!razorpayOrderId) {
       console.error('[Razorpay] No order ID returned from Razorpay');
       return NextResponse.json(
@@ -95,7 +97,7 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-    
+
     console.log(`[Razorpay] Created Razorpay order: ${razorpayOrderId}`);
 
     // Create a payment record in the database
@@ -113,7 +115,7 @@ export async function POST(req: NextRequest) {
           initiatedAt: new Date().toISOString(),
           paymentMethod: paymentMethod,
           razorpayReceiptId: receiptId,
-          initialOrderStatus: mapPaymentStatusToOrderStatus('PENDING', 'RAZORPAY')
+          initialOrderStatus: mapPaymentStatusToOrderStatus('PENDING', 'RAZORPAY'),
         },
       },
     });
@@ -135,7 +137,9 @@ export async function POST(req: NextRequest) {
         contact: order.user?.phoneNumber || order.address?.phoneNumber || '',
       },
       notes: {
-        address: order.address ? `${order.address.addressLine1}, ${order.address.city}` : 'Not provided',
+        address: order.address
+          ? `${order.address.addressLine1}, ${order.address.city}`
+          : 'Not provided',
         orderId: orderId,
         paymentMethod: paymentMethod,
       },

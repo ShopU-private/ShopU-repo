@@ -24,12 +24,13 @@ export function validateCartItems(cartItems: CartItem[]): boolean {
 
   return cartItems.every(item => {
     // Validate each item has either product or medicine reference
-    const hasValidRef = (item.product?.id || item.medicine?.id || item.productId || item.medicineId);
+    const hasValidRef = item.product?.id || item.medicine?.id || item.productId || item.medicineId;
     // Validate quantity
-    const hasValidQuantity = item.quantity && typeof item.quantity === 'number' && item.quantity > 0;
+    const hasValidQuantity =
+      item.quantity && typeof item.quantity === 'number' && item.quantity > 0;
     // Validate price exists somewhere
     const hasValidPrice = item.product?.price || item.medicine?.price;
-    
+
     return hasValidRef && hasValidQuantity && hasValidPrice;
   });
 }
@@ -40,13 +41,15 @@ export function validateCartItems(cartItems: CartItem[]): boolean {
  * @returns Normalized array of order items
  */
 export function prepareOrderItems(cartItems: CartItem[]) {
-  return cartItems.map(item => ({
-    productId: item.product?.id || item.productId || null,
-    medicineId: item.medicine?.id || item.medicineId || null,
-    quantity: item.quantity,
-    price: parseFloat((item.product?.price || item.medicine?.price || 0).toString()),
-    combinationId: item.combinationId || null
-  })).filter(item => (item.productId || item.medicineId) && item.quantity > 0);
+  return cartItems
+    .map(item => ({
+      productId: item.product?.id || item.productId || null,
+      medicineId: item.medicine?.id || item.medicineId || null,
+      quantity: item.quantity,
+      price: parseFloat((item.product?.price || item.medicine?.price || 0).toString()),
+      combinationId: item.combinationId || null,
+    }))
+    .filter(item => (item.productId || item.medicineId) && item.quantity > 0);
 }
 
 /**
