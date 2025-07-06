@@ -25,8 +25,6 @@ const Page = () => {
   // ✅ Fetch products from backend when category changes
   useEffect(() => {
     axios.get(`/product?category=${category}`).then(res => {
-      console.log(res.data);
-      
       setProducts(res.data); // full list of products
       setFiltered(res.data); // initially, filtered list is same
     });

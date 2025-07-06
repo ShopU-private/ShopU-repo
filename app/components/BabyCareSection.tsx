@@ -30,12 +30,12 @@ const BabyCareSection = () => {
 
   // Fetch medicines with "Baby-Care" type
   const { medicines, loading, error } = useMedicines({
-    type: 'Baby-Care',
+    type: 'allopathy',
     limit: 5,
   });
 
   const handleView = () => {
-    router.push('/product?category=Baby-Care'); // ✅ Change path as per your route
+    router.push('/product?category=allopathy'); // ✅ Change path as per your route
   };
 
   const toggleFavorite = (id: number | string) => {
