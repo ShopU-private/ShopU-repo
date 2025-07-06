@@ -55,7 +55,7 @@ const PersonalCareSection = () => {
 
   return (
     <section className="py-6 sm:py-8 bg-white">
-      <div className="container mx-auto px-4">
+      <div className="container max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg sm:text-xl font-bold text-gray-800">
             Personal <span className="text-gray-500">Care</span>
