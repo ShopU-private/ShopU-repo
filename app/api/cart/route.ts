@@ -17,40 +17,42 @@ export async function GET(req: NextRequest) {
     
     const userId = payload.id;
 
-    // Verify user exists
-    const userExists = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true }
-    });
-
-    if (!userExists) {
-      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
+    // Use cached headers to allow browser caching
+    const cacheControl = req.headers.get('Cache-Control');
+    if (cacheControl === 'no-cache') {
+      // This is a forced refresh, skip the cache check
+    } else {
+      // Generate an ETag based on user ID
+      const eTag = `"cart-${userId}"`;
+      const ifNoneMatch = req.headers.get('If-None-Match');
+      
+      // Check if client has a valid cached version
+      if (ifNoneMatch === eTag) {
+        return new NextResponse(null, { 
+          status: 304,  // Not Modified
+          headers: {
+            'ETag': eTag,
+            'Cache-Control': 'private, max-age=60'
+          }
+        });
+      }
     }
 
-    // Optimize the query by selecting only needed fields
+    // More optimized query with only necessary fields
     const cartItems = await prisma.cartItem.findMany({
       where: { userId },
-      include: {
+      select: {
+        id: true,
+        quantity: true,
+        productId: true,
+        medicineId: true,
+        addedAt: true,
         product: {
           select: {
             id: true,
             name: true,
             price: true,
             imageUrl: true,
-            variantTypes: {
-              include: {
-                values: true,
-              },
-            },
-            combinations: {
-              include: {
-                values: {
-                  include: {
-                    variantValue: true,
-                  },
-                },
-              },
-            },
           },
         },
         medicine: {
@@ -66,7 +68,18 @@ export async function GET(req: NextRequest) {
       orderBy: { addedAt: 'desc' },
     });
 
-    return NextResponse.json({ success: true, cartItems });
+    // Generate an ETag for caching
+    const eTag = `"cart-${userId}"`;
+    
+    return NextResponse.json(
+      { success: true, cartItems },
+      { 
+        headers: {
+          'ETag': eTag,
+          'Cache-Control': 'private, max-age=60'
+        }
+      }
+    );
   } catch (error) {
     console.error('[GET /api/cart]', error);
     return NextResponse.json(
@@ -164,7 +177,7 @@ export async function POST(req: NextRequest) {
           cartItem = await prisma.cartItem.create({
             data: {
               userId,
-              medicineId,  // Fixed: removed invalid syntax
+              medicineId,
               quantity,
             },
             include: { 

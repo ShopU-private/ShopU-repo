@@ -1,55 +1,68 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useCart } from '@/app/hooks/useCart';
-import { Loader, ChevronUp, ChevronDown, Trash2, X, ShoppingBag } from 'lucide-react';
-import Image from 'next/image';
+import { Loader, ChevronUp, X, ShoppingBag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLocation } from '../context/LocationContext';
+import dynamic from 'next/dynamic';
+export interface CartItem {
+  id: string;
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image: string;
+  storeId?: string;
+  storeName?: string;
+}
 
 interface CartModalProps {
   isOpen: boolean;
   onCloseAction: () => void;
 }
 
+// Lazy-load the CartItemList component
+const CartItemList = dynamic(() => import('./cart/CartItemList'), {
+  loading: () => (
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <Loader className="h-8 w-8 animate-spin text-teal-600" />
+        <p className="text-gray-500 text-sm">Loading your cart...</p>
+      </div>
+    </div>
+  )
+});
+
 export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
-  const { cartItems, isLoading, updateQuantity, removeItem } = useCart();
-  const [itemTotal, setItemTotal] = useState(0);
+  const { cartItems, isLoading, refreshCart, totals } = useCart();
   const [processingAction, setProcessingAction] = useState<{ [key: string]: string }>({});
   const router = useRouter();
   const { location } = useLocation();
-  const deliveryAddress = location ? `${location.address}, PIN: ${location.pincode}` : "Please set delivery location";
   
-  useEffect(() => {
-    const total = cartItems.reduce((sum, item) => {
-      const price = Number(item.product?.price || item.medicine?.price || 0);
-      return sum + price * item.quantity;
-    }, 0);
-    setItemTotal(total);
-  }, [cartItems]);
+  const deliveryAddress = useMemo(() => 
+    location ? `${location.address}, PIN: ${location.pincode}` : "Please set delivery location"
+  , [location]);
+
+  // Memoized item total to avoid recalculation
+  const itemTotal = useMemo(() => totals?.subtotal || 0, [totals]);
   
+  // Refresh cart data when modal is opened, using a ref to avoid unnecessary refreshes
   useEffect(() => {
-    const loadDefaultAddressFromStorage = () => {
-      try {
-        const stored = localStorage.getItem('userLocation');
-
-        if (!stored) {
-          console.log('No userLocation found in localStorage');
-          return;
-        }
-
-        const parsed = JSON.parse(stored);
-        console.log('Loaded location from localStorage:', parsed);
-      } catch (error) {
-        console.error('Error reading userLocation from localStorage:', error);
-      }
-    };
-
+    let mounted = true;
+    
     if (isOpen) {
-      loadDefaultAddressFromStorage();
+      // Use a slight delay to prioritize UI rendering first
+      const timer = setTimeout(() => {
+        if (mounted) refreshCart();
+      }, 100);
+      return () => {
+        clearTimeout(timer);
+        mounted = false;
+      };
     }
-  }, [isOpen]);
-
+  }, [isOpen, refreshCart]);
+  
   useEffect(() => {
     const handleCloseCartModal = () => {
       onCloseAction();
@@ -62,20 +75,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
     };
   }, [onCloseAction]);
 
-  const handleUpdateQuantity = async (id: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setProcessingAction((prev) => ({ ...prev, [id]: 'update' }));
-    await updateQuantity(id, newQuantity);
-    setProcessingAction((prev) => ({ ...prev, [id]: '' }));
-  };
-
-  const handleRemoveItem = async (id: string) => {
-    setProcessingAction((prev) => ({ ...prev, [id]: 'remove' }));
-    await removeItem(id);
-    setProcessingAction((prev) => ({ ...prev, [id]: '' }));
-  };
-
-  const handleProceedToCheckout = (e: React.MouseEvent) => {
+  const handleProceedToCheckout = useCallback((e: React.MouseEvent) => {
     // Stop event propagation to prevent modal closing
     e.preventDefault();
     e.stopPropagation();
@@ -83,11 +83,109 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
     // Close the cart modal
     onCloseAction();
     // Navigate to checkout page
-      router.push('/checkout');
-   
-  };
+    router.push('/checkout');
+  }, [onCloseAction, router]);
   
   if (!isOpen) return null;
+
+  const renderCartContent = () => {
+    if (isLoading && cartItems.length === 0) {
+      return (
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <Loader className="h-8 w-8 animate-spin text-teal-600" />
+            <p className="text-gray-500 text-sm">Loading your cart...</p>
+          </div>
+        </div>
+      );
+    }
+    
+    if (cartItems.length === 0) {
+      return (
+        <div className="min-h-[50vh] px-4 sm:px-6 py-8">
+          <div className="flex flex-col items-center justify-center py-8 sm:py-12">
+            <div className="mb-6 rounded-full bg-teal-50 p-6 sm:p-8">
+              <ShoppingBag className="h-12 w-12 sm:h-16 sm:w-16 text-teal-400" />
+            </div>
+            <h2 className="mb-2 text-xl sm:text-2xl font-semibold text-gray-800">Your cart is empty</h2>
+            <p className="mb-6 text-center text-gray-500 text-sm sm:text-base px-4">
+              Looks like you haven&apos;t added any items to your cart yet.
+            </p>
+            <button
+              onClick={onCloseAction}
+              className="rounded-xl bg-teal-600 px-6 py-3 text-white font-medium transition-all hover:bg-teal-700 active:scale-95"
+            >
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="space-y-0">
+        <CartItemList 
+          cartItems={cartItems} 
+          processingAction={processingAction}
+          setProcessingAction={setProcessingAction}
+        />
+
+        {/* Bill Details */}
+        <div className="bg-white border-t border-gray-200">
+          <div className="bg-teal-50 px-4 py-3 border-b border-teal-100">
+            <h2 className="text-base font-semibold text-teal-800">Bill Details</h2>
+          </div>
+          <div className="p-4 space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Item Total:</span>
+              <span className="font-medium">₹{itemTotal.toFixed(0)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Shipping:</span>
+              <span className="text-teal-600 font-medium">Free</span>
+            </div>
+            <div className="flex justify-between pt-3 border-t border-gray-100">
+              <span className="font-semibold">Total:</span>
+              <span className="font-bold text-lg text-teal-600">₹{itemTotal.toFixed(0)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Cancellation Policy */}
+        <div className="bg-white border-t border-gray-200">
+          <div className="bg-gray-50 px-4 py-3 border-b border-gray-100">
+            <h2 className="text-base font-semibold text-gray-800">Cancellation Policy</h2>
+          </div>
+          <div className="p-4 text-xs sm:text-sm text-gray-600 space-y-2">
+            <p>Orders cannot be cancelled once packed for delivery.</p>
+            <p>In case of unexpected delays, a refund will be provided, if applicable.</p>
+          </div>
+        </div>
+
+        {/* Delivery Address */}
+        <div className="bg-white border-t border-gray-200">
+          <div className="p-4 flex justify-between items-start gap-3">
+            <div className="flex items-start gap-2">
+              <div className="w-4 h-4 rounded-full border-2 border-teal-500 flex-shrink-0 mt-1"></div>
+              <div>
+                <p className="text-sm font-medium text-gray-900 mb-1">Delivery Address</p>
+                <p className="text-xs text-gray-600">{deliveryAddress}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                onCloseAction();
+                router.push('/');
+              }}
+              className="text-teal-600 hover:text-teal-700 px-3 py-1 text-sm font-medium rounded-lg hover:bg-teal-50 transition-colors flex-shrink-0"
+            >
+              Change
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
   
   return (
     <div className="animate-fadeIn fixed inset-0 z-50 flex items-start justify-end bg-black/40 backdrop-blur-sm">
@@ -115,158 +213,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
         {/* Content */}
         <div className="flex flex-col h-[calc(100vh-80px)]">
           <div className="flex-1 overflow-y-auto">
-            {isLoading ? (
-              <div className="flex min-h-[50vh] items-center justify-center">
-                <div className="flex flex-col items-center gap-3">
-                  <Loader className="h-8 w-8 animate-spin text-teal-600" />
-                  <p className="text-gray-500 text-sm">Loading your cart...</p>
-                </div>
-              </div>
-            ) : cartItems.length === 0 ? (
-              <div className="min-h-[50vh] px-4 sm:px-6 py-8">
-                <div className="flex flex-col items-center justify-center py-8 sm:py-12">
-                  <div className="mb-6 rounded-full bg-teal-50 p-6 sm:p-8">
-                    <ShoppingBag className="h-12 w-12 sm:h-16 sm:w-16 text-teal-400" />
-                  </div>
-                  <h2 className="mb-2 text-xl sm:text-2xl font-semibold text-gray-800">Your cart is empty</h2>
-                  <p className="mb-6 text-center text-gray-500 text-sm sm:text-base px-4">
-                    Looks like you haven&apos;t added any items to your cart yet.
-                  </p>
-                  <button
-                    onClick={onCloseAction}
-                    className="rounded-xl bg-teal-600 px-6 py-3 text-white font-medium transition-all hover:bg-teal-700 active:scale-95"
-                  >
-                    Continue Shopping
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-0">
-                {/* Cart Items */}
-                <div className="bg-white">
-                  {cartItems.map((item) => {
-                    const price = Number(item.product?.price || item.medicine?.price || 0);
-                    const name = item.product?.name || item.medicine?.name || 'Unknown Item';
-                    const imageUrl = item.product?.imageUrl;
-
-                    return (
-                      <div key={item.id} className="p-4 flex items-center gap-3 border-b border-gray-100">
-                        {/* Product Image */}
-                        <div className="h-12 w-12 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
-                          {imageUrl ? (
-                            <Image
-                              src={imageUrl}
-                              alt={name}
-                              width={48}
-                              height={48}
-                              className="h-full w-full object-contain"
-                            />
-                          ) : (
-                            <div className="h-full w-full bg-gray-100 flex items-center justify-center">
-                              <ShoppingBag className="h-4 w-4 text-gray-400" />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Product Details */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-normal text-gray-800 line-clamp-2 mb-1">{name}</h3>
-                          <p className="text-sm text-teal-600 font-medium">₹{price.toFixed(0)}</p>
-                        </div>
-
-                        {/* Quantity Controls */}
-                        <div className="flex items-center border border-gray-300 rounded">
-                          <button
-                            className="text-gray-400 hover:text-teal-600 transition-colors p-1 hover:bg-teal-50"
-                            onClick={() => handleUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                            disabled={item.quantity <= 1 || processingAction[item.id] === 'update'}
-                          >
-                            <ChevronDown size={14} />
-                          </button>
-                          <span className="text-sm px-3 py-1 min-w-[2rem] text-center border-l border-r border-gray-300">
-                            {String(item.quantity).padStart(2, '0')}
-                          </span>
-                          <button
-                            className="text-gray-400 hover:text-teal-600 transition-colors p-1 hover:bg-teal-50"
-                            onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                            disabled={processingAction[item.id] === 'update'}
-                          >
-                            <ChevronUp size={14} />
-                          </button>
-                        </div>
-
-                        {/* Remove Button */}
-                        <button 
-                          onClick={() => handleRemoveItem(item.id)} 
-                          className="text-red-400 hover:text-red-600 transition-colors p-2 rounded-full hover:bg-red-50"
-                          disabled={processingAction[item.id] === 'remove'}
-                        >
-                          {processingAction[item.id] === 'remove' ? (
-                            <Loader className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Bill Details */}
-                <div className="bg-white border-t border-gray-200">
-                  <div className="bg-teal-50 px-4 py-3 border-b border-teal-100">
-                    <h2 className="text-base font-semibold text-teal-800">Bill Details</h2>
-                  </div>
-                  <div className="p-4 space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Item Total:</span>
-                      <span className="font-medium">₹{itemTotal.toFixed(0)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Shipping:</span>
-                      <span className="text-teal-600 font-medium">Free</span>
-                    </div>
-                    <div className="flex justify-between pt-3 border-t border-gray-100">
-                      <span className="font-semibold">Total:</span>
-                      <span className="font-bold text-lg text-teal-600">₹{itemTotal.toFixed(0)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Cancellation Policy */}
-                <div className="bg-white border-t border-gray-200">
-                  <div className="bg-gray-50 px-4 py-3 border-b border-gray-100">
-                    <h2 className="text-base font-semibold text-gray-800">Cancellation Policy</h2>
-                  </div>
-                  <div className="p-4 text-xs sm:text-sm text-gray-600 space-y-2">
-                    <p>Orders cannot be cancelled once packed for delivery.</p>
-                    <p>In case of unexpected delays, a refund will be provided, if applicable.</p>
-                  </div>
-                </div>
-
-                {/* Delivery Address */}
-                <div className="bg-white border-t border-gray-200">
-                  <div className="p-4 flex justify-between items-start gap-3">
-                    <div className="flex items-start gap-2">
-                      <div className="w-4 h-4 rounded-full border-2 border-teal-500 flex-shrink-0 mt-1"></div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 mb-1">Delivery Address</p>
-                        <p className="text-xs text-gray-600">{deliveryAddress}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        onCloseAction();
-                        router.push('/');
-                      }}
-                      className="text-teal-600 hover:text-teal-700 px-3 py-1 text-sm font-medium rounded-lg hover:bg-teal-50 transition-colors flex-shrink-0"
-                    >
-                      Change
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+            {renderCartContent()}
           </div>
 
           {/* Footer - Checkout Button */}
