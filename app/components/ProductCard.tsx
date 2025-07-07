@@ -50,9 +50,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
         >
           <Heart
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${
-              isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'
-            }`}
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'
+              }`}
           />
         </button>
       </div>
@@ -74,11 +73,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-3 h-3 sm:w-4 sm:h-4 ${
-                  i < Math.floor(product.rating)
+                className={`w-3 h-3 sm:w-4 sm:h-4 ${i < Math.floor(product.rating)
                     ? 'text-yellow-400 fill-current'
                     : 'text-gray-300'
-                }`}
+                  }`}
               />
             ))}
           </div>
@@ -96,8 +94,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </span>
               {product.originalPrice && (
                 <span className="text-xs sm:text-sm text-gray-500 line-through">
-                  ₹{product.originalPrice}
+                  ₹{String(product.originalPrice).slice(0, 5)}
                 </span>
+
               )}
             </div>
           </div>
@@ -105,7 +104,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <button
             onClick={() => onAddToCart(product)}
             disabled={isAdding}
-            className="bg-teal-600 text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-1 group"
+            className="bg-[#317C80] text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-1 group"
           >
             {isAdding ? (
               <span>Adding...</span>

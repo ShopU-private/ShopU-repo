@@ -72,7 +72,7 @@ const ChatBot: React.FC = () => {
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center rounded-full bg-teal-600 p-4 text-white shadow-lg transition-all duration-200 hover:bg-teal-700"
+        className="flex items-center justify-center rounded-full bg-[#317C80] p-4 text-white shadow-lg transition-all duration-200 hover:bg-teal-700"
       >
         {isOpen ? (
           <svg

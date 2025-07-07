@@ -3,18 +3,23 @@ import React from 'react';
 interface HealthCategory {
   id: string;
   name: string;
-  icon: React.ReactNode; 
+  icon: React.ReactNode;
 }
 
 interface Props {
   title?: string;
+  title1?: string;
   healthCategories: HealthCategory[];
 }
 
-const HealthCategoryGrid: React.FC<Props> = ({ title = "Shop By Health Concerns", healthCategories }) => {
+const HealthCategoryGrid: React.FC<Props> = ({ title = "Shop By", title1 = " Health Condition", healthCategories }) => {
   return (
-    <section className="mb-8">
-      <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">{title}</h2>
+    <section className="mb-8 max-w-7xl mx-auto ">
+      <div className='w-60 mb-6'>
+        <h2 className="text-xl sm:text-xl font-semibold text-[#317C80]">{title} <span className="text-[#E93E40]">{title1}</span> </h2>
+        <hr className="bg-[#317C80] h-1 border-0 rounded mt-1" />
+      </div>
+
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3">
         {healthCategories.map((category) => (
           <button

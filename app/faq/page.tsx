@@ -2,8 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", subject: "", message: "" });
@@ -25,8 +23,6 @@ export default function ContactPage() {
   };
 
   return (
-    <div>
-      <Header/>
     <div className="flex flex-col lg:flex-row gap-8 p-6 lg:p-16 max-w-6xl mx-auto">
         
       <div className="flex-1">
@@ -98,7 +94,6 @@ export default function ContactPage() {
       </form>
       
     </div>
-    <Footer/>
-    </div>
+
   );
 }

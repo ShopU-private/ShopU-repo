@@ -99,18 +99,18 @@ export default function Searchbar() {
           value={searchQuery}
           onChange={e => handleSearch(e.target.value)}
           placeholder="Search essentials, groceries and more..."
-          className="w-full rounded-lg border border-gray-300 px-4 py-2 pl-10 focus:border-transparent focus:ring-2 focus:ring-teal-500 focus:outline-none"
+          className="w-full rounded-lg bg-gray-100 px-4 py-2 pl-10  focus:outline-none"
         />
         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
         {isSearching && (
           <div className="absolute top-1/2 right-3 -translate-y-1/2 transform">
-            <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-teal-500"></div>
+            <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-[#317C80]"></div>
           </div>
         )}
         {searchQuery && (
           <button
             onClick={clearSearch}
-            className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-gray-600"
+            className="absolute top-1/2 right-4 -translate-y-1/2 transform text-gray-600 hover:text-gray-600"
           >
             ✕
           </button>

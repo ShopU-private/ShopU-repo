@@ -26,7 +26,7 @@ const PersonalCareSection = () => {
   const { addItem } = useCart();
 
   // Fetch medicines filtered by personal care type
-  const {  medicines, loading, error } = useMedicines({
+  const { medicines, loading, error } = useMedicines({
     type: 'allopathy', // Filter by medicine type
     limit: 5,
   });
@@ -54,13 +54,13 @@ const PersonalCareSection = () => {
   };
 
   return (
-    <section className="py-6 sm:py-8 bg-white">
-      <div className="container mx-auto px-4">
+    <section className="py-6 sm:py-8 bg-gray-50">
+      <div className="container max-w-7xl mx-auto px-4 w-[90%]">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-800">
-            Personal <span className="text-gray-500">Care</span>
-          </h2>
-          <button className="text-sm text-teal-600 hover:underline font-medium">View All</button>
+          <h2 className="text-xl sm:text-xl font-semibold text-[#317C80] mb-4">Personal <span className="text-[#E93E40]">Care</span><hr className="bg-[#317C80] w-32 h-1 border-0 rounded mt-1" /> </h2>
+                  <button className="text-sm font-medium bg-[#317C80] text-white py-1 px-3 rounded cursor-pointer">
+          View All <span className="text-lg">{'>'}</span>
+        </button>
         </div>
 
         <div className="flex overflow-x-auto gap-4 sm:grid sm:grid-cols-3 lg:grid-cols-5 sm:overflow-visible pb-2">

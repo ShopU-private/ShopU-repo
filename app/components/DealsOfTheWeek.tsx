@@ -170,16 +170,16 @@ const DealOfTheWeek = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6 bg-white">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 bg-white w-[90%]">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 sm:gap-0">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <h2 className="text-xl sm:text-2xl font-semibold text-teal-700">Deal Of The Week</h2>
-          <div className="flex gap-2">
+                    <h2 className="text-2xl sm:text-2xl font-semibold text-[#317C80] text-center">Deal of <span className="text-[#E93E40]">The Week</span></h2>
+          <div className="flex gap-2 justify-center sm:justify-start">
             {['days', 'hours', 'minutes', 'seconds'].map((unit) => (
               <div
                 key={unit}
-                className="bg-teal-600 text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-medium text-center"
+                className="bg-[#E93E40] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-sm sm:text-sm font-medium text-center"
               >
                 <div className="text-base sm:text-lg font-bold">
                   {timeLeft[unit as keyof typeof timeLeft]}
