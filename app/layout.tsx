@@ -49,7 +49,7 @@
 //   );
 // }
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Karla } from 'next/font/google';
 import './globals.css';
 import { LocationProvider } from './context/LocationContext';
 import { CartModalProvider } from './context/CartModalContext';
@@ -68,6 +68,11 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const karla = Karla({
+  weight: '300', // or '500', '700', etc.
+  subsets: ['latin'], // specify subsets if needed
+});
+
 export const metadata: Metadata = {
   title: 'ShopU',
   description: 'Your one-stop shop for all your needs',
@@ -83,7 +88,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${karla.className} antialiased`}>
         <LocationProvider>
           <CartModalProvider>
             <Header />

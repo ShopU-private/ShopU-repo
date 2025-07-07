@@ -139,7 +139,7 @@ const ShopUSpecialOffers = () => {
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Special Medicines</h2>
-              <div className="w-16 sm:w-20 h-1 bg-gradient-to-r from-teal-500 to-teal-300 rounded-full"></div>
+              <hr className="bg-[#317C80] w-64 h-1 border-0 rounded mt-1" />
             </div>
             <div className="flex items-center space-x-2">
               <button

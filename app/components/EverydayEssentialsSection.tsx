@@ -51,14 +51,12 @@ const EverydayEssentialsSection = () => {
 
   return (
     <section className="py-6 sm:py-8 bg-white">
-      <div className="container max-w-7xl mx-auto px-4">
+      <div className="container max-w-7xl mx-auto px-4 w-[90%]">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-800">
-            Everyday <span className="text-gray-500">Essentials</span>
-          </h2>
-          <button className="text-sm text-teal-600 hover:underline font-medium">
-            View All
-          </button>
+          <h2 className="text-xl sm:text-xl font-semibold text-[#317C80] mb-4">Everyday <span className="text-[#E93E40]">Essentials</span><hr className="bg-[#317C80] w-48 h-1 border-0 rounded mt-1" /> </h2>
+                 <button className="text-sm font-medium bg-[#317C80] text-white py-1 px-3 rounded cursor-pointer">
+          View All <span className="text-lg">{'>'}</span>
+        </button>
         </div>
 
         <div className="flex overflow-x-auto gap-4 sm:grid sm:grid-cols-3 lg:grid-cols-5 sm:overflow-visible pb-2">
