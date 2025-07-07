@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
+import { useRouter } from 'next/navigation'; // ✅ FIXED: App Router wala import
 
 interface Product {
   id: number | string;
@@ -54,7 +55,6 @@ const BabyCareSection = () => {
   const handleAddToCart = async (product: Product) => {
     setAddingIds((prev) => [...prev, product.id]);
     try {
-      // Use medicineId instead of productId for medicines
       await addItem(null, product.id.toString(), 1);
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (error) {
