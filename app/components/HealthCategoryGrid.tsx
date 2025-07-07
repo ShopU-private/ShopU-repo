@@ -8,9 +8,11 @@ interface HealthCategory {
 
 interface Props {
   title?: string;
+  title1?: string;
   healthCategories: HealthCategory[];
 }
 
+<<<<<<< HEAD
 const HealthCategoryGrid: React.FC<Props> = ({
   title = 'Shop By Health Concerns',
   healthCategories,
@@ -20,6 +22,18 @@ const HealthCategoryGrid: React.FC<Props> = ({
       <h2 className="mb-4 text-lg font-bold text-gray-900 sm:text-xl">{title}</h2>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-7">
         {healthCategories.map(category => (
+=======
+const HealthCategoryGrid: React.FC<Props> = ({ title = "Shop By", title1 = " Health Condition", healthCategories }) => {
+  return (
+    <section className="mb-8 max-w-7xl mx-auto ">
+      <div className='w-60 mb-6'>
+        <h2 className="text-xl sm:text-xl font-semibold text-[#317C80]">{title} <span className="text-[#E93E40]">{title1}</span> </h2>
+        <hr className="bg-[#317C80] h-1 border-0 rounded mt-1" />
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3">
+        {healthCategories.map((category) => (
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
           <button
             key={category.id}
             className="group rounded-lg border bg-white p-2 shadow-sm transition-all duration-300 hover:border-teal-200 hover:shadow-md sm:p-3"

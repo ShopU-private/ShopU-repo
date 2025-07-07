@@ -10,6 +10,7 @@ const ShopUCarousel = () => {
   const slides = [
     {
       id: 1,
+<<<<<<< HEAD
       price: '₹165',
       title: 'Covid 19 pack',
       subtitle: 'Get it now 45% Off',
@@ -29,6 +30,21 @@ const ShopUCarousel = () => {
       subtitle: 'Complete care 25% Off',
       buttonText: 'Buy now',
     },
+=======
+      image: "/image4.png",
+      title: "Covid 19 pack",
+    },
+    {
+      id: 2,
+      image: "/image5.png",
+      title: "Health Pack",
+    },
+    {
+      id: 3,
+      image: "/image6.png",
+      title: "Wellness Bundle",
+    }
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
   ];
 
   const { addToCart } = useCart();
@@ -44,10 +60,17 @@ const ShopUCarousel = () => {
     return () => clearInterval(interval);
   }, [isAutoPlaying, slides.length]);
 
+<<<<<<< HEAD
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
     setIsAutoPlaying(false);
+=======
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index); // ✅ only this
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
   };
+
 
   const handleOrderNow = async () => {
     setIsOrderingNow(true);
@@ -56,7 +79,11 @@ const ShopUCarousel = () => {
       const currentProduct = slides[currentSlide];
       await addToCart({
         productId: `promo_${currentProduct.id}`,
+<<<<<<< HEAD
         quantity: 1,
+=======
+        quantity: 1
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
       });
       // Dispatch cart updated event
       window.dispatchEvent(new CustomEvent('cartUpdated'));
@@ -69,6 +96,7 @@ const ShopUCarousel = () => {
   };
 
   return (
+<<<<<<< HEAD
     <div className="mx-auto max-w-6xl space-y-4 p-2 sm:p-4">
       {/* Main Carousel */}
       <div className="flex flex-col gap-4 lg:flex-row">
@@ -106,6 +134,17 @@ const ShopUCarousel = () => {
                     <Camera className="h-4 w-4 text-white sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
                   </div>
                 </div>
+=======
+    <div className="max-w-7xl mx-auto p-2 sm:p-4 space-y-4 w-[90%] ">
+      {/* Main Carousel */}
+      <div className="flex flex-col lg:flex-row gap-4 py-4">
+        {/* Carousel Banner */}
+        <div className="flex-3 relative bg-gradient-to-br rounded-lg overflow-hidden min-h-[250px] sm:min-h-[300px]">
+          <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+            {slides.map((slide) => (
+              <div key={slide.id} className="min-w-full">
+                <img src={slide.image} alt={slide.title} className="max-h-100 w-full object-cover" />
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
               </div>
             ))}
           </div>
@@ -116,16 +155,27 @@ const ShopUCarousel = () => {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
+<<<<<<< HEAD
                 className={`h-2 w-2 rounded-full transition-all sm:h-3 sm:w-3 ${
                   index === currentSlide ? 'bg-white' : 'bg-white/50'
                 }`}
+=======
+                className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all ${index === currentSlide
+                  ? 'bg-white'
+                  : 'bg-white/50'
+                  }`}
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
               />
             ))}
           </div>
         </div>
 
         {/* Right Side Card */}
+<<<<<<< HEAD
         <div className="hidden min-h-[150px] flex-1 rounded-lg bg-gray-200 sm:block sm:min-h-[200px] lg:min-h-[300px]">
+=======
+        <div className="flex-1 bg-gray-200 rounded-xl min-h-[150px] sm:min-h-[200px] lg:min-h-[300px] hidden sm:block">
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
           {/* Empty placeholder matching original design */}
         </div>
       </div>

@@ -50,9 +50,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
           className="absolute top-2 right-2 rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50"
         >
           <Heart
+<<<<<<< HEAD
             className={`h-3 w-3 sm:h-4 sm:w-4 ${
               isFavorite ? 'fill-current text-red-500' : 'text-gray-400'
             }`}
+=======
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'
+              }`}
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
           />
         </button>
       </div>
@@ -74,9 +79,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
+<<<<<<< HEAD
                 className={`h-3 w-3 sm:h-4 sm:w-4 ${
                   i < Math.floor(product.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'
                 }`}
+=======
+                className={`w-3 h-3 sm:w-4 sm:h-4 ${i < Math.floor(product.rating)
+                    ? 'text-yellow-400 fill-current'
+                    : 'text-gray-300'
+                  }`}
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
               />
             ))}
           </div>
@@ -91,9 +103,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="flex items-center space-x-1 sm:space-x-2">
               <span className="text-base font-bold text-gray-900 sm:text-lg">₹{product.price}</span>
               {product.originalPrice && (
+<<<<<<< HEAD
                 <span className="text-xs text-gray-500 line-through sm:text-sm">
                   ₹{product.originalPrice}
+=======
+                <span className="text-xs sm:text-sm text-gray-500 line-through">
+                  ₹{String(product.originalPrice).slice(0, 5)}
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
                 </span>
+
               )}
             </div>
           </div>
@@ -101,7 +119,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <button
             onClick={() => onAddToCart(product)}
             disabled={isAdding}
+<<<<<<< HEAD
             className="group flex items-center space-x-1 rounded-lg bg-teal-600 px-3 py-1.5 text-white transition-colors hover:bg-teal-700 sm:px-4 sm:py-2"
+=======
+            className="bg-[#317C80] text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-1 group"
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
           >
             {isAdding ? (
               <span>Adding...</span>

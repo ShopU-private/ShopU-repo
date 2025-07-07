@@ -3,9 +3,15 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
+<<<<<<< HEAD
 import ProductCard from '../components/ProductView-Cards';
 import FilterSection from '../components/ProductFilter';
 import { ProductType } from '../types/ProductType';
+=======
+import ProductCard from '../components/ProductView-Card';
+import FilterSection from '../components/ProductFilter';
+import { ProductType } from '../types/ProductTypes';
+>>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
 
 const PRODUCTS_PER_PAGE = 12; // Each page will show 12 products
 
