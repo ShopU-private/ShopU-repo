@@ -32,13 +32,13 @@ const PersonalCareSection = () => {
   });
 
   const toggleFavorite = (productId: number) => {
-    setFavorites((prev) =>
-      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
+    setFavorites(prev =>
+      prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]
     );
   };
 
   const handleAddToCart = async (product: Product) => {
-    setAddingIds((prev) => [...prev, product.id]);
+    setAddingIds(prev => [...prev, product.id]);
 
     try {
       // Use medicineId instead of productId for medicines
@@ -48,7 +48,7 @@ const PersonalCareSection = () => {
       console.error('Error adding to cart:', error);
     } finally {
       setTimeout(() => {
-        setAddingIds((prev) => prev.filter((id) => id !== product.id));
+        setAddingIds(prev => prev.filter(id => id !== product.id));
       }, 1000);
     }
   };
@@ -63,24 +63,28 @@ const PersonalCareSection = () => {
         </button>
         </div>
 
-        <div className="flex overflow-x-auto gap-4 sm:grid sm:grid-cols-3 lg:grid-cols-5 sm:overflow-visible pb-2">
+        <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-5">
           {loading ? (
             // Loading skeleton
             Array(5)
               .fill(0)
               .map((_, i) => (
-                <div key={i} className="min-w-[180px] sm:min-w-0 animate-pulse">
-                  <div className="bg-gray-200 h-[200px] rounded-lg mb-2"></div>
-                  <div className="bg-gray-200 h-4 rounded w-3/4 mb-2"></div>
-                  <div className="bg-gray-200 h-4 rounded w-1/2"></div>
+                <div key={i} className="min-w-[180px] animate-pulse sm:min-w-0">
+                  <div className="mb-2 h-[200px] rounded-lg bg-gray-200"></div>
+                  <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
+                  <div className="h-4 w-1/2 rounded bg-gray-200"></div>
                 </div>
               ))
           ) : error ? (
-            <div className="text-center w-full py-4 text-red-500">Failed to load products. Please try again.</div>
+            <div className="w-full py-4 text-center text-red-500">
+              Failed to load products. Please try again.
+            </div>
           ) : medicines.length === 0 ? (
-            <div className="text-center w-full py-4 text-gray-500">No personal care medicines found.</div>
+            <div className="w-full py-4 text-center text-gray-500">
+              No personal care medicines found.
+            </div>
           ) : (
-            medicines.map((medicine) => (
+            medicines.map(medicine => (
               <div key={medicine.id} className="min-w-[180px] sm:min-w-0">
                 <ProductCard
                   product={{

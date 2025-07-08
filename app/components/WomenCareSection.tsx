@@ -50,6 +50,7 @@ const WomenCareSection = () => {
   };
 
   const handleAddToCart = async (product: Product) => {
+
     setAddingIds((prev) => [...prev, product.id]);
     try {
       await addItem(null, product.id.toString(), 1);
@@ -58,7 +59,7 @@ const WomenCareSection = () => {
       console.error('Error adding to cart:', error);
     } finally {
       setTimeout(() => {
-        setAddingIds((prev) => prev.filter((id) => id !== product.id));
+        setAddingIds(prev => prev.filter(id => id !== product.id));
       }, 1000);
     }
   };

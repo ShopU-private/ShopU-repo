@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string; itemId: string } }) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string; itemId: string } }
+) {
   try {
     if (!isAdmin(req)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -27,7 +30,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string; 
     }
 
     // Use transaction to update status and handle stock changes
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async tx => {
       // Update order item status
       const updated = await tx.orderItem.update({
         where: { id: orderItemId },
@@ -35,8 +38,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string; 
       });
 
       // Handle stock restoration for cancellations/returns
-      if (['CANCELLED', 'RETURNED'].includes(status) && 
-          !['CANCELLED', 'RETURNED'].includes(currentOrderItem.status)) {
+      if (
+        ['CANCELLED', 'RETURNED'].includes(status) &&
+        !['CANCELLED', 'RETURNED'].includes(currentOrderItem.status)
+      ) {
         if (currentOrderItem.combinationId) {
           await tx.productVariantCombination.update({
             where: { id: currentOrderItem.combinationId },

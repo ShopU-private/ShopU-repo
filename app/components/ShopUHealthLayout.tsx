@@ -33,7 +33,7 @@ const ShopUHealthComponent: React.FC = () => {
   ];
 
   const toggleFavorite = (id: number | string) => {
-    setFavorites((prev) => {
+    setFavorites(prev => {
       const updated = new Set(prev);
       if (updated.has(id)) {
         updated.delete(id);
@@ -84,13 +84,13 @@ const ShopUHealthComponent: React.FC = () => {
                 onClick={() => scroll('left')}
                 className="p-1.5 sm:p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
               <button
                 onClick={() => scroll('right')}
                 className="p-1.5 sm:p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             </div>
           </div>
@@ -107,17 +107,17 @@ const ShopUHealthComponent: React.FC = () => {
                 ))}
               </div>
             ) : error ? (
-              <div className="text-center py-8 text-red-500">
+              <div className="py-8 text-center text-red-500">
                 Failed to load medicines. Please try again.
               </div>
             ) : medicines.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">No medicines available.</div>
+              <div className="py-8 text-center text-gray-500">No medicines available.</div>
             ) : (
               <div
                 ref={scrollRef}
                 className="flex overflow-x-auto gap-4 no-scrollbar scroll-smooth px-1"
               >
-                {medicines.map((medicine) => (
+                {medicines.map(medicine => (
                   <div
                     key={medicine.id}
                     className="min-w-[240px] max-w-[240px] bg-white flex-shrink-0"

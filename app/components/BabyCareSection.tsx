@@ -5,6 +5,7 @@ import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useRouter } from 'next/navigation'; // ✅ FIXED: App Router wala import
+const router = useRouter();
 
 interface Product {
   id: number | string;
@@ -15,7 +16,7 @@ interface Product {
   rating: number;
   reviews: number;
   image?: string;
-  imageUrl?: string;
+  imgUrl?: string;
   category: string;
   manufacturerName?: string;
   packSizeLabel?: string;
@@ -26,6 +27,7 @@ const BabyCareSection = () => {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [addingIds, setAddingIds] = useState<(number | string)[]>([]);
   const { addItem } = useCart();
+
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -66,12 +68,19 @@ const BabyCareSection = () => {
     }
   };
 
+    const handleView = () => {
+    router.push('/product?category=allopathy'); // ✅ Change path as per your route
+  };
+
   return (
+
     <section className="px-4 sm:px-6 lg:px-4 py-6 max-w-7xl mx-auto w-[90%] ">
       {/* Section Header */}
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-xl sm:text-xl font-semibold text-[#317C80] mb-4">Baby <span className="text-[#E93E40]">Care</span><hr className="bg-[#317C80] w-24 h-1 border-0 rounded mt-1" /> </h2>
-        <button className="text-sm font-medium bg-[#317C80] text-white py-1 px-3 rounded cursor-pointer">
+        <button 
+        onClick={handleView}
+        className="text-sm font-medium bg-[#317C80] text-white py-1 px-3 rounded cursor-pointer">
           View All <span className="text-lg">{'>'}</span>
         </button>
       </div>

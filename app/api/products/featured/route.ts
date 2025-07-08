@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const limit = Number(searchParams.get('limit') || '5');
     const category = searchParams.get('category');
-    
+
     // Query to fetch featured products with higher discount or marked as featured
     const featuredProducts = await prisma.product.findMany({
       where: {
@@ -20,11 +20,11 @@ export async function GET(req: NextRequest) {
             category: {
               name: {
                 contains: category,
-                mode: 'insensitive'
-              }
-            }
-          }
-        })
+                mode: 'insensitive',
+              },
+            },
+          },
+        }),
       },
       include: {
         subCategory: {
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
       orderBy: [
         // Order by stock and price to get a good mix
         { stock: 'desc' },
-        { price: 'asc' }
+        { price: 'asc' },
       ],
       take: limit,
     });
@@ -47,18 +47,18 @@ export async function GET(req: NextRequest) {
       // Calculate a random discount between 10-50% for products without one
       const discount = Math.floor(Math.random() * 40) + 10;
       const originalPrice = Math.ceil(product.price * (100 / (100 - discount)));
-      
+
       return {
         ...product,
         discount,
         originalPrice,
-        featured: true
+        featured: true,
       };
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      products: productsWithDiscount 
+    return NextResponse.json({
+      success: true,
+      products: productsWithDiscount,
     });
   } catch (err) {
     console.error('[GET /api/products/featured]', err);

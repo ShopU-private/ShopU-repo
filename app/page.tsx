@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { searchEventEmitter } from './components/MedicineCard';
 import ShopUCarousel from './components/ShopUCarousel';
 import DealOfTheWeek from './components/DealsOfTheWeek';
-import SpecialOffer from './components/SpecialOffer';
+import ShopUSpecialOffers from './components/SpecialOffer';
 import BabyCareSection from './components/BabyCareSection';
 import WomenCareSection from './components/WomenCareSection';
 import BrandSection from './components/ShopByBrand';
@@ -40,7 +40,7 @@ export default function Home() {
       <ShopUCarousel />
       <HealthLayout />
       <DealOfTheWeek />
-      <SpecialOffer />
+      <ShopUSpecialOffers />
       <BabyCareSection />
       <BrandSection />
       <WomenCareSection />

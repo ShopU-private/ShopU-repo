@@ -26,9 +26,6 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ success: true, message: 'Cart cleared successfully' });
   } catch (error) {
     console.error('[DELETE /api/cart/clear]', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to clear cart' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to clear cart' }, { status: 500 });
   }
 }
