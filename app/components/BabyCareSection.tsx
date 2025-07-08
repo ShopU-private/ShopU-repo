@@ -5,7 +5,6 @@ import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useRouter } from 'next/navigation'; // ✅ FIXED: App Router wala import
-const router = useRouter();
 
 interface Product {
   id: number | string;
@@ -27,10 +26,10 @@ const BabyCareSection = () => {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [addingIds, setAddingIds] = useState<(number | string)[]>([]);
   const { addItem } = useCart();
-
-
+  
+  
   const scrollRef = useRef<HTMLDivElement>(null);
-
+  
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({
@@ -39,7 +38,7 @@ const BabyCareSection = () => {
       });
     }
   };
-
+  
   // Fetch medicine with "baby care" type
   const { medicines, loading, error } = useMedicines({
     type: 'allopathy', // Filter by medicine type
@@ -51,10 +50,10 @@ const BabyCareSection = () => {
       prev.includes(productId)
         ? prev.filter((id) => id !== productId)
         : [...prev, productId]
-    );
-  };
-
-  const handleAddToCart = async (product: Product) => {
+      );
+    };
+    
+    const handleAddToCart = async (product: Product) => {
     setAddingIds((prev) => [...prev, product.id]);
     try {
       await addItem(null, product.id.toString(), 1);
@@ -67,7 +66,8 @@ const BabyCareSection = () => {
       }, 1000);
     }
   };
-
+  
+    const router = useRouter();
     const handleView = () => {
     router.push('/product?category=allopathy'); // ✅ Change path as per your route
   };
