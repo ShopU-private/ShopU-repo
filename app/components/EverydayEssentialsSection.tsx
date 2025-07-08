@@ -48,15 +48,7 @@ const EverydayEssentialsSection = () => {
   };
 
   return (
-<<<<<<< HEAD
-    <section className="bg-white py-6 sm:py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-800 sm:text-xl">
-            Everyday <span className="text-gray-500">Essentials</span>
-          </h2>
-          <button className="text-sm font-medium text-teal-600 hover:underline">View All</button>
-=======
+
     <section className="py-6 sm:py-8 bg-white">
       <div className="container max-w-7xl mx-auto px-4 w-[90%]">
         <div className="flex justify-between items-center mb-4">
@@ -64,7 +56,6 @@ const EverydayEssentialsSection = () => {
                  <button className="text-sm font-medium bg-[#317C80] text-white py-1 px-3 rounded cursor-pointer">
           View All <span className="text-lg">{'>'}</span>
         </button>
->>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
         </div>
 
         <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-5">

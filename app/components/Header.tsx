@@ -500,16 +500,8 @@ const Header = () => {
             )}
 
             {/* Shopping Cart */}
-<<<<<<< HEAD
-            <button
-              onClick={openCartModal}
-              className="relative rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 hover:text-teal-600"
-            >
-              <ShoppingCart className="h-6 w-6" />
-=======
             <button onClick={openCartModal} className="relative rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 hover:text-teal-600">
               <ShoppingCart className="h-6 w-6 text-[#317C80]" />
->>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
               {isLoadingCart ? (
                 <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
                   <Loader className="h-3 w-3 animate-spin text-teal-600" />

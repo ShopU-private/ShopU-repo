@@ -3,17 +3,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
-<<<<<<< HEAD
-import ProductCard from '../components/ProductView-Cards';
-import FilterSection from '../components/ProductFilter';
-import { ProductType } from '../types/ProductType';
-=======
 import ProductCard from '../components/ProductView-Card';
 import FilterSection from '../components/ProductFilter';
 import { ProductType } from '../types/ProductTypes';
->>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
 
-const PRODUCTS_PER_PAGE = 12; // Each page will show 12 products
+const PRODUCTS_PER_PAGE = 16; // Each page will show 12 products
 
 const Page = () => {
   const [products, setProducts] = useState<ProductType[]>([]);
@@ -28,7 +22,7 @@ const Page = () => {
   const searchParams = useSearchParams();
   const category = searchParams.get('category'); //
 
-  // ✅ Fetch products from backend when category changes
+  // Fetch products from backend when category changes
   useEffect(() => {
     axios.get(`/product?category=${category}`).then(res => {
       setProducts(res.data); // full list of products
@@ -36,7 +30,7 @@ const Page = () => {
     });
   }, [category]);
 
-  // ✅ Handle brand/skinType checkbox filters
+  //  Handle brand/skinType checkbox filters
   const handleFilterChange = (type: string, value: string) => {
     const updated = { ...filters };
     const list = updated[type as keyof typeof filters];
@@ -47,7 +41,7 @@ const Page = () => {
 
     setFilters(updated);
 
-    // ✅ Apply filters to products
+    //  Apply filters to products
     let data = [...products];
     Object.keys(updated).forEach(key => {
       const values = updated[key as keyof typeof filters];
@@ -60,7 +54,7 @@ const Page = () => {
     setCurrentPage(1); // reset to page 1
   };
 
-  // ✅ Apply sorting (Low-High or High-Low)
+  //  Apply sorting (Low-High or High-Low)
   const sortedData = () => {
     let data = [...filtered];
     if (sort === 'low-to-high') {
@@ -71,15 +65,16 @@ const Page = () => {
     return data;
   };
 
-  // ✅ Paginate the filtered and sorted data
+  //  Paginate the filtered and sorted data
   const paginated = sortedData().slice(
     (currentPage - 1) * PRODUCTS_PER_PAGE,
     currentPage * PRODUCTS_PER_PAGE
   );
 
-  const totalPages = Math.ceil(filtered.length / PRODUCTS_PER_PAGE);
+  const MAX_PAGES = 10;
+  const totalPages = Math.min(Math.ceil(filtered.length/PRODUCTS_PER_PAGE), MAX_PAGES);
 
-  // ✅ Smart pagination UI (with dots "...")
+  // pagination UI
   const Pagination = ({
     currentPage,
     totalPages,
@@ -92,7 +87,7 @@ const Page = () => {
     const getPages = () => {
       const pages = [];
 
-      if (totalPages <= 7) {
+      if (totalPages <= 2) {
         for (let i = 1; i <= totalPages; i++) pages.push(i);
       } else {
         if (currentPage <= 4) {
@@ -116,7 +111,7 @@ const Page = () => {
     };
 
     return (
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+      <div className="flex justify-center mt-6 gap-4">
         <button
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
@@ -157,61 +152,92 @@ const Page = () => {
   };
 
   return (
-    <div className="flex flex-col p-4 md:flex-row">
-      {/* === Sidebar: Filters === */}
-      <div className="mt-12 mb-4 w-full md:mb-0 md:w-1/4 md:pr-6">
-        <div className="rounded border bg-white p-4 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold">Filter By</h2>
-
-          <FilterSection
-            title="Brand"
-            options={['Nivea', 'Himalaya', 'Pampers']}
-            type="brand"
-            selected={filters.brand}
-            onChange={handleFilterChange}
-          />
-
-          <FilterSection
-            title="Skin Type"
-            options={['Oily', 'Dry', 'Normal']}
-            type="skinType"
-            selected={filters.skinType}
-            onChange={handleFilterChange}
-          />
-        </div>
+    <div className="container mx-auto p-4 md:p-6">
+      <div className="flex flex-col md:flex-row">
+        {/* === Sidebar: Filters === */}
+        <div className="mt-14 mb-4 w-full md:mb-0 md:w-1/4 md:pr-6">
+  <div className="rounded border bg-white p-4 shadow-sm">
+    {/* Price Range */}
+    <div className="mb-4">
+      <label className="block text-lg font-medium mb-1">Price Range</label>
+      <div className="flex items-center gap-2">
+        <input type="number" placeholder="Min" className="border px-2 py-1 w-20 rounded text-lg" />
+        <span>-</span>
+        <input type="number" placeholder="Max" className="border px-2 py-1 w-20 rounded text-lg" />
+        <button className="bg-[#317C80] text-white text-lg px-2 py-1 rounded">Go</button>
       </div>
+    </div>
 
-      {/* === Product Cards + Sorting + Pagination === */}
-      <div className="w-full md:w-3/4">
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-gray-600">
-            You searched for: <b>{category}</b>
-          </p>
-          <select
-            className="rounded border px-2 py-1 text-sm"
-            onChange={e => setSort(e.target.value)}
-          >
-            <option value="">Default Sorting</option>
-            <option value="low-to-high">Price: Low to High</option>
-            <option value="high-to-low">Price: High to Low</option>
-          </select>
+    {/*  Category Filters */}
+    <div className="mb-4">
+      <h2 className="text-lg font-bold text-[#317C80] mb-1">Categories</h2>
+      {[
+        "Diapering",
+        "Baby Bath",
+        "Baby Food",
+        "Wipes",
+        "Baby Hair Care",
+        "Baby Skin Care",
+        "Baby Food By Age"
+      ].map((cat, i) => (
+        <div key={i} className="flex items-center justify-between cursor-pointer py-1 border-b">
+          <span className="text-lg">{cat}</span>
+          <span className='text-[20px]'>+</span>
         </div>
+      ))}
+    </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-          {paginated.map(item => (
-            <ProductCard key={item._id} item={item} />
-          ))}
+    {/*  Filters by Brand and Skin Type */}
+    <h2 className="mb-2 text-lg font-bold text-[#317C80]">Filter By</h2>
+    <FilterSection
+      title="Brand"
+      options={['Nivea', 'Himalaya', 'Pampers']}
+      type="brand"
+      selected={filters.brand}
+      onChange={handleFilterChange}
+    />
+    <FilterSection
+      title="Skin Type"
+      options={['Oily', 'Dry', 'Normal']}
+      type="skinType"
+      selected={filters.skinType}
+      onChange={handleFilterChange}
+    />
+  </div>
+</div>
+
+        {/* === Product Cards + Sorting + Pagination === */}
+        <div className="w-full md:w-3/4">
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-gray-600">
+              You searched for: <b>{category}</b>
+            </p>
+            <select
+              className="rounded border px-4 py-2 text-lg"
+              onChange={e => setSort(e.target.value)}
+            >
+              <option value="">Default Sorting</option>
+              <option value="low-to-high">Price: Low to High</option>
+              <option value="high-to-low">Price: High to Low</option>
+            </select>
+          </div>
+
+          {/* Product Grid */}
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
+            {paginated.map(item => (
+              <ProductCard key={item._id} item={item} />
+            ))}
+          </div>
+
+          {/* Pagination UI */}
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </div>
-
-        {/* Pagination UI */}
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        )}
       </div>
     </div>
   );

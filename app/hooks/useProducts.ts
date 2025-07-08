@@ -8,8 +8,10 @@ interface Medicine {
   price: number;
   originalPrice?: number;
   discount?: number;
+  imageUrl?: string;
   rating?: number;
   reviews?: number;
+  subtitle?: string;
   manufacturerName?: string;
   packSizeLabel?: string;
   type?: string;

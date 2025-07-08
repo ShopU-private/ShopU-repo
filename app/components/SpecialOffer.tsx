@@ -133,25 +133,14 @@ const ShopUSpecialOffers = () => {
   }
 
   return (
-<<<<<<< HEAD
-    <div className="min-h-screen bg-gray-50">
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-=======
+
     <div className="min-h-xl bg-gray-50">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 w-[90%]">
->>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
         <div className="mb-8 sm:mb-12">
           <div className="mb-6 flex items-center justify-between sm:mb-8">
             <div>
-<<<<<<< HEAD
-              <h2 className="mb-2 text-2xl font-bold text-gray-800 sm:text-3xl">
-                Special Medicines
-              </h2>
-              <div className="h-1 w-16 rounded-full bg-gradient-to-r from-teal-500 to-teal-300 sm:w-20"></div>
-=======
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Special Medicines</h2>
               <hr className="bg-[#317C80] w-64 h-1 border-0 rounded mt-1" />
->>>>>>> f6a1dc91063cebddc87d89c36f350f5a8279f26f
             </div>
             <div className="flex items-center space-x-2">
               <button
