@@ -39,15 +39,12 @@ export interface RazorpayVerificationParams {
 
 /**
  * Maps a payment provider's status to an internal order status.
- * 
+ *
  * @param paymentStatus - Status received from payment gateway
  * @param provider - Payment provider name (e.g., 'razorpay', 'stripe')
  * @returns Internal order status ('PENDING', 'CONFIRMED', 'PAYMENT_FAILED', etc.)
  */
-export function mapPaymentStatusToOrderStatus(
-  paymentStatus: string,
-  provider: string
-): string {
+export function mapPaymentStatusToOrderStatus(paymentStatus: string, provider: string): string {
   const successStatuses = ['COMPLETED', 'SUCCESS', 'PAID', 'CAPTURED'];
   const failedStatuses = ['FAILED', 'FAILURE', 'DECLINED', 'CANCELLED'];
 
@@ -68,7 +65,7 @@ export function mapPaymentStatusToOrderStatus(
 
 /**
  * Verifies the Razorpay signature to ensure the request is genuine.
- * 
+ *
  * @param params - The verification parameters
  * @returns True if signature is valid, else false
  */
@@ -76,15 +73,12 @@ export function verifyRazorpaySignature({
   orderId,
   paymentId,
   signature,
-  secret
+  secret,
 }: RazorpayVerificationParams): boolean {
   if (!secret || !signature) return false;
 
   const payload = `${orderId}|${paymentId}`;
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
+  const expectedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
 
   return expectedSignature === signature;
 }
@@ -92,7 +86,7 @@ export function verifyRazorpaySignature({
 /**
  * Formats raw payment object for client/frontend use.
  * Removes sensitive fields.
- * 
+ *
  * @param payment - Raw payment object
  * @returns Formatted payment object or null
  */
@@ -116,7 +110,7 @@ export function formatPaymentForClient(payment: Payment) {
 
 /**
  * Validates payment amount against order amount to prevent tampering
- * 
+ *
  * @param paymentAmount - Amount from the payment provider
  * @param orderAmount - Expected amount from the order
  * @param tolerance - Acceptable difference (default: 0)
@@ -133,19 +127,19 @@ export function validatePaymentAmount(
 
 /**
  * Checks if Razorpay configuration is valid
- * 
+ *
  * @returns Boolean indicating if the configuration is valid
  */
 export function isRazorpayConfigValid(): boolean {
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
-  
+
   return Boolean(keyId && keySecret && keyId.length > 0 && keySecret.length > 0);
 }
 
 /**
  * Creates Razorpay compatible amount (converts to paise)
- * 
+ *
  * @param amount - Amount in rupees
  * @returns Amount in paise as an integer
  */

@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+'use client';
+
+import React, { useState, useRef } from 'react';
 import { useCart } from '../hooks/useCart';
 import ProductCard from '../components/ProductCard';
 import HealthCategoryGrid from '../components/HealthCategoryGrid';
@@ -13,9 +14,9 @@ interface HealthCategory {
 
 const ShopUHealthComponent: React.FC = () => {
   const [favorites, setFavorites] = useState<Set<number | string>>(new Set());
-  const { addItem } = useCart();
   const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { addItem } = useCart();
 
   // Fetch medicines for the Super Saver section
   const { medicines, loading, error } = useMedicines({
@@ -32,8 +33,17 @@ const ShopUHealthComponent: React.FC = () => {
     { id: 'liver', name: 'Liver Care', icon: '🫀' },
   ];
 
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -460 : 460,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   const toggleFavorite = (id: number | string) => {
-    setFavorites((prev) => {
+    setFavorites(prev => {
       const updated = new Set(prev);
       if (updated.has(id)) {
         updated.delete(id);
@@ -56,49 +66,35 @@ const ShopUHealthComponent: React.FC = () => {
     }
   };
 
-  const scroll = (direction: 'left' | 'right') => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const scrollAmount = 260; // Adjust based on card size + gap
-    container.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
-      behavior: 'smooth',
-    });
-  };
-
   return (
-    <div className="min-h-xl bg-gray-50">
+    <section className="min-h-xl">
       <div className="max-w-7xl mx-auto px-4 py-6 w-[90%]">
         {/* ✅ Health Category Section */}
         <HealthCategoryGrid healthCategories={healthCategories} />
 
         {/* ✅ Super Saver Section */}
-        <section className="mx-auto py-4">
-          <div className="flex items-center justify-between mb-4 sm:mb-8">
+        <div className="mx-auto py-4">
+          <div className="flex items-center justify-between mb-4 sm:mb-4">
             <div>
-              <h2 className="text-xl sm:text-xl font-semibold text-[#317C80] ">Super Saver <span className="text-[#E93E40]">Up to 50% off</span><hr className="bg-[#317C80] h-1 border-0 rounded mt-1" /> </h2>
-              
+              <h2 className="text-xl sm:text-xl font-semibold text-primaryColor">Super Saver <span className="text-secondaryColor">Up to 50% off</span><hr className="bg-background1 h-1 border-0 rounded mt-1" /> </h2>
             </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => scroll('left')}
-                className="p-1.5 sm:p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-              <button
-                onClick={() => scroll('right')}
-                className="p-1.5 sm:p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
-              >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-            </div>
+            <button className="text-sm font-medium bg-background1 text-white py-1 px-3 rounded cursor-pointer">
+              View All <span className="text-lg">{'>'}</span>
+            </button>
           </div>
 
           <div className="relative">
+            <button
+              onClick={() => scroll('left')}
+              className="absolute left-[-15px] top-1/2 transform -translate-y-1/2 z-10 bg-background1 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-md"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
             {loading ? (
               <div className="flex gap-4 overflow-x-auto no-scrollbar px-1">
-                {[...Array(4)].map((_, index) => (
+                {[...Array(5)].map((_, index) => (
                   <div key={index} className="min-w-[240px] animate-pulse">
                     <div className="bg-gray-200 h-52 rounded-lg mb-2"></div>
                     <div className="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
@@ -107,20 +103,20 @@ const ShopUHealthComponent: React.FC = () => {
                 ))}
               </div>
             ) : error ? (
-              <div className="text-center py-8 text-red-500">
+              <div className="text-center py-8 text-secondaryColor">
                 Failed to load medicines. Please try again.
               </div>
             ) : medicines.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">No medicines available.</div>
+              <div className="py-8 text-center text-gray-500">No medicines available.</div>
             ) : (
               <div
                 ref={scrollRef}
-                className="flex overflow-x-auto gap-4 no-scrollbar scroll-smooth px-1"
+                className="flex overflow-x-auto gap-5 no-scrollbar scroll-smooth py-4"
               >
-                {medicines.map((medicine) => (
+                {medicines.map(medicine => (
                   <div
                     key={medicine.id}
-                    className="min-w-[240px] max-w-[240px] bg-white flex-shrink-0"
+                    className="min-w-[210px] max-w-[210px]"
                   >
                     <ProductCard
                       product={{
@@ -131,7 +127,7 @@ const ShopUHealthComponent: React.FC = () => {
                         discount: medicine.discount || 20,
                         rating: medicine.rating || 4.5,
                         reviews: medicine.reviews || 100,
-                        image: '/medicine-placeholder.jpg',
+                        image: medicine.imageUrl || '/medicine-placeholder.jpg',
                         category: medicine.type || 'Medicine',
                         subtitle: medicine.manufacturerName,
                       }}
@@ -144,10 +140,19 @@ const ShopUHealthComponent: React.FC = () => {
                 ))}
               </div>
             )}
+            {/* Right Scroll Button */}
+            <button
+              onClick={() => scroll('right')}
+              className="absolute right-[-15px] top-1/2 transform -translate-y-1/2 z-10 bg-background1 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-md"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
-        </section>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

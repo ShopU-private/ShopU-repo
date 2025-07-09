@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 
 interface Medicine {
+  imageUrl: string;
   id: string;
   name: string;
   price: number;
@@ -10,6 +11,7 @@ interface Medicine {
   discount?: number;
   rating?: number;
   reviews?: number;
+  subtitle?: string;
   manufacturerName?: string;
   packSizeLabel?: string;
   type?: string;
@@ -65,6 +67,7 @@ export function useMedicines(options: UseMedicinesOptions = {}) {
           rating: 4.5,
           reviews: 10,
           category: medicine.type || 'Medicine',
+          imageUrl: ''
         })) || [];
 
         setMedicines(transformed);

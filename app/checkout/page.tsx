@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useCart } from '@/app/hooks/useCart';
 import { Loader } from 'lucide-react';
 import Link from 'next/link';
-import { useLocation } from '../context/LocationContext'; 
+import { useLocation } from '../context/LocationContext';
 import { useRouter } from 'next/navigation';
 import { logCheckoutEvent, validateAddressId } from '@/lib/checkout-utils';
 
@@ -38,16 +38,18 @@ export default function CheckoutPage() {
         addressesFromContext = [location.address as Address];
       } else if (typeof location.address === 'string') {
         // Create a normalized address object with required fields for API
-        addressesFromContext = [{
-          id: 'temp-address-id', // We'll replace this on the backend
-          fullName: 'Delivery Address',
-          addressLine1: location.address,
-          city: location.city || 'Unknown',
-          state: location.state || 'Unknown',
-          postalCode: location.pincode || '503301',
-          phoneNumber: '9999999999',
-          isDefault: true
-        }];
+        addressesFromContext = [
+          {
+            id: 'temp-address-id', // We'll replace this on the backend
+            fullName: 'Delivery Address',
+            addressLine1: location.address,
+            city: location.city || 'Unknown',
+            state: location.state || 'Unknown',
+            postalCode: location.pincode || '503301',
+            phoneNumber: '9999999999',
+            isDefault: true,
+          },
+        ];
       }
     }
 
@@ -75,7 +77,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     const total = cartItems.reduce((sum, item) => {
       const itemPrice = item.product?.price || item.medicine?.price || 0;
-      return sum + (itemPrice * item.quantity);
+      return sum + itemPrice * item.quantity;
     }, 0);
     setSubtotal(total);
   }, [cartItems]);
@@ -133,24 +135,21 @@ export default function CheckoutPage() {
       <div className="mx-auto max-w-4xl">
         <h1 className="mb-6 text-2xl font-bold text-gray-800">Checkout</h1>
 
-        <div className="rounded-lg bg-white p-6 shadow-md mb-6">
+        <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
           <h2 className="mb-4 text-lg font-semibold">Delivery Address</h2>
           {addresses.length === 0 ? (
-            <div className="text-center py-4">
+            <div className="py-4 text-center">
               <p className="mb-3 text-gray-600">No saved addresses found.</p>
-              <Link 
-                href="/account/addresses"
-                className="text-teal-600 hover:underline"
-              >
+              <Link href="/account/addresses" className="text-teal-600 hover:underline">
                 Add a new address
               </Link>
             </div>
           ) : (
             <div className="space-y-3">
               {addresses.map(address => (
-                <div 
-                  key={address.id} 
-                  className={`border rounded-lg p-3 cursor-pointer ${selectedAddressId === address.id ? 'border-teal-600 bg-teal-50' : 'border-gray-200 hover:border-gray-300'}`}
+                <div
+                  key={address.id}
+                  className={`cursor-pointer rounded-lg border p-3 ${selectedAddressId === address.id ? 'border-teal-600 bg-teal-50' : 'border-gray-200 hover:border-gray-300'}`}
                   onClick={() => setSelectedAddressId(address.id)}
                 >
                   <div className="flex items-start">
@@ -171,7 +170,7 @@ export default function CheckoutPage() {
                       </p>
                       <p className="text-sm text-gray-600">{address.phoneNumber}</p>
                       {address.isDefault && (
-                        <span className="inline-block mt-1 text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded">
+                        <span className="mt-1 inline-block rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-800">
                           Default
                         </span>
                       )}
@@ -185,7 +184,7 @@ export default function CheckoutPage() {
 
         <div className="rounded-lg bg-white p-6 shadow-md">
           <h2 className="mb-4 text-lg font-semibold">Your Order Summary</h2>
-          <div className="space-y-1 mb-6">
+          <div className="mb-6 space-y-1">
             <div className="flex justify-between text-sm">
               <span>Items ({cartItems.reduce((sum, item) => sum + item.quantity, 0)})</span>
               <span>₹{subtotal.toFixed(2)}</span>
@@ -194,13 +193,13 @@ export default function CheckoutPage() {
               <span>Shipping</span>
               <span>{subtotal > 500 ? 'Free' : '₹40.00'}</span>
             </div>
-            <div className="border-t mt-2 pt-2 flex justify-between font-medium">
+            <div className="mt-2 flex justify-between border-t pt-2 font-medium">
               <span>Total</span>
               <span>₹{(subtotal + (subtotal > 500 ? 0 : 40)).toFixed(2)}</span>
             </div>
           </div>
 
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <div className="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
             <p className="text-yellow-800">
               Please review your order details before proceeding to payment.
             </p>
@@ -214,7 +213,7 @@ export default function CheckoutPage() {
               Continue Shopping
             </Link>
             <button
-              className={`rounded-lg ${!selectedAddressId || addresses.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'} px-6 py-2 text-white`}
+              className={`rounded-lg ${!selectedAddressId || addresses.length === 0 ? 'cursor-not-allowed bg-gray-400' : 'bg-teal-600 hover:bg-teal-700'} px-6 py-2 text-white`}
               onClick={handleProceedToPayment}
               disabled={!selectedAddressId || addresses.length === 0}
             >

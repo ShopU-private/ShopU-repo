@@ -32,7 +32,7 @@ const ShopUCarousel = () => {
     if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setCurrentSlide(prev => (prev + 1) % slides.length);
     }, 4000);
 
     return () => clearInterval(interval);
@@ -78,7 +78,7 @@ const ShopUCarousel = () => {
           </div>
 
           {/* Dot Indicators */}
-          <div className="absolute bottom-3 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 transform space-x-2 sm:bottom-4">
             {slides.map((_, index) => (
               <button
                 key={index}
@@ -99,17 +99,19 @@ const ShopUCarousel = () => {
       </div>
 
       {/* WhatsApp Banner */}
-      <div className="bg-white rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-sm border gap-3 sm:gap-0">
+      <div className="flex flex-col items-start justify-between gap-3 rounded-lg border bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:gap-0 sm:p-4">
         <div className="flex items-center space-x-3 sm:space-x-4">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-            <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500 sm:h-12 sm:w-12">
+            <MessageCircle className="h-5 w-5 text-white sm:h-6 sm:w-6" />
           </div>
-          <span className="text-gray-800 font-medium text-sm sm:text-base">Claim 5% Off on WhatsApp</span>
+          <span className="text-sm font-medium text-gray-800 sm:text-base">
+            Claim 5% Off on WhatsApp
+          </span>
         </div>
         <button
           onClick={handleOrderNow}
           disabled={isOrderingNow}
-          className="bg-teal-600 hover:bg-teal-700 text-white px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm transition-colors w-full sm:w-auto"
+          className="w-full rounded-lg bg-teal-600 px-4 py-2 text-xs text-white transition-colors hover:bg-teal-700 sm:w-auto sm:px-6 sm:text-sm"
         >
           {isOrderingNow ? 'Adding...' : 'Order now →'}
         </button>

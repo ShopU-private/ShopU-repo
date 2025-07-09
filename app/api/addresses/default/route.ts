@@ -34,10 +34,10 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ success: true, address: anyAddress });
       }
 
-      return NextResponse.json({ 
-        success: false, 
+      return NextResponse.json({
+        success: false,
         error: 'No address found for this user',
-        address: null 
+        address: null,
       });
     }
 

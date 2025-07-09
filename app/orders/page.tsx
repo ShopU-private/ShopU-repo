@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -147,14 +147,18 @@ export default function OrdersPage() {
       <h1 className="mb-8 text-2xl font-bold text-gray-900 sm:text-3xl">My Orders</h1>
 
       <div className="space-y-8">
-        {orders.map((order) => (
-          <div key={order._id} className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow">
+        {orders.map(order => (
+          <div
+            key={order._id}
+            className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow"
+          >
             {/* Order Header */}
             <div className="border-b border-gray-200 bg-gray-50 px-4 py-4 sm:px-6">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-sm text-gray-500">
-                    Order placed on <span className="font-medium">{formatDate(order.createdAt)}</span>
+                    Order placed on{' '}
+                    <span className="font-medium">{formatDate(order.createdAt)}</span>
                   </p>
                   <p className="text-xs text-gray-500">Order ID: {order._id}</p>
                 </div>
@@ -176,9 +180,8 @@ export default function OrdersPage() {
 
             {/* Order Items */}
             <div className="divide-y divide-gray-200">
-              {
-             (order.items ?? []).slice(0, 2).map((item, idx) => (
-               <div key={idx} className="flex items-center px-4 py-4 sm:px-6">
+              {(order.items ?? []).slice(0, 2).map((item, idx) => (
+                <div key={idx} className="flex items-center px-4 py-4 sm:px-6">
                   <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 bg-gray-100">
                     {item.image ? (
                       <div className="relative h-full w-full">
@@ -197,8 +200,8 @@ export default function OrdersPage() {
                     )}
                   </div>
 
-                  <div className="flex-1 min-w-0 ml-4">
-                    <h4 className="text-sm font-medium text-gray-900 line-clamp-1">{item.name}</h4>
+                  <div className="ml-4 min-w-0 flex-1">
+                    <h4 className="line-clamp-1 text-sm font-medium text-gray-900">{item.name}</h4>
                     <p className="mt-1 text-xs text-gray-500">Qty: {item.quantity}</p>
                   </div>
 
@@ -210,7 +213,7 @@ export default function OrdersPage() {
 
               {(order.items?.length ?? 0) > 2 && (
                 <div className="bg-gray-50 px-4 py-3 text-center text-sm text-gray-500">
-                  + {((order.items?.length ?? 0) - 2)} more item(s)
+                  + {(order.items?.length ?? 0) - 2} more item(s)
                 </div>
               )}
             </div>
@@ -219,7 +222,8 @@ export default function OrdersPage() {
             <div className="border-t border-gray-200 bg-gray-50 px-4 py-3 sm:px-6">
               <div className="flex justify-between">
                 <p className="text-sm text-gray-700">
-                  <span className="font-medium">Payment Method:</span> {order.paymentMethod ?? 'N/A'}
+                  <span className="font-medium">Payment Method:</span>{' '}
+                  {order.paymentMethod ?? 'N/A'}
                 </p>
                 <p className="text-sm font-medium text-gray-900">
                   Total: ₹{Number(order.totalAmount ?? 0).toFixed(2)}

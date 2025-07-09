@@ -1,16 +1,16 @@
 // app/api/contact/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { NextRequest, NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 
 export async function POST(req: NextRequest) {
   const { name, subject, message } = await req.json();
 
   if (!name || !subject || !message) {
-    return NextResponse.json({ success: false, error: "Missing fields" }, { status: 400 });
+    return NextResponse.json({ success: false, error: 'Missing fields' }, { status: 400 });
   }
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: 'gmail',
     auth: {
       user: process.env.SMTP_USER, // your Gmail address
       pass: process.env.SMTP_PASS, // your Gmail App Password (not your real password)
@@ -33,6 +33,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ success: false, error: "Email failed" }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Email failed' }, { status: 500 });
   }
 }

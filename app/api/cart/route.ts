@@ -14,59 +14,72 @@ export async function GET(req: NextRequest) {
     if (!payload || !payload.id) {
       return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 401 });
     }
-    
+
     const userId = payload.id;
 
-    // Verify user exists
-    const userExists = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true }
-    });
+    // Use cached headers to allow browser caching
+    const cacheControl = req.headers.get('Cache-Control');
+    if (cacheControl === 'no-cache') {
+      // This is a forced refresh, skip the cache check
+    } else {
+      // Generate an ETag based on user ID
+      const eTag = `"cart-${userId}"`;
+      const ifNoneMatch = req.headers.get('If-None-Match');
 
-    if (!userExists) {
-      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
+      // Check if client has a valid cached version
+      if (ifNoneMatch === eTag) {
+        return new NextResponse(null, {
+          status: 304, // Not Modified
+          headers: {
+            ETag: eTag,
+            'Cache-Control': 'private, max-age=60',
+          },
+        });
+      }
     }
 
-    // Optimize the query by selecting only needed fields
+    // More optimized query with only necessary fields
     const cartItems = await prisma.cartItem.findMany({
       where: { userId },
-      include: {
+      select: {
+        id: true,
+        quantity: true,
+        productId: true,
+        medicineId: true,
+        addedAt: true,
         product: {
           select: {
             id: true,
             name: true,
             price: true,
             imageUrl: true,
-            variantTypes: {
-              include: {
-                values: true,
-              },
-            },
-            combinations: {
-              include: {
-                values: {
-                  include: {
-                    variantValue: true,
-                  },
-                },
-              },
-            },
           },
         },
         medicine: {
           select: {
             id: true,
-            name: true, 
+            name: true,
             price: true,
             manufacturerName: true,
-            packSizeLabel: true
-          }
+            packSizeLabel: true,
+          },
         },
       },
       orderBy: { addedAt: 'desc' },
     });
 
-    return NextResponse.json({ success: true, cartItems });
+    // Generate an ETag for caching
+    const eTag = `"cart-${userId}"`;
+
+    return NextResponse.json(
+      { success: true, cartItems },
+      {
+        headers: {
+          ETag: eTag,
+          'Cache-Control': 'private, max-age=60',
+        },
+      }
+    );
   } catch (error) {
     console.error('[GET /api/cart]', error);
     return NextResponse.json(
@@ -88,19 +101,19 @@ export async function POST(req: NextRequest) {
     if (!payload || !payload.id) {
       return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 401 });
     }
-    
+
     const userId = payload.id;
-    
+
     // Verify user exists
     const userExists = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true }
+      select: { id: true },
     });
 
     if (!userExists) {
       return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
-    
+
     const { productId, medicineId, quantity = 1 } = await req.json();
 
     if (!productId && !medicineId) {
@@ -123,7 +136,7 @@ export async function POST(req: NextRequest) {
         // First check if the medicine exists without a transaction
         const medicineExists = await prisma.medicine.findUnique({
           where: { id: medicineId },
-          select: { id: true }
+          select: { id: true },
         });
 
         if (!medicineExists) {
@@ -147,16 +160,16 @@ export async function POST(req: NextRequest) {
           cartItem = await prisma.cartItem.update({
             where: { id: existingCartItem.id },
             data: { quantity: existingCartItem.quantity + quantity },
-            include: { 
+            include: {
               medicine: {
                 select: {
                   id: true,
                   name: true,
                   price: true,
                   manufacturerName: true,
-                  packSizeLabel: true
-                }
-              } 
+                  packSizeLabel: true,
+                },
+              },
             },
           });
         } else {
@@ -164,19 +177,19 @@ export async function POST(req: NextRequest) {
           cartItem = await prisma.cartItem.create({
             data: {
               userId,
-              medicineId,  // Fixed: removed invalid syntax
+              medicineId,
               quantity,
             },
-            include: { 
+            include: {
               medicine: {
                 select: {
                   id: true,
                   name: true,
                   price: true,
                   manufacturerName: true,
-                  packSizeLabel: true
-                }
-              } 
+                  packSizeLabel: true,
+                },
+              },
             },
           });
         }
@@ -200,14 +213,11 @@ export async function POST(req: NextRequest) {
         // Check if the product exists without a transaction
         const productExists = await prisma.product.findUnique({
           where: { id: productId },
-          select: { id: true }
+          select: { id: true },
         });
 
         if (!productExists) {
-          return NextResponse.json(
-            { success: false, error: 'Product not found' },
-            { status: 404 }
-          );
+          return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
         }
 
         // Check if product is already in cart
@@ -224,15 +234,15 @@ export async function POST(req: NextRequest) {
           cartItem = await prisma.cartItem.update({
             where: { id: existingCartItem.id },
             data: { quantity: existingCartItem.quantity + quantity },
-            include: { 
+            include: {
               product: {
                 select: {
                   id: true,
                   name: true,
                   price: true,
-                  imageUrl: true
-                }
-              } 
+                  imageUrl: true,
+                },
+              },
             },
           });
         } else {
@@ -243,15 +253,15 @@ export async function POST(req: NextRequest) {
               productId,
               quantity,
             },
-            include: { 
+            include: {
               product: {
                 select: {
                   id: true,
                   name: true,
                   price: true,
-                  imageUrl: true
-                }
-              } 
+                  imageUrl: true,
+                },
+              },
             },
           });
         }
@@ -271,9 +281,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('[POST /api/cart] General error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart';
-    return NextResponse.json(
-      { success: false, error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }

@@ -3,18 +3,20 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface LocationType {
-  address: string | {
-    id: string;
-    fullName: string;
-    addressLine1: string;
-    addressLine2?: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    pincode?: string;
-    phoneNumber: string;
-    isDefault: boolean;
-  };
+  address:
+    | string
+    | {
+        id: string;
+        fullName: string;
+        addressLine1: string;
+        addressLine2?: string;
+        city: string;
+        state: string;
+        postalCode: string;
+        pincode?: string;
+        phoneNumber: string;
+        isDefault: boolean;
+      };
   city?: string;
   state?: string;
   pincode?: string;
@@ -116,7 +118,7 @@ export const LocationProvider = ({ children }: LocationProviderProps) => {
         setLocationError,
         addressId,
         setAddressId,
-        setFullAddress
+        setFullAddress,
       }}
     >
       {children}

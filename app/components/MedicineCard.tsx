@@ -14,7 +14,6 @@ interface MedicineCardProps {
   medicine: Medicine;
 }
 
-
 const MedicineCard: React.FC<MedicineCardProps> = ({ medicine }) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
@@ -38,7 +37,7 @@ const MedicineCard: React.FC<MedicineCardProps> = ({ medicine }) => {
         setIsAdded(true);
         // Emit cart update event
         window.dispatchEvent(new CustomEvent('cartUpdated'));
-        
+
         // Reset the "Added" state after 2 seconds
         setTimeout(() => setIsAdded(false), 2000);
       } else {
@@ -61,17 +60,16 @@ const MedicineCard: React.FC<MedicineCardProps> = ({ medicine }) => {
       <h3 className="mb-2 text-lg font-semibold text-gray-800">{medicine.name}</h3>
       <p className="mb-3 line-clamp-2 text-sm text-gray-600">{medicine.description}</p>
       <div className="flex items-center justify-between">
-        <span className="text-xl font-bold text-teal-600">₹{medicine.price}</span>
-        <button 
+        <span className="text-xl font-bold text-primaryColor">₹{medicine.price}</span>
+        <button
           onClick={addToCart}
           disabled={isAddingToCart}
-          className={`rounded-md px-4 py-2 text-white transition-colors ${
-            isAdded 
-              ? 'bg-green-600 hover:bg-green-700' 
-              : isAddingToCart 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-teal-600 hover:bg-teal-700'
-          }`}
+          className={`rounded-md px-4 py-2 text-white transition-colors ${isAdded
+              ? 'bg-green-600 hover:bg-green-700'
+              : isAddingToCart
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-background1 hover:bg-teal-700'
+            }`}
         >
           {isAddingToCart ? 'Adding...' : isAdded ? 'Added!' : 'Add to Cart'}
         </button>
