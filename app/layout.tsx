@@ -69,8 +69,8 @@ const geistMono = Geist_Mono({
 });
 
 const karla = Karla({
-  weight: '300', // or '500', '700', etc.
-  subsets: ['latin'], // specify subsets if needed
+  weight: '400',
+  subsets: ['latin'], 
 });
 
 export const metadata: Metadata = {
@@ -92,7 +92,9 @@ export default function RootLayout({
         <LocationProvider>
           <CartModalProvider>
             <Header />
-            <main className="min-h-[calc(100vh-200px)]">{children}</main>
+            <main className="min-h-[calc(100vh-200px)] bg-background"> 
+              {children}
+            </main>
             <Footer />
             <CartModalWrapper />
           </CartModalProvider>

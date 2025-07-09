@@ -38,3 +38,43 @@
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+:root {
+  --background: #F8F8F8;
+  --primaryColor: #317C80;
+  --secondaryColor: #E93E40;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-primaryColor: var(--primaryColor);
+  --color-secondaryColor: var(--secondaryColor);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #F8F8F8;
+    --primaryColor: #317C80;
+    --secondaryColor: #E93E40;
+  }
+}
+
+.bg-background {
+  background-color: var(--background);
+}
+
+.bg-background1 {
+  background-color: var(--primaryColor);
+}
+
+.bg-background2 {
+  background-color: var(--secondaryColor);
+}
+
+.text-primaryColor {
+  color: var(--primaryColor);
+}
+
+.text-secondaryColor {
+  color: var(--secondaryColor);
+}

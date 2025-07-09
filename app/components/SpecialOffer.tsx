@@ -86,8 +86,8 @@ const ShopUSpecialOffers = () => {
   }, []);
 
   // Removed nextSlide and prevSlide functions as currentSlide is not used
-  const nextSlide = () => {};
-  const prevSlide = () => {};
+  const nextSlide = () => { };
+  const prevSlide = () => { };
 
   const handleAddToCart = async (offerId: string) => {
     try {
@@ -100,8 +100,8 @@ const ShopUSpecialOffers = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="mx-auto max-w-6xl px-4">
+      <section className="min-h-screen  py-8">
+        <div className="max-w-6xl mx-auto px-4">
           <div className="animate-pulse">
             <div className="mb-6 flex items-center justify-between">
               <div className="space-y-2">
@@ -120,7 +120,7 @@ const ShopUSpecialOffers = () => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -133,14 +133,14 @@ const ShopUSpecialOffers = () => {
   }
 
   return (
-
-    <div className="min-h-xl bg-gray-50">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 w-[90%]">
+    <section className="min-h-xl">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-8 w-[90%]">
         <div className="mb-8 sm:mb-12">
           <div className="mb-6 flex items-center justify-between sm:mb-8">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Special Medicines</h2>
-              <hr className="bg-[#317C80] w-64 h-1 border-0 rounded mt-1" />
+              <h2 className="text-2xl sm:text-2xl font-bold text-primaryColor mb-2">Special
+                <span className='text-secondaryColor'> Offer</span></h2>
+              <hr className="bg-background1 w-40 h-1 border-0 rounded mt-1" />
             </div>
             <div className="flex items-center space-x-2">
               <button
@@ -208,7 +208,7 @@ const ShopUSpecialOffers = () => {
           </div>
         </div>
       </main>
-    </div>
+    </section>
   );
 };
 
@@ -226,9 +226,8 @@ const OfferCard = ({
   return (
     <div
       onClick={onClick}
-      className={`relative transform cursor-pointer overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${
-        selected ? 'ring-opacity-50 ring-2 ring-teal-400' : ''
-      }`}
+      className={`relative bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${selected ? 'ring-2 ring-teal-400 ring-opacity-50' : ''
+        }`}
     >
       {offer.discount && (
         <div className="absolute top-3 right-3 z-10 rounded-full bg-gradient-to-r from-red-500 to-red-400 px-2 py-1 text-xs font-bold text-white">
@@ -259,9 +258,8 @@ const OfferCard = ({
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-3 w-3 ${
-                    i < Math.floor(offer.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'
-                  }`}
+                  className={`w-3 h-3 ${i < Math.floor(offer.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                    }`}
                 />
               ))}
             </div>
@@ -276,7 +274,7 @@ const OfferCard = ({
             e.stopPropagation();
             onAddToCart();
           }}
-          className="group mt-4 flex w-full items-center justify-center space-x-1 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 py-2 text-sm font-semibold text-white transition-all duration-200 hover:from-teal-700 hover:to-teal-600"
+          className="w-full mt-4 bg-gradient-to-r from-primaryColor to-teal-600 text-white py-2 rounded-lg text-sm font-semibold hover:from-primaryColor hover:to-teal-600 transition-all duration-200 flex items-center justify-center space-x-1 group"
         >
           <span>Add to Cart</span>
           <svg
