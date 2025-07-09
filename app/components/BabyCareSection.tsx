@@ -4,23 +4,6 @@ import React, { useState, useRef } from 'react';
 import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
-// ✅ FIXED: App Router wala import
-
-interface Product {
-  id: number | string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  discount?: number;
-  rating: number;
-  reviews: number;
-  image?: string;
-  imageUrl?: string;
-  category: string;
-  manufacturerName?: string;
-  packSizeLabel?: string;
-  subtitle?: string;
-}
 
 const BabyCareSection = () => {
   const [favorites, setFavorites] = useState<Set<number | string>>(new Set());

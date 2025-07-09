@@ -39,7 +39,7 @@ export default function OrderSuccessPage() {
       <div className="mx-auto max-w-2xl">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <Loader className="h-12 w-12 animate-spin text-teal-600 mb-4" />
+            <Loader className="mb-4 h-12 w-12 animate-spin text-teal-600" />
             <h2 className="text-xl font-semibold text-gray-700">Verifying your payment...</h2>
             <p className="mt-2 text-gray-500">Please wait while we confirm your order.</p>
           </div>
@@ -51,18 +51,18 @@ export default function OrderSuccessPage() {
               </div>
               <h1 className="mb-2 text-2xl font-bold text-gray-800">Order Placed Successfully!</h1>
               <p className="mb-6 text-center text-gray-600">
-                {paymentMethod === 'cod' 
-                  ? 'Your order has been placed. We will deliver it to your doorstep soon!' 
+                {paymentMethod === 'cod'
+                  ? 'Your order has been placed. We will deliver it to your doorstep soon!'
                   : 'Your payment was successful and your order has been placed.'}
               </p>
-              
+
               {orderId && (
                 <div className="mb-6 w-full rounded-lg bg-gray-50 p-4 text-center">
                   <p className="text-sm text-gray-500">Order Reference</p>
                   <p className="font-mono font-medium text-gray-800">{orderId}</p>
                 </div>
               )}
-              
+
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-6 py-3 text-white transition-all hover:bg-teal-700"

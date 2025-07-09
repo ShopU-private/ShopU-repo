@@ -14,7 +14,6 @@ interface MedicineCardProps {
   medicine: Medicine;
 }
 
-
 const MedicineCard: React.FC<MedicineCardProps> = ({ medicine }) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isAdded, setIsAdded] = useState(false);

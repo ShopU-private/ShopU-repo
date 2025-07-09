@@ -43,7 +43,7 @@ const ShopUHealthComponent: React.FC = () => {
   };
 
   const toggleFavorite = (id: number | string) => {
-    setFavorites((prev) => {
+    setFavorites(prev => {
       const updated = new Set(prev);
       if (updated.has(id)) {
         updated.delete(id);
@@ -107,13 +107,13 @@ const ShopUHealthComponent: React.FC = () => {
                 Failed to load medicines. Please try again.
               </div>
             ) : medicines.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">No medicines available.</div>
+              <div className="py-8 text-center text-gray-500">No medicines available.</div>
             ) : (
               <div
                 ref={scrollRef}
                 className="flex overflow-x-auto gap-5 no-scrollbar scroll-smooth py-4"
               >
-                {medicines.map((medicine) => (
+                {medicines.map(medicine => (
                   <div
                     key={medicine.id}
                     className="min-w-[210px] max-w-[210px]"

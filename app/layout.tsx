@@ -21,7 +21,7 @@
 //   title: 'ShopU',
 //   description: 'Your one-stop shop for all your needs',
 //   icons: {
-//     icon: '/Shop U Logo-02.jpg', 
+//     icon: '/Shop U Logo-02.jpg',
 //   },
 // };
 
@@ -92,7 +92,7 @@ export default function RootLayout({
         <LocationProvider>
           <CartModalProvider>
             <Header />
-            <main className="min-h-[calc(100vh-200px)] "> 
+            <main className="min-h-[calc(100vh-200px)] bg-background"> 
               {children}
             </main>
             <Footer />

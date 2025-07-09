@@ -32,7 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group flex flex-col h-88 p-2 gap-8">
       {/* Product Image */}
-      <div className="relative w-full h-32 sm:h-40">
+      <div className="relative h-32 w-full sm:h-40">
         <Image
           src={product.image}
           alt={product.name}
@@ -41,7 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           className="object-cover group-hover:scale-105 transition-transform duration-300 p-4 "
         />
         {product.discount && (
-          <div className="absolute top-2 left-2 bg-red-600 text-white px-1.5 py-0.5 rounded text-xs font-medium">
+          <div className="absolute top-2 left-2 rounded bg-red-600 px-1.5 py-0.5 text-xs font-medium text-white">
             {product.discount}% OFF
           </div>
         )}
@@ -76,7 +76,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Price & Add Button */}
-        <div className="flex items-center justify-between mt-auto">
+        <div className="mt-auto flex items-center justify-between">
           <div className="flex flex-col">
             <div className="flex items-center space-x-1 sm:space-x-2">
               <span className="text-xl sm:text-xl font-bold text-primaryColor py-2">
@@ -95,7 +95,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <span>Adding...</span>
             ) : (
               <>
-                <Plus className="w-3 h-3 sm:w-4 sm:h-4 group-hover:rotate-90 transition-transform" />
+                <Plus className="h-3 w-3 transition-transform group-hover:rotate-90 sm:h-4 sm:w-4" />
                 <span className="text-xs sm:text-sm">ADD</span>
               </>
             )}

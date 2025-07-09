@@ -1,38 +1,36 @@
 // app/contact/page.tsx
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", subject: "", message: "" });
+  const [form, setForm] = useState({ name: '', subject: '', message: '' });
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState("");
+  const [response, setResponse] = useState('');
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    const res = await fetch("/api/faq", {
-      method: "POST",
+    const res = await fetch('/api/faq', {
+      method: 'POST',
       body: JSON.stringify(form),
     });
 
     const data = await res.json();
-    setResponse(data.success ? "Message sent!" : "Failed to send.");
+    setResponse(data.success ? 'Message sent!' : 'Failed to send.');
     setLoading(false);
-    setForm({ name: "", subject: "", message: "" });
+    setForm({ name: '', subject: '', message: '' });
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 p-6 lg:p-16 max-w-6xl mx-auto">
-        
+
+    <div className="mx-auto flex max-w-6xl flex-col gap-8 p-6 lg:flex-row lg:p-16">
       <div className="flex-1">
-        <h2 className="text-xl font-semibold mb-4">General Information</h2>
+        <h2 className="mb-4 text-xl font-semibold">General Information</h2>
         <div className="space-y-4 text-gray-700">
           <div>
             <h4 className="font-semibold">What can I buy from Shop U Store?</h4>
-            <p>
-              Prescription medicines, OTC healthcare products, and daily essentials.
-            </p>
+            <p>Prescription medicines, OTC healthcare products, and daily essentials.</p>
           </div>
           <div>
             <h4 className="font-semibold">How fast is the delivery?</h4>
@@ -44,9 +42,7 @@ export default function ContactPage() {
           </div>
           <div>
             <h4 className="font-semibold">Can I return items?</h4>
-            <p>
-              Groceries/medicines are non-returnable unless wrong/damaged.
-            </p>
+            <p>Groceries/medicines are non-returnable unless wrong/damaged.</p>
           </div>
           <div>
             <h4 className="font-semibold">How do I contact support?</h4>
@@ -55,45 +51,40 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-gray-200 p-6 rounded-md w-full max-w-md"
-      >
-        <h2 className="text-lg font-semibold mb-4">Ask a Question</h2>
+      <form onSubmit={handleSubmit} className="w-full max-w-md rounded-md bg-gray-200 p-6">
+        <h2 className="mb-4 text-lg font-semibold">Ask a Question</h2>
         <input
           type="text"
           required
           placeholder="Your Name"
-          className="w-full p-2 mb-3 rounded-md"
+          className="mb-3 w-full rounded-md p-2"
           value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          onChange={e => setForm({ ...form, name: e.target.value })}
         />
         <input
           type="text"
           required
           placeholder="Subject"
-          className="w-full p-2 mb-3 rounded-md"
+          className="mb-3 w-full rounded-md p-2"
           value={form.subject}
-          onChange={(e) => setForm({ ...form, subject: e.target.value })}
+          onChange={e => setForm({ ...form, subject: e.target.value })}
         />
         <textarea
           required
           placeholder="Tag Your Message"
-          className="w-full p-2 mb-3 rounded-md h-24"
+          className="mb-3 h-24 w-full rounded-md p-2"
           value={form.message}
-          onChange={(e) => setForm({ ...form, message: e.target.value })}
+          onChange={e => setForm({ ...form, message: e.target.value })}
         />
         <button
           type="submit"
-          className="bg-gray-700 text-white px-4 py-2 rounded-md"
+          className="rounded-md bg-gray-700 px-4 py-2 text-white"
           disabled={loading}
         >
-          {loading ? "Sending..." : "Send"}
+          {loading ? 'Sending...' : 'Send'}
         </button>
         {response && <p className="mt-2 text-sm">{response}</p>}
       </form>
-      
     </div>
-
   );
 }

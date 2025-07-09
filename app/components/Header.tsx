@@ -1,16 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import {
-  Search,
-  ShoppingCart,
-  User,
-  MapPin,
-  Menu,
-  X,
-  Loader,
-  ChevronDown,
-} from 'lucide-react';
+import { Search, ShoppingCart, User, MapPin, Menu, X, Loader, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import Logo from '../../public/Shop U Logo-03.jpg';
 import LoginModal from './LoginModal';
@@ -442,7 +433,7 @@ const Header = () => {
                       <p className="font-medium text-gray-700">My Account</p>
                       <p className="text-sm text-gray-600">{phoneNumber}</p>
                     </div>
-                    <div className="py-2 space-y-1">
+                    <div className="space-y-1 py-2">
                       <Link
                         href="/orders"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
@@ -594,7 +585,7 @@ const Header = () => {
                 <div className="mb-4 rounded-lg bg-gray-50" ref={mobileAccountMenuRef}>
                   {/* My Account Header */}
                   <button
-                    className="flex w-full items-center justify-between px-6 py-2 border-b border-gray-100 text-left"
+                    className="flex w-full items-center justify-between border-b border-gray-100 px-6 py-2 text-left"
                     onClick={() => setIsMobileAccountMenuOpen(!isMobileAccountMenuOpen)}
                   >
                     <div>
@@ -607,7 +598,7 @@ const Header = () => {
                   </button>
                   {/* Dropdown List Items */}
                   {isMobileAccountMenuOpen && (
-                    <div className="py-2 space-y-1">
+                    <div className="space-y-1 py-2">
                       <Link
                         href="/orders"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
@@ -770,8 +761,7 @@ const Header = () => {
         onPhoneChange={(value) => {
           console.log(value);
           setPhoneNumber(value)
-        }
-        }
+        }}
       />
     </header>
   );

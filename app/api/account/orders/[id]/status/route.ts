@@ -44,7 +44,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     // Use a transaction to update status and restore stock
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async tx => {
       // Update status
       const updated = await tx.orderItem.update({
         where: { id: orderItemId },

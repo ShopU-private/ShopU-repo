@@ -12,6 +12,7 @@ interface Props {
   healthCategories: HealthCategory[];
 }
 
+
 const HealthCategoryGrid: React.FC<Props> = ({ title = "Shop By", title1 = " Health Condition", healthCategories }) => {
   return (
     <section className="py-6 max-w-7xl mx-auto ">
@@ -24,9 +25,9 @@ const HealthCategoryGrid: React.FC<Props> = ({ title = "Shop By", title1 = " Hea
         {healthCategories.map((category) => (
           <button
             key={category.id}
-            className="bg-white p-2 sm:p-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border hover:border-teal-200 group"
+            className="group rounded-lg border bg-white p-2 shadow-sm transition-all duration-300 hover:border-teal-200 hover:shadow-md sm:p-3"
           >
-            <div className="text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="mb-1 text-xl transition-transform duration-300 group-hover:scale-110 sm:mb-2 sm:text-2xl">
               {category.icon}
             </div>
             <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-primaryColor transition-colors">

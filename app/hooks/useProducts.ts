@@ -11,6 +11,7 @@ interface Medicine {
   discount?: number;
   rating?: number;
   reviews?: number;
+  subtitle?: string;
   manufacturerName?: string;
   packSizeLabel?: string;
   type?: string;
