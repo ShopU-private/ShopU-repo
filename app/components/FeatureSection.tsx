@@ -21,7 +21,7 @@ const FeatureCards = () => {
   ];
 
   return (
-    <section className="px-4 sm:px-8 md:px-16 py-8 sm:py-8 bg-gray-50 ">
+    <section className="px-4 sm:px-8 md:px-16 py-8 sm:py-8 ">
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
         {features.map((item, index) => (
           <div key={index} className="flex items-start gap-4 text-left">
