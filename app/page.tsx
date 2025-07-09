@@ -46,9 +46,9 @@ export default function Home() {
       <WomenCareSection />
       <PersonalCareSection />
       <EverydayEssentialsSection />
-      <main className="flex items-center justify-center px-4 py-8">
+      <main className="flex justify-center items-center px-4 py-8">
         {searchResults.length > 0 ? (
-          <div className="grid w-[90%] max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 max-w-7xl w-[90%]">
             {searchResults.map(medicine => (
               <MedicineCard key={medicine.id} medicine={medicine} />
             ))}

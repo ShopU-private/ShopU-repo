@@ -72,7 +72,7 @@ const Page = () => {
   );
 
   const MAX_PAGES = 10;
-  const totalPages = Math.min(Math.ceil(filtered.length / PRODUCTS_PER_PAGE), MAX_PAGES);
+  const totalPages = Math.min(Math.ceil(filtered.length/PRODUCTS_PER_PAGE), MAX_PAGES);
 
   // pagination UI
   const Pagination = ({
@@ -111,7 +111,7 @@ const Page = () => {
     };
 
     return (
-      <div className="mt-6 flex justify-center gap-4">
+      <div className="flex justify-center mt-6 gap-4">
         <button
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
@@ -156,66 +156,55 @@ const Page = () => {
       <div className="flex flex-col md:flex-row">
         {/* === Sidebar: Filters === */}
         <div className="mt-14 mb-4 w-full md:mb-0 md:w-1/4 md:pr-6">
-          <div className="rounded border bg-white p-4 shadow-sm">
-            {/* Price Range */}
-            <div className="mb-4">
-              <label className="mb-1 block text-lg font-medium">Price Range</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  className="w-20 rounded border px-2 py-1 text-lg"
-                />
-                <span>-</span>
-                <input
-                  type="number"
-                  placeholder="Max"
-                  className="w-20 rounded border px-2 py-1 text-lg"
-                />
-                <button className="rounded bg-[#317C80] px-2 py-1 text-lg text-white">Go</button>
-              </div>
-            </div>
+  <div className="rounded border bg-white p-4 shadow-sm">
+    {/* Price Range */}
+    <div className="mb-4">
+      <label className="block text-lg font-medium mb-1">Price Range</label>
+      <div className="flex items-center gap-2">
+        <input type="number" placeholder="Min" className="border px-2 py-1 w-20 rounded text-lg" />
+        <span>-</span>
+        <input type="number" placeholder="Max" className="border px-2 py-1 w-20 rounded text-lg" />
+        <button className="bg-[#317C80] text-white text-lg px-2 py-1 rounded">Go</button>
+      </div>
+    </div>
 
-            {/*  Category Filters */}
-            <div className="mb-4">
-              <h2 className="mb-1 text-lg font-bold text-[#317C80]">Categories</h2>
-              {[
-                'Diapering',
-                'Baby Bath',
-                'Baby Food',
-                'Wipes',
-                'Baby Hair Care',
-                'Baby Skin Care',
-                'Baby Food By Age',
-              ].map((cat, i) => (
-                <div
-                  key={i}
-                  className="flex cursor-pointer items-center justify-between border-b py-1"
-                >
-                  <span className="text-lg">{cat}</span>
-                  <span className="text-[20px]">+</span>
-                </div>
-              ))}
-            </div>
-
-            {/*  Filters by Brand and Skin Type */}
-            <h2 className="mb-2 text-lg font-bold text-[#317C80]">Filter By</h2>
-            <FilterSection
-              title="Brand"
-              options={['Nivea', 'Himalaya', 'Pampers']}
-              type="brand"
-              selected={filters.brand}
-              onChange={handleFilterChange}
-            />
-            <FilterSection
-              title="Skin Type"
-              options={['Oily', 'Dry', 'Normal']}
-              type="skinType"
-              selected={filters.skinType}
-              onChange={handleFilterChange}
-            />
-          </div>
+    {/*  Category Filters */}
+    <div className="mb-4">
+      <h2 className="text-lg font-bold text-[#317C80] mb-1">Categories</h2>
+      {[
+        "Diapering",
+        "Baby Bath",
+        "Baby Food",
+        "Wipes",
+        "Baby Hair Care",
+        "Baby Skin Care",
+        "Baby Food By Age"
+      ].map((cat, i) => (
+        <div key={i} className="flex items-center justify-between cursor-pointer py-1 border-b">
+          <span className="text-lg">{cat}</span>
+          <span className='text-[20px]'>+</span>
         </div>
+      ))}
+    </div>
+
+    {/*  Filters by Brand and Skin Type */}
+    <h2 className="mb-2 text-lg font-bold text-[#317C80]">Filter By</h2>
+    <FilterSection
+      title="Brand"
+      options={['Nivea', 'Himalaya', 'Pampers']}
+      type="brand"
+      selected={filters.brand}
+      onChange={handleFilterChange}
+    />
+    <FilterSection
+      title="Skin Type"
+      options={['Oily', 'Dry', 'Normal']}
+      type="skinType"
+      selected={filters.skinType}
+      onChange={handleFilterChange}
+    />
+  </div>
+</div>
 
         {/* === Product Cards + Sorting + Pagination === */}
         <div className="w-full md:w-3/4">

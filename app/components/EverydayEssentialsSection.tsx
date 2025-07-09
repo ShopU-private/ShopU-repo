@@ -48,16 +48,14 @@ const EverydayEssentialsSection = () => {
   };
 
   return (
-    <section className="bg-white py-6 sm:py-8">
-      <div className="container mx-auto w-[90%] max-w-7xl px-4">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="mb-4 text-xl font-semibold text-[#317C80] sm:text-xl">
-            Everyday <span className="text-[#E93E40]">Essentials</span>
-            <hr className="mt-1 h-1 w-48 rounded border-0 bg-[#317C80]" />{' '}
-          </h2>
-          <button className="cursor-pointer rounded bg-[#317C80] px-3 py-1 text-sm font-medium text-white">
-            View All <span className="text-lg">{'>'}</span>
-          </button>
+
+    <section className="py-6 sm:py-8 bg-white">
+      <div className="container max-w-7xl mx-auto px-4 w-[90%]">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl sm:text-xl font-semibold text-[#317C80] mb-4">Everyday <span className="text-[#E93E40]">Essentials</span><hr className="bg-[#317C80] w-48 h-1 border-0 rounded mt-1" /> </h2>
+                 <button className="text-sm font-medium bg-[#317C80] text-white py-1 px-3 rounded cursor-pointer">
+          View All <span className="text-lg">{'>'}</span>
+        </button>
         </div>
 
         <div className="flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-5">

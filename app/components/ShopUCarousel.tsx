@@ -10,19 +10,19 @@ const ShopUCarousel = () => {
   const slides = [
     {
       id: 1,
-      image: '/image4.png',
-      title: 'Covid 19 pack',
+      image: "/image4.png",
+      title: "Covid 19 pack",
     },
     {
       id: 2,
-      image: '/image5.png',
-      title: 'Health Pack',
+      image: "/image5.png",
+      title: "Health Pack",
     },
     {
       id: 3,
-      image: '/image6.png',
-      title: 'Wellness Bundle',
-    },
+      image: "/image6.png",
+      title: "Wellness Bundle",
+    }
   ];
 
   const { addToCart } = useCart();
@@ -38,9 +38,11 @@ const ShopUCarousel = () => {
     return () => clearInterval(interval);
   }, [isAutoPlaying, slides.length]);
 
+
   const goToSlide = (index: number) => {
     setCurrentSlide(index); // ✅ only this
   };
+
 
   const handleOrderNow = async () => {
     setIsOrderingNow(true);
@@ -49,7 +51,7 @@ const ShopUCarousel = () => {
       const currentProduct = slides[currentSlide];
       await addToCart({
         productId: `promo_${currentProduct.id}`,
-        quantity: 1,
+        quantity: 1
       });
       // Dispatch cart updated event
       window.dispatchEvent(new CustomEvent('cartUpdated'));
@@ -62,22 +64,15 @@ const ShopUCarousel = () => {
   };
 
   return (
-    <div className="mx-auto w-[90%] max-w-7xl space-y-4 p-2 sm:p-4">
+    <div className="max-w-7xl mx-auto p-2 sm:p-4 space-y-4 w-[90%] ">
       {/* Main Carousel */}
-      <div className="flex flex-col gap-4 py-4 lg:flex-row">
+      <div className="flex flex-col lg:flex-row gap-4 py-4">
         {/* Carousel Banner */}
-        <div className="relative min-h-[250px] flex-3 overflow-hidden rounded-lg bg-gradient-to-br sm:min-h-[300px]">
-          <div
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-          >
-            {slides.map(slide => (
+        <div className="flex-3 relative bg-gradient-to-br rounded-lg overflow-hidden min-h-[250px] sm:min-h-[300px]">
+          <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+            {slides.map((slide) => (
               <div key={slide.id} className="min-w-full">
-                <img
-                  src={slide.image}
-                  alt={slide.title}
-                  className="max-h-100 w-full object-cover"
-                />
+                <img src={slide.image} alt={slide.title} className="max-h-100 w-full object-cover" />
               </div>
             ))}
           </div>
@@ -88,16 +83,17 @@ const ShopUCarousel = () => {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`h-2 w-2 rounded-full transition-all sm:h-3 sm:w-3 ${
-                  index === currentSlide ? 'bg-white' : 'bg-white/50'
-                }`}
+                className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all ${index === currentSlide
+                  ? 'bg-white'
+                  : 'bg-white/50'
+                  }`}
               />
             ))}
           </div>
         </div>
 
         {/* Right Side Card */}
-        <div className="hidden min-h-[150px] flex-1 rounded-xl bg-gray-200 sm:block sm:min-h-[200px] lg:min-h-[300px]">
+        <div className="flex-1 bg-gray-200 rounded-xl min-h-[150px] sm:min-h-[200px] lg:min-h-[300px] hidden sm:block">
           {/* Empty placeholder matching original design */}
         </div>
       </div>
