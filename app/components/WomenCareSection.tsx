@@ -42,16 +42,13 @@ const WomenCareSection = () => {
   });
 
   const toggleFavorite = (productId: number) => {
-    setFavorites((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId]
+    setFavorites(prev =>
+      prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]
     );
   };
 
   const handleAddToCart = async (product: Product) => {
-
-    setAddingIds((prev) => [...prev, product.id]);
+    setAddingIds(prev => [...prev, product.id]);
     try {
       await addItem(null, product.id.toString(), 1);
       window.dispatchEvent(new CustomEvent('cartUpdated'));
@@ -65,14 +62,14 @@ const WomenCareSection = () => {
   };
 
   return (
-    <section className="py-6 sm:py-8 bg-gray-50">
-      <div className="container max-w-7xl mx-auto px-4 w-[90%]">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl sm:text-xl font-semibold text-[#317C80] mb-4">
+    <section className="bg-gray-50 py-6 sm:py-8">
+      <div className="container mx-auto w-[90%] max-w-7xl px-4">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="mb-4 text-xl font-semibold text-[#317C80] sm:text-xl">
             Women <span className="text-[#E93E40]">Care</span>
-            <hr className="bg-[#317C80] w-32 h-1 border-0 rounded mt-1" />
+            <hr className="mt-1 h-1 w-32 rounded border-0 bg-[#317C80]" />
           </h2>
-          <button className="text-sm font-medium bg-[#317C80] text-white py-1 px-3 rounded cursor-pointer">
+          <button className="cursor-pointer rounded bg-[#317C80] px-3 py-1 text-sm font-medium text-white">
             View All <span className="text-lg">{'>'}</span>
           </button>
         </div>
@@ -81,20 +78,23 @@ const WomenCareSection = () => {
           {/* Left Scroll Button */}
           <button
             onClick={() => scroll('left')}
-            className="absolute left-[-10px] top-1/2 transform -translate-y-1/2 z-10 bg-[#317C80] text-white w-8 h-8 rounded-full flex items-center justify-center shadow-md"
+            className="absolute top-1/2 left-[-10px] z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-[#317C80] text-white shadow-md"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
           {/* Scrollable product list */}
-          <div
-            ref={scrollRef}
-            className="overflow-x-auto no-scrollbar"
-          >
-            <div className="flex gap-5 sm:gap-5 px-2 my-2">
-              {medicines.map((medicine) => {
+          <div ref={scrollRef} className="no-scrollbar overflow-x-auto">
+            <div className="my-2 flex gap-5 px-2 sm:gap-5">
+              {medicines.map(medicine => {
                 const normalizedProduct = {
                   ...medicine,
                   id: Number(medicine.id),
@@ -124,14 +124,19 @@ const WomenCareSection = () => {
           {/* Right Scroll Button */}
           <button
             onClick={() => scroll('right')}
-            className="absolute right-[-10px] top-1/2 transform -translate-y-1/2 z-10 bg-[#317C80] text-white w-8 h-8 rounded-full flex items-center justify-center shadow-md"
+            className="absolute top-1/2 right-[-10px] z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-[#317C80] text-white shadow-md"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
-
       </div>
     </section>
   );

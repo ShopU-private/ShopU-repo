@@ -133,14 +133,15 @@ const ShopUSpecialOffers = () => {
   }
 
   return (
-
     <div className="min-h-xl bg-gray-50">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 w-[90%]">
+      <main className="mx-auto w-[90%] max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
         <div className="mb-8 sm:mb-12">
           <div className="mb-6 flex items-center justify-between sm:mb-8">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Special Medicines</h2>
-              <hr className="bg-[#317C80] w-64 h-1 border-0 rounded mt-1" />
+              <h2 className="mb-2 text-2xl font-bold text-gray-800 sm:text-3xl">
+                Special Medicines
+              </h2>
+              <hr className="mt-1 h-1 w-64 rounded border-0 bg-[#317C80]" />
             </div>
             <div className="flex items-center space-x-2">
               <button

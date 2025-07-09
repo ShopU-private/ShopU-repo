@@ -244,14 +244,14 @@ const Header = () => {
   return (
     <header className="bg-white shadow-lg">
       {/* Main Navbar */}
-      <div className="border-b border-gray-100 px-4 py-1 max-w-7xl mx-auto">
+      <div className="mx-auto max-w-7xl border-b border-gray-100 px-4 py-1">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-10">
           {/* Logo */}
           <div className="px-4">
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
-              className=" w-36   transition-transform hover:scale-105 md:h-20"
+              className="w-36 transition-transform hover:scale-105 md:h-20"
               width={400}
               height={80}
               priority
@@ -417,7 +417,7 @@ const Header = () => {
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={toggleUserMenu}
-                  className="hidden border-2 border-solid items-center gap-2 rounded-lg px-1 py-2 text-[#317C80] transition-colors hover:bg-gray-50 hover:text-[#317C80] md:flex"
+                  className="hidden items-center gap-2 rounded-lg border-2 border-solid px-1 py-2 text-[#317C80] transition-colors hover:bg-gray-50 hover:text-[#317C80] md:flex"
                 >
                   <User className="h-5 w-5" />
                   <span className="text-md font-medium">Account</span>
@@ -500,7 +500,10 @@ const Header = () => {
             )}
 
             {/* Shopping Cart */}
-            <button onClick={openCartModal} className="relative rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 hover:text-teal-600">
+            <button
+              onClick={openCartModal}
+              className="relative rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 hover:text-teal-600"
+            >
               <ShoppingCart className="h-6 w-6 text-[#317C80]" />
               {isLoadingCart ? (
                 <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
@@ -540,7 +543,7 @@ const Header = () => {
       <div className="hidden bg-[#317C80] md:block">
         <div className="mx-auto max-w-7xl px-6">
           <div
-            className="flex justify-between items-center gap-4 overflow-x-auto py-3"
+            className="flex items-center justify-between gap-4 overflow-x-auto py-3"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
@@ -554,7 +557,7 @@ const Header = () => {
             {categories.map((category, index) => (
               <button
                 key={index}
-                className="rounded-lg px-3 py-1.5 text-[15px]  whitespace-nowrap text-white transition-all hover:bg-white hover:text-teal-700 hover:shadow-sm"
+                className="rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:text-teal-700 hover:shadow-sm"
               >
                 {category}
               </button>
