@@ -40,9 +40,9 @@
 }
 
 :root {
-  --background: #F8F8F8;
-  --primaryColor: #317C80;
-  --secondaryColor: #E93E40;
+  --background: #f8f8f8;
+  --primaryColor: #317c80;
+  --secondaryColor: #e93e40;
 }
 
 @theme inline {
@@ -53,9 +53,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #F8F8F8;
-    --primaryColor: #317C80;
-    --secondaryColor: #E93E40;
+    --background: #f8f8f8;
+    --primaryColor: #317c80;
+    --secondaryColor: #e93e40;
   }
 }
 

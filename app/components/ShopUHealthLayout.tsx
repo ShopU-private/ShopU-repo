@@ -68,17 +68,20 @@ const ShopUHealthComponent: React.FC = () => {
 
   return (
     <section className="min-h-xl">
-      <div className="max-w-7xl mx-auto px-4 py-6 w-[90%]">
+      <div className="mx-auto w-[90%] max-w-7xl px-4 py-6">
         {/* ✅ Health Category Section */}
         <HealthCategoryGrid healthCategories={healthCategories} />
 
         {/* ✅ Super Saver Section */}
         <div className="mx-auto py-4">
-          <div className="flex items-center justify-between mb-4 sm:mb-4">
+          <div className="mb-4 flex items-center justify-between sm:mb-4">
             <div>
-              <h2 className="text-xl sm:text-xl font-semibold text-primaryColor">Super Saver <span className="text-secondaryColor">Up to 50% off</span><hr className="bg-background1 h-1 border-0 rounded mt-1" /> </h2>
+              <h2 className="text-primaryColor text-xl font-semibold sm:text-xl">
+                Super Saver <span className="text-secondaryColor">Up to 50% off</span>
+                <hr className="bg-background1 mt-1 h-1 rounded border-0" />{' '}
+              </h2>
             </div>
-            <button className="text-sm font-medium bg-background1 text-white py-1 px-3 rounded cursor-pointer">
+            <button className="bg-background1 cursor-pointer rounded px-3 py-1 text-sm font-medium text-white">
               View All <span className="text-lg">{'>'}</span>
             </button>
           </div>
@@ -86,24 +89,30 @@ const ShopUHealthComponent: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => scroll('left')}
-              className="absolute left-[-15px] top-1/2 transform -translate-y-1/2 z-10 bg-background1 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-md"
+              className="bg-background1 absolute top-1/2 left-[-15px] z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             {loading ? (
-              <div className="flex gap-4 overflow-x-auto no-scrollbar px-1">
+              <div className="no-scrollbar flex gap-4 overflow-x-auto px-1">
                 {[...Array(5)].map((_, index) => (
                   <div key={index} className="min-w-[240px] animate-pulse">
-                    <div className="bg-gray-200 h-52 rounded-lg mb-2"></div>
-                    <div className="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
-                    <div className="bg-gray-200 h-4 w-1/2 rounded"></div>
+                    <div className="mb-2 h-52 rounded-lg bg-gray-200"></div>
+                    <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
+                    <div className="h-4 w-1/2 rounded bg-gray-200"></div>
                   </div>
                 ))}
               </div>
             ) : error ? (
-              <div className="text-center py-8 text-secondaryColor">
+              <div className="text-secondaryColor py-8 text-center">
                 Failed to load medicines. Please try again.
               </div>
             ) : medicines.length === 0 ? (
@@ -111,13 +120,10 @@ const ShopUHealthComponent: React.FC = () => {
             ) : (
               <div
                 ref={scrollRef}
-                className="flex overflow-x-auto gap-5 no-scrollbar scroll-smooth py-4"
+                className="no-scrollbar flex gap-5 overflow-x-auto scroll-smooth py-4"
               >
                 {medicines.map(medicine => (
-                  <div
-                    key={medicine.id}
-                    className="min-w-[210px] max-w-[210px]"
-                  >
+                  <div key={medicine.id} className="max-w-[210px] min-w-[210px]">
                     <ProductCard
                       product={{
                         id: medicine.id,
@@ -143,9 +149,15 @@ const ShopUHealthComponent: React.FC = () => {
             {/* Right Scroll Button */}
             <button
               onClick={() => scroll('right')}
-              className="absolute right-[-15px] top-1/2 transform -translate-y-1/2 z-10 bg-background1 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-md"
+              className="bg-background1 absolute top-1/2 right-[-15px] z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>

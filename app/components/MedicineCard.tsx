@@ -60,16 +60,17 @@ const MedicineCard: React.FC<MedicineCardProps> = ({ medicine }) => {
       <h3 className="mb-2 text-lg font-semibold text-gray-800">{medicine.name}</h3>
       <p className="mb-3 line-clamp-2 text-sm text-gray-600">{medicine.description}</p>
       <div className="flex items-center justify-between">
-        <span className="text-xl font-bold text-primaryColor">₹{medicine.price}</span>
+        <span className="text-primaryColor text-xl font-bold">₹{medicine.price}</span>
         <button
           onClick={addToCart}
           disabled={isAddingToCart}
-          className={`rounded-md px-4 py-2 text-white transition-colors ${isAdded
+          className={`rounded-md px-4 py-2 text-white transition-colors ${
+            isAdded
               ? 'bg-green-600 hover:bg-green-700'
               : isAddingToCart
-                ? 'bg-gray-400 cursor-not-allowed'
+                ? 'cursor-not-allowed bg-gray-400'
                 : 'bg-background1 hover:bg-teal-700'
-            }`}
+          }`}
         >
           {isAddingToCart ? 'Adding...' : isAdded ? 'Added!' : 'Add to Cart'}
         </button>

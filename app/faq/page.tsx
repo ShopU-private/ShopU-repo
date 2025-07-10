@@ -23,7 +23,6 @@ export default function ContactPage() {
   };
 
   return (
-
     <div className="mx-auto flex max-w-6xl flex-col gap-8 p-6 lg:flex-row lg:p-16">
       <div className="flex-1">
         <h2 className="mb-4 text-xl font-semibold">General Information</h2>

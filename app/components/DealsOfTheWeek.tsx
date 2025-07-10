@@ -36,17 +36,18 @@ const DealOfTheWeek = () => {
           const data = await response.json();
 
           // Transform products to match the expected format
-          const dealsProducts: Product[] = data.products?.map((product: any) => ({
-            id: Number(product.id),
-            name: product.name,
-            price: `₹${product.price}`,
-            features: [
-              product.description?.split('.')[0] || 'Quality product',
-              product.subCategory?.name || 'Essential item',
-              `${product.discount || 20}% discount`,
-            ],
-            isOnSale: true,
-          })) || [];
+          const dealsProducts: Product[] =
+            data.products?.map((product: any) => ({
+              id: Number(product.id),
+              name: product.name,
+              price: `₹${product.price}`,
+              features: [
+                product.description?.split('.')[0] || 'Quality product',
+                product.subCategory?.name || 'Essential item',
+                `${product.discount || 20}% discount`,
+              ],
+              isOnSale: true,
+            })) || [];
 
           setProducts(dealsProducts);
         } else {
@@ -149,7 +150,7 @@ const DealOfTheWeek = () => {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto p-4 sm:p-6 ">
+      <div className="mx-auto max-w-6xl p-4 sm:p-6">
         <div className="animate-pulse">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div className="space-y-2">
@@ -171,16 +172,18 @@ const DealOfTheWeek = () => {
   }
 
   return (
-    <section className="max-w-7xl mx-auto p-4 sm:p-6  w-[90%]">
+    <section className="mx-auto w-[90%] max-w-7xl p-4 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 sm:gap-0">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <h2 className="text-2xl sm:text-2xl font-semibold text-primaryColor text-center">Deal of <span className="text-secondaryColor">The Week</span></h2>
-          <div className="flex gap-2 justify-center sm:justify-start">
-            {['days', 'hours', 'minutes', 'seconds'].map((unit) => (
+      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <h2 className="text-primaryColor text-center text-2xl font-semibold sm:text-2xl">
+            Deal of <span className="text-secondaryColor">The Week</span>
+          </h2>
+          <div className="flex justify-center gap-2 sm:justify-start">
+            {['days', 'hours', 'minutes', 'seconds'].map(unit => (
               <div
                 key={unit}
-                className="bg-background2 text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-sm sm:text-sm font-medium text-center"
+                className="bg-background2 rounded px-2 py-1.5 text-center text-sm font-medium text-white sm:px-3 sm:py-2 sm:text-sm"
               >
                 <div className="text-base font-bold sm:text-lg">
                   {timeLeft[unit as keyof typeof timeLeft]}
@@ -196,20 +199,22 @@ const DealOfTheWeek = () => {
           <button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors ${currentIndex === 0
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-teal-100 hover:bg-teal-200 text-teal-600'
-              }`}
+            className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors sm:h-10 sm:w-10 ${
+              currentIndex === 0
+                ? 'cursor-not-allowed bg-gray-200 text-gray-400'
+                : 'bg-teal-100 text-teal-600 hover:bg-teal-200'
+            }`}
           >
             <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
           <button
             onClick={handleNext}
             disabled={currentIndex + itemsPerPage >= products.length}
-            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors ${currentIndex + itemsPerPage >= products.length
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-teal-600 hover:bg-teal-700 text-white'
-              }`}
+            className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors sm:h-10 sm:w-10 ${
+              currentIndex + itemsPerPage >= products.length
+                ? 'cursor-not-allowed bg-gray-200 text-gray-400'
+                : 'bg-teal-600 text-white hover:bg-teal-700'
+            }`}
           >
             <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
