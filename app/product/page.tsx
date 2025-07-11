@@ -124,7 +124,7 @@ const Page = () => {
       <div className="flex flex-col md:flex-row">
         {/* === Sidebar === */}
         <div className="mt-14 mb-4 w-full md:mb-0 md:w-1/4 md:pr-6">
-          <div className="rounded border bg-white p-4 shadow-sm">
+          <div className="rounded bg-white p-4 shadow-sm">
             {/* Price Range */}
             <div className="mb-4">
               <label className="mb-1 block text-lg font-medium">Price Range</label>
