@@ -172,16 +172,18 @@ const DealOfTheWeek = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 bg-white w-[90%]">
+    <div className="mx-auto w-[90%] max-w-7xl bg-white p-4 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 sm:gap-0">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    <h2 className="text-2xl sm:text-2xl font-semibold text-[#317C80] text-center">Deal of <span className="text-[#E93E40]">The Week</span></h2>
-          <div className="flex gap-2 justify-center sm:justify-start">
-            {['days', 'hours', 'minutes', 'seconds'].map((unit) => (
+      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <h2 className="text-center text-2xl font-semibold text-[#317C80] sm:text-2xl">
+            Deal of <span className="text-[#E93E40]">The Week</span>
+          </h2>
+          <div className="flex justify-center gap-2 sm:justify-start">
+            {['days', 'hours', 'minutes', 'seconds'].map(unit => (
               <div
                 key={unit}
-                className="bg-[#E93E40] text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded text-sm sm:text-sm font-medium text-center"
+                className="rounded bg-[#E93E40] px-2 py-1.5 text-center text-sm font-medium text-white sm:px-3 sm:py-2 sm:text-sm"
               >
                 <div className="text-base font-bold sm:text-lg">
                   {timeLeft[unit as keyof typeof timeLeft]}
@@ -275,5 +277,5 @@ const DealOfTheWeek = () => {
     </div>
   );
 };
-  
+
 export default DealOfTheWeek;

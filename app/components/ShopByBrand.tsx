@@ -13,14 +13,9 @@ const brandData = [
 
 const BrandSection = () => {
   return (
-    <div className='max-w-7xl mx-auto px-4 py-6 w-[90%]'>
-    <HealthCategoryGrid
-      title="Shop By "
-      title1='Brand'
-      healthCategories={brandData}
-    />
+    <div className="mx-auto w-[90%] max-w-7xl px-4 py-6">
+      <HealthCategoryGrid title="Shop By " title1="Brand" healthCategories={brandData} />
     </div>
-
   );
 };
 

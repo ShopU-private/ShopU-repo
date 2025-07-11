@@ -50,9 +50,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
           className="absolute top-2 right-2 rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50"
         >
           <Heart
-
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'
-              }`}
+            className={`h-3 w-3 sm:h-4 sm:w-4 ${
+              isFavorite ? 'fill-current text-red-500' : 'text-gray-400'
+            }`}
           />
         </button>
       </div>
@@ -74,10 +74,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-3 h-3 sm:w-4 sm:h-4 ${i < Math.floor(product.rating)
-                    ? 'text-yellow-400 fill-current'
-                    : 'text-gray-300'
-                  }`}
+                className={`h-3 w-3 sm:h-4 sm:w-4 ${
+                  i < Math.floor(product.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'
+                }`}
               />
             ))}
           </div>
@@ -92,7 +91,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="flex items-center space-x-1 sm:space-x-2">
               <span className="text-base font-bold text-gray-900 sm:text-lg">₹{product.price}</span>
               {product.originalPrice && (
-                <span className="text-xs sm:text-sm text-gray-500 line-through">
+                <span className="text-xs text-gray-500 line-through sm:text-sm">
                   ₹{String(product.originalPrice).slice(0, 5)}
                 </span>
               )}
@@ -102,7 +101,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <button
             onClick={() => onAddToCart(product)}
             disabled={isAdding}
-            className="bg-[#317C80] text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-1 group">
+            className="group flex items-center space-x-1 rounded-lg bg-[#317C80] px-3 py-1.5 text-white transition-colors hover:bg-teal-700 sm:px-4 sm:py-2"
+          >
             {isAdding ? (
               <span>Adding...</span>
             ) : (

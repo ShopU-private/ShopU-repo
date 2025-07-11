@@ -88,7 +88,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${karla.className} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${karla.className} antialiased`}
+      >
         <LocationProvider>
           <CartModalProvider>
             <Header />

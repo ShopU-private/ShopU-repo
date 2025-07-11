@@ -68,27 +68,29 @@ const ShopUHealthComponent: React.FC = () => {
 
   return (
     <div className="min-h-xl bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-6 w-[90%]">
+      <div className="mx-auto w-[90%] max-w-7xl px-4 py-6">
         {/* ✅ Health Category Section */}
         <HealthCategoryGrid healthCategories={healthCategories} />
 
         {/* ✅ Super Saver Section */}
         <section className="mx-auto py-4">
-          <div className="flex items-center justify-between mb-4 sm:mb-8">
+          <div className="mb-4 flex items-center justify-between sm:mb-8">
             <div>
-              <h2 className="text-xl sm:text-xl font-semibold text-[#317C80] ">Super Saver <span className="text-[#E93E40]">Up to 50% off</span><hr className="bg-[#317C80] h-1 border-0 rounded mt-1" /> </h2>
-              
+              <h2 className="text-xl font-semibold text-[#317C80] sm:text-xl">
+                Super Saver <span className="text-[#E93E40]">Up to 50% off</span>
+                <hr className="mt-1 h-1 rounded border-0 bg-[#317C80]" />{' '}
+              </h2>
             </div>
             <div className="flex space-x-2">
               <button
                 onClick={() => scroll('left')}
-                className="p-1.5 sm:p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+                className="rounded-full bg-gray-200 p-1.5 transition-colors hover:bg-gray-300 sm:p-2"
               >
                 <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
               <button
                 onClick={() => scroll('right')}
-                className="p-1.5 sm:p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+                className="rounded-full bg-gray-200 p-1.5 transition-colors hover:bg-gray-300 sm:p-2"
               >
                 <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
@@ -97,12 +99,12 @@ const ShopUHealthComponent: React.FC = () => {
 
           <div className="relative">
             {loading ? (
-              <div className="flex gap-4 overflow-x-auto no-scrollbar px-1">
+              <div className="no-scrollbar flex gap-4 overflow-x-auto px-1">
                 {[...Array(4)].map((_, index) => (
                   <div key={index} className="min-w-[240px] animate-pulse">
-                    <div className="bg-gray-200 h-52 rounded-lg mb-2"></div>
-                    <div className="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
-                    <div className="bg-gray-200 h-4 w-1/2 rounded"></div>
+                    <div className="mb-2 h-52 rounded-lg bg-gray-200"></div>
+                    <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
+                    <div className="h-4 w-1/2 rounded bg-gray-200"></div>
                   </div>
                 ))}
               </div>
@@ -115,12 +117,12 @@ const ShopUHealthComponent: React.FC = () => {
             ) : (
               <div
                 ref={scrollRef}
-                className="flex overflow-x-auto gap-4 no-scrollbar scroll-smooth px-1"
+                className="no-scrollbar flex gap-4 overflow-x-auto scroll-smooth px-1"
               >
                 {medicines.map(medicine => (
                   <div
                     key={medicine.id}
-                    className="min-w-[240px] max-w-[240px] bg-white flex-shrink-0"
+                    className="max-w-[240px] min-w-[240px] flex-shrink-0 bg-white"
                   >
                     <ProductCard
                       product={{
