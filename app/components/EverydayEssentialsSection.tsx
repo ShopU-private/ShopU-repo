@@ -4,12 +4,14 @@ import React, { useState, useRef } from 'react';
 import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
+import { useRouter } from 'next/navigation';
 
 const EverydayEssentialsSection = () => {
   const [favorites, setFavorites] = useState<Set<number | string>>(new Set());
   const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
+  const router = useRouter();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -49,6 +51,9 @@ const EverydayEssentialsSection = () => {
     }
   };
 
+  const handleView = () => {
+    router.push('/prduct?category=EveryDayEssential');
+  };
   return (
     <section className="py-6 sm:py-8">
       <div className="container mx-auto w-[90%] max-w-7xl px-4">

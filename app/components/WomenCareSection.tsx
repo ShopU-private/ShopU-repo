@@ -4,12 +4,14 @@ import React, { useState, useRef } from 'react';
 import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
+import { useRouter } from 'next/navigation';
 
 const WomenCareSection = () => {
   const [favorites, setFavorites] = useState<Set<number | string>>(new Set());
   const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
+  const router = useRouter();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -47,6 +49,10 @@ const WomenCareSection = () => {
     } finally {
       setAddingProductId(null);
     }
+  };
+
+  const handleView = () => {
+    router.push('/product?category=WomenCare'); //Change path as per your route
   };
 
   return (

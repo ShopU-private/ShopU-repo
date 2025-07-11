@@ -4,6 +4,31 @@ import React, { useState, useRef } from 'react';
 import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
+import { useRouter } from 'next/navigation';
+
+interface Product {
+  id: number | string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  discount?: number;
+  rating: number;
+  reviews: number;
+  image?: string;
+  imgUrl?: string;
+  category: string;
+  manufacturerName?: string;
+  packSizeLabel?: string;
+  subtitle?: string;
+}
+
+const BabyCareSection = () => {
+  const [favorites, setFavorites] = useState<number[]>([]);
+  const [addingIds, setAddingIds] = useState<(number | string)[]>([]);
+  const { addItem } = useCart();
+  const router = useRouter();
+
+=======
 
 const BabyCareSection = () => {
   const [favorites, setFavorites] = useState<Set<number | string>>(new Set());
@@ -81,6 +106,7 @@ const BabyCareSection = () => {
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
+
         {loading ? (
           <div className="no-scrollbar flex gap-4 overflow-x-auto px-1">
             {[...Array(5)].map((_, index) => (

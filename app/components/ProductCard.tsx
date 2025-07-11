@@ -62,7 +62,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <h3 className="mb-1 line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-900 transition-colors group-hover:text-teal-600 sm:mb-1 sm:min-h-[3rem]">
           {product.name}
         </h3>
-
         {product.originalPrice && (
           <div>
             <hr className="text-[#D9D9D9]" />
