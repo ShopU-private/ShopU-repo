@@ -3,37 +3,34 @@ import React from 'react';
 interface HealthCategory {
   id: string;
   name: string;
-  icon: React.ReactNode;
+  image: string;
 }
 
 interface Props {
-  title?: string;
-  title1?: string;
   healthCategories: HealthCategory[];
 }
 
-
-const HealthCategoryGrid: React.FC<Props> = ({ title = "Shop By", title1 = " Health Condition", healthCategories }) => {
+const HealthCategoryGrid: React.FC<Props> = ({ healthCategories }) => {
   return (
-    <section className="py-6 max-w-7xl mx-auto ">
-      <div className='w-60 mb-6'>
-        <h2 className="text-xl sm:text-xl font-semibold text-primaryColor">{title} <span className="text-secondaryColor">{title1}</span> </h2>
-        <hr className="bg-background1 h-1 border-0 rounded mt-1" />
+    <section className="mx-auto max-w-7xl">
+      <div className="w-60">
+        <h2 className="text-primaryColor text-xl font-semibold sm:text-xl">
+          Shop By <span className="text-secondaryColor">Health Condition</span>{' '}
+        </h2>
+        <hr className="bg-background1 mt-1 h-1 rounded border-0" />
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3">
-        {healthCategories.map((category) => (
-          <button
-            key={category.id}
-            className="group rounded-lg border bg-white p-2 shadow-sm transition-all duration-300 hover:border-teal-200 hover:shadow-md sm:p-3"
-          >
-            <div className="mb-1 text-xl transition-transform duration-300 group-hover:scale-110 sm:mb-2 sm:text-2xl">
-              {category.icon}
+      <div className="grid grid-cols-2 gap-4 pt-8 pb-10 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-7">
+        {healthCategories.map(category => (
+          <div key={category.id} className="group items-center rounded-lg">
+            <div className="mb-1 flex justify-center transition-transform duration-300 group-hover:scale-102 sm:mb-2">
+              <img src={category.image} alt="" className="h-34 w-36 rounded-lg" />
             </div>
-            <h3 className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-primaryColor transition-colors">
+
+            <h3 className="group-hover:text-primaryColor text-center text-sm font-medium text-black transition-colors sm:text-sm">
               {category.name}
             </h3>
-          </button>
+          </div>
         ))}
       </div>
     </section>

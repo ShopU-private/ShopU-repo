@@ -6,9 +6,9 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <footer className="bg-background1 text-gray-800">
-      <div className=" bg-white px-6 py-10 text-center sm:px-10 lg:px-20">
+      <div className="bg-white px-6 py-10 text-center sm:px-10 lg:px-20">
         {/* Newsletter Section */}
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto max-w-7xl">
           <h2 className="text-xl font-semibold">Join our newsletter and get</h2>
           <p className="my-2 text-sm text-black">
             Join our email subscription now to get updates on promotions and coupons.
@@ -17,11 +17,11 @@ export default function Footer() {
             <input
               type="email"
               placeholder="Your Email Address"
-              className="w-full rounded-full border-none bg-background1 px-4 py-3 text-center text-white placeholder-gray-100 focus:outline-none sm:flex-1 sm:text-left"
+              className="bg-background1 w-full rounded-full border-none px-4 py-3 text-center text-white placeholder-gray-100 focus:outline-none sm:flex-1 sm:text-left"
             />
             <button
               type="submit"
-              className="rounded-full bg-white px-6 py-3 text-[#40A1A6] cursor-pointer border"
+              className="cursor-pointer rounded-full border bg-white px-6 py-3 text-[#40A1A6]"
             >
               Subscribe
             </button>
@@ -29,9 +29,8 @@ export default function Footer() {
         </div>
       </div>
 
-
       {/* Footer Grid */}
-      <div className="grid gap-10 border-t px-6 py-10 text-center text-sm sm:grid-cols-2 sm:px-10 sm:text-left md:grid-cols-4 lg:px-20 max-w-7xl mx-auto">
+      <div className="mx-auto grid max-w-7xl gap-10 border-t px-6 py-10 text-center text-sm sm:grid-cols-2 sm:px-10 sm:text-left md:grid-cols-4 lg:px-20">
         {/* ShopU Logo */}
         <div className="flex flex-col items-center sm:items-start">
           <img
@@ -43,19 +42,19 @@ export default function Footer() {
             <p className="flex items-center justify-center gap-2 sm:justify-start">
               <Phone size={16} /> 1233-777
             </p>
-            <p className="flex items-center justify-center gap-2 sm:justify-start py-1">
+            <p className="flex items-center justify-center gap-2 py-1 sm:justify-start">
               <Mail size={16} /> shopU@contact.com
             </p>
-            <p className="flex items-center justify-center gap-2 sm:justify-start py-1">
+            <p className="flex items-center justify-center gap-2 py-1 sm:justify-start">
               <MapPin size={16} /> Boring Road, Patna
             </p>
           </div>
         </div>
 
         {/* Categories */}
-        <div className=" text-white">
-          <h3 className="mb-3 font-semibold text-xl">Categorys</h3>
-          <ul className="space-y-4 font-medium py-1">
+        <div className="text-white">
+          <h3 className="mb-3 text-xl font-semibold">Categorys</h3>
+          <ul className="space-y-4 py-1 font-medium">
             <li>Baby Care</li>
             <li>Women Care</li>
             <li>Personal Care</li>
@@ -66,8 +65,8 @@ export default function Footer() {
 
         {/* Health Concern */}
         <div className="text-white">
-          <h3 className="mb-3 font-semibold text-xl">Health Condition</h3>
-          <ul className="space-y-4 font-medium py-1">
+          <h3 className="mb-3 text-xl font-semibold">Health Condition</h3>
+          <ul className="space-y-4 py-1 font-medium">
             <li>Diabetes Care</li>
             <li>Elderly Care</li>
             <li>Oral Care</li>
@@ -77,9 +76,9 @@ export default function Footer() {
         </div>
 
         {/* Account */}
-        <div className=" text-white">
-          <h3 className="mb-3 font-semibold text-xl">Account</h3>
-          <ul className="space-y-4 font-medium py-1">
+        <div className="text-white">
+          <h3 className="mb-3 text-xl font-semibold">Account</h3>
+          <ul className="space-y-4 py-1 font-medium">
             <li>Wishlist</li>
             <li>
               <Link href="/cart">Cart</Link>
@@ -91,7 +90,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom Footer */}
-      <div className="flex flex-col items-center gap-4 border-t px-6 py-6 text-xl font-medium text-white sm:flex-row sm:justify-between sm:px-10 lg:px-20 max-w-7xl mx-auto">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 border-t px-6 py-6 text-xl font-medium text-white sm:flex-row sm:justify-between sm:px-10 lg:px-20">
         <p>© 2025, All rights reserved</p>
 
         {/* Payment Icons */}

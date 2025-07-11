@@ -70,7 +70,7 @@ const geistMono = Geist_Mono({
 
 const karla = Karla({
   weight: '400',
-  subsets: ['latin'], 
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
@@ -88,13 +88,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${karla.className} antialiased bg-background`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${karla.className} antialiased`}
+      >
         <LocationProvider>
           <CartModalProvider>
             <Header />
-            <main className="min-h-[calc(100vh-200px)] bg-background"> 
-              {children}
-            </main>
+            <main className="bg-background min-h-[calc(100vh-200px)]">{children}</main>
             <Footer />
             <CartModalWrapper />
           </CartModalProvider>

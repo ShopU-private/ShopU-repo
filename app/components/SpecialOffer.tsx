@@ -38,7 +38,8 @@ const ShopUSpecialOffers = () => {
     const fetchMedicines = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/get-medicine?limit=3');
+        // ↓↓↓ this is enough
+        const response = await fetch('/api/get-medicine?limit=2');
 
         if (!response.ok) throw new Error('Failed to fetch medicines');
         const data = await response.json();
@@ -86,8 +87,8 @@ const ShopUSpecialOffers = () => {
   }, []);
 
   // Removed nextSlide and prevSlide functions as currentSlide is not used
-  const nextSlide = () => { };
-  const prevSlide = () => { };
+  const nextSlide = () => {};
+  const prevSlide = () => {};
 
   const handleAddToCart = async (offerId: string) => {
     try {
@@ -100,8 +101,8 @@ const ShopUSpecialOffers = () => {
 
   if (loading) {
     return (
-      <section className="min-h-screen  py-8">
-        <div className="max-w-6xl mx-auto px-4">
+      <section className="min-h-xl py-8">
+        <div className="mx-auto max-w-6xl px-4">
           <div className="animate-pulse">
             <div className="mb-6 flex items-center justify-between">
               <div className="space-y-2">
@@ -113,8 +114,7 @@ const ShopUSpecialOffers = () => {
                 <div className="h-8 w-8 rounded-full bg-gray-200"></div>
               </div>
             </div>
-            <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-              <div className="h-64 rounded-xl bg-gray-200"></div>
+            <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-2 lg:gap-6">
               <div className="h-64 rounded-xl bg-gray-200"></div>
               <div className="h-64 rounded-xl bg-gray-200"></div>
             </div>
@@ -134,13 +134,15 @@ const ShopUSpecialOffers = () => {
 
   return (
     <section className="min-h-xl">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-8 w-[90%]">
+      <main className="mx-auto w-[90%] max-w-7xl px-4 py-8 sm:px-6 sm:py-8">
         <div className="mb-8 sm:mb-12">
           <div className="mb-6 flex items-center justify-between sm:mb-8">
             <div>
-              <h2 className="text-2xl sm:text-2xl font-bold text-primaryColor mb-2">Special
-                <span className='text-secondaryColor'> Offer</span></h2>
-              <hr className="bg-background1 w-40 h-1 border-0 rounded mt-1" />
+              <h2 className="text-primaryColor mb-2 text-2xl font-bold sm:text-2xl">
+                Special
+                <span className="text-secondaryColor"> Offer</span>
+              </h2>
+              <hr className="bg-background1 mt-1 h-1 w-40 rounded border-0" />
             </div>
             <div className="flex items-center space-x-2">
               <button
@@ -195,8 +197,8 @@ const ShopUSpecialOffers = () => {
             ))}
           </div>
 
-          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-            {offers.map(offer => (
+          <div className="hidden gap-6 sm:grid sm:grid-cols-2">
+            {offers.slice(0, 2).map(offer => (
               <OfferCard
                 key={offer.id}
                 offer={offer}
@@ -226,8 +228,9 @@ const OfferCard = ({
   return (
     <div
       onClick={onClick}
-      className={`relative bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer ${selected ? 'ring-2 ring-teal-400 ring-opacity-50' : ''
-        }`}
+      className={`relative transform cursor-pointer overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${
+        selected ? 'ring-opacity-50 ring-2 ring-teal-400' : ''
+      }`}
     >
       {offer.discount && (
         <div className="absolute top-3 right-3 z-10 rounded-full bg-gradient-to-r from-red-500 to-red-400 px-2 py-1 text-xs font-bold text-white">
@@ -258,8 +261,9 @@ const OfferCard = ({
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`w-3 h-3 ${i < Math.floor(offer.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                    }`}
+                  className={`h-3 w-3 ${
+                    i < Math.floor(offer.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'
+                  }`}
                 />
               ))}
             </div>
@@ -274,7 +278,7 @@ const OfferCard = ({
             e.stopPropagation();
             onAddToCart();
           }}
-          className="w-full mt-4 bg-gradient-to-r from-primaryColor to-teal-600 text-white py-2 rounded-lg text-sm font-semibold hover:from-primaryColor hover:to-teal-600 transition-all duration-200 flex items-center justify-center space-x-1 group"
+          className="from-primaryColor hover:from-primaryColor group mt-4 flex w-full items-center justify-center space-x-1 rounded-lg bg-gradient-to-r to-teal-600 py-2 text-sm font-semibold text-white transition-all duration-200 hover:to-teal-600"
         >
           <span>Add to Cart</span>
           <svg

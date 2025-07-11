@@ -129,7 +129,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   id="phone"
                   value={phoneNumber}
                   onChange={e => setPhoneNumber(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 py-3 pr-4 pl-24 transition-all focus:border-transparent focus:ring-2 focus:ring-primaryColor focus:outline-none"
+                  className="focus:ring-primaryColor w-full rounded-xl border border-gray-300 py-3 pr-4 pl-24 transition-all focus:border-transparent focus:ring-2 focus:outline-none"
                   placeholder="Enter your phone number"
                   disabled={loading}
                 />
@@ -137,7 +137,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             </div>
             <button
               onClick={handleSendOtp}
-              className="w-full transform rounded-xl bg-background1 px-4 py-3 font-medium text-white shadow-lg shadow-teal-100 transition-all hover:scale-[1.02] hover:bg-background1 active:scale-[0.98]"
+              className="bg-background1 hover:bg-background1 w-full transform rounded-xl px-4 py-3 font-medium text-white shadow-lg shadow-teal-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
               disabled={loading}
             >
               {loading ? 'Sending OTP...' : 'Send OTP'}
@@ -145,7 +145,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           </div>
         ) : (
           <div className="space-y-6">
-            {error && <p className="text-center text-sm text-secondaryColor">{error}</p>}
+            {error && <p className="text-secondaryColor text-center text-sm">{error}</p>}
             <div className="relative">
               <label htmlFor="otp" className="mb-2 block text-sm font-medium text-gray-700">
                 Enter OTP
@@ -159,7 +159,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   id="otp"
                   value={otp}
                   onChange={e => setOtp(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 py-3 pr-4 pl-12 transition-all focus:border-transparent focus:ring-2 focus:ring-primaryColor focus:outline-none"
+                  className="focus:ring-primaryColor w-full rounded-xl border border-gray-300 py-3 pr-4 pl-12 transition-all focus:border-transparent focus:ring-2 focus:outline-none"
                   placeholder="Enter 6-digit OTP"
                   disabled={loading}
                 />
@@ -167,7 +167,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             </div>
             <button
               onClick={handleVerifyOtp}
-              className="w-full transform rounded-xl bg-background1 px-4 py-3 font-medium text-white shadow-lg shadow-teal-100 transition-all hover:scale-[1.02] hover:bg-background1 active:scale-[0.98]"
+              className="bg-background1 hover:bg-background1 w-full transform rounded-xl px-4 py-3 font-medium text-white shadow-lg shadow-teal-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
               disabled={loading}
             >
               {loading ? 'Verifying...' : 'Verify OTP'}
@@ -178,11 +178,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500">
             By continuing, you agree to our{' '}
-            <a href="#" className="font-medium text-primaryColor hover:text-teal-700">
+            <a href="#" className="text-primaryColor font-medium hover:text-teal-700">
               Terms of Service
             </a>{' '}
             and{' '}
-            <a href="#" className="font-medium text-primaryColor hover:text-teal-700">
+            <a href="#" className="text-primaryColor font-medium hover:text-teal-700">
               Privacy Policy
             </a>
           </p>

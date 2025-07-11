@@ -23,7 +23,7 @@ const Header = () => {
     isLoadingLocation,
     setIsLoadingLocation,
     locationError,
-    setLocationError = () => { } // Provide default empty function
+    setLocationError = () => {}, // Provide default empty function
   } = useLocation();
   const [phoneNumber, setPhoneNumber] = useState('');
   const { openCartModal } = useCartModal();
@@ -245,14 +245,14 @@ const Header = () => {
   return (
     <header className="bg-white shadow-lg">
       {/* Main Navbar */}
-      <div className="border-b border-gray-100 px-4 py-1 max-w-7xl mx-auto">
+      <div className="mx-auto max-w-7xl border-b border-gray-100 px-4 py-1">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-10">
           {/* Logo */}
           <div className="px-4">
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
-              className=" w-36 h-16 py-2  transition-transform hover:scale-105 md:h-20"
+              className="h-16 w-36 py-2 transition-transform hover:scale-105 md:h-20"
               width={400}
               height={80}
               priority
@@ -265,7 +265,7 @@ const Header = () => {
               className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 transition-all hover:border-teal-300 hover:shadow-md"
               onClick={toggleLocation}
             >
-              <MapPin className="h-5 w-5 text-primaryColor" />
+              <MapPin className="text-primaryColor h-5 w-5" />
               <div className="min-w-0">
                 <p className="text-xs text-gray-500">Deliver to</p>
                 <div className="flex items-center gap-1">
@@ -292,7 +292,7 @@ const Header = () => {
                 <div className="space-y-3">
                   {isLoadingLocation ? (
                     <div className="flex items-center justify-center py-6">
-                      <Loader className="mr-2 h-5 w-5 animate-spin text-primaryColor" />
+                      <Loader className="text-primaryColor mr-2 h-5 w-5 animate-spin" />
                       <p className="text-gray-600">Getting your location...</p>
                     </div>
                   ) : locationError ? (
@@ -309,7 +309,7 @@ const Header = () => {
                     <div className="cursor-pointer rounded-lg border border-gray-100 p-3 transition-colors hover:bg-teal-50">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-2">
-                          <MapPin className="mt-0.5 h-4 w-4 text-PrimaaryColor" />
+                          <MapPin className="text-PrimaaryColor mt-0.5 h-4 w-4" />
                           <div>
                             <p className="font-medium text-gray-800">
                               {typeof location.address === 'string'
@@ -326,7 +326,7 @@ const Header = () => {
                             setLocation(null);
                             setShowPincodeInput(false);
                           }}
-                          className="text-sm text-primaryColor hover:underline"
+                          className="text-primaryColor text-sm hover:underline"
                         >
                           Change
                         </button>
@@ -375,7 +375,7 @@ const Header = () => {
                           <button
                             type="submit"
                             disabled={isLoadingPincode || pincode.length !== 6}
-                            className="flex-1 rounded-lg bg-background1 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-background1 disabled:bg-gray-300"
+                            className="bg-background1 hover:bg-background1 flex-1 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors disabled:bg-gray-300"
                           >
                             {isLoadingPincode ? (
                               <span className="flex items-center justify-center gap-2">
@@ -418,7 +418,7 @@ const Header = () => {
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={toggleUserMenu}
-                  className="hidden border-2 border-solid items-center gap-2 rounded-lg px-1 py-2 text-primaryColor transition-colors hover:bg-gray-50 hover:text-primaryColor md:flex"
+                  className="text-primaryColor hover:text-primaryColor hidden items-center gap-2 rounded-lg border-2 border-solid px-1 py-2 transition-colors hover:bg-gray-50 md:flex"
                 >
                   <User className="h-5 w-5" />
                   <span className="text-md font-medium">Account</span>
@@ -493,7 +493,7 @@ const Header = () => {
             ) : (
               <button
                 onClick={() => setIsLoginModalOpen(true)}
-                className="hidden items-center gap-2 rounded-lg bg-background1 px-4 py-2 text-white transition-colors hover:bg-background1 md:flex"
+                className="bg-background1 hover:bg-background1 hidden items-center gap-2 rounded-lg px-4 py-2 text-white transition-colors md:flex"
               >
                 <User className="h-5 w-5" />
                 <span className="text-sm font-medium">Login</span>
@@ -501,7 +501,10 @@ const Header = () => {
             )}
 
             {/* Shopping Cart */}
-            <button onClick={openCartModal} className="relative rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 hover:text-primaryColor">
+            <button
+              onClick={openCartModal}
+              className="hover:text-primaryColor relative rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50"
+            >
               <ShoppingCart className="h-6 w-6 text-[#317C80]" />
               {isLoadingCart ? (
                 <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
@@ -530,7 +533,7 @@ const Header = () => {
             <input
               type="text"
               placeholder="Search essentials, groceries and more..."
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 pl-12 text-sm focus:border-teal-500 focus:ring-2 focus:ring-primaryColor focus:outline-none"
+              className="focus:ring-primaryColor w-full rounded-xl border border-gray-200 px-4 py-3 pl-12 text-sm focus:border-teal-500 focus:ring-2 focus:outline-none"
             />
             <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
           </div>
@@ -538,10 +541,10 @@ const Header = () => {
       </div>
 
       {/* Categories Navigation */}
-      <div className="hidden bg-background1 md:block">
+      <div className="bg-background1 hidden md:block">
         <div className="mx-auto max-w-7xl px-6">
           <div
-            className="flex justify-between items-center gap-4 overflow-x-auto py-3"
+            className="flex items-center justify-between gap-4 overflow-x-auto py-3"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
@@ -555,7 +558,7 @@ const Header = () => {
             {categories.map((category, index) => (
               <button
                 key={index}
-                className="rounded-lg px-3 py-1.5 text-[15px]  whitespace-nowrap text-white transition-all hover:bg-white hover:text-primaryColor hover:shadow-sm"
+                className="hover:text-primaryColor rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
               >
                 {category}
               </button>
@@ -660,7 +663,7 @@ const Header = () => {
                     setIsLoginModalOpen(true);
                     setIsMenuOpen(false);
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg bg-teal-600 p-3 text-white hover:bg-background1"
+                  className="hover:bg-background1 flex w-full items-center gap-2 rounded-lg bg-teal-600 p-3 text-white"
                 >
                   <span className="text-sm font-medium">Login</span>
                 </button>
@@ -672,7 +675,7 @@ const Header = () => {
                   className="flex w-full items-center gap-2 text-left"
                   onClick={getUserLocation}
                 >
-                  <MapPin className="h-4 w-4 text-primaryColor" />
+                  <MapPin className="text-primaryColor h-4 w-4" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-gray-800">Delivery Location</p>
                     <p className="truncate text-xs text-gray-600">
@@ -691,7 +694,7 @@ const Header = () => {
                   <div className="mt-3 border-t pt-3">
                     <button
                       onClick={() => setShowPincodeInput(!showPincodeInput)}
-                      className="w-full rounded-lg bg-teal-50 px-3 py-2 text-sm font-medium text-primaryColor hover:bg-teal-100"
+                      className="text-primaryColor w-full rounded-lg bg-teal-50 px-3 py-2 text-sm font-medium hover:bg-teal-100"
                     >
                       📝 Enter Pincode Instead
                     </button>
@@ -703,7 +706,7 @@ const Header = () => {
                           value={pincode}
                           onChange={handlePincodeInputChange}
                           placeholder="Enter 6-digit pincode"
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primaryColor focus:ring-1 focus:ring-primaryColor focus:outline-none"
+                          className="focus:border-primaryColor focus:ring-primaryColor w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:outline-none"
                           maxLength={6}
                         />
                         <div className="flex gap-2">
@@ -758,9 +761,9 @@ const Header = () => {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
-        onPhoneChange={(value) => {
+        onPhoneChange={value => {
           console.log(value);
-          setPhoneNumber(value)
+          setPhoneNumber(value);
         }}
       />
     </header>
