@@ -18,12 +18,12 @@ const HealthCategoryGrid: React.FC<Props> = ({
   healthCategories,
 }) => {
   return (
-    <section className="mx-auto mb-8 max-w-7xl">
+    <section className="mx-auto max-w-7xl py-6">
       <div className="mb-6 w-60">
-        <h2 className="text-xl font-semibold text-[#317C80] sm:text-xl">
-          {title} <span className="text-[#E93E40]">{title1}</span>{' '}
+        <h2 className="text-primaryColor text-xl font-semibold sm:text-xl">
+          {title} <span className="text-secondaryColor">{title1}</span>{' '}
         </h2>
-        <hr className="mt-1 h-1 rounded border-0 bg-[#317C80]" />
+        <hr className="bg-background1 mt-1 h-1 rounded border-0" />
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-7">
@@ -35,7 +35,7 @@ const HealthCategoryGrid: React.FC<Props> = ({
             <div className="mb-1 text-xl transition-transform duration-300 group-hover:scale-110 sm:mb-2 sm:text-2xl">
               {category.icon}
             </div>
-            <h3 className="text-xs font-medium text-gray-900 transition-colors group-hover:text-teal-600 sm:text-sm">
+            <h3 className="group-hover:text-primaryColor text-xs font-medium text-gray-900 transition-colors sm:text-sm">
               {category.name}
             </h3>
           </button>

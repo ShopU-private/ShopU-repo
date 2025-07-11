@@ -49,7 +49,7 @@
 //   );
 // }
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Karla } from 'next/font/google';
+import { Karla } from 'next/font/google';
 import './globals.css';
 import { LocationProvider } from './context/LocationContext';
 import { CartModalProvider } from './context/CartModalContext';
@@ -58,19 +58,9 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Script from 'next/script';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
 const karla = Karla({
-  weight: '300', // or '500', '700', etc.
-  subsets: ['latin'], // specify subsets if needed
+  weight: '400',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
@@ -88,13 +78,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${karla.className} antialiased`}
-      >
+      <body className={`${karla.className} antialiased`}>
         <LocationProvider>
           <CartModalProvider>
             <Header />
-            <main className="min-h-[calc(100vh-200px)]">{children}</main>
+            <main className="bg-background min-h-[calc(100vh-200px)]">{children}</main>
             <Footer />
             <CartModalWrapper />
           </CartModalProvider>

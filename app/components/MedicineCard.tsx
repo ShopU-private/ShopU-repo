@@ -60,7 +60,7 @@ const MedicineCard: React.FC<MedicineCardProps> = ({ medicine }) => {
       <h3 className="mb-2 text-lg font-semibold text-gray-800">{medicine.name}</h3>
       <p className="mb-3 line-clamp-2 text-sm text-gray-600">{medicine.description}</p>
       <div className="flex items-center justify-between">
-        <span className="text-xl font-bold text-teal-600">₹{medicine.price}</span>
+        <span className="text-primaryColor text-xl font-bold">₹{medicine.price}</span>
         <button
           onClick={addToCart}
           disabled={isAddingToCart}
@@ -69,7 +69,7 @@ const MedicineCard: React.FC<MedicineCardProps> = ({ medicine }) => {
               ? 'bg-green-600 hover:bg-green-700'
               : isAddingToCart
                 ? 'cursor-not-allowed bg-gray-400'
-                : 'bg-teal-600 hover:bg-teal-700'
+                : 'bg-background1 hover:bg-teal-700'
           }`}
         >
           {isAddingToCart ? 'Adding...' : isAdded ? 'Added!' : 'Add to Cart'}

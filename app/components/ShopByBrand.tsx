@@ -13,7 +13,7 @@ const brandData = [
 
 const BrandSection = () => {
   return (
-    <div className="mx-auto w-[90%] max-w-7xl px-4 py-6">
+    <div className="mx-auto w-[90%] max-w-7xl px-4 py-2">
       <HealthCategoryGrid title="Shop By " title1="Brand" healthCategories={brandData} />
     </div>
   );

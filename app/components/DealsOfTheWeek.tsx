@@ -150,7 +150,7 @@ const DealOfTheWeek = () => {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-6xl bg-white p-4 sm:p-6">
+      <div className="mx-auto max-w-6xl p-4 sm:p-6">
         <div className="animate-pulse">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div className="space-y-2">
@@ -172,18 +172,18 @@ const DealOfTheWeek = () => {
   }
 
   return (
-    <div className="mx-auto w-[90%] max-w-7xl bg-white p-4 sm:p-6">
+    <section className="mx-auto w-[90%] max-w-7xl p-4 sm:p-6">
       {/* Header */}
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <h2 className="text-center text-2xl font-semibold text-[#317C80] sm:text-2xl">
-            Deal of <span className="text-[#E93E40]">The Week</span>
+          <h2 className="text-primaryColor text-center text-2xl font-semibold sm:text-2xl">
+            Deal of <span className="text-secondaryColor">The Week</span>
           </h2>
           <div className="flex justify-center gap-2 sm:justify-start">
             {['days', 'hours', 'minutes', 'seconds'].map(unit => (
               <div
                 key={unit}
-                className="rounded bg-[#E93E40] px-2 py-1.5 text-center text-sm font-medium text-white sm:px-3 sm:py-2 sm:text-sm"
+                className="bg-background2 rounded px-2 py-1.5 text-center text-sm font-medium text-white sm:px-3 sm:py-2 sm:text-sm"
               >
                 <div className="text-base font-bold sm:text-lg">
                   {timeLeft[unit as keyof typeof timeLeft]}
@@ -274,7 +274,7 @@ const DealOfTheWeek = () => {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 
