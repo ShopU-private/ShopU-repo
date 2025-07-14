@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, MessageCircle } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
+import { WhatsappCard } from 'twilio/lib/rest/content/v1/content';
+import { FaFacebookF, FaWhatsapp } from 'react-icons/fa';
 
 const ShopUCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -64,7 +66,7 @@ const ShopUCarousel = () => {
   return (
     <div className="mx-auto w-[90%] max-w-7xl space-y-4 p-2 sm:p-4">
       {/* Main Carousel */}
-      <div className="flex flex-col gap-4 py-4 lg:flex-row">
+      <div className="flex flex-col gap-5 py-2 lg:flex-row">
         {/* Carousel Banner */}
         <div className="relative min-h-[250px] flex-3 overflow-hidden rounded-lg bg-gradient-to-br sm:min-h-[300px]">
           <div
@@ -97,28 +99,92 @@ const ShopUCarousel = () => {
         </div>
 
         {/* Right Side Card */}
-        <div className="hidden min-h-[150px] flex-1 rounded-xl bg-gray-200 sm:block sm:min-h-[200px] lg:min-h-[300px]">
-          {/* Empty placeholder matching original design */}
+        <div className="relative flex w-64 flex-col items-center space-y-3 rounded-xl bg-gray-100 px-6 py-4 text-center shadow">
+          {/* Top Badge */}
+          <div className="text-secondaryColor absolute top-3 left-4 text-xl font-semibold">
+            <p>Special Deal</p>
+          </div>
+          <div className="bg-background2 absolute top-0 right-0 rounded-tr-xl rounded-bl-2xl px-3 py-1 text-sm font-bold text-white">
+            <p>
+              46% <br />
+              OFF
+            </p>
+          </div>
+
+          {/* Product Image */}
+          <img src="/pediasure.png" alt="Pediasure" className="mt-8 h-36 object-contain" />
+
+          {/* Product Name */}
+          <p className="text-left text-sm font-medium text-gray-800">
+            Pediasure Chocolate Flavour Nutrition..
+          </p>
+
+          {/* Price + Add */}
+          <div className="flex w-full items-center justify-between border-t border-gray-200 px-2 pt-1">
+            <div className="flex items-baseline gap-1">
+              <span className="text-primaryColor text-lg font-bold">₹51</span>
+              <span className="text-sm text-gray-400 line-through">₹96</span>
+            </div>
+            <button className="bg-background1 rounded px-5 py-1 text-sm font-medium text-white">
+              ADD
+            </button>
+          </div>
+
+          {/* Countdown */}
+          <div className="w-full px-2 text-left">
+            <p className="pt-2 text-xs font-medium text-gray-700">Hurry Up! Offer ends in:</p>
+            <div className="mt-1 flex justify-center gap-2 rounded bg-gray-100 p-2 text-sm font-semibold text-gray-800">
+              <div className="text-center">
+                <div>00</div>
+                <div className="text-xs font-normal">Hours</div>
+              </div>
+              <span>:</span>
+              <div className="text-center">
+                <div>00</div>
+                <div className="text-xs font-normal">Mins</div>
+              </div>
+              <span>:</span>
+              <div className="text-center">
+                <div>00</div>
+                <div className="text-xs font-normal">Secs</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* WhatsApp Banner */}
-      <div className="flex flex-col items-start justify-between gap-3 rounded-lg border bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:gap-0 sm:p-4">
-        <div className="flex items-center space-x-3 sm:space-x-4">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500 sm:h-12 sm:w-12">
-            <MessageCircle className="h-5 w-5 text-white sm:h-6 sm:w-6" />
+      <div className="bg-background1 flex h-46 w-full flex-col items-center justify-between rounded-lg px-14 py-4 text-white sm:flex-row">
+        {/* Left: Logo & Text */}
+        <div className="flex w-full flex-col items-center gap-10 sm:w-auto sm:flex-row">
+          {/* Logo */}
+          <div className="flex items-center gap-2">
+            <img src="/ShopULogo.png" alt="Shopu Logo" className="h-20 w-40" />
           </div>
-          <span className="text-sm font-medium text-gray-800 sm:text-base">
-            Claim 5% Off on WhatsApp
-          </span>
+
+          {/* Text */}
+          <div className="text-center sm:text-left">
+            <p className="text-lg font-medium sm:text-lg">Now available on</p>
+            <h1 className="py-2 text-4xl font-semibold">WHATSAPP</h1>
+            <p className="mt-1 text-sm sm:text-base">Click to order.</p>
+          </div>
         </div>
-        <button
-          onClick={handleOrderNow}
-          disabled={isOrderingNow}
-          className="w-full rounded-lg bg-teal-600 px-4 py-2 text-xs text-white transition-colors hover:bg-teal-700 sm:w-auto sm:px-6 sm:text-sm"
+
+        {/* Middle: WhatsApp Button */}
+        <a
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primaryColor flex items-center gap-2 rounded-md border border-white bg-white px-8 py-3 text-xl font-medium font-semibold shadow hover:shadow-lg"
         >
-          {isOrderingNow ? 'Adding...' : 'Order now →'}
-        </button>
+          <FaWhatsapp className="text-2xl" />
+          WhatsApp
+        </a>
+
+        {/* Right: Illustration */}
+        <div className="hidden sm:block">
+          <img src="/specialimage.png" alt="WhatsApp Illustration" className="h-36" />
+        </div>
       </div>
     </div>
   );

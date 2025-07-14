@@ -13,6 +13,7 @@ import BrandSection from './components/ShopByBrand';
 import PersonalCareSection from './components/PersonalCareSection';
 import EverydayEssentialsSection from './components/EverydayEssentialsSection';
 import FeatureSection from './components/FeatureSection';
+import PromoBanner from './components/Promobanner';
 
 interface Medicine {
   id: string;
@@ -45,6 +46,7 @@ export default function Home() {
       <BrandSection />
       <WomenCareSection />
       <PersonalCareSection />
+      <PromoBanner />
       <EverydayEssentialsSection />
       <main className="flex items-center justify-center px-4 py-8">
         {searchResults.length > 0 ? (

@@ -38,7 +38,8 @@ const ShopUSpecialOffers = () => {
     const fetchMedicines = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/get-medicine?limit=3');
+        // ↓↓↓ this is enough
+        const response = await fetch('/api/get-medicine?limit=2');
 
         if (!response.ok) throw new Error('Failed to fetch medicines');
         const data = await response.json();
@@ -100,7 +101,7 @@ const ShopUSpecialOffers = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <section className="min-h-xl py-8">
         <div className="mx-auto max-w-6xl px-4">
           <div className="animate-pulse">
             <div className="mb-6 flex items-center justify-between">
@@ -113,14 +114,13 @@ const ShopUSpecialOffers = () => {
                 <div className="h-8 w-8 rounded-full bg-gray-200"></div>
               </div>
             </div>
-            <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-              <div className="h-64 rounded-xl bg-gray-200"></div>
+            <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-2 lg:gap-6">
               <div className="h-64 rounded-xl bg-gray-200"></div>
               <div className="h-64 rounded-xl bg-gray-200"></div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -133,15 +133,16 @@ const ShopUSpecialOffers = () => {
   }
 
   return (
-    <div className="min-h-xl bg-gray-50">
-      <main className="mx-auto w-[90%] max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+    <section className="min-h-xl">
+      <main className="mx-auto w-[90%] max-w-7xl px-4 py-8 sm:px-6 sm:py-8">
         <div className="mb-8 sm:mb-12">
           <div className="mb-6 flex items-center justify-between sm:mb-8">
             <div>
-              <h2 className="mb-2 text-2xl font-bold text-gray-800 sm:text-3xl">
-                Special Medicines
+              <h2 className="text-primaryColor mb-2 text-2xl font-bold sm:text-2xl">
+                Special
+                <span className="text-secondaryColor"> Offer</span>
               </h2>
-              <hr className="mt-1 h-1 w-64 rounded border-0 bg-[#317C80]" />
+              <hr className="bg-background1 mt-1 h-1 w-40 rounded border-0" />
             </div>
             <div className="flex items-center space-x-2">
               <button
@@ -196,8 +197,8 @@ const ShopUSpecialOffers = () => {
             ))}
           </div>
 
-          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-            {offers.map(offer => (
+          <div className="hidden gap-6 sm:grid sm:grid-cols-2">
+            {offers.slice(0, 2).map(offer => (
               <OfferCard
                 key={offer.id}
                 offer={offer}
@@ -209,7 +210,7 @@ const ShopUSpecialOffers = () => {
           </div>
         </div>
       </main>
-    </div>
+    </section>
   );
 };
 
@@ -277,7 +278,7 @@ const OfferCard = ({
             e.stopPropagation();
             onAddToCart();
           }}
-          className="group mt-4 flex w-full items-center justify-center space-x-1 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 py-2 text-sm font-semibold text-white transition-all duration-200 hover:from-teal-700 hover:to-teal-600"
+          className="from-primaryColor hover:from-primaryColor group mt-4 flex w-full items-center justify-center space-x-1 rounded-lg bg-gradient-to-r to-teal-600 py-2 text-sm font-semibold text-white transition-all duration-200 hover:to-teal-600"
         >
           <span>Add to Cart</span>
           <svg

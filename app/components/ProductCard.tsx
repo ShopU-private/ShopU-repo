@@ -30,15 +30,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isAdding,
 }) => {
   return (
-    <div className="group flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-sm transition-all duration-300 hover:shadow-lg">
+    <div className="group flex h-88 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:h-88">
       {/* Product Image */}
       <div className="relative h-32 w-full sm:h-40">
         <Image
-          src={product.image}
+          src="/Nivea.png"
           alt={product.name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover px-12 pt-8 pb-2 transition-transform duration-300 group-hover:scale-105"
         />
         {product.discount && (
           <div className="absolute top-2 left-2 rounded bg-red-600 px-1.5 py-0.5 text-xs font-medium text-white">
@@ -47,10 +47,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
         <button
           onClick={() => onToggleFavorite(product.id)}
-          className="absolute top-2 right-2 rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50"
+          className="absolute top-0.5 right-2 rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50"
         >
           <Heart
-            className={`h-3 w-3 sm:h-4 sm:w-4 ${
+            className={`h-5 w-3 sm:h-5 sm:w-5 ${
               isFavorite ? 'fill-current text-red-500' : 'text-gray-400'
             }`}
           />
@@ -59,49 +59,38 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Info */}
       <div className="flex flex-grow flex-col p-2 sm:p-3">
-        <div className="mb-1 sm:mb-2">
-          <span className="rounded bg-teal-50 px-1.5 py-0.5 text-xs font-medium text-teal-600">
-            {product.category}
-          </span>
-        </div>
-        <h3 className="mb-1 line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-900 transition-colors group-hover:text-teal-600 sm:mb-2 sm:min-h-[3rem] sm:text-base">
-          {product.name}
+        <p className="text-xs font-medium text-red-500">
+          End In <span className="font-semibold text-[#317C80]">05:02:12</span>
+        </p>
+        <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-900 transition-colors group-hover:text-teal-600 sm:mb-1 sm:min-h-[3rem]">
+          {product.name.length > 40 ? `${product.name.slice(0, 40)}...` : product.name}
         </h3>
+        <p className="mb-1 text-xs text-gray-500">tube of 100 ml Gel</p>
 
-        {/* Rating */}
-        <div className="mb-2 flex items-center space-x-1 sm:mb-3">
-          <div className="flex">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`h-3 w-3 sm:h-4 sm:w-4 ${
-                  i < Math.floor(product.rating) ? 'fill-current text-yellow-400' : 'text-gray-300'
-                }`}
-              />
-            ))}
+        {product.originalPrice && (
+          <div>
+            <hr className="text-[#D9D9D9]" />
+            <p className="text-sm text-gray-500">
+              MRP <s>₹{String(product.originalPrice).slice(0, 5)}</s>{' '}
+              <span className="font-medium text-green-500">{product.discount}% OFF</span>
+            </p>
           </div>
-          <span className="text-xs text-gray-600 sm:text-sm">
-            {product.rating} ({product.reviews})
-          </span>
-        </div>
+        )}
 
         {/* Price & Add Button */}
         <div className="mt-auto flex items-center justify-between">
           <div className="flex flex-col">
             <div className="flex items-center space-x-1 sm:space-x-2">
-              <span className="text-base font-bold text-gray-900 sm:text-lg">₹{product.price}</span>
-              {product.originalPrice && (
-                <span className="text-xs text-gray-500 line-through sm:text-sm">
-                  ₹{String(product.originalPrice).slice(0, 5)}
-                </span>
-              )}
+              <span className="text-primaryColor py-2 text-xl font-bold sm:text-xl">
+                ₹{product.price}
+              </span>
             </div>
           </div>
 
           <button
             onClick={() => onAddToCart(product)}
             disabled={isAdding}
-            className="group flex items-center space-x-1 rounded-lg bg-[#317C80] px-3 py-1.5 text-white transition-colors hover:bg-teal-700 sm:px-4 sm:py-2"
+            className="bg-background1 hover:bg-background1 flex hidden items-center space-x-1 rounded-lg px-3 py-1.5 text-white transition group-hover:flex sm:px-4 sm:py-2"
           >
             {isAdding ? (
               <span>Adding...</span>
