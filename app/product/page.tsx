@@ -15,6 +15,8 @@ const Page = () => {
   const [filtered, setFiltered] = useState<ProductType[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [ShowFilterDrawer, setShowFilterDrawer] = useState(false);
+  const [ShowSortDrawer, setShowSortDrawer] = useState(false)
 
   const [sort, setSort] = useState('');
   const searchParams = useSearchParams();
@@ -121,12 +123,22 @@ const Page = () => {
 
   return (
     <div className="container mx-auto p-4 md:p-6 max-w-7xl">
+      <div className='md:hidden flex justify-between gap-2 mb-4'>
+        <button onClick={() => setShowFilterDrawer(true)}
+          className='flex-1 bg-white font-bold border-r-2'>
+            Filter
+        </button>
+        <button onClick={() => setShowSortDrawer(true)}
+          className='flex-1 bg-white font-bold text-black'>
+            Sort
+          </button>
+      </div>
       <div className="flex flex-col md:flex-row">
         {/* === Sidebar === */}
         <div className="mt-14 mb-4 w-full md:mb-0 md:w-1/4 md:pr-6">
-          <div className="rounded border bg-white p-4 shadow-sm">
+          <div className="rounded border bg-white p-4 shadow-sm hidden md:block">
             {/* Price Range */}
-            <div className="mb-4">
+            <div className="mb-4 ">
               <label className="block text-lg font-medium mb-1">Price Range</label>
               <div className="flex items-center gap-2">
                 <input
@@ -145,10 +157,12 @@ const Page = () => {
             </div>
 
             {/* Filter Sidebar */}
-            <FilterSidebar
+            <div className='hidden md:block'>
+              <FilterSidebar
               selectedFilters={selectedFilters}
               setSelectedFilters={setSelectedFilters}
             />
+            </div>
           </div>
         </div>
 
@@ -181,7 +195,7 @@ const Page = () => {
           </div>
 
           {/* Sorting */}
-          <div className="mb-4 flex justify-end">
+          <div className="justify-end hidden md:block">
             <select
               className="rounded border px-4 py-2 text-lg"
               onChange={e => setSort(e.target.value)}
@@ -207,10 +221,48 @@ const Page = () => {
               onPageChange={setCurrentPage}
             />
           )}
+
+      {ShowFilterDrawer &&(
+        <div 
+          className='fixed inset-0 z-50 bg-white p-4 md:hidden overflow-y-auto'>
+          <div className='flex justify-between items-center mb-4'>
+            <h2 className='text-xl font-bold text-black '>Filter</h2>
+            <button onClick={() => setShowFilterDrawer(false)}>X</button>
+          </div>
+
+          <FilterSidebar
+            selectedFilters={selectedFilters}
+            setSelectedFilters={setSelectedFilters}/>
         </div>
+      )}
+
+{ShowSortDrawer && (
+  <div className="fixed inset-0 z-50 bg-white p-4 md:hidden">
+    <div className="flex justify-between items-center mb-4">
+      <h2 className="text-xl font-bold text-[#317c80]">Sort By</h2>
+      <button onClick={() => setShowSortDrawer(false)}>✕</button>
+    </div>
+
+    <select
+      className="w-full border px-4 py-2 text-lg rounded"
+      onChange={e => {
+        setSort(e.target.value);
+        setShowSortDrawer(false);
+      }}
+    >
+      <option value="">Default</option>
+      <option value="low-to-high">Price: Low to High</option>
+      <option value="high-to-low">Price: High to Low</option>
+    </select>
+  </div>
+)}
+
       </div>
     </div>
-  );
+
+
+  </div>
+);
 };
 
 export default Page;

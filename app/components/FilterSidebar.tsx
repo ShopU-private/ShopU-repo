@@ -72,9 +72,27 @@ export default function FilterSidebar({ selectedFilters, setSelectedFilters }: P
   );
 
   return (
-    <div className="w-64 bg-white p-4">
+    <div className="w-full md:w-64 bg-white p-4 overflow-y-auto">
       {renderSection('Categories', filters)}
       {renderSection('Filter By', filterBy)}
+
+      <div className='mt-6'>
+        {selectedFilters.length > 0 && (
+          <div className='flex flex-wrap gap-2'>
+            {selectedFilters.map((item) =>(
+              <span key={item} className='bg-blue-100 text-[#317c80] px-2 py-1 rounded-full flex'>
+                {item}
+                <button className='ml-1'
+                 onClick={() => setSelectedFilters((prev) => prev.filter((i) => i !== item))}>X</button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className='mt-6 text-right'>
+        <button className='bg-[#317c80] text-white px-4 py-2 rounded'>Save</button>
+      </div>
     </div>
   );
 }
