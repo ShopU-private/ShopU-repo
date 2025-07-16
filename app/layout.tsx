@@ -57,6 +57,7 @@ import CartModalWrapper from './components/CartModalWrapper';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Script from 'next/script';
+import { Toaster } from 'react-hot-toast';
 
 const karla = Karla({
   weight: '400',
@@ -79,6 +80,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${karla.className} antialiased`}>
+        <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
         <LocationProvider>
           <CartModalProvider>
             <Header />

@@ -22,7 +22,7 @@ const HealthCategoryGrid: React.FC<Props> = ({ healthCategories }) => {
 
       <div className="grid grid-cols-2 gap-4 pt-8 pb-10 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-7">
         {healthCategories.map(category => (
-          <div key={category.id} className="group items-center rounded-lg">
+          <div key={category.id} className="group cursor-pointer items-center rounded-lg">
             <div className="mb-1 flex justify-center transition-transform duration-300 group-hover:scale-102 sm:mb-2">
               <img src={category.image} alt="" className="h-34 w-36 rounded-lg" />
             </div>

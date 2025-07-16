@@ -17,7 +17,8 @@ interface Product {
 interface ProductCardProps {
   product: Product;
   isFavorite: boolean;
-  onToggleFavorite: (productId: number) => void;
+  onToggleFavorite: (product: Product) => void;
+
   onAddToCart: (product: Product) => void;
   isAdding: boolean;
 }
@@ -30,24 +31,27 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isAdding,
 }) => {
   return (
-    <div className="group flex h-88 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:h-88">
+    <div className="group flex h-86 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:h-86">
       {/* Product Image */}
-      <div className="relative h-32 w-full sm:h-40">
-        <Image
-          src="/Nivea.png"
-          alt={product.name}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover px-12 pt-8 pb-2 transition-transform duration-300 group-hover:scale-105"
-        />
+      <div className="relative h-40 w-full">
+        <div>
+          <Image
+            src={'/pediasure.png'} // dynamic image fallback
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="mt-4 px-12 py-4 transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+
         {product.discount && (
-          <div className="absolute top-2 left-2 rounded bg-red-600 px-1.5 py-0.5 text-xs font-medium text-white">
+          <div className="absolute top-1 left-2 rounded bg-red-600 px-1.5 py-0.5 text-xs font-medium text-white">
             {product.discount}% OFF
           </div>
         )}
         <button
-          onClick={() => onToggleFavorite(product.id)}
-          className="absolute top-0.5 right-2 rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50"
+          onClick={() => onToggleFavorite(product)}
+          className="absolute top-0 right-2 rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50"
         >
           <Heart
             className={`h-5 w-3 sm:h-5 sm:w-5 ${
@@ -58,11 +62,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Product Info */}
-      <div className="flex flex-grow flex-col p-2 sm:p-3">
+      <div className="flex flex-grow flex-col px-3 py-1">
         <p className="text-xs font-medium text-red-500">
           End In <span className="font-semibold text-[#317C80]">05:02:12</span>
         </p>
-        <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-900 transition-colors group-hover:text-teal-600 sm:mb-1 sm:min-h-[3rem]">
+        <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-900 transition-colors group-hover:text-teal-600 sm:min-h-[3rem]">
           {product.name.length > 40 ? `${product.name.slice(0, 40)}...` : product.name}
         </h3>
         <p className="mb-1 text-xs text-gray-500">tube of 100 ml Gel</p>
@@ -90,7 +94,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <button
             onClick={() => onAddToCart(product)}
             disabled={isAdding}
-            className="bg-background1 hover:bg-background1 flex hidden items-center space-x-1 rounded-lg px-3 py-1.5 text-white transition group-hover:flex sm:px-4 sm:py-2"
+            className="bg-background1 hover:bg-background1 flex hidden cursor-pointer items-center space-x-1 rounded-lg px-3 py-1.5 text-white transition group-hover:flex sm:px-4 sm:py-2"
           >
             {isAdding ? (
               <span>Adding...</span>

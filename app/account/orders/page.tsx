@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader, AlertCircle, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 
 interface OrderItem {
   productId: string;
@@ -50,9 +51,11 @@ export default function OrdersPage() {
         if (!response.ok) {
           if (response.status === 401) {
             router.push('/');
-            return;
+          } else {
+            const errorData = await response.json();
+            toast.error(errorData.message || 'Failed to fetch orders');
           }
-          throw new Error('Failed to fetch orders');
+          return;
         }
 
         const data = await response.json();

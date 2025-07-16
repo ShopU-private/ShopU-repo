@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 type Product = {
   id: string;
@@ -158,56 +159,56 @@ export function useCart() {
           }),
         });
 
+        const data = await response.json();
+
         if (response.status === 401) {
-          throw new Error('Please login to add items to cart');
+          toast.error('Please login to add items to cart');
+          return null;
         }
 
         if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.error || 'Failed to add item to cart');
+          toast.error(data.error || 'Failed to add item to cart');
+          return null;
         }
 
-        const data = await response.json();
-        if (data.success) {
-          // Optimistic update
-          if (data.cartItem) {
-            setCartItems(prev => {
-              // Find if this item already exists
-              const existingIndex = prev.findIndex(
-                item =>
-                  (productId && item.productId === productId) ||
-                  (medicineId && item.medicineId === medicineId)
-              );
+        if (data.success && data.cartItem) {
+          setCartItems(prev => {
+            const existingIndex = prev.findIndex(
+              item =>
+                (productId && item.productId === productId) ||
+                (medicineId && item.medicineId === medicineId)
+            );
 
-              if (existingIndex >= 0) {
-                // Update existing item
-                const updated = [...prev];
-                updated[existingIndex] = {
-                  ...updated[existingIndex],
-                  quantity: updated[existingIndex].quantity + quantity,
-                };
-                return updated;
-              } else {
-                // Add new item
-                return [...prev, data.cartItem];
-              }
-            });
+            if (existingIndex >= 0) {
+              const updated = [...prev];
+              updated[existingIndex] = {
+                ...updated[existingIndex],
+                quantity: updated[existingIndex].quantity + quantity,
+              };
+              return updated;
+            } else {
+              return [...prev, data.cartItem];
+            }
+          });
 
-            // Update cache
-            const updatedItems = [...cartItems];
-            cartCache.set(updatedItems);
-          }
+          // Update cache
+          const updatedItems = [...cartItems];
+          cartCache.set(updatedItems);
 
-          // Refresh cart in background after a short delay
+          // Optional refresh
           setTimeout(() => fetchCartItems(true), 300);
+
+          toast.success('Item added to cart');
           return data.cartItem;
         } else {
-          throw new Error(data.error || 'Failed to add item to cart');
+          toast.error(data.error || 'Failed to add item to cart');
+          return null;
         }
       } catch (err) {
         console.error('Error adding item to cart:', err);
-        setError(err instanceof Error ? err.message : 'Failed to add item to cart');
-        throw err;
+        setError('Something went wrong while adding to cart');
+        toast.error('Something went wrong while adding to cart');
+        return null;
       }
     },
     [cartItems, fetchCartItems]
@@ -275,26 +276,24 @@ export function useCart() {
           method: 'DELETE',
         });
 
-        if (!response.ok) {
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
           // Revert on error
           setCartItems(originalItems);
-          const data = await response.json();
-          throw new Error(data.error || 'Failed to remove item from cart');
+          toast.error(data.error || 'Failed to remove item from cart');
+          return null;
         }
 
-        const data = await response.json();
-        if (data.success) {
-          // Update cache
-          cartCache.set(updatedItems);
-        } else {
-          // Revert on error
-          setCartItems(originalItems);
-          throw new Error(data.error || 'Failed to remove item from cart');
-        }
+        // Update cache on success
+        cartCache.set(updatedItems);
+        toast.success('Item removed from cart');
+        return true;
       } catch (err) {
         console.error('Error removing item from cart:', err);
-        setError(err instanceof Error ? err.message : 'Failed to remove item from cart');
-        throw err;
+        setError('Failed to remove item from cart');
+        toast.error('Something went wrong while removing from cart');
+        return null;
       }
     },
     [cartItems]

@@ -5,6 +5,8 @@ import { useCart } from '../hooks/useCart';
 import ProductCard from '../components/ProductCard';
 import HealthCategoryGrid from '../components/HealthCategoryGrid';
 import { useMedicines } from '../hooks/useProducts';
+import { useRouter } from 'next/navigation';
+import { useWishlist } from '../hooks/useWishlist';
 
 interface HealthCategory {
   id: string;
@@ -13,10 +15,11 @@ interface HealthCategory {
 }
 
 const ShopUHealthComponent: React.FC = () => {
-  const [favorites, setFavorites] = useState<Set<number | string>>(new Set());
   const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
+  const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
+  const router = useRouter();
 
   // Fetch medicines for the Super Saver section
   const { medicines, loading, error } = useMedicines({
@@ -40,18 +43,6 @@ const ShopUHealthComponent: React.FC = () => {
         behavior: 'smooth',
       });
     }
-  };
-
-  const toggleFavorite = (id: number | string) => {
-    setFavorites(prev => {
-      const updated = new Set(prev);
-      if (updated.has(id)) {
-        updated.delete(id);
-      } else {
-        updated.add(id);
-      }
-      return updated;
-    });
   };
 
   const handleAddToCart = async (medicineId: string) => {
@@ -138,7 +129,15 @@ const ShopUHealthComponent: React.FC = () => {
                         subtitle: medicine.manufacturerName,
                       }}
                       isFavorite={favorites.has(medicine.id)}
-                      onToggleFavorite={() => toggleFavorite(medicine.id)}
+                      onToggleFavorite={() =>
+                        toggleFavorite({
+                          id: medicine.id,
+                          name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
+                          price: medicine.price,
+                          image: medicine.imageUrl || '/medicine-placeholder.jpg',
+                          category: medicine.type || 'Medicine',
+                        })
+                      }
                       onAddToCart={() => handleAddToCart(medicine.id)}
                       isAdding={addingProductId === medicine.id}
                     />

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 
 interface Medicine {
+  stock: number;
   imageUrl: string;
   id: string;
   name: string;

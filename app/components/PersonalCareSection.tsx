@@ -4,17 +4,20 @@ import React, { useState, useRef } from 'react';
 import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
+import { useRouter } from 'next/navigation';
+import { useWishlist } from '../hooks/useWishlist';
 
 const PersonalCareSection = () => {
-  const [favorites, setFavorites] = useState<Set<number | string>>(new Set());
   const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
+  const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
+  const router = useRouter();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({
-        left: direction === 'left' ? -460 : 460,
+        left: direction === 'left' ? -690 : 690,
         behavior: 'smooth',
       });
     }
@@ -24,18 +27,6 @@ const PersonalCareSection = () => {
     type: 'allopathy',
     limit: 10,
   });
-
-  const toggleFavorite = (id: number | string) => {
-    setFavorites(prev => {
-      const updated = new Set(prev);
-      if (updated.has(id)) {
-        updated.delete(id);
-      } else {
-        updated.add(id);
-      }
-      return updated;
-    });
-  };
 
   const handleAddToCart = async (medicineId: string) => {
     setAddingProductId(medicineId);
@@ -114,7 +105,15 @@ const PersonalCareSection = () => {
                       subtitle: medicine.manufacturerName,
                     }}
                     isFavorite={favorites.has(medicine.id)}
-                    onToggleFavorite={() => toggleFavorite(medicine.id)}
+                    onToggleFavorite={() =>
+                      toggleFavorite({
+                        id: medicine.id,
+                        name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
+                        price: medicine.price,
+                        image: medicine.imageUrl || '/medicine-placeholder.jpg',
+                        category: medicine.type || 'Medicine',
+                      })
+                    }
                     onAddToCart={() => handleAddToCart(medicine.id)}
                     isAdding={addingProductId === medicine.id}
                   />
