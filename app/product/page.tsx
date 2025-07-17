@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../components/FilterSidebar';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useWishlist } from '../hooks/useWishlist';
@@ -16,7 +16,7 @@ const Page = () => {
   const { favorites, toggleFavorite } = useWishlist();
   const { addItem } = useCart();
 
-  const { medicines, loading, error } = useMedicines({
+  const { medicines } = useMedicines({
     type: 'allopathy',
     limit: 16,
   });

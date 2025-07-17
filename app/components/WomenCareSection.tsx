@@ -5,14 +5,12 @@ import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
-import { useRouter } from 'next/navigation';
 
 const WomenCareSection = () => {
   const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
   const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
-  const router = useRouter();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {

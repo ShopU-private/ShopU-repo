@@ -4,7 +4,6 @@ import React, { useState, useRef } from 'react';
 import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
-import { useRouter } from 'next/navigation';
 import { useWishlist } from '../hooks/useWishlist';
 
 const PersonalCareSection = () => {
@@ -12,7 +11,6 @@ const PersonalCareSection = () => {
   const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
-  const router = useRouter();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {

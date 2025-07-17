@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Plus, Star } from 'lucide-react';
+import { Heart, Plus } from 'lucide-react';
 import Image from 'next/image';
 
 interface Product {
@@ -44,14 +44,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
           />
         </div>
 
-        {product.discount && (
-          <div className="absolute top-1 left-2 rounded bg-red-600 px-1.5 py-0.5 text-xs font-medium text-white">
-            {product.discount}% OFF
-          </div>
-        )}
         <button
           onClick={() => onToggleFavorite(product)}
-          className="absolute top-0 right-2 rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50"
+          className="absolute top-0 right-2 rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50 hidden group-hover:flex "
         >
           <Heart
             className={`h-5 w-3 sm:h-5 sm:w-5 ${
@@ -74,7 +69,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {product.originalPrice && (
           <div>
             <hr className="text-[#D9D9D9]" />
-            <p className="text-sm text-gray-500">
+            <p className="text-xs text-gray-500">
               MRP <s>₹{String(product.originalPrice).slice(0, 5)}</s>{' '}
               <span className="font-medium text-green-500">{product.discount}% OFF</span>
             </p>
@@ -94,10 +89,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <button
             onClick={() => onAddToCart(product)}
             disabled={isAdding}
-            className="bg-background1 hover:bg-background1 flex hidden cursor-pointer items-center space-x-1 rounded-lg px-3 py-1.5 text-white transition group-hover:flex sm:px-4 sm:py-2"
+            className="bg-background1 hover:bg-background1 hidden cursor-pointer items-center space-x-1 rounded px-3 py-1.5 text-white transition group-hover:flex sm:px-3 sm:py-1"
           >
             {isAdding ? (
-              <span>Adding...</span>
+              <span className='text-xs sm:text-sm'>Adding...</span>
             ) : (
               <>
                 <Plus className="h-3 w-3 transition-transform group-hover:rotate-90 sm:h-4 sm:w-4" />

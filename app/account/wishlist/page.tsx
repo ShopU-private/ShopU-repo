@@ -103,7 +103,6 @@ export default function WishlistPage() {
         ) : (
           <>
             {/* Desktop Table View */}
-
             <div className="hidden overflow-x-auto px-13 sm:block">
               <h2 className="text-primaryColor mb-4 text-xl font-semibold">
                 Wish<span className="text-secondaryColor">list</span>
@@ -134,7 +133,7 @@ export default function WishlistPage() {
                         <span className="text-sm text-gray-800">{item.name}</span>
                       </td>
                       <td className="text-primaryColor px-6 py-4 text-sm font-medium">
-                        ₹{item.price}
+                        ₹{String(item.price).slice(0, 5)}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700">
                         {new Date(item.createdAt).toLocaleDateString('en-US', {
@@ -194,7 +193,7 @@ export default function WishlistPage() {
                       height={50}
                     />
                     <div className="flex-1 text-sm">{item.name}</div>
-                    <div className="text-primaryColor text-md">₹{item.price}</div>
+                    <div className="text-primaryColor text-md">₹{String(item.price).slice(0, 5)}</div>
                   </div>
                   <hr className="text-gray-300" />
                   <div className="mt-3 flex items-center justify-between">

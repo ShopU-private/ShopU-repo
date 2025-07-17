@@ -71,6 +71,7 @@ export function useMedicines(options: UseMedicinesOptions = {}) {
               reviews: 10,
               category: medicine.type || 'Medicine',
               imageUrl: '',
+              stock: 0
             })
           ) || [];
 

@@ -5,7 +5,6 @@ import { useCart } from '../hooks/useCart';
 import ProductCard from '../components/ProductCard';
 import HealthCategoryGrid from '../components/HealthCategoryGrid';
 import { useMedicines } from '../hooks/useProducts';
-import { useRouter } from 'next/navigation';
 import { useWishlist } from '../hooks/useWishlist';
 
 interface HealthCategory {
@@ -19,7 +18,6 @@ const ShopUHealthComponent: React.FC = () => {
   const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
-  const router = useRouter();
 
   // Fetch medicines for the Super Saver section
   const { medicines, loading, error } = useMedicines({

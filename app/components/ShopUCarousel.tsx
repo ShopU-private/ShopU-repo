@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, MessageCircle } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
-import { WhatsappCard } from 'twilio/lib/rest/content/v1/content';
-import { FaFacebookF, FaWhatsapp } from 'react-icons/fa';
+import { FaWhatsapp } from 'react-icons/fa';
 
 const ShopUCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);

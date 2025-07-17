@@ -55,14 +55,14 @@ export default function ContactPage() {
   return (
     <>
       <Navroute />
-      <div className="mx-auto max-w-7xl px-16 py-10">
-        <div className="">
+      {/* Desktop view */}
+      <div className="mx-auto max-w-7xl px-16 py-10 hidden sm:block">
+        <div>
           <h2 className="text-primaryColor mb-8 text-xl font-semibold">
             Frequently Asked <span className="text-secondaryColor">Questions</span>
             <hr className="bg-background1 mt-2 h-1 w-70 rounded border-0" />
           </h2>
         </div>
-
         <div className="lg:flex lg:items-start lg:gap-10">
           {/* Left: FAQ Section */}
           <div className="flex-1">
@@ -75,9 +75,8 @@ export default function ContactPage() {
                   >
                     {faq.question}
                     <ChevronDown
-                      className={`h-5 w-5 transition-transform duration-200 ${
-                        index === activeIndex ? 'rotate-180' : ''
-                      }`}
+                      className={`h-5 w-5 transition-transform duration-200 ${index === activeIndex ? 'rotate-180' : ''
+                        }`}
                     />
                   </button>
                   {index === activeIndex && (
@@ -92,7 +91,7 @@ export default function ContactPage() {
 
           {/* Right: Form */}
           <div className="mt-10 w-full max-w-md rounded-md bg-white px-10 py-6 shadow-sm lg:mt-0">
-            <h2 className="mb-4 text-lg font-semibold text-[#317C80]">Ask a Questions</h2>
+            <h2 className="mb-4 text-lg font-semibold text-primaryColor">Ask a Questions</h2>
             <form onSubmit={handleSubmit}>
               <input
                 type="text"
@@ -119,7 +118,82 @@ export default function ContactPage() {
               />
               <button
                 type="submit"
-                className="w-full rounded-md bg-[#317C80] px-4 py-2 text-white transition-all hover:opacity-90"
+                className="w-full rounded-md bg-background1 px-4 py-2 text-white transition-all hover:opacity-90"
+                disabled={loading}
+              >
+                {loading ? 'Sending...' : 'Send'}
+              </button>
+              {response && <p className="mt-2 text-sm text-green-600">{response}</p>}
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile view */}
+      <div className="mx-auto max-w-7xl py-8 px-4 sm:hidden">
+        <div className="">
+          <h2 className="text-primaryColor mb-8 text-xl font-semibold">
+            Frequently Asked <span className="text-secondaryColor">Questions</span>
+            <hr className="bg-background1 mt-2 h-1 w-70 rounded border-0" />
+          </h2>
+        </div>
+
+        <div className="lg:flex lg:items-start lg:gap-10">
+          {/* Left: FAQ Section */}
+          <div className="flex-1">
+            <div className="space-y-3">
+              {faqs.map((faq, index) => (
+                <div key={index} className="rounded bg-white py-1 shadow-sm">
+                  <button
+                    onClick={() => setActiveIndex(index === activeIndex ? -1 : index)}
+                    className="text-md flex w-full items-center justify-between px-4 py-4 text-left font-semibold text-gray-900"
+                  >
+                    {faq.question}
+                    <ChevronDown
+                      className={`h-5 w-5 transition-transform duration-200 ${index === activeIndex ? 'rotate-180' : ''
+                        }`}
+                    />
+                  </button>
+                  {index === activeIndex && (
+                    <div className="border-t border-gray-200 px-4 py-4 text-sm text-gray-600">
+                      {faq.answer}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: Form */}
+          <div className="mt-10 w-full max-w-md rounded-md bg-white px-10 py-6 shadow-sm lg:mt-0">
+            <h2 className="mb-4 text-lg font-semibold text-primaryColor">Ask a Questions</h2>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                required
+                placeholder="Your Name"
+                className="mb-6 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+              />
+              <input
+                type="text"
+                required
+                placeholder="Subject"
+                className="mb-6 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={form.subject}
+                onChange={e => setForm({ ...form, subject: e.target.value })}
+              />
+              <textarea
+                required
+                placeholder="Tag Your Message"
+                className="mb-3 h-32 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={form.message}
+                onChange={e => setForm({ ...form, message: e.target.value })}
+              />
+              <button
+                type="submit"
+                className="w-full rounded-md bg-background1 px-4 py-2 text-white transition-all hover:opacity-90"
                 disabled={loading}
               >
                 {loading ? 'Sending...' : 'Send'}
