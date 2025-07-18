@@ -26,7 +26,7 @@ const Header = () => {
     isLoadingLocation,
     setIsLoadingLocation,
     locationError,
-    setLocationError = () => {}, // Provide default empty function
+    setLocationError = () => { }, // Provide default empty function
   } = useLocation();
   const [phoneNumber, setPhoneNumber] = useState('');
   const { openCartModal } = useCartModal();
@@ -85,6 +85,19 @@ const Header = () => {
       checkLoginStatus();
     }
   }, [isLoginModalOpen, checkLoginStatus]);
+  useEffect(() => {
+    const handleUpdate = () => {
+      const timeout = setTimeout(() => {
+        fetchCartCount();
+      }, 200); // slight debounce
+
+      return () => clearTimeout(timeout);
+    };
+
+    window.addEventListener('cartCountUpdated', handleUpdate);
+    return () => window.removeEventListener('cartCountUpdated', handleUpdate);
+  }, [fetchCartCount]);
+
 
   // Listen for cart updates
   useEffect(() => {

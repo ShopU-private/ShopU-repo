@@ -2,7 +2,7 @@
 
 import React, { memo } from 'react';
 import Image from 'next/image';
-import { ChevronUp, ChevronDown, Trash2, ShoppingBag, Loader } from 'lucide-react';
+import { ChevronUp, ChevronDown, Trash2, ShoppingBag, Loader, Plus, Minus } from 'lucide-react';
 import { useCart } from '@/app/hooks/useCart';
 
 type CartItem = {
@@ -44,7 +44,7 @@ const CartItemRow = memo(
     const imageUrl = item.product?.imageUrl;
 
     return (
-      <div key={item.id} className="flex items-center gap-3 border-b border-gray-100 p-4">
+      <div key={item.id} className="flex items-center gap-3 border-b border-gray-100 p-4 h-28">
         {/* Product Image */}
         <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
           {imageUrl ? (
@@ -72,21 +72,21 @@ const CartItemRow = memo(
         {/* Quantity Controls */}
         <div className="flex items-center rounded border border-gray-300">
           <button
-            className="p-1 text-gray-400 transition-colors hover:bg-teal-50 hover:text-teal-600"
+            className="py-2 px-1 text-xl text-gray-900 transition-colors hover:bg-teal-50 hover:text-teal-600"
             onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
             disabled={item.quantity <= 1 || processingAction[item.id] === 'update'}
           >
-            <ChevronDown size={14} />
+            <Minus size={15} />
           </button>
-          <span className="min-w-[2rem] border-r border-l border-gray-300 px-3 py-1 text-center text-sm">
+          <span className="min-w-[2rem] border-gray-300 px-3 py-1 text-center text-sm">
             {String(item.quantity).padStart(2, '0')}
           </span>
           <button
-            className="p-1 text-gray-400 transition-colors hover:bg-teal-50 hover:text-teal-600"
+            className="py-2 px-1 text-gray-900 transition-colors hover:bg-teal-50 hover:text-teal-600"
             onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
             disabled={processingAction[item.id] === 'update'}
           >
-            <ChevronUp size={14} />
+            <Plus size={15} />
           </button>
         </div>
 

@@ -21,6 +21,7 @@ interface WishlistItem {
 export default function WishlistPage() {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [removingProductId, setRemovingProductId] = useState<string | null>(null);
   const [addingProductId, setAddingProductId] = useState<string | null>(null);
   const { addItem } = useCart();
   const router = useRouter();
@@ -56,6 +57,7 @@ export default function WishlistPage() {
 
   const handleRemove = async (productId: string) => {
     try {
+      setRemovingProductId(productId);
       const res = await fetch(`/api/account/wishlist?productId=${productId}`, {
         method: 'DELETE',
       });
@@ -63,7 +65,6 @@ export default function WishlistPage() {
       const data = await res.json();
 
       if (res.ok) {
-        // ✅ Use item.productId to compare, not item.id
         setWishlist(prev => prev.filter(item => item.productId !== productId));
         toast.success(data.message || 'Deleted item from wishlist');
       } else {
@@ -72,8 +73,11 @@ export default function WishlistPage() {
     } catch (error) {
       console.error('Delete error:', error);
       toast.error('Something went wrong while deleting');
+    } finally {
+      setRemovingProductId(null);
     }
   };
+
 
   const handleAddToCart = async (productId: string) => {
     setAddingProductId(productId);
@@ -148,7 +152,7 @@ export default function WishlistPage() {
                         <button
                           onClick={() => handleAddToCart(item.productId)}
                           disabled={addingProductId === item.productId}
-                          className="hover:bg-opacity-90 rounded bg-[#317C80] p-4 px-4 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
+                          className="hover:bg-opacity-90 rounded bg-[#317C80] px-4 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {addingProductId === item.productId ? 'Adding..' : 'ADD'}
                         </button>
@@ -156,10 +160,16 @@ export default function WishlistPage() {
                       <td className="px-6 py-4">
                         <button
                           onClick={() => handleRemove(item.productId)}
-                          className="text-gray-500 hover:text-red-500"
+                          className="text-gray-500 hover:text-red-500 disabled:opacity-60"
+                          disabled={removingProductId === item.productId}
                         >
-                          <Trash2 className="h-5 w-5" />
+                          {removingProductId === item.productId ? (
+                            <Loader className="h-5 w-5 animate-spin text-red-500" />
+                          ) : (
+                            <Trash2 className="h-5 w-5" />
+                          )}
                         </button>
+
                       </td>
                     </tr>
                   ))}
@@ -207,10 +217,16 @@ export default function WishlistPage() {
 
                     <button
                       onClick={() => handleRemove(item.productId)}
-                      className="text-gray-500 hover:text-red-500"
+                      className="text-gray-500 hover:text-red-500 disabled:opacity-60"
+                      disabled={removingProductId === item.productId}
                     >
-                      <Trash2 className="h-5 w-5" />
+                      {removingProductId === item.productId ? (
+                        <Loader className="h-5 w-5 animate-spin text-red-500" />
+                      ) : (
+                        <Trash2 className="h-5 w-5" />
+                      )}
                     </button>
+
                   </div>
                 </div>
               ))}

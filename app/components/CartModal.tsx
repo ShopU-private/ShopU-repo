@@ -144,16 +144,16 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
           </div>
           <div className="space-y-3 p-4">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Item Total:</span>
-              <span className="font-medium">₹{itemTotal.toFixed(0)}</span>
+              <span className="text-gray-900">Item Total:</span>
+              <span className="font-medium text-primaryColor">₹{itemTotal.toFixed(0)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Shipping:</span>
-              <span className="font-medium text-teal-600">Free</span>
+              <span className="text-gray-900">Shipping:</span>
+              <span className="font-medium text-green-500">Free</span>
             </div>
             <div className="flex justify-between border-t border-gray-100 pt-3">
               <span className="font-semibold">Total:</span>
-              <span className="text-lg font-bold text-teal-600">₹{itemTotal.toFixed(0)}</span>
+              <span className="text-lg font-semibold text-primaryColor">₹{itemTotal.toFixed(0)}</span>
             </div>
           </div>
         </div>
@@ -196,9 +196,9 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
 
   return (
     <div className="animate-fadeIn fixed inset-0 z-50 flex items-start justify-end bg-black/40 backdrop-blur-sm">
-      <div className="animate-slideRight relative h-screen max-h-screen w-full max-w-sm transform overflow-hidden rounded-r-2xl bg-white shadow-2xl transition-all sm:max-w-md sm:rounded-r-3xl lg:max-w-lg">
+      <div className="animate-slideRight relative h-screen max-h-screen w-full max-w-sm transform overflow-hidden rounded-r-2xl bg-white shadow-2xl transition-all sm:max-w-md sm:rounded-r-3xl lg:max-w-md">
         {/* Header */}
-        <div className="relative bg-gradient-to-r from-teal-500 to-teal-600 px-4 py-4 sm:px-6 sm:py-5">
+        <div className="relative bg-background1 px-4 py-4">
           <button
             onClick={onCloseAction}
             className="absolute top-3 right-3 rounded-full p-1 text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:top-4 sm:right-4"
@@ -211,7 +211,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
               <ShoppingBag className="h-5 w-5 text-white sm:h-6 sm:w-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white sm:text-2xl">Your Cart</h1>
+              <h1 className="text-xl font-bold text-white sm:text-2xl">Cart</h1>
               <p className="text-sm text-teal-100">
                 {cartItems.length} item{cartItems.length !== 1 ? 's' : ''}
               </p>
@@ -235,9 +235,9 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
                 </div>
                 <button
                   onClick={handleProceedToCheckout}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-teal-700 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-teal-700 hover:to-teal-800 hover:shadow-xl active:scale-95 sm:w-auto sm:px-8 sm:py-4"
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-background1 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:shadow-xl active:scale-95 sm:w-auto sm:px-6 sm:py-3"
                 >
-                  Proceed to Checkout
+                  Proceed to Pay
                   <ChevronUp className="rotate-90 transform" size={18} />
                 </button>
               </div>

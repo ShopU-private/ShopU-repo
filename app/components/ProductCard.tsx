@@ -89,14 +89,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <button
             onClick={() => onAddToCart(product)}
             disabled={isAdding}
-            className="bg-background1 hover:bg-background1 hidden cursor-pointer items-center space-x-1 rounded px-3 py-1.5 text-white transition group-hover:flex sm:px-3 sm:py-1"
+            className="bg-background1 hover:bg-background1 hidden cursor-pointer items-center space-x-1 rounded px-3 py-1 text-white transition group-hover:flex"
           >
             {isAdding ? (
-              <span className='text-xs sm:text-sm'>Adding...</span>
+              <span className='text-sm'>Adding..</span>
             ) : (
               <>
-                <Plus className="h-3 w-3 transition-transform group-hover:rotate-90 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm">ADD</span>
+                <span className="text-sm px-2">ADD</span>
               </>
             )}
           </button>

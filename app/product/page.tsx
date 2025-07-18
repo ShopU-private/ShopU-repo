@@ -47,7 +47,7 @@ const Page = () => {
     <>
       <Navroute />
       <div className="min-h-xl bg-background px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl justify-between gap-4 px-12">
+        <div className="mx-auto flex max-w-7xl justify-between gap-4 px-10">
           {/* Sidebar */}
           <Sidebar onCategorySelect={handleAddFilter} />
 
