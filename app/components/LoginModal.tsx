@@ -50,6 +50,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       }
     } catch (err) {
       toast.error('Something went wrong. Please try again.');
+      console.error('Somthing wents wrong:', err);
     } finally {
       setLoading(false);
     }
@@ -84,6 +85,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       }
     } catch (err) {
       toast.error('Something went wrong. Please try again.');
+      console.error('Somthing wents wrong:', err);
     } finally {
       setLoading(false);
     }

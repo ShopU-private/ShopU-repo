@@ -57,12 +57,12 @@ export function useWishlist() {
           toast.success(data.message || 'Removed from wishlist');
         }
       } catch (err) {
-        // rollback if error
+        console.error('Somthing wents wrong:', err);
         setFavorites(prev => new Set(prev).add(product.id));
         toast.error('Network error — item not removed');
       }
 
-      return; // ✅ exit after delete logic
+      return;
     }
 
     // ADD TO WISHLIST
@@ -88,6 +88,7 @@ export function useWishlist() {
       }
     } catch (error) {
       toast.error('Something went wrong. Please try again.');
+      console.error('Something went wrong. Please try again.', error);
     }
   };
 

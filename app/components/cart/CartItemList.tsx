@@ -2,7 +2,7 @@
 
 import React, { memo } from 'react';
 import Image from 'next/image';
-import { ChevronUp, ChevronDown, Trash2, ShoppingBag, Loader, Plus, Minus } from 'lucide-react';
+import { Trash2, ShoppingBag, Loader, Plus, Minus } from 'lucide-react';
 import { useCart } from '@/app/hooks/useCart';
 
 type CartItem = {
@@ -44,7 +44,7 @@ const CartItemRow = memo(
     const imageUrl = item.product?.imageUrl;
 
     return (
-      <div key={item.id} className="flex items-center gap-3 border-b border-gray-100 p-4 h-28">
+      <div key={item.id} className="flex h-28 items-center gap-3 border-b border-gray-100 p-4">
         {/* Product Image */}
         <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
           {imageUrl ? (
@@ -72,7 +72,7 @@ const CartItemRow = memo(
         {/* Quantity Controls */}
         <div className="flex items-center rounded border border-gray-300">
           <button
-            className="py-2 px-1 text-xl text-gray-900 transition-colors hover:bg-teal-50 hover:text-teal-600"
+            className="px-1 py-2 text-xl text-gray-900 transition-colors hover:bg-teal-50 hover:text-teal-600"
             onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
             disabled={item.quantity <= 1 || processingAction[item.id] === 'update'}
           >
@@ -82,7 +82,7 @@ const CartItemRow = memo(
             {String(item.quantity).padStart(2, '0')}
           </span>
           <button
-            className="py-2 px-1 text-gray-900 transition-colors hover:bg-teal-50 hover:text-teal-600"
+            className="px-1 py-2 text-gray-900 transition-colors hover:bg-teal-50 hover:text-teal-600"
             onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
             disabled={processingAction[item.id] === 'update'}
           >

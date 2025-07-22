@@ -21,7 +21,7 @@ export default function Navroute() {
     <nav className="bg-white text-sm text-gray-500">
       {/* Desktop View */}
       <div className="mx-auto hidden max-w-7xl px-4 py-5 sm:block">
-        <ol className="flex items-center space-x-2 px-16">
+        <ol className="flex items-center space-x-2 px-12">
           <li>
             <Link href="/" className="hover:underline">
               Home

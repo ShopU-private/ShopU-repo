@@ -120,7 +120,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
             </p>
             <button
               onClick={onCloseAction}
-              className="rounded-xl bg-teal-600 px-6 py-3 font-medium text-white transition-all hover:bg-teal-700 active:scale-95"
+              className="bg-background1 cursor-pointer rounded-xl px-4 py-3 text-sm font-medium text-white transition-all hover:bg-teal-700 active:scale-95"
             >
               Continue Shopping
             </button>
@@ -145,7 +145,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
           <div className="space-y-3 p-4">
             <div className="flex justify-between text-sm">
               <span className="text-gray-900">Item Total:</span>
-              <span className="font-medium text-primaryColor">₹{itemTotal.toFixed(0)}</span>
+              <span className="text-primaryColor font-medium">₹{itemTotal.toFixed(0)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-900">Shipping:</span>
@@ -153,7 +153,9 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
             </div>
             <div className="flex justify-between border-t border-gray-100 pt-3">
               <span className="font-semibold">Total:</span>
-              <span className="text-lg font-semibold text-primaryColor">₹{itemTotal.toFixed(0)}</span>
+              <span className="text-primaryColor text-lg font-semibold">
+                ₹{itemTotal.toFixed(0)}
+              </span>
             </div>
           </div>
         </div>
@@ -198,7 +200,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
     <div className="animate-fadeIn fixed inset-0 z-50 flex items-start justify-end bg-black/40 backdrop-blur-sm">
       <div className="animate-slideRight relative h-screen max-h-screen w-full max-w-sm transform overflow-hidden rounded-r-2xl bg-white shadow-2xl transition-all sm:max-w-md sm:rounded-r-3xl lg:max-w-md">
         {/* Header */}
-        <div className="relative bg-background1 px-4 py-4">
+        <div className="bg-background1 relative px-4 py-4">
           <button
             onClick={onCloseAction}
             className="absolute top-3 right-3 rounded-full p-1 text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:top-4 sm:right-4"
@@ -221,8 +223,8 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
 
         {/* Content */}
         <div className="flex h-[calc(100vh-80px)] flex-col">
-          <div className="flex-1 overflow-y-auto">{renderCartContent()}</div>
-
+          <div className="hidden flex-1 overflow-y-auto sm:block">{renderCartContent()}</div>
+          <div className="max-h-[68vh] flex-1 overflow-y-auto sm:hidden">{renderCartContent()}</div>
           {/* Footer - Checkout Button */}
           {cartItems.length > 0 && (
             <div className="border-t border-gray-100 bg-white p-4 sm:p-6">
@@ -235,7 +237,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
                 </div>
                 <button
                   onClick={handleProceedToCheckout}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-background1 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:shadow-xl active:scale-95 sm:w-auto sm:px-6 sm:py-3"
+                  className="bg-background1 flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 font-semibold text-white shadow-lg transition-all hover:shadow-xl active:scale-95 sm:w-auto sm:px-6 sm:py-3"
                 >
                   Proceed to Pay
                   <ChevronUp className="rotate-90 transform" size={18} />

@@ -39,8 +39,9 @@ const PersonalCareSection = () => {
   };
 
   return (
-    <section className="py-6 sm:py-8">
-      <div className="container mx-auto w-[90%] max-w-7xl px-4">
+    <section className="min-h-xl">
+      {/* Desktop view */}
+      <div className="container mx-auto hidden w-[90%] max-w-7xl px-4 py-6 sm:block">
         <div className="flex items-center justify-between">
           <h2 className="text-primaryColor mb-4 text-xl font-semibold sm:text-xl">
             Personal <span className="text-secondaryColor">Care</span>
@@ -134,6 +135,71 @@ const PersonalCareSection = () => {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </button>
+        </div>
+      </div>
+
+      {/* Mobile view */}
+      <div className="px-4 py-6 sm:hidden">
+        {/* Section Header */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-primaryColor mb-4 text-lg font-medium">
+            Personal <span className="text-secondaryColor">Care</span>
+            <hr className="bg-background1 mt-1 w-30 rounded border-2" />{' '}
+          </h2>
+
+          <button className="bg-background text-md text-primaryColor cursor-pointer rounded px-3 py-1 font-semibold">
+            View All <span className="text-lg">{'>'}</span>
+          </button>
+        </div>
+
+        {/* Horizontal Scrollable Card Row */}
+        <div className="no-scrollbar flex gap-2 overflow-x-auto scroll-smooth py-1">
+          {loading ? (
+            [...Array(2)].map((_, index) => (
+              <div key={index} className="min-w-[190px] animate-pulse">
+                <div className="mb-2 h-52 rounded-lg bg-gray-200"></div>
+                <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
+                <div className="h-4 w-1/2 rounded bg-gray-200"></div>
+              </div>
+            ))
+          ) : error ? (
+            <div className="text-secondaryColor py-8 text-center">
+              Failed to load medicines. Please try again.
+            </div>
+          ) : medicines.length === 0 ? (
+            <div className="py-8 text-center text-gray-500">No medicines available.</div>
+          ) : (
+            medicines.map(medicine => (
+              <div key={medicine.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
+                <ProductCard
+                  product={{
+                    id: medicine.id,
+                    name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
+                    price: medicine.price,
+                    originalPrice: medicine.originalPrice || medicine.price * 1.2,
+                    discount: medicine.discount || 20,
+                    rating: medicine.rating || 4.5,
+                    reviews: medicine.reviews || 100,
+                    image: medicine.imageUrl || '/medicine-placeholder.jpg',
+                    category: medicine.type || 'Medicine',
+                    subtitle: medicine.manufacturerName,
+                  }}
+                  isFavorite={favorites.has(medicine.id)}
+                  onToggleFavorite={() =>
+                    toggleFavorite({
+                      id: medicine.id,
+                      name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
+                      price: medicine.price,
+                      image: medicine.imageUrl || '/medicine-placeholder.jpg',
+                      category: medicine.type || 'Medicine',
+                    })
+                  }
+                  onAddToCart={() => handleAddToCart(medicine.id)}
+                  isAdding={addingProductId === medicine.id}
+                />
+              </div>
+            ))
+          )}
         </div>
       </div>
     </section>

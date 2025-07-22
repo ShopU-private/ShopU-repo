@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ loggedIn: true, phoneNumber: payload.phoneNumber }, { status: 200 });
   } catch (err) {
+    console.error('Token verification failed:', err);
     return NextResponse.json({ loggedIn: false }, { status: 200 });
   }
 }

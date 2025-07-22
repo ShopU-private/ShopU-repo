@@ -26,7 +26,7 @@ const Header = () => {
     isLoadingLocation,
     setIsLoadingLocation,
     locationError,
-    setLocationError = () => { }, // Provide default empty function
+    setLocationError = () => {}, // Provide default empty function
   } = useLocation();
   const [phoneNumber, setPhoneNumber] = useState('');
   const { openCartModal } = useCartModal();
@@ -97,7 +97,6 @@ const Header = () => {
     window.addEventListener('cartCountUpdated', handleUpdate);
     return () => window.removeEventListener('cartCountUpdated', handleUpdate);
   }, [fetchCartCount]);
-
 
   // Listen for cart updates
   useEffect(() => {
@@ -353,12 +352,22 @@ const Header = () => {
       <div className="mx-auto max-w-7xl border-b border-gray-100 px-4 py-1">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-10">
           {/* Logo */}
-          <div className="px-4">
+          <div className="hidden px-4 sm:block">
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
               className="h-16 w-36 py-2 transition-transform hover:scale-105 md:h-20"
               width={400}
+              height={80}
+              priority
+            />
+          </div>
+          <div className="px-4 sm:hidden">
+            <Image
+              src={Logo}
+              alt="ShopU - Shop Unlimited with ShopU"
+              className="h-18 w-34 py-2 md:h-20"
+              width={500}
               height={80}
               priority
             />

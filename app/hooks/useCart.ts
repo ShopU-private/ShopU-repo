@@ -109,8 +109,7 @@ export function useCart() {
         }
       } catch (err) {
         console.error('Error fetching cart:', err);
-        const fallbackError =
-          err instanceof Error ? err.message : 'Failed to fetch cart items';
+        const fallbackError = err instanceof Error ? err.message : 'Failed to fetch cart items';
         setError(fallbackError);
         toast.error(fallbackError);
 
@@ -125,7 +124,6 @@ export function useCart() {
     },
     [lastFetch]
   );
-
 
   // Initialize cart on component mount
   useEffect(() => {
@@ -256,7 +254,6 @@ export function useCart() {
     },
     [cartItems]
   );
-
 
   // Remove item from cart with optimistic updates
   const removeItem = useCallback(

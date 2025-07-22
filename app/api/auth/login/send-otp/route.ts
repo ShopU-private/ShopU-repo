@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: twilioResponse.status === 'pending' });
   } catch (error) {
+    console.error('Somthing wents wrong:', error);
     return NextResponse.json({ success: false, message: 'Internal Error' }, { status: 500 });
   }
 }

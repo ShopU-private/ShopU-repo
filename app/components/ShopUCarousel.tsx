@@ -1,11 +1,11 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useCart } from '../hooks/useCart';
 import { FaWhatsapp } from 'react-icons/fa';
+import Image from 'next/image';
 
 const ShopUCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isOrderingNow, setIsOrderingNow] = useState(false);
 
   const slides = [
     {
@@ -25,41 +25,14 @@ const ShopUCarousel = () => {
     },
   ];
 
-  const { addToCart } = useCart();
-
-  // Auto-play functionality
   useEffect(() => {
-    if (!isAutoPlaying) return;
-
     const interval = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % slides.length);
     }, 4000);
-
     return () => clearInterval(interval);
-  }, [isAutoPlaying, slides.length]);
+  }, [slides.length]);
 
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index); // ✅ only this
-  };
-
-  const handleOrderNow = async () => {
-    setIsOrderingNow(true);
-    try {
-      // Add the current slide's product to the cart
-      const currentProduct = slides[currentSlide];
-      await addToCart({
-        productId: `promo_${currentProduct.id}`,
-        quantity: 1,
-      });
-      // Dispatch cart updated event
-      window.dispatchEvent(new CustomEvent('cartUpdated'));
-      // You could also redirect to checkout or open cart modal here
-    } catch (error) {
-      console.error('Failed to place order:', error);
-    } finally {
-      setIsOrderingNow(false);
-    }
-  };
+  const goToSlide = (index: number) => setCurrentSlide(index);
 
   return (
     <>
@@ -68,17 +41,20 @@ const ShopUCarousel = () => {
         {/* Main Carousel */}
         <div className="flex flex-col gap-5 py-2 lg:flex-row">
           {/* Carousel Banner */}
-          <div className="relative min-h-[250px] flex-3 overflow-hidden rounded-lg bg-gradient-to-br sm:min-h-[300px]">
+          <div className="relative min-h-[250px] flex-3 overflow-hidden rounded-lg bg-gradient-to-br">
             <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
               {slides.map(slide => (
                 <div key={slide.id} className="min-w-full">
-                  <img
+                  <Image
                     src={slide.image}
                     alt={slide.title}
-                    className="max-h-100 w-full object-cover"
+                    width={1200}
+                    height={400}
+                    className="max-h-110 w-full object-cover"
+                    priority
                   />
                 </div>
               ))}
@@ -112,8 +88,13 @@ const ShopUCarousel = () => {
             </div>
 
             {/* Product Image */}
-            <img src="/pediasure.png" alt="Pediasure" className="mt-8 h-36 object-contain" />
-
+            <Image
+              src="/pediasure.png"
+              alt="Pediasure"
+              width={144}
+              height={144}
+              className="mt-8 object-contain"
+            />
             {/* Product Name */}
             <p className="text-left text-sm font-medium text-gray-800">
               Pediasure Chocolate Flavour Nutrition..
@@ -159,7 +140,8 @@ const ShopUCarousel = () => {
           <div className="flex w-full flex-col items-center gap-10 sm:w-auto sm:flex-row">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <img src="/ShopULogo.png" alt="Shopu Logo" className="h-20 w-40" />
+              {/* <img src="/ShopULogo.png" alt="Shopu Logo" className="h-20 w-40" /> */}
+              <Image src="/ShopULogo.png" alt="Shopu Logo" width={160} height={80} priority />
             </div>
 
             {/* Text */}
@@ -183,7 +165,7 @@ const ShopUCarousel = () => {
 
           {/* Right: Illustration */}
           <div>
-            <img src="/specialimage.png" alt="WhatsApp Illustration" className="h-36" />
+            <Image src="/specialimage.png" alt="WhatsApp Illustration" width={200} height={144} />
           </div>
         </div>
       </div>
@@ -197,10 +179,13 @@ const ShopUCarousel = () => {
           >
             {slides.map(slide => (
               <div key={slide.id} className="min-w-full">
-                <img
+                <Image
                   src={slide.image}
                   alt={slide.title}
-                  className="h-56 max-h-100 w-full object-cover"
+                  width={600}
+                  height={250}
+                  className="h-56 w-full object-cover"
+                  priority
                 />
               </div>
             ))}
@@ -220,20 +205,22 @@ const ShopUCarousel = () => {
           </div>
         </div>
 
-        <div className="bg-background1 flex h-42 w-full flex-col items-center justify-between px-2 py-2 text-white">
+        <div className="bg-background1 flex w-full flex-col items-center justify-between px-2 py-4 text-white">
           {/* Left: Logo & Text */}
-          <div className="flex w-full items-center gap-10 sm:w-auto sm:flex-row">
+          <div className="flex w-full items-center gap-2 sm:w-auto sm:flex-row">
             {/* Text */}
             <div className="text-left">
-              <p className="text-lg font-medium">
-                Now available on <span>WHATSAPP</span>
+              <p className="mb-2 text-lg font-medium">
+                Now available on WHATSAPP
+                <br />
+                Click to order.
               </p>
-              <p className="mt-1 text-sm sm:text-base">Click to order.</p>
+
               <a
                 href="#"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primaryColor flex items-center gap-2 rounded-md border border-white bg-white px-8 py-3 text-xl font-medium font-semibold shadow hover:shadow-lg"
+                className="text-primaryColor text-md flex w-34 items-center gap-1 rounded-full border border-white bg-white px-4 py-2 font-medium font-semibold shadow hover:shadow-lg"
               >
                 <FaWhatsapp className="text-2xl" />
                 WhatsApp
@@ -243,7 +230,12 @@ const ShopUCarousel = () => {
             <div>
               {/* Right: Illustration */}
               <div className="">
-                <img src="/specialimage.png" alt="WhatsApp Illustration" className="h-36" />
+                <Image
+                  src="/specialimage.png"
+                  alt="WhatsApp Illustration"
+                  width={150}
+                  height={150}
+                />
               </div>
             </div>
           </div>
