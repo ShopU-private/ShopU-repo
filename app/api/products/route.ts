@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
             category: true,
           },
         },
-        productImage: true,
+
         variantTypes: {
           include: {
             values: true,
@@ -68,7 +68,6 @@ export async function POST(req: NextRequest) {
     const product = await prisma.product.create({
       data,
       include: {
-        productImage: true,
         subCategory: true,
       },
     });

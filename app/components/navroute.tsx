@@ -49,11 +49,11 @@ export default function Navroute() {
       <div className="sm:hidden">
         <div className="bg-background1 flex justify-between px-4 py-4">
           <div className="">
-            <ArrowLeft className="h-6 w-8 text-2xl text-white" />
+            <ArrowLeft className="h-6 w-10 text-3xl text-white" />
           </div>
           <div className="flex">
-            <Search className="h-6 w-12 text-white" />
-            <ShoppingCart className="h-6 w-12 text-white" />
+            <Search className="h-7 w-14 text-white" />
+            <ShoppingCart className="h-7 w-14 text-white" />
           </div>
         </div>
 

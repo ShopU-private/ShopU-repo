@@ -3,7 +3,7 @@ import { Heart } from 'lucide-react';
 import Image from 'next/image';
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   originalPrice?: number;
@@ -12,6 +12,8 @@ interface Product {
   reviews: number;
   image: string;
   category: string;
+  subtitle?: string;
+  stock: number;
 }
 
 interface ProductCardProps {
@@ -38,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="relative h-40 w-full">
           <div>
             <Image
-              src={'/pediasure.png'} // dynamic image fallback
+              src={'/pediasure.png'}
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

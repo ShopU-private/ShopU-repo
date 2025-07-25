@@ -43,7 +43,7 @@ const DealOfTheWeek = () => {
     const fetchDeals = async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/products?discount=true&limit=4');
+        const res = await fetch('/api/product?discount=true&limit=4');
 
         if (res.ok) {
           const data = await res.json();
@@ -63,7 +63,7 @@ const DealOfTheWeek = () => {
           setProducts(dealsProducts);
           setCurrentIndex(0);
         } else {
-          throw new Error('Failed to fetch deals');
+          console.log('Error fetching deals:');
         }
       } catch (err) {
         console.error('Error fetching deals:', err);

@@ -145,7 +145,11 @@ export default function WishlistPage() {
                         })}
                       </td>
                       <td className="px-6 py-4 text-sm text-green-600">
-                        {item.stock || 'In Stock'}
+                        <span
+                          className={Number(item.stock) > 5 ? 'text-green-600' : 'text-red-600'}
+                        >
+                          {Number(item.stock) > 5 ? 'In Stock' : 'Only few left'}
+                        </span>
                       </td>
                       <td className="px-6 py-4">
                         <button
@@ -183,7 +187,7 @@ export default function WishlistPage() {
               </h2>
               {wishlist.map(item => (
                 <div key={item.id} className="mb-6 rounded-lg bg-white px-6 py-4 shadow-sm">
-                  <div className="mb-2 flex justify-between text-sm text-gray-600">
+                  <div className="text-md mb-2 flex justify-between text-gray-600">
                     <span className="text-lg font-medium text-black">
                       {new Date(item.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
@@ -191,14 +195,16 @@ export default function WishlistPage() {
                         day: 'numeric',
                       })}
                     </span>
-                    <span className="text-green-600">{item.stock || 'In Stock'}</span>
+                    <span className={Number(item.stock) > 5 ? 'text-green-600' : 'text-red-600'}>
+                      {Number(item.stock) > 5 ? 'In Stock' : 'Only few left'}
+                    </span>
                   </div>
                   <div className="flex items-center gap-4 py-6 font-medium">
                     <Image
                       src={item.image_url}
                       alt={item.name.length > 10 ? item.name.slice(0, 10) + '…' : item.name}
-                      width={50}
-                      height={50}
+                      width={60}
+                      height={60}
                     />
                     <div className="text-md flex-1 pr-4">
                       {item.name.length > 45 ? item.name.slice(0, 45) + '…' : item.name}

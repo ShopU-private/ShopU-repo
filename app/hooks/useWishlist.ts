@@ -7,8 +7,11 @@ interface Product {
   price: number;
   image: string;
   category: string;
+  stock: number;
 }
-
+interface WishlistItem {
+  productId: number | string;
+}
 export function useWishlist() {
   const [favorites, setFavorites] = useState<Set<number | string>>(new Set());
 
@@ -19,7 +22,7 @@ export function useWishlist() {
         const data = await res.json();
 
         if (res.ok && Array.isArray(data)) {
-          const favSet = new Set(data.map((item: any) => item.productId));
+          const favSet = new Set((data as WishlistItem[]).map(item => item.productId));
           setFavorites(favSet);
         } else if (res.status === 401) {
           console.warn('User is not logged in ');
@@ -73,7 +76,7 @@ export function useWishlist() {
         body: JSON.stringify({
           name: product.name,
           price: product.price,
-          stock: 40,
+          stock: product.stock,
           image_url: product.image,
           productId: product.id,
         }),

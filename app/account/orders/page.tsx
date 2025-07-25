@@ -9,7 +9,7 @@ import Navroute from '@/app/components/navroute';
 
 interface Product {
   name: string;
-  image: string;
+  image_url: string;
 }
 
 interface OrderItem {
@@ -122,13 +122,12 @@ export default function OrdersPage() {
                         </td>
                         <td className="flex items-center justify-center gap-3 px-4 py-4">
                           <Image
-                            src={item.image || '/placeholder.png'}
+                            src={item.product?.image_url || '/placeholder.png'}
                             alt={item?.name || 'Product'}
                             width={50}
                             height={50}
                             className="rounded"
                           />
-                          <span className="text-sm text-gray-800">{item.name}</span>
                         </td>
                         <td className="text-primaryColor px-4 py-4 text-sm font-medium">
                           ₹{item.price}
@@ -157,26 +156,28 @@ export default function OrdersPage() {
                 (order.orderItems ?? []).map((item, index) => (
                   <div
                     key={`${order.id}-${index}`}
-                    className="mb-6 rounded-lg bg-white p-4 shadow-sm"
+                    className="mb-6 rounded-lg bg-white px-6 py-4 shadow-sm"
                   >
                     <div className="text-md mb-2 flex justify-between text-gray-600">
                       <span className="font-medium text-black">#ORD{order.id.slice(-10)}</span>
-                      <span className="font-medium text-black">{formatDate(order.createdAt)}</span>
+                      <span className="text-lg font-medium text-black">
+                        {formatDate(order.createdAt)}
+                      </span>
                     </div>
                     <div className="mb-4 flex items-center gap-4 border-b border-gray-200 py-4">
                       <Image
-                        src={item?.image || '/Nivea.png'}
+                        src={item.product?.image_url || '/placeholder.png'}
                         alt={item?.name ?? 'Product'}
-                        width={50}
-                        height={50}
+                        width={60}
+                        height={60}
                         className="rounded"
                       />
-                      <div className="text-md flex-1">
-                        <div className="font-medium text-gray-800">{item.name}</div>
-                        <div className="flex justify-between text-gray-800">
-                          <span className="">Qty: {item.quantity}</span>
-                          <span className="text-primaryColor">₹{item.price}</span>
-                        </div>
+                      <div className="text-md flex-1 text-gray-800">
+                        <h2 className="pr-2 font-medium">{item.product?.name}</h2>
+                        <h2 className="text-lg">Qty: {item.quantity}</h2>
+                      </div>
+                      <div className="flex justify-between text-lg text-gray-800">
+                        <span className="text-primaryColor">₹{item.price}</span>
                       </div>
                     </div>
                     <span className={`${getStatusColor(item.status)} font-medium`}>

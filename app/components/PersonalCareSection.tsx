@@ -70,7 +70,7 @@ const PersonalCareSection = () => {
           {loading ? (
             <div className="no-scrollbar flex gap-4 overflow-x-auto px-1">
               {[...Array(5)].map((_, index) => (
-                <div key={index} className="min-w-[240px] animate-pulse">
+                <div key={index} className="min-w-[210px] animate-pulse">
                   <div className="mb-2 h-52 rounded-lg bg-gray-200"></div>
                   <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
                   <div className="h-4 w-1/2 rounded bg-gray-200"></div>
@@ -97,6 +97,7 @@ const PersonalCareSection = () => {
                       price: medicine.price,
                       originalPrice: medicine.originalPrice || medicine.price * 1.2,
                       discount: medicine.discount || 20,
+                      stock: medicine.stock || 30,
                       rating: medicine.rating || 4.5,
                       reviews: medicine.reviews || 100,
                       image: medicine.imageUrl || '/medicine-placeholder.jpg',
@@ -109,6 +110,7 @@ const PersonalCareSection = () => {
                         id: medicine.id,
                         name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
                         price: medicine.price,
+                        stock: medicine.stock || 30,
                         image: medicine.imageUrl || '/medicine-placeholder.jpg',
                         category: medicine.type || 'Medicine',
                       })
@@ -178,6 +180,7 @@ const PersonalCareSection = () => {
                     price: medicine.price,
                     originalPrice: medicine.originalPrice || medicine.price * 1.2,
                     discount: medicine.discount || 20,
+                    stock: medicine.stock || 30,
                     rating: medicine.rating || 4.5,
                     reviews: medicine.reviews || 100,
                     image: medicine.imageUrl || '/medicine-placeholder.jpg',
@@ -190,6 +193,7 @@ const PersonalCareSection = () => {
                       id: medicine.id,
                       name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
                       price: medicine.price,
+                      stock: medicine.stock || 30,
                       image: medicine.imageUrl || '/medicine-placeholder.jpg',
                       category: medicine.type || 'Medicine',
                     })

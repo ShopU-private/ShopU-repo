@@ -44,17 +44,17 @@ model UserAddress {
 }
 
 model Category {
-  id            String        @id @default(uuid())
-  name          String        @unique
+  id            String         @id @default(uuid())
+  name          String         @unique
   subCategories SubCategory[]
 }
 
 model SubCategory {
-  id         String    @id @default(uuid())
+  id         String     @id @default(uuid())
   name       String
   categoryId String
+  category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   products   Product[]
-  category   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model Product {
@@ -67,12 +67,12 @@ model Product {
   isActive      Boolean                     @default(true) @map("is_active")
   createdAt     DateTime                    @default(now()) @map("created_at")
   subCategoryId String
+  subCategory   SubCategory                 @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
   cartItems     CartItem[]
   orderItems    OrderItem[]
-  subCategory   SubCategory                 @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
   combinations  ProductVariantCombination[]
   variantTypes  VariantType[]
-  productImage  ProductImage[]
+  productImages ProductImage[]
 }
 
 model VariantType {

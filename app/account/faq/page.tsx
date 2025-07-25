@@ -1,5 +1,6 @@
 'use client';
 
+import type { FormEvent } from 'react';
 import { useState } from 'react';
 import Navroute from '../../components/navroute';
 import { ChevronDown } from 'lucide-react';
@@ -38,7 +39,7 @@ export default function ContactPage() {
   const [response, setResponse] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const res = await fetch('/api/faq', {

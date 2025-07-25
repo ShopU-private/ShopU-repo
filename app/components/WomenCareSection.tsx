@@ -2,9 +2,9 @@
 
 import React, { useState, useRef } from 'react';
 import ProductCard from './ProductCard';
-import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
+import { useProducts } from '../hooks/useBabycare';
 
 const WomenCareSection = () => {
   const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
@@ -21,15 +21,15 @@ const WomenCareSection = () => {
     }
   };
 
-  const { medicines, loading, error } = useMedicines({
-    type: 'allopathy',
+  const { products, loading, error } = useProducts({
+    category: 'Women Care',
     limit: 10,
   });
 
-  const handleAddToCart = async (medicineId: string) => {
-    setAddingProductId(medicineId);
+  const handleAddToCart = async (productId: string) => {
+    setAddingProductId(productId);
     try {
-      await addItem(null, medicineId, 1);
+      await addItem(productId, null, 1);
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (error) {
       console.error('Add to cart failed:', error);
@@ -70,7 +70,7 @@ const WomenCareSection = () => {
           {loading ? (
             <div className="no-scrollbar flex gap-4 overflow-x-auto px-1">
               {[...Array(5)].map((_, index) => (
-                <div key={index} className="min-w-[240px] animate-pulse">
+                <div key={index} className="min-w-[210px] animate-pulse">
                   <div className="mb-2 h-52 rounded-lg bg-gray-200"></div>
                   <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
                   <div className="h-4 w-1/2 rounded bg-gray-200"></div>
@@ -81,40 +81,42 @@ const WomenCareSection = () => {
             <div className="text-secondaryColor py-8 text-center">
               Failed to load women care. Please try again.
             </div>
-          ) : medicines.length === 0 ? (
+          ) : products.length === 0 ? (
             <div className="py-8 text-center text-gray-500">No women care available.</div>
           ) : (
             <div
               ref={scrollRef}
               className="no-scrollbar flex gap-5 overflow-x-auto scroll-smooth py-4"
             >
-              {medicines.map(medicine => (
-                <div key={medicine.id} className="max-w-[210px] min-w-[210px]">
+              {products.map(product => (
+                <div key={product.id} className="max-w-[210px] min-w-[210px]">
                   <ProductCard
                     product={{
-                      id: medicine.id,
-                      name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                      price: medicine.price,
-                      originalPrice: medicine.originalPrice || medicine.price * 1.2,
-                      discount: medicine.discount || 20,
-                      rating: medicine.rating || 4.5,
-                      reviews: medicine.reviews || 100,
-                      image: medicine.imageUrl || '/medicine-placeholder.jpg',
-                      category: medicine.type || 'Medicine',
-                      subtitle: medicine.manufacturerName,
+                      id: product.id,
+                      name: product.name,
+                      price: product.price,
+                      originalPrice: product.originalPrice,
+                      discount: product.discount,
+                      stock: product.stock,
+                      rating: product.rating || 4.5,
+                      reviews: product.reviews || 100,
+                      image: product.imageUrl || '/product-placeholder.jpg',
+                      category: product.category || 'Product',
+                      subtitle: product.description,
                     }}
-                    isFavorite={favorites.has(medicine.id)}
+                    isFavorite={favorites.has(product.id)}
                     onToggleFavorite={() =>
                       toggleFavorite({
-                        id: medicine.id,
-                        name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                        price: medicine.price,
-                        image: medicine.imageUrl || '/medicine-placeholder.jpg',
-                        category: medicine.type || 'Medicine',
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        stock: product.stock,
+                        image: product.imageUrl || '/product-placeholder.jpg',
+                        category: product.category || 'Product',
                       })
                     }
-                    onAddToCart={() => handleAddToCart(medicine.id)}
-                    isAdding={addingProductId === medicine.id}
+                    onAddToCart={() => handleAddToCart(product.id)}
+                    isAdding={addingProductId === product.id}
                   />
                 </div>
               ))}
@@ -164,36 +166,38 @@ const WomenCareSection = () => {
             <div className="text-secondaryColor py-8 text-center">
               Failed to load medicines. Please try again.
             </div>
-          ) : medicines.length === 0 ? (
+          ) : products.length === 0 ? (
             <div className="py-8 text-center text-gray-500">No medicines available.</div>
           ) : (
-            medicines.map(medicine => (
-              <div key={medicine.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
+            products.map(product => (
+              <div key={product.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
                 <ProductCard
                   product={{
-                    id: medicine.id,
-                    name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                    price: medicine.price,
-                    originalPrice: medicine.originalPrice || medicine.price * 1.2,
-                    discount: medicine.discount || 20,
-                    rating: medicine.rating || 4.5,
-                    reviews: medicine.reviews || 100,
-                    image: medicine.imageUrl || '/medicine-placeholder.jpg',
-                    category: medicine.type || 'Medicine',
-                    subtitle: medicine.manufacturerName,
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    originalPrice: product.originalPrice,
+                    discount: product.discount,
+                    stock: product.stock,
+                    rating: product.rating || 4.5,
+                    reviews: product.reviews || 100,
+                    image: product.imageUrl || '/product-placeholder.jpg',
+                    category: product.category || 'Product',
+                    subtitle: product.description,
                   }}
-                  isFavorite={favorites.has(medicine.id)}
+                  isFavorite={favorites.has(product.id)}
                   onToggleFavorite={() =>
                     toggleFavorite({
-                      id: medicine.id,
-                      name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                      price: medicine.price,
-                      image: medicine.imageUrl || '/medicine-placeholder.jpg',
-                      category: medicine.type || 'Medicine',
+                      id: product.id,
+                      name: product.name,
+                      price: product.price,
+                      stock: product.stock,
+                      image: product.imageUrl || '/product-placeholder.jpg',
+                      category: product.category || 'Product',
                     })
                   }
-                  onAddToCart={() => handleAddToCart(medicine.id)}
-                  isAdding={addingProductId === medicine.id}
+                  onAddToCart={() => handleAddToCart(product.id)}
+                  isAdding={addingProductId === product.id}
                 />
               </div>
             ))
