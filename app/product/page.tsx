@@ -99,6 +99,7 @@ const Page = () => {
                       image: medicine.imageUrl || '/medicine-placeholder.jpg',
                       category: medicine.type || 'Medicine',
                       subtitle: medicine.manufacturerName,
+                      stock: medicine.stock ?? 0,
                     }}
                     isFavorite={favorites.has(medicine.id)}
                     onToggleFavorite={() =>
@@ -108,6 +109,7 @@ const Page = () => {
                         price: medicine.price,
                         image: medicine.imageUrl || '/medicine-placeholder.jpg',
                         category: medicine.type || 'Medicine',
+                        stock: medicine.stock ?? 0,
                       })
                     }
                     onAddToCart={() => handleAddToCart(medicine.id)}
