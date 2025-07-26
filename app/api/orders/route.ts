@@ -179,7 +179,6 @@ export async function POST(req: NextRequest) {
 // GET - Fetch orders
 export async function GET(req: NextRequest) {
   try {
-    // Authenticate user using the same token approach as in POST
     const token = req.cookies.get('token')?.value;
     if (!token) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -188,19 +187,20 @@ export async function GET(req: NextRequest) {
     const payload = verifyToken(token);
     const userId = payload.id;
 
-    // Fetch orders for the user using Prisma
     const orders = await prisma.order.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' }, // Most recent first
+      orderBy: { createdAt: 'desc' },
       include: {
-        orderItems: true,
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
         address: true,
       },
     });
-    return NextResponse.json({
-      success: true,
-      orders,
-    });
+
+    return NextResponse.json({ success: true, orders });
   } catch (error) {
     console.error('Error fetching orders:', error);
     return NextResponse.json(

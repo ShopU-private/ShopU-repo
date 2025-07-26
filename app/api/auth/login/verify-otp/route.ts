@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
+    console.error('Somthing wents wrong:', error);
     return NextResponse.json({ success: false, message: 'Internal Error' }, { status: 500 });
   }
 }

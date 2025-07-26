@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 
 interface Medicine {
+  stock: number;
   imageUrl: string;
   id: string;
   name: string;
@@ -70,6 +71,7 @@ export function useMedicines(options: UseMedicinesOptions = {}) {
               reviews: 10,
               category: medicine.type || 'Medicine',
               imageUrl: '',
+              stock: 0,
             })
           ) || [];
 

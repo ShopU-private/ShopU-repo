@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
         // Only include products with images for better display
         imageUrl: {
           not: null,
+          not: '',
         },
         // Optional category filter
         ...(category && {
@@ -32,7 +33,6 @@ export async function GET(req: NextRequest) {
             category: true,
           },
         },
-        productImage: true,
       },
       orderBy: [
         // Order by stock and price to get a good mix

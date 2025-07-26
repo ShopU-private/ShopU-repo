@@ -10,6 +10,7 @@ import Searchbar from './SearchBar';
 import { useLocation } from '../context/LocationContext';
 import { useCartModal } from '../context/CartModalContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,6 +18,8 @@ const Header = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [activeCategoryIndex, setActiveCategoryIndex] = useState<number | null>(null);
+  const router = useRouter();
   const {
     location,
     setLocation,
@@ -34,6 +37,7 @@ const Header = () => {
   const [showPincodeInput, setShowPincodeInput] = useState(false);
   const locationRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const categoriesRef = useRef<HTMLDivElement>(null);
   const [isMobileAccountMenuOpen, setIsMobileAccountMenuOpen] = useState(false);
   const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
   const fetchCartCount = React.useCallback(async () => {
@@ -81,6 +85,18 @@ const Header = () => {
       checkLoginStatus();
     }
   }, [isLoginModalOpen, checkLoginStatus]);
+  useEffect(() => {
+    const handleUpdate = () => {
+      const timeout = setTimeout(() => {
+        fetchCartCount();
+      }, 200); // slight debounce
+
+      return () => clearTimeout(timeout);
+    };
+
+    window.addEventListener('cartCountUpdated', handleUpdate);
+    return () => window.removeEventListener('cartCountUpdated', handleUpdate);
+  }, [fetchCartCount]);
 
   // Listen for cart updates
   useEffect(() => {
@@ -99,16 +115,101 @@ const Header = () => {
     checkLoginStatus();
   }, [checkLoginStatus]);
 
+  const handleClick = () => {
+    router.push('/');
+  };
   const categories = [
-    'All Products',
-    'Baby Care',
-    'Nutritional Drinks',
-    'Women Care',
-    'Personal Care',
-    'Ayurveda',
-    'Health Devices',
-    'Home Essentials',
-    'Health Condition',
+    {
+      name: 'Baby Care',
+      subcategories: [
+        'Diapering',
+        'Diaper By Weight',
+        'Baby Food',
+        'Baby Skin Care',
+        'Baby Food By Age',
+        'Baby Hair Care',
+        'Baby Bath',
+      ],
+    },
+    {
+      name: 'Nutritional Drinks',
+      subcategories: [
+        'Nutritional Drinks',
+        'Sports Nutrition',
+        'Vitamins & Supplements',
+        'Minerals',
+        'Omega & Fish Oil',
+      ],
+    },
+    {
+      name: 'Women Care',
+      subcategories: [
+        'Feminine Hygiene',
+        'Gyno Care',
+        'Women Supplements',
+        'Pregnancy',
+        'Grooming',
+      ],
+    },
+    {
+      name: 'Personal Care',
+      subcategories: [
+        'Skin Care',
+        'Hair Care',
+        'Oral Care',
+        'Mens Grooming',
+        'Sexual Wellness',
+        'Fragrances',
+      ],
+    },
+    {
+      name: 'Ayurveda',
+      subcategories: ['Health Concers', 'Herbs', 'Herbal Juices', 'Chyawanprash', 'Honey'],
+    },
+    {
+      name: 'Health Devices',
+      subcategories: [
+        'Bp Monitors',
+        'Covid Test Kits',
+        'Glucometers & Test Strips',
+        'Thermometers',
+        'Plus Oximeters',
+        'Pregnancy test Kit',
+        'Heating Belts',
+        'Weighing machine',
+        'Nebulizer',
+        'Supports & Splints',
+        'Health Accessories',
+      ],
+    },
+    {
+      name: 'Home Essentials',
+      subcategories: [
+        'Insect Repellents',
+        'Antiseptic Liquids',
+        'Room Freshners',
+        'Cleaning Essentials',
+        'Batteries',
+        'Pet Food',
+      ],
+    },
+    {
+      name: 'Health Condition',
+      subcategories: [
+        'Mental Wellness',
+        'Liver Care',
+        'Diabetic',
+        'Pain Relief',
+        'Cardiac',
+        'Kidney Care',
+        'Stomach Care',
+        'Eye Care',
+        'Cold & Cough',
+        'Wound Care',
+        'Sleep Aids',
+        'Bone, Joint & Muscle',
+      ],
+    },
   ];
 
   const toggleMenu = () => {
@@ -231,16 +332,19 @@ const Header = () => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setIsUserMenuOpen(false);
       }
+      if (categoriesRef.current && !categoriesRef.current.contains(event.target as Node)) {
+        setActiveCategoryIndex(null);
+      }
     };
 
-    if (isLocationOpen || isUserMenuOpen) {
+    if (isLocationOpen || isUserMenuOpen || activeCategoryIndex !== null) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isLocationOpen, isUserMenuOpen]);
+  }, [isLocationOpen, isUserMenuOpen, activeCategoryIndex]);
 
   return (
     <header className="bg-white shadow-lg">
@@ -248,12 +352,22 @@ const Header = () => {
       <div className="mx-auto max-w-7xl border-b border-gray-100 px-4 py-1">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-10">
           {/* Logo */}
-          <div className="px-4">
+          <div className="hidden px-4 sm:block">
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
               className="h-16 w-36 py-2 transition-transform hover:scale-105 md:h-20"
               width={400}
+              height={80}
+              priority
+            />
+          </div>
+          <div className="px-4 sm:hidden">
+            <Image
+              src={Logo}
+              alt="ShopU - Shop Unlimited with ShopU"
+              className="h-18 w-34 py-2 md:h-20"
+              width={500}
               height={80}
               priority
             />
@@ -435,25 +549,25 @@ const Header = () => {
                     </div>
                     <div className="space-y-1 py-2">
                       <Link
-                        href="/orders"
+                        href="/account/orders"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
                       >
                         My Orders
                       </Link>
                       <a
-                        href="#"
+                        href="/account/myAddresses"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
                       >
                         Saved Addresses
                       </a>
                       <a
-                        href="#"
+                        href="/account/wishlist"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
                       >
                         Wishlist
                       </a>
                       <Link
-                        href="/faq"
+                        href="/account/faq"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
                       >
                         FAQ
@@ -544,24 +658,42 @@ const Header = () => {
       <div className="bg-background1 hidden md:block">
         <div className="mx-auto max-w-7xl px-6">
           <div
-            className="flex items-center justify-between gap-4 overflow-x-auto py-3"
-            style={{
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-            }}
+            className="relative z-30 flex items-center justify-between gap-4 py-3"
+            ref={categoriesRef}
           >
-            <style jsx>{`
-              div::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
+            <button
+              onClick={handleClick}
+              className="hover:text-primaryColor rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
+            >
+              All Products
+            </button>
             {categories.map((category, index) => (
-              <button
-                key={index}
-                className="hover:text-primaryColor rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
-              >
-                {category}
-              </button>
+              <div key={index} className="relative">
+                <button
+                  className="hover:text-primaryColor rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
+                  onClick={() => setActiveCategoryIndex(prev => (prev === index ? null : index))}
+                >
+                  {category.name}
+                </button>
+
+                {/* Show popup if current index is active */}
+                {activeCategoryIndex === index && category.subcategories.length > 0 && (
+                  <div className="absolute top-full left-0 z-50 mt-3 min-w-36 bg-white shadow-md">
+                    {category.subcategories.map((sub, subIdx) => (
+                      <button
+                        key={subIdx}
+                        className="hover:bg-primaryColor w-full px-3 py-2 text-left text-sm text-gray-800 hover:text-white"
+                        onClick={() => {
+                          console.log('Clicked:', sub);
+                          setActiveCategoryIndex(null); // close dropdown after click
+                        }}
+                      >
+                        {sub}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -603,25 +735,25 @@ const Header = () => {
                   {isMobileAccountMenuOpen && (
                     <div className="space-y-1 py-2">
                       <Link
-                        href="/orders"
+                        href="/account/orders"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
                       >
                         My Orders
                       </Link>
                       <a
-                        href="#"
+                        href="/account/myAddresses"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
                       >
                         Saved Addresses
                       </a>
                       <a
-                        href="#"
+                        href="/account/wishlist"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
                       >
                         Wishlist
                       </a>
                       <a
-                        href="#"
+                        href="/account/faq"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
                       >
                         FAQ
@@ -747,7 +879,7 @@ const Header = () => {
                       key={index}
                       className="rounded-lg border border-gray-200 p-2 text-left text-xs text-gray-700 hover:border-teal-200 hover:bg-teal-50"
                     >
-                      {category}
+                      {category.name}
                     </button>
                   ))}
                 </div>

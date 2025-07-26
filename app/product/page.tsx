@@ -1,256 +1,174 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useSearchParams } from 'next/navigation';
-import ProductCard from '../components/ProductView-Card';
-import { ProductType } from '../types/ProductTypes';
-import FilterSidebar from '../components/FilterSidebar';
-import { X } from 'lucide-react';
-
-const PRODUCTS_PER_PAGE = 16;
+import React, { useState } from 'react';
+import Sidebar from '../components/FilterSidebar';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useWishlist } from '../hooks/useWishlist';
+import { useCart } from '../hooks/useCart';
+import { useMedicines } from '../hooks/useProducts';
+import ProductCard from '../components/ProductCard';
+import Navroute from '../components/navroute';
 
 const Page = () => {
-  const [products, setProducts] = useState<ProductType[]>([]);
-  const [filtered, setFiltered] = useState<ProductType[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [ShowFilterDrawer, setShowFilterDrawer] = useState(false);
-  const [ShowSortDrawer, setShowSortDrawer] = useState(false)
+  const totalPages = 5;
+  const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
+  const { favorites, toggleFavorite } = useWishlist();
+  const { addItem } = useCart();
 
-  const [sort, setSort] = useState('');
-  const searchParams = useSearchParams();
-  const category = searchParams.get('category');
+  const { medicines } = useMedicines({
+    type: 'allopathy',
+    limit: 16,
+  });
 
-  useEffect(() => {
-    axios.get(`/product?category=${category}`).then(res => {
-      setProducts(res.data);
-      setFiltered(res.data);
-    });
-  }, [category]);
-
-  const sortedData = () => {
-    let data = [...filtered];
-    if (sort === 'low-to-high') {
-      data.sort((a, b) => a.price - b.price);
-    } else if (sort === 'high-to-low') {
-      data.sort((a, b) => b.price - a.price);
+  const handleAddToCart = async (medicineId: string) => {
+    setAddingProductId(medicineId);
+    try {
+      await addItem(null, medicineId, 1);
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+    } catch (error) {
+      console.error('Add to cart failed:', error);
+    } finally {
+      setAddingProductId(null);
     }
-    return data;
   };
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
-  const paginated = sortedData().slice(
-    (currentPage - 1) * PRODUCTS_PER_PAGE,
-    currentPage * PRODUCTS_PER_PAGE
-  );
-
-  const MAX_PAGES = 10;
-  const totalPages = Math.min(Math.ceil(filtered.length / PRODUCTS_PER_PAGE), MAX_PAGES);
-
-  const Pagination = ({
-    currentPage,
-    totalPages,
-    onPageChange,
-  }: {
-    currentPage: number;
-    totalPages: number;
-    onPageChange: (page: number) => void;
-  }) => {
-    const getPages = () => {
-      const pages = [];
-      if (totalPages <= 2) {
-        for (let i = 1; i <= totalPages; i++) pages.push(i);
-      } else {
-        if (currentPage <= 4) {
-          pages.push(1, 2, 3, 4, 5, '...', totalPages);
-        } else if (currentPage >= totalPages - 3) {
-          pages.push(
-            1,
-            '...',
-            totalPages - 4,
-            totalPages - 3,
-            totalPages - 2,
-            totalPages - 1,
-            totalPages
-          );
-        } else {
-          pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
-        }
-      }
-      return pages;
-    };
-
-    return (
-      <div className="flex justify-center mt-6 gap-4">
-        <button
-          disabled={currentPage === 1}
-          onClick={() => onPageChange(currentPage - 1)}
-          className="rounded border px-3 py-1 disabled:opacity-50"
-        >
-          &#8592; Prev
-        </button>
-
-        {getPages().map((page, index) =>
-          page === '...' ? (
-            <span key={index} className="px-2">
-              ...
-            </span>
-          ) : (
-            <button
-              key={index}
-              onClick={() => onPageChange(Number(page))}
-              className={`h-8 w-8 rounded-full border text-sm font-medium ${
-                currentPage === page
-                  ? 'bg-[#317C80] text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              {page}
-            </button>
-          )
-        )}
-
-        <button
-          disabled={currentPage === totalPages}
-          onClick={() => onPageChange(currentPage + 1)}
-          className="rounded border px-3 py-1 disabled:opacity-50"
-        >
-          Next &#8594;
-        </button>
-      </div>
+  const handleAddFilter = (filter: string) => {
+    setSelectedFilters(prev =>
+      prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]
     );
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-6 max-w-7xl">
-      <div className='md:hidden flex justify-between gap-2 mb-4'>
-        <button onClick={() => setShowFilterDrawer(true)}
-          className='flex-1 bg-white font-bold border-r-2'>
-            Filter
-        </button>
-        <button onClick={() => setShowSortDrawer(true)}
-          className='flex-1 bg-white font-bold text-black'>
-            Sort
-          </button>
-      </div>
-      <div className="flex flex-col md:flex-row">
-        {/* === Sidebar === */}
-        <div className="mt-14 mb-4 w-full md:mb-0 md:w-1/4 md:pr-6">
-          <div className="rounded border bg-white p-4 shadow-sm hidden md:block">
-            {/* Price Range */}
-            <div className="mb-4 ">
-              <label className="block text-lg font-medium mb-1">Price Range</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  className="border px-2 py-1 w-20 rounded text-lg"
-                />
-                <span>-</span>
-                <input
-                  type="number"
-                  placeholder="Max"
-                  className="border px-2 py-1 w-20 rounded text-lg"
-                />
-                <button className="bg-[#317C80] text-white text-lg px-2 py-1 rounded">Go</button>
+    <>
+      <Navroute />
+      <div className="min-h-xl bg-background px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl justify-between gap-4 px-10">
+          {/* Sidebar */}
+          <Sidebar onCategorySelect={handleAddFilter} />
+
+          {/* Main Content */}
+          <main className="space-y-6 lg:col-span-4">
+            {/* Top Filter Bar */}
+            <div className="mb-4 flex flex-col items-center justify-between gap-4 sm:flex-row">
+              <div className="text-md font-semibold">
+                You searched for* <span className="text-primaryColor">Baby Care</span>
               </div>
+              <select className="rounded bg-white py-2 pr-8 pl-4 text-sm shadow outline-none">
+                <option>Default Sorting</option>
+                <option>Price: Low to High</option>
+                <option>Price: High to Low</option>
+              </select>
             </div>
-
-            {/* Filter Sidebar */}
-            <div className='hidden md:block'>
-              <FilterSidebar
-              selectedFilters={selectedFilters}
-              setSelectedFilters={setSelectedFilters}
-            />
-            </div>
-          </div>
-        </div>
-
-        {/* === Product Section === */}
-        <div className="w-full md:w-3/4">
-          <div className="mb-4">
-            <p className="text-gray-600 font-bold">
-              You searched for: <b>{category}</b>
-            </p>
-
-            {/* SHOW SELECTED FILTERS BELOW */}
             {selectedFilters.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="mb-4 flex flex-wrap gap-2">
                 {selectedFilters.map(filter => (
-                  <span
+                  <div
                     key={filter}
-                    className="bg-blue-100 text-[#317c80] px-2 py-1 rounded-full text-sm flex items-center"
+                    className="flex items-center gap-2 rounded-full bg-white px-4 text-xs text-gray-600"
                   >
-                    {filter}
-                    <X
-                      className="ml-1 w-4 h-4 cursor-pointer"
-                      onClick={() =>
-                        setSelectedFilters(prev => prev.filter(item => item !== filter))
-                      }
-                    />
-                  </span>
+                    <span>{filter}</span>
+                    <button
+                      onClick={() => setSelectedFilters(prev => prev.filter(f => f !== filter))}
+                      className="text-xl text-gray-600"
+                    >
+                      &times;
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Product Grid */}
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
-            {paginated.map(item => (
-              <ProductCard key={item._id} item={item} />
-            ))}
-          </div>
+            {/* Product Grid */}
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {medicines.map(medicine => (
+                <div key={medicine.id} className="max-w-[210px] min-w-[210px]">
+                  <ProductCard
+                    product={{
+                      id: medicine.id,
+                      name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
+                      price: medicine.price,
+                      originalPrice: medicine.originalPrice || medicine.price * 1.2,
+                      discount: medicine.discount || 20,
+                      rating: medicine.rating || 4.5,
+                      reviews: medicine.reviews || 100,
+                      image: medicine.imageUrl || '/medicine-placeholder.jpg',
+                      category: medicine.type || 'Medicine',
+                      subtitle: medicine.manufacturerName,
+                    }}
+                    isFavorite={favorites.has(medicine.id)}
+                    onToggleFavorite={() =>
+                      toggleFavorite({
+                        id: medicine.id,
+                        name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
+                        price: medicine.price,
+                        image: medicine.imageUrl || '/medicine-placeholder.jpg',
+                        category: medicine.type || 'Medicine',
+                      })
+                    }
+                    onAddToCart={() => handleAddToCart(medicine.id)}
+                    isAdding={addingProductId === medicine.id}
+                  />
+                </div>
+              ))}
+            </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          )}
+            {/* Pagination */}
+            <div className="mt-8 flex items-center justify-around">
+              {/* Page Controls */}
+              <div className="flex items-center gap-2">
+                {/* Previous Button */}
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                    currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-primaryColor text-white'
+                  }`}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
 
-      {ShowFilterDrawer &&(
-        <div 
-          className='fixed inset-0 z-50 bg-white p-4 md:hidden overflow-y-auto'>
-          <div className='flex justify-between items-center mb-4'>
-            <h2 className='text-xl font-bold text-black '>Filter</h2>
-            <button onClick={() => setShowFilterDrawer(false)}>X</button>
-          </div>
+                {[1, 2, 3].map(page => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`h-8 w-8 rounded-full text-sm font-medium ${
+                      currentPage === page
+                        ? 'bg-primaryColor text-white'
+                        : 'text-black hover:bg-gray-200'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
 
-          <FilterSidebar
-            selectedFilters={selectedFilters}
-            setSelectedFilters={setSelectedFilters}/>
+                <span className="text-lg">...</span>
+
+                {/* Next Button */}
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="bg-primaryColor flex h-8 w-8 items-center justify-center rounded-full text-white"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+
+              {/* Results Info */}
+              <div className="pl-24 text-sm text-gray-700">
+                Showing {(currentPage - 1) * 2 + 1}-{currentPage * 2} of 27 results
+              </div>
+            </div>
+          </main>
         </div>
-      )}
-
-{ShowSortDrawer && (
-  <div className="fixed inset-0 z-50 bg-white p-4 md:hidden">
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-xl font-bold text-[#317c80]">Sort By</h2>
-      <button onClick={() => setShowSortDrawer(false)}>✕</button>
-    </div>
-
-    <select
-      className="w-full border px-4 py-2 text-lg rounded"
-      onChange={e => {
-        setSort(e.target.value);
-        setShowSortDrawer(false);
-      }}
-    >
-      <option value="">Default</option>
-      <option value="low-to-high">Price: Low to High</option>
-      <option value="high-to-low">Price: High to Low</option>
-    </select>
-  </div>
-)}
-
       </div>
-    </div>
-
-
-  </div>
-);
+    </>
+  );
 };
 
 export default Page;
