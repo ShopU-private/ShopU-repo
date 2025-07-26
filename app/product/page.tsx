@@ -194,18 +194,6 @@ const Page = () => {
             )}
           </div>
 
-          {/* Sorting */}
-          <div className="justify-end hidden md:block">
-            <select
-              className="rounded border px-4 py-2 text-lg"
-              onChange={e => setSort(e.target.value)}
-            >
-              <option value="">Default Sorting</option>
-              <option value="low-to-high">Price: Low to High</option>
-              <option value="high-to-low">Price: High to Low</option>
-            </select>
-          </div>
-
           {/* Product Grid */}
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
             {paginated.map(item => (
