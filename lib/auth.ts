@@ -1,6 +1,7 @@
 import { jwtDecode } from 'jwt-decode';
 import { prisma } from '@/lib/client';
 import { NextRequest } from 'next/server';
+import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -15,8 +16,7 @@ interface TokenPayload {
 
 // ✅ Utility: Generate a JWT token - Keep this for server-side use only
 export function generateToken(user: { id: string; role: string; phoneNumber?: string }) {
-  // This should only be used in API routes, not in middleware
-  const jwt = require('jsonwebtoken');
+
   return jwt.sign(
     {
       id: user.id,
@@ -44,8 +44,12 @@ export function verifyToken(token: string): TokenPayload {
     }
     
     return decoded;
-  } catch (error: any) {
-    console.error('Token verification failed:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Token verification failed:', error.message);
+    } else {
+      console.error('Token verification failed:', error);
+    }
     throw new Error('Invalid token');
   }
 }
@@ -69,8 +73,12 @@ export function isAdmin(req: NextRequest): boolean {
     
     // Case-insensitive check for admin role
     return decoded.role?.toUpperCase() === 'ADMIN';
-  } catch (error: any) {
-    console.error('Error in isAdmin check:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error in isAdmin check:', error.message);
+    } else {
+      console.error('Error in isAdmin check:', error);
+    }
     return false;
   }
 }

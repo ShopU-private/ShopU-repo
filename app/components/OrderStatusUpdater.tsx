@@ -63,8 +63,8 @@ export default function OrderStatusUpdater({
       
       // Reset success state after 3 seconds
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to update status');
     } finally {
       setLoading(false);
     }

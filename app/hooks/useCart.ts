@@ -40,7 +40,7 @@ export function useCart() {
   const [lastFetch, setLastFetch] = useState<number>(0);
 
   // Helper for local storage operations
-  const cartCache = {
+  const cartCache = useMemo(() => ({
     get: (): { items: CartItem[]; timestamp: number } | null => {
       try {
         const cached = localStorage.getItem(CART_CACHE_KEY);
@@ -60,7 +60,7 @@ export function useCart() {
     isValid: (timestamp: number) => {
       return Date.now() - timestamp < CART_CACHE_TTL;
     },
-  };
+  }), []);
 
   // Fetch cart items from API with debounce logic
   const fetchCartItems = useCallback(
@@ -122,7 +122,7 @@ export function useCart() {
         setIsLoading(false);
       }
     },
-    [lastFetch]
+    [lastFetch, cartCache]
   );
 
   // Initialize cart on component mount
@@ -210,7 +210,7 @@ export function useCart() {
         return null;
       }
     },
-    [cartItems, fetchCartItems]
+    [cartItems, fetchCartItems, cartCache]
   );
 
   // Update item quantity with optimistic updates
@@ -252,7 +252,7 @@ export function useCart() {
         toast.error('Something went wrong while updating the cart');
       }
     },
-    [cartItems]
+    [cartItems, cartCache]
   );
 
   // Remove item from cart with optimistic updates
@@ -292,7 +292,7 @@ export function useCart() {
         return null;
       }
     },
-    [cartItems, fetchCartItems]
+    [cartItems, fetchCartItems, cartCache]
   );
 
   // Clear cart
@@ -317,7 +317,7 @@ export function useCart() {
     } catch (err) {
       console.error('Error clearing cart:', err);
     }
-  }, []);
+  }, [cartCache, fetchCartItems]);
 
   // Legacy support for components using addToCart instead of addItem
   const addToCart = useCallback(

@@ -55,6 +55,16 @@ interface RazorpayInstance {
   open(): void;
 }
 
+interface AddressDetails {
+  id: string;
+  fullName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  phoneNumber?: string;
+}
 export default function PaymentMethodModal({
   isOpen,
   onCloseAction,
@@ -66,7 +76,7 @@ export default function PaymentMethodModal({
   const [selectedMethod, setSelectedMethod] = useState<string>('cod');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [addressDetails, setAddressDetails] = useState<any>(null);
+  const [addressDetails, setAddressDetails] = useState<AddressDetails | null>(null);
   const router = useRouter();
 
   // Fetch the selected address details if we have an ID
@@ -471,7 +481,11 @@ export default function PaymentMethodModal({
                     {addressDetails.fullName}, {addressDetails.addressLine1}, {addressDetails.city}
                   </p>
                 ) : location?.address ? (
-                  <p className="mt-1 text-xs text-green-600">{location.address}</p>
+                  <p className="mt-1 text-xs text-green-600">
+                    {typeof location.address === 'string' 
+                      ? location.address 
+                      : `${location.address.addressLine1}, ${location.address.city}`}
+                  </p>
                 ) : (
                   <p className="mt-1 text-xs text-amber-600">
                     <button

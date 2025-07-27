@@ -50,9 +50,9 @@ export default function LiveTracking({ awb, orderId, isAdmin = true }: { awb: st
 
         setTrackingData(data);
         setError(null);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error fetching tracking:', err);
-        setError(err.message || 'Failed to load tracking information');
+        setError(err instanceof Error ? err.message : 'Failed to load tracking information');
       } finally {
         setLoading(false);
       }

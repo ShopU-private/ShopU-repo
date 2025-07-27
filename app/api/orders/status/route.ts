@@ -53,15 +53,16 @@ export async function POST(req: NextRequest) {
       message: 'Status updated successfully'
     });
 
-  } catch (error: any) {
-    console.error('Status update API error:', error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Status update API error:', errorMessage);
 
     return NextResponse.json({
       success: false,
       error: 'Failed to update status',
-      message: error.message
+      message: errorMessage
     }, {
-      status: error.response?.status || 500
+      status: 500
     });
   }
 }

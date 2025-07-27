@@ -15,6 +15,12 @@ import {
 import { mapPaymentStatusToOrderStatus } from '@/lib/payment-utils';
 import { prepareOrderItems, validateCartItems, logCheckoutEvent } from '@/lib/checkout-utils';
 
+interface RazorpayHandlerResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
 export default function PaymentPage() {
   const { cartItems, clearCart, isLoading } = useCart();
   const { location, addressId } = useLocation(); 
@@ -169,10 +175,9 @@ console.log('Selected Address ID:', location);
       }
 
       // Ensure Razorpay is loaded
-      const isLoaded = await ensureRazorpayLoaded();
-      
-      if (!isLoaded || typeof window === 'undefined' || typeof window.Razorpay === 'undefined') {
-        throw new Error('Razorpay not loaded. Please refresh the page and try again.');
+      const isRazorpayLoaded = await ensureRazorpayLoaded();
+      if (!isRazorpayLoaded) {
+        throw new Error('Failed to load Razorpay SDK. Please try again.');
       }
 
       console.log('Initializing Razorpay with options:', { 
@@ -181,12 +186,6 @@ console.log('Selected Address ID:', location);
         amount: data.amount,
         order_id: data.order_id
       });
-
-      interface RazorpayHandlerResponse {
-        razorpay_payment_id: string;
-        razorpay_order_id: string;
-        razorpay_signature: string;
-      }
 
       const options = {
         key: data.key,
@@ -227,7 +226,7 @@ console.log('Selected Address ID:', location);
     }
   };
 
-  const handlePaymentSuccess = async (response: any, orderId: string) => {
+  const handlePaymentSuccess = async (response: RazorpayHandlerResponse, orderId: string) => {
     try {
       await fetch('/api/payment/callback', {
         method: 'POST',
@@ -314,7 +313,12 @@ console.log('Selected Address ID:', location);
                 <div className="flex items-start gap-3 bg-teal-50 border border-teal-100 rounded-lg p-4">
                   <MapPin className="h-5 w-5 text-teal-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium">{addressDetails.address}</p>
+                    <p className="font-medium">
+                      {typeof addressDetails === 'string' 
+                        ? addressDetails 
+                        : JSON.stringify(addressDetails)
+                      }
+                    </p>
                   </div>
                 </div>
               ) : (

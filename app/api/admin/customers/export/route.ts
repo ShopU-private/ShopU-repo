@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
+import { Prisma } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,9 +11,9 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const { filters = {}, searchQuery = '', selectedCustomers } = body;
-
     // Build where clause based on filters
-    const where: any = {};
+    const where: Prisma.UserWhereInput = {};
+ 
     
     if (selectedCustomers && selectedCustomers.length > 0) {
       where.id = { in: selectedCustomers };
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (filters.minOrders) {
-        const minOrders = parseInt(filters.minOrders);
+        // const minOrders = parseInt(filters.minOrders);
         where.orders = { ...where.orders, some: {} };
       }
     }

@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
+    console.error('Error verifying OTP:', error);
     return NextResponse.json({ success: false, message: 'Internal Error' }, { status: 500 });
   }
 }
