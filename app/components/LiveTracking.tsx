@@ -1,0 +1,195 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Truck, Check, AlertCircle, Clock, Package, MapPin, Loader } from 'lucide-react';
+import OrderStatusUpdater from './OrderStatusUpdater';
+
+interface Scan {
+  scan_type: string;
+  scan_location: string;
+  scan_date: string;
+}
+
+interface TrackingStatus {
+  Status: string;
+  StatusDateTime: string;
+}
+
+interface TrackingData {
+  success: boolean;
+  ShipmentData?: Array<{
+    Shipment: {
+      Status?: TrackingStatus;
+      Scans?: Scan[];
+    }
+  }>;
+  error?: string;
+}
+
+export default function LiveTracking({ awb, orderId, isAdmin = true }: { awb: string, orderId?: string, isAdmin?: boolean }) {
+  const [trackingData, setTrackingData] = useState<TrackingData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTracking = async () => {
+      if (!awb) {
+        setLoading(false);
+        setError('No tracking number provided');
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/track/${awb}`);
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || data.error || 'Failed to fetch tracking info');
+        }
+
+        setTrackingData(data);
+        setError(null);
+      } catch (err: any) {
+        console.error('Error fetching tracking:', err);
+        setError(err.message || 'Failed to load tracking information');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTracking();
+    const interval = setInterval(fetchTracking, 5 * 60 * 1000); // every 5 minutes
+    return () => clearInterval(interval);
+  }, [awb]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-6">
+        <Loader className="w-8 h-8 text-teal-600 animate-spin" />
+        <p className="mt-4 text-gray-600">Loading tracking information...</p>
+      </div>
+    );
+  }
+
+  if (error || !trackingData?.success) {
+    return (
+      <div className="p-4 border border-red-200 rounded-md bg-red-50">
+        <div className="flex items-center gap-2">
+          <AlertCircle className="w-5 h-5 text-red-500" />
+          <p className="text-red-700">
+            {error || trackingData?.error || 'Unable to load tracking information'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const shipment = trackingData?.ShipmentData?.[0]?.Shipment;
+  const status = shipment?.Status?.Status || 'Unknown';
+  const scans = shipment?.Scans || [];
+
+  const getStatusIcon = (status: string) => {
+    const iconClass = "w-6 h-6";
+    switch (status.toLowerCase()) {
+      case 'delivered':
+        return <Check className={`${iconClass} text-green-600`} />;
+      case 'out for delivery':
+        return <Truck className={`${iconClass} text-blue-600`} />;
+      case 'in transit':
+        return <Truck className={`${iconClass} text-yellow-600`} />;
+      case 'shipped':
+        return <Package className={`${iconClass} text-purple-600`} />;
+      case 'pending':
+        return <Clock className={`${iconClass} text-gray-600`} />;
+      default:
+        return <Package className={`${iconClass} text-gray-600`} />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'delivered':
+        return 'bg-green-100 text-green-800 border-green-300';
+      case 'out for delivery':
+        return 'bg-blue-100 text-blue-800 border-blue-300';
+      case 'in transit':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'shipped':
+        return 'bg-purple-100 text-purple-800 border-purple-300';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    };
+    return new Date(dateString).toLocaleString('en-IN', options);
+  };
+
+  const renderStatusUpdater = () => {
+    if (!isAdmin || !orderId) return null;
+    
+    return (
+      <div className="mt-2 border-t pt-2">
+        <p className="text-sm font-medium text-gray-700 mb-1">Update Status:</p>
+        <OrderStatusUpdater 
+          orderId={orderId} 
+          currentStatus={status} 
+          onStatusChange={(newStatus) => {
+            // Optionally refresh tracking data or update UI
+            console.log('Status updated to:', newStatus);
+          }}
+        />
+      </div>
+    );
+  };
+
+  return (
+    <div className="border rounded-lg shadow-sm overflow-hidden">
+      <div className="p-4 bg-gray-50 border-b">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-medium text-gray-900">Shipment Tracking</h2>
+          <div className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(status)}`}>
+            {status}
+          </div>
+        </div>
+        <p className="text-sm text-gray-500 mt-1">AWB: {awb}</p>
+        {renderStatusUpdater()}
+      </div>
+
+      {scans.length === 0 ? (
+        <div className="p-6 text-center text-gray-500">
+          <Package className="mx-auto h-10 w-10 text-gray-400" />
+          <p className="mt-2">No tracking details available yet.</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-gray-200">
+          {scans.map((scan, idx) => (
+            <div key={idx} className="p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 mt-1">
+                {getStatusIcon(scan.scan_type)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-900">{scan.scan_type}</p>
+                <div className="flex items-center text-sm text-gray-500 mt-1">
+                  <MapPin className="w-4 h-4 mr-1" />
+                  {scan.scan_location || 'Location not available'}
+                </div>
+                <p className="text-sm text-gray-500 mt-1">
+                  {formatDate(scan.scan_date)}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

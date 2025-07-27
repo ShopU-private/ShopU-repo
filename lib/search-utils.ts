@@ -6,7 +6,7 @@
 class SearchLRUCache<T> {
   private capacity: number;
   private cache: Map<string, { data: T; timestamp: number }>;
-  private ttl: number; // Time to live in milliseconds
+  private ttl: number;  // Time to live in milliseconds
 
   constructor(capacity: number = 100, ttl: number = 60 * 60 * 1000) {
     this.capacity = capacity;
@@ -17,20 +17,20 @@ class SearchLRUCache<T> {
   // Get an item from cache
   get(key: string): T | undefined {
     if (!this.cache.has(key)) return undefined;
-
+    
     const item = this.cache.get(key);
     if (!item) return undefined;
-
+    
     // Check if the item has expired
     if (Date.now() - item.timestamp > this.ttl) {
       this.cache.delete(key);
       return undefined;
     }
-
+    
     // Move to the end to mark as recently used
     this.cache.delete(key);
     this.cache.set(key, item);
-
+    
     return item.data;
   }
 
@@ -39,7 +39,7 @@ class SearchLRUCache<T> {
     // If key exists, delete it first
     if (this.cache.has(key)) {
       this.cache.delete(key);
-    }
+    } 
     // If at capacity, remove the oldest item
     else if (this.cache.size >= this.capacity) {
       const oldestKey = this.cache.keys().next().value;
@@ -47,11 +47,11 @@ class SearchLRUCache<T> {
         this.cache.delete(oldestKey);
       }
     }
-
+    
     // Add new item
     this.cache.set(key, {
       data: value,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     });
   }
 
@@ -76,8 +76,8 @@ export function normalizeSearchTerm(term: string): string {
   return term
     .trim()
     .toLowerCase()
-    .replace(/[^\w\s]/g, '') // Remove special characters
-    .replace(/\s+/g, ' '); // Replace multiple spaces with single space
+    .replace(/[^\w\s]/g, '')  // Remove special characters
+    .replace(/\s+/g, ' ');    // Replace multiple spaces with single space
 }
 
 // Export the cache for use in API routes
@@ -98,13 +98,9 @@ export interface Product {
 }
 
 // Start cache cleanup interval
-if (typeof window === 'undefined') {
-  // Only run on server
-  setInterval(
-    () => {
-      medicineSearchCache.cleanup();
-      productSearchCache.cleanup();
-    },
-    15 * 60 * 1000
-  ); // Clean up every 15 minutes
+if (typeof window === 'undefined') { // Only run on server
+  setInterval(() => {
+    medicineSearchCache.cleanup();
+    productSearchCache.cleanup();
+  }, 15 * 60 * 1000); // Clean up every 15 minutes
 }

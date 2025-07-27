@@ -4,7 +4,11 @@ import { prisma } from '@/lib/client';
 import { generateToken } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
 
-const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
+
+const client = twilio(
+  process.env.TWILIO_ACCOUNT_SID!,
+  process.env.TWILIO_AUTH_TOKEN!
+);
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +37,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const token = generateToken({
+    const token = await generateToken({
       id: user.id,
       phoneNumber: user.phoneNumber,
       role: user.role,
@@ -42,14 +46,13 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ success: true });
     response.cookies.set('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       maxAge: 30 * 24 * 60 * 60,
       path: '/',
     });
 
     return response;
   } catch (error) {
-    console.error('Somthing wents wrong:', error);
     return NextResponse.json({ success: false, message: 'Internal Error' }, { status: 500 });
   }
 }

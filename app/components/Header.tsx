@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, ShoppingCart, User, MapPin, Menu, X, Loader, ChevronDown } from 'lucide-react';
+import { Search, ShoppingCart, User, MapPin, Menu, X, Loader, ChevronDown ,Shield } from 'lucide-react';
 import Image from 'next/image';
 import Logo from '../../public/Shop U Logo-03.jpg';
 import LoginModal from './LoginModal';
@@ -12,12 +12,14 @@ import { useCartModal } from '../context/CartModalContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState<number | null>(null);
   const router = useRouter();
   const {
@@ -39,6 +41,7 @@ const Header = () => {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const categoriesRef = useRef<HTMLDivElement>(null);
   const [isMobileAccountMenuOpen, setIsMobileAccountMenuOpen] = useState(false);
+
   const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
   const fetchCartCount = React.useCallback(async () => {
     try {
@@ -68,6 +71,7 @@ const Header = () => {
       const data = await res.json();
       setIsLoggedIn(data.loggedIn);
       setPhoneNumber(data.phoneNumber);
+      setIsAdmin(data.role?.toUpperCase() === 'ADMIN');
       if (data.loggedIn) {
         fetchCartCount();
       } else {
@@ -75,6 +79,7 @@ const Header = () => {
       }
     } catch {
       setIsLoggedIn(false);
+      setIsAdmin(false);
       setCartCount(0);
     }
   }, [fetchCartCount]);
@@ -85,6 +90,7 @@ const Header = () => {
       checkLoginStatus();
     }
   }, [isLoginModalOpen, checkLoginStatus]);
+
   useEffect(() => {
     const handleUpdate = () => {
       const timeout = setTimeout(() => {
@@ -548,6 +554,16 @@ const Header = () => {
                       <p className="text-sm text-gray-600">{phoneNumber}</p>
                     </div>
                     <div className="space-y-1 py-2">
+
+                          {isAdmin && (
+                        <Link
+                          href="/admin"
+                          className="flex items-center gap-3 px-6 py-1 text-[0.85rem] font-medium text-red-600 hover:bg-gray-50"
+                        >
+                          <Shield className="h-4 w-4" />
+                          Admin Panel
+                        </Link>
+                      )}
                       <Link
                         href="/account/orders"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
@@ -734,6 +750,16 @@ const Header = () => {
                   {/* Dropdown List Items */}
                   {isMobileAccountMenuOpen && (
                     <div className="space-y-1 py-2">
+
+                          {isAdmin && (
+                        <Link
+                          href="/admin"
+                          className="flex items-center gap-3 px-6 py-1 text-[0.85rem] font-medium text-red-600 hover:bg-gray-50"
+                        >
+                          <Shield className="h-4 w-4" />
+                          Admin Panel
+                        </Link>
+                      )}
                       <Link
                         href="/account/orders"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
