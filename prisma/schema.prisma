@@ -73,6 +73,7 @@ model Product {
   combinations  ProductVariantCombination[]
   variantTypes  VariantType[]
   productImages ProductImage[]
+  wishlist      Wishlist[]
 }
 
 model VariantType {
@@ -126,14 +127,13 @@ model Wishlist {
   id         String   @id @default(uuid())
   name       String
   price      Decimal
-  stock      Int
   image_url  String
   productId  String
   is_active  Boolean  @default(true)
   createdAt  DateTime @default(now()) @map("created_at")
   userId     String?
   user       User?    @relation(fields: [userId], references: [id])
-
+  product   Product  @relation(fields: [productId], references: [id])
   @@map("Wishlist")
 }
 

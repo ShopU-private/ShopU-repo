@@ -5,12 +5,14 @@ import ProductCard from './ProductCard';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
 import { useProducts } from '../hooks/useBabycare';
+import { useRouter } from 'next/navigation';
 
 const WomenCareSection = () => {
   const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
   const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
+    const router = useRouter();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -38,6 +40,10 @@ const WomenCareSection = () => {
     }
   };
 
+    const handleCardClick = () => {
+    router.push('/product?category=Women Care');
+  };
+
   return (
     <section className="min-h-xl">
       {/* Desktop view */}
@@ -47,7 +53,7 @@ const WomenCareSection = () => {
             Women <span className="text-secondaryColor">Care</span>
             <hr className="bg-background1 mt-1 h-1 w-32 rounded border-0" />
           </h2>
-          <button className="bg-background1 cursor-pointer rounded px-3 py-1 text-sm font-medium text-white">
+          <button onClick={handleCardClick} className="bg-background1 cursor-pointer rounded px-3 py-1 text-sm font-medium text-white">
             View All <span className="text-lg">{'>'}</span>
           </button>
         </div>
@@ -110,7 +116,6 @@ const WomenCareSection = () => {
                         id: product.id,
                         name: product.name,
                         price: product.price,
-                        stock: product.stock,
                         image: product.imageUrl || '/product-placeholder.jpg',
                         category: product.category || 'Product',
                       })
@@ -147,7 +152,7 @@ const WomenCareSection = () => {
             Women <span className="text-secondaryColor">Care</span>
             <hr className="bg-background1 mt-1 w-28 rounded border-2" />
           </h2>
-          <button className="bg-background text-md text-primaryColor cursor-pointer rounded px-3 py-1 font-semibold">
+          <button onClick={handleCardClick} className="bg-background text-md text-primaryColor cursor-pointer rounded px-3 py-1 font-semibold">
             View All <span className="text-lg">{'>'}</span>
           </button>
         </div>
@@ -191,7 +196,6 @@ const WomenCareSection = () => {
                       id: product.id,
                       name: product.name,
                       price: product.price,
-                      stock: product.stock,
                       image: product.imageUrl || '/product-placeholder.jpg',
                       category: product.category || 'Product',
                     })

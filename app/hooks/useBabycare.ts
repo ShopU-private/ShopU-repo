@@ -19,12 +19,15 @@ interface Product {
 interface UseProductsOptions {
   category?: string;
   limit?: number;
+  page?: number;
 }
 
 export function useProducts(options: UseProductsOptions = {}) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(options.page || 1);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -35,6 +38,7 @@ export function useProducts(options: UseProductsOptions = {}) {
         const queryParams = new URLSearchParams();
         if (options.category) queryParams.append('category', options.category);
         if (options.limit) queryParams.append('limit', options.limit.toString());
+        if (options.page) queryParams.append('page', options.page.toString());
 
         const res = await fetch(`/api/products/featured?${queryParams.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch products');
@@ -51,14 +55,16 @@ export function useProducts(options: UseProductsOptions = {}) {
               stock: product.stock ?? 0,
               imageUrl: product.imageUrl || '/product-placeholder.jpg',
               category: product.subCategory?.name || 'Product',
-              originalPrice: parseFloat(product.price?.toString() || '0') * 1.15,
-              discount: 15,
+              originalPrice: product.originalPrice ?? product.price * 1.15,
+              discount: product.discount ?? 15,
               rating: 4.2,
               reviews: 12,
             })
           ) || [];
 
         setProducts(transformed);
+        setTotalPages(data.totalPages || 1);
+        setCurrentPage(data.currentPage || 1);
       } catch (err) {
         console.error('Product fetch error:', err);
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -69,7 +75,7 @@ export function useProducts(options: UseProductsOptions = {}) {
     };
 
     fetchProducts();
-  }, [options.category, options.limit]);
+  }, [options.category, options.limit, options.page]);
 
-  return { products, loading, error };
+  return { products, loading, error, totalPages, currentPage };
 }

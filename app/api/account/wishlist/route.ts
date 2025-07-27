@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 // Add product to wishlist
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, price, stock, image_url, productId } = body;
+  const { name, price, image_url, productId } = body;
 
   const token = req.cookies.get('token')?.value;
 
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   const payload = verifyToken(token);
   const userId = payload.id;
 
-  if (!name || !price || !stock || !image_url || !productId) {
+  if (!name || !price || !image_url || !productId) {
     return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
   }
 
@@ -42,7 +42,6 @@ export async function POST(req: NextRequest) {
       data: {
         name,
         price,
-        stock,
         image_url,
         productId,
         userId,
@@ -76,10 +75,28 @@ export async function GET(req: NextRequest) {
         is_active: true,
         userId: userId,
       },
+      include: {
+        product: {
+          select: {
+            stock: true,
+          },
+        },
+      },
     });
 
-    //Return wishlist items
-    return NextResponse.json(items, { status: 200 });
+    // Map to send stock along with wishlist item
+    const response = items.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image_url: item.image_url,
+      productId: item.productId,
+      createdAt: item.createdAt,
+      stock: item.product?.stock ?? 0, // default to 0 if null
+    }));
+
+    return NextResponse.json(response, { status: 200 });
+
   } catch (error) {
     console.error('Error fetching wishlist:', error);
     return NextResponse.json({ message: 'Failed to fetch wishlist', error }, { status: 500 });

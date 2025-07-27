@@ -41,7 +41,7 @@ const BabyCareSection = () => {
   };
 
   const handleCardClick = () => {
-    router.push('/product');
+    router.push('/product?category=Baby Care');
   };
 
   return (
@@ -121,7 +121,7 @@ const BabyCareSection = () => {
                         id: product.id,
                         name: product.name,
                         price: product.price,
-                        stock: product.stock,
+
                         image: product.imageUrl || '/product-placeholder.jpg',
                         category: product.category || 'Product',
                       })
@@ -205,7 +205,6 @@ const BabyCareSection = () => {
                       id: product.id,
                       name: product.name,
                       price: product.price,
-                      stock: product.stock,
                       image: product.imageUrl || '/product-placeholder.jpg',
                       category: product.category || 'Product',
                     })

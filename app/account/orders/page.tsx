@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import { Loader } from 'lucide-react'; // 🌀 import loader
+import { Loader } from 'lucide-react'; 
 import Navroute from '@/app/components/navroute';
 
 interface Product {

@@ -15,7 +15,7 @@ interface WishlistItem {
   image_url: string;
   price: number;
   createdAt: string;
-  stock?: string;
+  stock?: number;
 }
 
 export default function WishlistPage() {
@@ -81,7 +81,7 @@ export default function WishlistPage() {
   const handleAddToCart = async (productId: string) => {
     setAddingProductId(productId);
     try {
-      await addItem(null, productId, 1);
+      await addItem(productId, null,  1);
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (err) {
       console.error('Add to cart failed:', err);

@@ -4,8 +4,9 @@ import React, { useState, useRef } from 'react';
 import { useCart } from '../hooks/useCart';
 import ProductCard from '../components/ProductCard';
 import HealthCategoryGrid from '../components/HealthCategoryGrid';
-import { useMedicines } from '../hooks/useProducts';
+
 import { useWishlist } from '../hooks/useWishlist';
+import { useProducts } from '../hooks/useBabycare';
 
 interface HealthCategory {
   id: string;
@@ -19,7 +20,10 @@ const ShopUHealthComponent: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
 
-  const { medicines, loading, error } = useMedicines({ limit: 10 });
+  const { products, loading, error } = useProducts({
+    category: 'Women Care',
+    limit: 10,
+  });
 
   const healthCategories: HealthCategory[] = [
     { id: 'diabetes', name: 'Diabetes Care', image: '/Diabetise.jpg' },
@@ -40,10 +44,10 @@ const ShopUHealthComponent: React.FC = () => {
     }
   };
 
-  const handleAddToCart = async (medicineId: string) => {
-    setAddingProductId(medicineId);
+  const handleAddToCart = async (productId: string) => {
+    setAddingProductId(productId);
     try {
-      await addItem(null, medicineId, 1);
+      await addItem(productId, null, 1);
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (error) {
       console.error('Add to cart failed:', error);
@@ -104,39 +108,38 @@ const ShopUHealthComponent: React.FC = () => {
                 <div className="text-secondaryColor py-8 text-center">
                   Failed to load medicines. Please try again.
                 </div>
-              ) : medicines.length === 0 ? (
+              ) : products.length === 0 ? (
                 <div className="py-8 text-center text-gray-500">No medicines available.</div>
               ) : (
-                medicines.map(medicine => (
-                  <div key={medicine.id} className="max-w-[210px] min-w-[210px] flex-shrink-0">
-                    <ProductCard
-                      product={{
-                        id: medicine.id,
-                        name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                        price: medicine.price,
-                        originalPrice: medicine.originalPrice || medicine.price * 1.2,
-                        discount: medicine.discount || 20,
-                        stock: medicine.stock || 30,
-                        rating: medicine.rating || 4.5,
-                        reviews: medicine.reviews || 100,
-                        image: medicine.imageUrl || '/medicine-placeholder.jpg',
-                        category: medicine.type || 'Medicine',
-                        subtitle: medicine.manufacturerName,
-                      }}
-                      isFavorite={favorites.has(medicine.id)}
-                      onToggleFavorite={() =>
-                        toggleFavorite({
-                          id: medicine.id,
-                          name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                          price: medicine.price,
-                          stock: medicine.stock || 30,
-                          image: medicine.imageUrl || '/medicine-placeholder.jpg',
-                          category: medicine.type || 'Medicine',
-                        })
-                      }
-                      onAddToCart={() => handleAddToCart(medicine.id)}
-                      isAdding={addingProductId === medicine.id}
-                    />
+                products.map(product => (
+                  <div key={product.id} className="max-w-[210px] min-w-[210px] flex-shrink-0">
+                  <ProductCard
+                    product={{
+                      id: product.id,
+                      name: product.name,
+                      price: product.price,
+                      originalPrice: product.originalPrice,
+                      discount: product.discount,
+                      stock: product.stock,
+                      rating: product.rating || 4.5,
+                      reviews: product.reviews || 100,
+                      image: product.imageUrl || '/product-placeholder.jpg',
+                      category: product.category || 'Product',
+                      subtitle: product.description,
+                    }}
+                    isFavorite={favorites.has(product.id)}
+                    onToggleFavorite={() =>
+                      toggleFavorite({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: product.imageUrl || '/product-placeholder.jpg',
+                        category: product.category || 'Product',
+                      })
+                    }
+                    onAddToCart={() => handleAddToCart(product.id)}
+                    isAdding={addingProductId === product.id}
+                  />
                   </div>
                 ))
               )}
@@ -189,39 +192,38 @@ const ShopUHealthComponent: React.FC = () => {
               <div className="text-secondaryColor py-8 text-center">
                 Failed to load medicines. Please try again.
               </div>
-            ) : medicines.length === 0 ? (
+            ) : products.length === 0 ? (
               <div className="py-8 text-center text-gray-500">No medicines available.</div>
             ) : (
-              medicines.map(medicine => (
-                <div key={medicine.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
-                  <ProductCard
-                    product={{
-                      id: medicine.id,
-                      name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                      price: medicine.price,
-                      originalPrice: medicine.originalPrice || medicine.price * 1.2,
-                      discount: medicine.discount || 20,
-                      stock: medicine.stock || 30,
-                      rating: medicine.rating || 4.5,
-                      reviews: medicine.reviews || 100,
-                      image: medicine.imageUrl || '/medicine-placeholder.jpg',
-                      category: medicine.type || 'Medicine',
-                      subtitle: medicine.manufacturerName,
-                    }}
-                    isFavorite={favorites.has(medicine.id)}
-                    onToggleFavorite={() =>
-                      toggleFavorite({
-                        id: medicine.id,
-                        name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                        price: medicine.price,
-                        stock: medicine.stock || 30,
-                        image: medicine.imageUrl || '/medicine-placeholder.jpg',
-                        category: medicine.type || 'Medicine',
-                      })
-                    }
-                    onAddToCart={() => handleAddToCart(medicine.id)}
-                    isAdding={addingProductId === medicine.id}
-                  />
+              products.map(product => (
+                <div key={product.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
+                <ProductCard
+                  product={{
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    originalPrice: product.originalPrice,
+                    discount: product.discount,
+                    stock: product.stock,
+                    rating: product.rating || 4.5,
+                    reviews: product.reviews || 100,
+                    image: product.imageUrl || '/product-placeholder.jpg',
+                    category: product.category || 'Product',
+                    subtitle: product.description,
+                  }}
+                  isFavorite={favorites.has(product.id)}
+                  onToggleFavorite={() =>
+                    toggleFavorite({
+                      id: product.id,
+                      name: product.name,
+                      price: product.price,
+                      image: product.imageUrl || '/product-placeholder.jpg',
+                      category: product.category || 'Product',
+                    })
+                  }
+                  onAddToCart={() => handleAddToCart(product.id)}
+                  isAdding={addingProductId === product.id}
+                />
                 </div>
               ))
             )}

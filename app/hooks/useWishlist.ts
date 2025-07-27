@@ -7,7 +7,6 @@ interface Product {
   price: number;
   image: string;
   category: string;
-  stock: number;
 }
 interface WishlistItem {
   productId: number | string;
@@ -76,7 +75,6 @@ export function useWishlist() {
         body: JSON.stringify({
           name: product.name,
           price: product.price,
-          stock: product.stock,
           image_url: product.image,
           productId: product.id,
         }),
