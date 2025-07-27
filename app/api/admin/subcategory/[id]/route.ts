@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
-import { z } from 'zod';
 import { updateSubCategorySchema } from '@/lib/schema/adminSchema';
 
 interface Params {
@@ -24,6 +23,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(subCategories, { status: 200 });
   } catch (error) {
+    console.error('Somthing wents wrong:', error);
     return NextResponse.json({ error: 'Failed to fetch subcategories' }, { status: 500 });
   }
 }

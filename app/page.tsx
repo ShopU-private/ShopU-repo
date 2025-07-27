@@ -13,6 +13,7 @@ import BrandSection from './components/ShopByBrand';
 import PersonalCareSection from './components/PersonalCareSection';
 import EverydayEssentialsSection from './components/EverydayEssentialsSection';
 import FeatureSection from './components/FeatureSection';
+import PromoBanner from './components/Promobanner';
 
 interface Medicine {
   id: string;
@@ -45,10 +46,11 @@ export default function Home() {
       <BrandSection />
       <WomenCareSection />
       <PersonalCareSection />
+      <PromoBanner />
       <EverydayEssentialsSection />
-      <main className="flex justify-center items-center px-4 py-8">
+      <main className="flex items-center justify-center px-4 py-8">
         {searchResults.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 max-w-7xl w-[90%]">
+          <div className="grid w-[90%] max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {searchResults.map(medicine => (
               <MedicineCard key={medicine.id} medicine={medicine} />
             ))}

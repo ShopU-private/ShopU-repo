@@ -49,7 +49,7 @@
 //   );
 // }
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Karla } from 'next/font/google';
+import { Karla } from 'next/font/google';
 import './globals.css';
 import { LocationProvider } from './context/LocationContext';
 import { CartModalProvider } from './context/CartModalContext';
@@ -57,20 +57,11 @@ import CartModalWrapper from './components/CartModalWrapper';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Script from 'next/script';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+import { Toaster } from 'react-hot-toast';
 
 const karla = Karla({
   weight: '400',
-  subsets: ['latin'], 
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
@@ -88,13 +79,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${karla.className} antialiased`}>
+      <body className={`${karla.className} antialiased`}>
+        <Toaster position="top-center" toastOptions={{ duration: 2000 }} />
         <LocationProvider>
           <CartModalProvider>
             <Header />
-            <main className="min-h-[calc(100vh-200px)] bg-background"> 
-              {children}
-            </main>
+            <main className="bg-background min-h-[calc(100vh-200px)]">{children}</main>
             <Footer />
             <CartModalWrapper />
           </CartModalProvider>

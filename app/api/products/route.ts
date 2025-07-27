@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/client';
+import { Prisma, prisma } from '@/lib/client';
 
 export async function GET(req: NextRequest) {
   try {
@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : undefined;
 
-    let whereClause: any = {};
+    let whereClause: Prisma.ProductWhereInput = {};
 
     if (subCategoryId) {
       whereClause = { subCategoryId };
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
             category: true,
           },
         },
-        productImage: true,
+
         variantTypes: {
           include: {
             values: true,
@@ -68,7 +68,6 @@ export async function POST(req: NextRequest) {
     const product = await prisma.product.create({
       data,
       include: {
-        productImage: true,
         subCategory: true,
       },
     });

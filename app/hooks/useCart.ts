@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 type Product = {
   id: string;
@@ -66,7 +66,6 @@ export function useCart() {
   const fetchCartItems = useCallback(
     async (forceRefresh = false) => {
       try {
-        // Use cache if available and not forcing refresh
         if (!forceRefresh) {
           const cache = cartCache.get();
           if (cache && cartCache.isValid(cache.timestamp)) {
@@ -76,7 +75,6 @@ export function useCart() {
           }
         }
 
-        // Don't fetch more than once every 500ms unless forced
         const now = Date.now();
         if (!forceRefresh && now - lastFetch < 500) {
           return;
@@ -91,29 +89,31 @@ export function useCart() {
         });
 
         if (response.status === 401) {
-          // User not logged in
           setCartItems([]);
           setIsLoading(false);
           return;
         }
 
         if (!response.ok) {
-          throw new Error('Failed to fetch cart');
+          toast.error('Failed to fetch cart');
+          return;
         }
 
         const data = await response.json();
+
         if (data.success && data.cartItems) {
           setCartItems(data.cartItems);
-          // Update cache
           cartCache.set(data.cartItems);
         } else {
-          throw new Error(data.error || 'Failed to fetch cart items');
+          toast.error(data.error || 'Failed to fetch cart items');
         }
       } catch (err) {
         console.error('Error fetching cart:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch cart items');
+        const fallbackError = err instanceof Error ? err.message : 'Failed to fetch cart items';
+        setError(fallbackError);
+        toast.error(fallbackError);
 
-        // Use cached data as fallback if available
+        // fallback to cache
         const cache = cartCache.get();
         if (cache) {
           setCartItems(cache.items);
@@ -158,56 +158,56 @@ export function useCart() {
           }),
         });
 
+        const data = await response.json();
+
         if (response.status === 401) {
-          throw new Error('Please login to add items to cart');
+          toast.error('Please login to add items to cart');
+          return null;
         }
 
         if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.error || 'Failed to add item to cart');
+          toast.error(data.error || 'Failed to add item to cart');
+          return null;
         }
 
-        const data = await response.json();
-        if (data.success) {
-          // Optimistic update
-          if (data.cartItem) {
-            setCartItems(prev => {
-              // Find if this item already exists
-              const existingIndex = prev.findIndex(
-                item =>
-                  (productId && item.productId === productId) ||
-                  (medicineId && item.medicineId === medicineId)
-              );
+        if (data.success && data.cartItem) {
+          setCartItems(prev => {
+            const existingIndex = prev.findIndex(
+              item =>
+                (productId && item.productId === productId) ||
+                (medicineId && item.medicineId === medicineId)
+            );
 
-              if (existingIndex >= 0) {
-                // Update existing item
-                const updated = [...prev];
-                updated[existingIndex] = {
-                  ...updated[existingIndex],
-                  quantity: updated[existingIndex].quantity + quantity,
-                };
-                return updated;
-              } else {
-                // Add new item
-                return [...prev, data.cartItem];
-              }
-            });
+            if (existingIndex >= 0) {
+              const updated = [...prev];
+              updated[existingIndex] = {
+                ...updated[existingIndex],
+                quantity: updated[existingIndex].quantity + quantity,
+              };
+              return updated;
+            } else {
+              return [...prev, data.cartItem];
+            }
+          });
 
-            // Update cache
-            const updatedItems = [...cartItems];
-            cartCache.set(updatedItems);
-          }
+          // Update cache
+          const updatedItems = [...cartItems];
+          cartCache.set(updatedItems);
 
-          // Refresh cart in background after a short delay
+          // Optional refresh
           setTimeout(() => fetchCartItems(true), 300);
+
+          toast.success('Item added to cart');
           return data.cartItem;
         } else {
-          throw new Error(data.error || 'Failed to add item to cart');
+          toast.error(data.error || 'Failed to add item to cart');
+          return null;
         }
       } catch (err) {
         console.error('Error adding item to cart:', err);
-        setError(err instanceof Error ? err.message : 'Failed to add item to cart');
-        throw err;
+        setError('Something went wrong while adding to cart');
+        toast.error('Something went wrong while adding to cart');
+        return null;
       }
     },
     [cartItems, fetchCartItems]
@@ -235,26 +235,21 @@ export function useCart() {
           body: JSON.stringify({ quantity }),
         });
 
-        if (!response.ok) {
-          // Revert on error
-          setCartItems(originalItems);
-          const data = await response.json();
-          throw new Error(data.error || 'Failed to update item quantity');
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          setCartItems(originalItems); // Revert on error
+          toast.error(data.error || 'Failed to update item quantity');
+          return;
         }
 
-        const data = await response.json();
-        if (data.success) {
-          // Update cache
-          cartCache.set(updatedItems);
-        } else {
-          // Revert on error
-          setCartItems(originalItems);
-          throw new Error(data.error || 'Failed to update item quantity');
-        }
+        // Success
+        cartCache.set(updatedItems);
+        toast.success('Cart updated!');
       } catch (err) {
         console.error('Error updating item quantity:', err);
         setError(err instanceof Error ? err.message : 'Failed to update item quantity');
-        throw err;
+        toast.error('Something went wrong while updating the cart');
       }
     },
     [cartItems]
@@ -275,29 +270,29 @@ export function useCart() {
           method: 'DELETE',
         });
 
-        if (!response.ok) {
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
           // Revert on error
           setCartItems(originalItems);
-          const data = await response.json();
-          throw new Error(data.error || 'Failed to remove item from cart');
+          toast.error(data.error || 'Failed to remove item from cart');
+          return null;
         }
 
-        const data = await response.json();
-        if (data.success) {
-          // Update cache
-          cartCache.set(updatedItems);
-        } else {
-          // Revert on error
-          setCartItems(originalItems);
-          throw new Error(data.error || 'Failed to remove item from cart');
-        }
+        // Update cache on success
+        cartCache.set(updatedItems);
+        await fetchCartItems(true);
+        window.dispatchEvent(new CustomEvent('cartCountUpdated'));
+        toast.success('Item removed from cart');
+        return true;
       } catch (err) {
         console.error('Error removing item from cart:', err);
-        setError(err instanceof Error ? err.message : 'Failed to remove item from cart');
-        throw err;
+        setError('Failed to remove item from cart');
+        toast.error('Something went wrong while removing from cart');
+        return null;
       }
     },
-    [cartItems]
+    [cartItems, fetchCartItems]
   );
 
   // Clear cart
@@ -317,6 +312,8 @@ export function useCart() {
         const data = await response.json();
         console.error('Error clearing cart:', data.error);
       }
+      await fetchCartItems(true);
+      window.dispatchEvent(new CustomEvent('cartCountUpdated'));
     } catch (err) {
       console.error('Error clearing cart:', err);
     }

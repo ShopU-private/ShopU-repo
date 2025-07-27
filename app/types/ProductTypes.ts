@@ -5,6 +5,7 @@ export type ProductType = {
   price: number;
   mrp: number;
   discount: number;
+  quantitiy: string;
   brand: string;
   skinType: string;
 };

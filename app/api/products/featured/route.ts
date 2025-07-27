@@ -4,17 +4,35 @@ import { prisma } from '@/lib/client';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const limit = Number(searchParams.get('limit') || '5');
+    const limit = Number(searchParams.get('limit') || '20');
+    const page = Number(searchParams.get('page') || '1');
     const category = searchParams.get('category');
 
-    // Query to fetch featured products with higher discount or marked as featured
-    const featuredProducts = await prisma.product.findMany({
+    const skip = (page - 1) * limit;
+
+    // Fetch total count for frontend pagination (optional but useful)
+    const totalCount = await prisma.product.count({
       where: {
-        // Only include products with images for better display
+        ...(category && {
+          subCategory: {
+            category: {
+              name: {
+                contains: category,
+                mode: 'insensitive',
+              },
+            },
+          },
+        }),
+      },
+    });
+
+    // Paginated product fetch
+    const products = await prisma.product.findMany({
+      where: {
         imageUrl: {
           not: null,
+          not: '',
         },
-        // Optional category filter
         ...(category && {
           subCategory: {
             category: {
@@ -32,22 +50,16 @@ export async function GET(req: NextRequest) {
             category: true,
           },
         },
-        productImage: true,
       },
-      orderBy: [
-        // Order by stock and price to get a good mix
-        { stock: 'desc' },
-        { price: 'asc' },
-      ],
+      orderBy: [{ stock: 'desc' }, { price: 'asc' }],
+      skip,
       take: limit,
     });
 
-    // Add calculated discount field
-    const productsWithDiscount = featuredProducts.map(product => {
-      // Calculate a random discount between 10-50% for products without one
+    // Add discount/originalPrice field
+    const productsWithDiscount = products.map(product => {
       const discount = Math.floor(Math.random() * 40) + 10;
       const originalPrice = Math.ceil(product.price * (100 / (100 - discount)));
-
       return {
         ...product,
         discount,
@@ -59,11 +71,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       products: productsWithDiscount,
+      total: totalCount,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
     });
   } catch (err) {
-    console.error('[GET /api/products/featured]', err);
+    console.error('[GET /api/products]', err);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch featured products' },
+      { success: false, error: 'Failed to fetch products' },
       { status: 500 }
     );
   }

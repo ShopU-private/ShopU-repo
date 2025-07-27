@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 
 interface Medicine {
+  stock: number;
   imageUrl: string;
   id: string;
   name: string;
@@ -55,20 +56,24 @@ export function useMedicines(options: UseMedicinesOptions = {}) {
           type?: string;
         };
 
-        const transformed = data.data?.map((medicine: ApiMedicine): Medicine => ({
-          id: medicine.id,
-          name: medicine.name,
-          price: parseFloat(medicine.price as string),
-          manufacturerName: medicine.manufacturerName,
-          packSizeLabel: medicine.packSizeLabel,
-          type: medicine.type,
-          originalPrice: parseFloat(medicine.price as string) * 1.2,
-          discount: 20,
-          rating: 4.5,
-          reviews: 10,
-          category: medicine.type || 'Medicine',
-          imageUrl: ''
-        })) || [];
+        const transformed =
+          data.data?.map(
+            (medicine: ApiMedicine): Medicine => ({
+              id: medicine.id,
+              name: medicine.name,
+              price: parseFloat(medicine.price as string),
+              manufacturerName: medicine.manufacturerName,
+              packSizeLabel: medicine.packSizeLabel,
+              type: medicine.type,
+              originalPrice: parseFloat(medicine.price as string) * 1.2,
+              discount: 20,
+              rating: 4.5,
+              reviews: 10,
+              category: medicine.type || 'Medicine',
+              imageUrl: '',
+              stock: 0,
+            })
+          ) || [];
 
         setMedicines(transformed);
       } catch (err) {

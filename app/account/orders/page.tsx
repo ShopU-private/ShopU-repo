@@ -1,0 +1,195 @@
+'use client';
+
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+import { Loader } from 'lucide-react'; 
+import Navroute from '@/app/components/navroute';
+
+interface Product {
+  name: string;
+  image_url: string;
+}
+
+interface OrderItem {
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image?: string;
+  product?: Product;
+  status?: string;
+}
+
+interface Order {
+  id: string;
+  userId: string;
+  orderItems?: OrderItem[];
+  totalAmount: number;
+  paymentMethod?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch('/api/orders');
+        if (!res.ok) {
+          if (res.status === 401) router.push('/');
+          else {
+            const err = await res.json();
+            toast.error(err.message || 'Failed to fetch orders');
+          }
+          return;
+        }
+        const data = await res.json();
+        setOrders(data.orders ?? []);
+      } catch {
+        toast.error('Failed to load orders');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchOrders();
+  }, [router]);
+
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+  const getStatusColor = (status: string = '') => {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return 'text-yellow-500';
+      case 'cancelled':
+        return 'text-red-600';
+      case 'confirmed':
+        return 'text-green-600';
+      case 'shipped':
+        return 'text-blue-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
+  return (
+    <>
+      <Navroute />
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        {isLoading ? (
+          <div className="flex min-h-[60vh] items-center justify-center">
+            <div className="text-center">
+              <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
+              <p className="mt-4 text-gray-600">Loading your orders...</p>
+            </div>
+          </div>
+        ) : orders.length === 0 ? (
+          <p className="text-gray-500">You have no orders.</p>
+        ) : (
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden px-13 sm:block">
+              <h2 className="text-primaryColor mb-4 text-xl font-semibold">
+                Order <span className="text-secondaryColor">List</span>
+                <hr className="bg-background1 mt-1 h-1 w-24 rounded border-0" />
+              </h2>
+              <table className="min-w-full border-separate border-spacing-y-4">
+                <thead>
+                  <tr className="bg-[#D5F3F6] text-center text-sm text-gray-800">
+                    <th className="px-6 py-4">Order ID</th>
+                    <th className="px-6 py-4">Product</th>
+                    <th className="px-6 py-4">Price</th>
+                    <th className="px-6 py-4">Quantity</th>
+                    <th className="px-6 py-4">Date</th>
+                    <th className="px-6 py-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.flatMap(order =>
+                    (order.orderItems ?? []).map((item, index) => (
+                      <tr
+                        key={`${order.id}-${index}`}
+                        className="rounded-lg bg-white text-center shadow-sm"
+                      >
+                        <td className="px-4 py-4 text-sm text-gray-700">
+                          #ORD{order.id.slice(-15)}
+                        </td>
+                        <td className="flex items-center justify-center gap-3 px-4 py-4">
+                          <Image
+                            src={item.product?.image_url || '/placeholder.png'}
+                            alt={item?.name || 'Product'}
+                            width={50}
+                            height={50}
+                            className="rounded"
+                          />
+                        </td>
+                        <td className="text-primaryColor px-4 py-4 text-sm font-medium">
+                          ₹{item.price}
+                        </td>
+                        <td className="px-4 py-4 text-sm">{item.quantity}</td>
+                        <td className="px-4 py-4 text-sm">{formatDate(order.createdAt)}</td>
+                        <td
+                          className={`px-4 py-4 text-sm font-medium ${getStatusColor(item.status)}`}
+                        >
+                          {item.status?.toUpperCase()}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="space-y-4 sm:hidden">
+              <h2 className="text-primaryColor mb-4 text-lg font-medium">
+                Order <span className="text-secondaryColor">List</span>
+                <hr className="bg-background1 mt-1 h-1 w-24 rounded border-0" />
+              </h2>
+              {orders.flatMap(order =>
+                (order.orderItems ?? []).map((item, index) => (
+                  <div
+                    key={`${order.id}-${index}`}
+                    className="mb-6 rounded-lg bg-white px-6 py-4 shadow-sm"
+                  >
+                    <div className="text-md mb-2 flex justify-between text-gray-600">
+                      <span className="font-medium text-black">#ORD{order.id.slice(-10)}</span>
+                      <span className="text-lg font-medium text-black">
+                        {formatDate(order.createdAt)}
+                      </span>
+                    </div>
+                    <div className="mb-4 flex items-center gap-4 border-b border-gray-200 py-4">
+                      <Image
+                        src={item.product?.image_url || '/placeholder.png'}
+                        alt={item?.name ?? 'Product'}
+                        width={60}
+                        height={60}
+                        className="rounded"
+                      />
+                      <div className="text-md flex-1 text-gray-800">
+                        <h2 className="pr-2 font-medium">{item.product?.name}</h2>
+                        <h2 className="text-lg">Qty: {item.quantity}</h2>
+                      </div>
+                      <div className="flex justify-between text-lg text-gray-800">
+                        <span className="text-primaryColor">₹{item.price}</span>
+                      </div>
+                    </div>
+                    <span className={`${getStatusColor(item.status)} font-medium`}>
+                      {item.status?.toUpperCase()}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
+}

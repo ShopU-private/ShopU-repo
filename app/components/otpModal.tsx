@@ -29,7 +29,7 @@ export default function OtpModal({
     if (val && i < 5) inputsRef.current[i + 1]?.focus();
   };
 
-  const handleKeyDown = (e: any, i: number) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, i: number) => {
     if (e.key === 'Backspace' && !otp[i] && i > 0) {
       inputsRef.current[i - 1]?.focus();
     }
