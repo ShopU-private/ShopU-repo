@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
         phoneNumber?: { contains: string };
       }>;
     } = {};
-    
+
     if (status === 'Active') {
       where.orders = { some: {} }; // Has at least one order
     } else if (status === 'Inactive') {
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
-        { phoneNumber: { contains: search } }
+        { phoneNumber: { contains: search } },
       ];
     }
 
@@ -53,29 +53,32 @@ export async function GET(req: NextRequest) {
           select: {
             id: true,
             totalAmount: true,
-            createdAt: true
-          }
+            createdAt: true,
+          },
         },
         addresses: {
           where: { isDefault: true },
           select: {
             city: true,
-            state: true
-          }
-        }
-      }
+            state: true,
+          },
+        },
+      },
     });
 
     // Transform data to match frontend expectations
     const transformedCustomers = customers.map(customer => {
       const totalOrders = customer.orders.length;
       const totalSpent = customer.orders.reduce((sum, order) => sum + Number(order.totalAmount), 0);
-      const lastOrderDate = customer.orders.length > 0 
-        ? customer.orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0].createdAt
-        : customer.createdAt;
-      
+      const lastOrderDate =
+        customer.orders.length > 0
+          ? customer.orders.sort(
+              (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            )[0].createdAt
+          : customer.createdAt;
+
       const defaultAddress = customer.addresses[0];
-      
+
       return {
         id: customer.id,
         name: customer.name || 'N/A',
@@ -87,7 +90,7 @@ export async function GET(req: NextRequest) {
         status: totalOrders > 0 ? 'Active' : 'Inactive',
         joinDate: customer.createdAt.toISOString(),
         city: defaultAddress?.city || 'N/A',
-        state: defaultAddress?.state || 'N/A'
+        state: defaultAddress?.state || 'N/A',
       };
     });
 
@@ -100,8 +103,8 @@ export async function GET(req: NextRequest) {
         page,
         limit,
         total: totalCustomers,
-        pages: Math.ceil(totalCustomers / limit)
-      }
+        pages: Math.ceil(totalCustomers / limit),
+      },
     });
   } catch (error) {
     console.error('[GET /api/admin/customers]', error);

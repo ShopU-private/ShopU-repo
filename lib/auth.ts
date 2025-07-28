@@ -16,7 +16,6 @@ interface TokenPayload {
 
 // ✅ Utility: Generate a JWT token - Keep this for server-side use only
 export function generateToken(user: { id: string; role: string; phoneNumber?: string }) {
-
   return jwt.sign(
     {
       id: user.id,
@@ -34,15 +33,15 @@ export function verifyToken(token: string): TokenPayload {
     if (!token || token.trim() === '') {
       throw new Error('Empty token provided');
     }
-    
+
     // Use jwt-decode instead of jwt.verify for Edge Runtime compatibility
     const decoded = jwtDecode<TokenPayload>(token);
-    
+
     // Check if token is expired
     if (decoded.exp && Date.now() >= decoded.exp * 1000) {
       throw new Error('Token expired');
     }
-    
+
     return decoded;
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -64,13 +63,13 @@ export function isAdmin(req: NextRequest): boolean {
 
   try {
     const decoded = jwtDecode<TokenPayload>(token);
-    
+
     // Check if token is expired
     if (decoded.exp && Date.now() >= decoded.exp * 1000) {
       console.log('Token expired for admin check');
       return false;
     }
-    
+
     // Case-insensitive check for admin role
     return decoded.role?.toUpperCase() === 'ADMIN';
   } catch (error: unknown) {

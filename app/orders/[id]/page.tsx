@@ -91,9 +91,9 @@ export default function OrderDetailPage() {
             'Content-Type': 'application/json',
           },
         });
-        
+
         if (!res.ok) throw new Error('Failed to fetch user data');
-       
+
         const data = await res.json();
         console.log('User data:', data);
         setIsAdmin(data.user?.role?.toUpperCase() === 'ADMIN');
@@ -107,13 +107,12 @@ export default function OrderDetailPage() {
     checkAdminStatus();
   }, [id]);
 
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -166,11 +165,13 @@ export default function OrderDetailPage() {
   // Find the main tracking number (from either order or first shipped item)
   const getMainTrackingNumber = () => {
     if (order.trackingNumber) return order.trackingNumber;
-    
-    const shippedItem = order.orderItems.find(item => 
-      item.trackingNumber && (item.status.toLowerCase() === 'shipped' || item.status.toLowerCase() === 'delivered')
+
+    const shippedItem = order.orderItems.find(
+      item =>
+        item.trackingNumber &&
+        (item.status.toLowerCase() === 'shipped' || item.status.toLowerCase() === 'delivered')
     );
-    
+
     return shippedItem?.trackingNumber || null;
   };
 
@@ -214,15 +215,14 @@ export default function OrderDetailPage() {
 
       {/* Order Items */}
       <div className="mt-6 rounded-lg border border-gray-200 bg-white shadow-sm">
-        <h2 className="border-b border-gray-200 bg-gray-50 px-6 py-3 text-lg font-medium">
-          Items
-        </h2>
+        <h2 className="border-b border-gray-200 bg-gray-50 px-6 py-3 text-lg font-medium">Items</h2>
         <ul className="divide-y divide-gray-200">
-          {order.orderItems.map((item) => {
+          {order.orderItems.map(item => {
             const itemName = item.product?.name || item.medicine?.name || 'Unknown Product';
-            const itemImage = item.product?.imageUrl || 
-                             (item.product?.productImage && item.product.productImage[0]?.url);
-            
+            const itemImage =
+              item.product?.imageUrl ||
+              (item.product?.productImage && item.product.productImage[0]?.url);
+
             return (
               <li key={item.id} className="p-6">
                 <div className="flex flex-col sm:flex-row">
@@ -248,7 +248,7 @@ export default function OrderDetailPage() {
                     )}
                   </div>
 
-                  <div className="mt-4 sm:mt-0 sm:ml-6 flex-1">
+                  <div className="mt-4 flex-1 sm:mt-0 sm:ml-6">
                     <div className="flex flex-col sm:flex-row sm:justify-between">
                       <div>
                         <h3 className="text-base font-medium text-gray-900">{itemName}</h3>
@@ -259,10 +259,10 @@ export default function OrderDetailPage() {
                         )}
                         <p className="mt-1 text-sm text-gray-500">Qty: {item.quantity}</p>
                       </div>
-                      <div className="mt-2 sm:mt-0 text-right">
+                      <div className="mt-2 text-right sm:mt-0">
                         <p className="text-base font-medium text-gray-900">₹{item.price}</p>
                         <span
-                          className={`inline-block mt-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(
+                          className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(
                             item.status
                           )}`}
                         >
@@ -270,7 +270,7 @@ export default function OrderDetailPage() {
                         </span>
                       </div>
                     </div>
-                    
+
                     {item.trackingNumber && item.trackingNumber !== mainTrackingNumber && (
                       <div className="mt-2 flex items-center text-sm text-gray-600">
                         <Truck className="mr-1 h-4 w-4 text-gray-500" />
@@ -283,10 +283,10 @@ export default function OrderDetailPage() {
                 {/* Admin controls for each item */}
                 {isAdmin && (
                   <div className="mt-4">
-                    <OrderStatusUpdater 
-                      orderId={order.id} 
+                    <OrderStatusUpdater
+                      orderId={order.id}
                       itemId={item.id}
-                      currentStatus={item.status} 
+                      currentStatus={item.status}
                     />
                   </div>
                 )}
@@ -318,9 +318,11 @@ export default function OrderDetailPage() {
                 </span>
               </dd>
             </div>
-            <div className="border-t border-gray-200 pt-3 flex justify-between">
+            <div className="flex justify-between border-t border-gray-200 pt-3">
               <dt className="font-medium">Total</dt>
-              <dd className="font-bold text-lg text-teal-700">₹{Number(order.totalAmount).toFixed(2)}</dd>
+              <dd className="text-lg font-bold text-teal-700">
+                ₹{Number(order.totalAmount).toFixed(2)}
+              </dd>
             </div>
           </dl>
         </div>

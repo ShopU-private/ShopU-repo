@@ -40,27 +40,30 @@ export function useCart() {
   const [lastFetch, setLastFetch] = useState<number>(0);
 
   // Helper for local storage operations
-  const cartCache = useMemo(() => ({
-    get: (): { items: CartItem[]; timestamp: number } | null => {
-      try {
-        const cached = localStorage.getItem(CART_CACHE_KEY);
-        return cached ? JSON.parse(cached) : null;
-      } catch (e) {
-        console.warn('Failed to retrieve cart cache', e);
-        return null;
-      }
-    },
-    set: (items: CartItem[]) => {
-      try {
-        localStorage.setItem(CART_CACHE_KEY, JSON.stringify({ items, timestamp: Date.now() }));
-      } catch (e) {
-        console.warn('Failed to save cart cache', e);
-      }
-    },
-    isValid: (timestamp: number) => {
-      return Date.now() - timestamp < CART_CACHE_TTL;
-    },
-  }), []);
+  const cartCache = useMemo(
+    () => ({
+      get: (): { items: CartItem[]; timestamp: number } | null => {
+        try {
+          const cached = localStorage.getItem(CART_CACHE_KEY);
+          return cached ? JSON.parse(cached) : null;
+        } catch (e) {
+          console.warn('Failed to retrieve cart cache', e);
+          return null;
+        }
+      },
+      set: (items: CartItem[]) => {
+        try {
+          localStorage.setItem(CART_CACHE_KEY, JSON.stringify({ items, timestamp: Date.now() }));
+        } catch (e) {
+          console.warn('Failed to save cart cache', e);
+        }
+      },
+      isValid: (timestamp: number) => {
+        return Date.now() - timestamp < CART_CACHE_TTL;
+      },
+    }),
+    []
+  );
 
   // Fetch cart items from API with debounce logic
   const fetchCartItems = useCallback(

@@ -21,12 +21,20 @@ interface TrackingData {
     Shipment: {
       Status?: TrackingStatus;
       Scans?: Scan[];
-    }
+    };
   }>;
   error?: string;
 }
 
-export default function LiveTracking({ awb, orderId, isAdmin = true }: { awb: string, orderId?: string, isAdmin?: boolean }) {
+export default function LiveTracking({
+  awb,
+  orderId,
+  isAdmin = true,
+}: {
+  awb: string;
+  orderId?: string;
+  isAdmin?: boolean;
+}) {
   const [trackingData, setTrackingData] = useState<TrackingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +74,7 @@ export default function LiveTracking({ awb, orderId, isAdmin = true }: { awb: st
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center p-6">
-        <Loader className="w-8 h-8 text-teal-600 animate-spin" />
+        <Loader className="h-8 w-8 animate-spin text-teal-600" />
         <p className="mt-4 text-gray-600">Loading tracking information...</p>
       </div>
     );
@@ -74,9 +82,9 @@ export default function LiveTracking({ awb, orderId, isAdmin = true }: { awb: st
 
   if (error || !trackingData?.success) {
     return (
-      <div className="p-4 border border-red-200 rounded-md bg-red-50">
+      <div className="rounded-md border border-red-200 bg-red-50 p-4">
         <div className="flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-red-500" />
+          <AlertCircle className="h-5 w-5 text-red-500" />
           <p className="text-red-700">
             {error || trackingData?.error || 'Unable to load tracking information'}
           </p>
@@ -90,7 +98,7 @@ export default function LiveTracking({ awb, orderId, isAdmin = true }: { awb: st
   const scans = shipment?.Scans || [];
 
   const getStatusIcon = (status: string) => {
-    const iconClass = "w-6 h-6";
+    const iconClass = 'w-6 h-6';
     switch (status.toLowerCase()) {
       case 'delivered':
         return <Check className={`${iconClass} text-green-600`} />;
@@ -128,21 +136,21 @@ export default function LiveTracking({ awb, orderId, isAdmin = true }: { awb: st
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     };
     return new Date(dateString).toLocaleString('en-IN', options);
   };
 
   const renderStatusUpdater = () => {
     if (!isAdmin || !orderId) return null;
-    
+
     return (
       <div className="mt-2 border-t pt-2">
-        <p className="text-sm font-medium text-gray-700 mb-1">Update Status:</p>
-        <OrderStatusUpdater 
-          orderId={orderId} 
-          currentStatus={status} 
-          onStatusChange={(newStatus) => {
+        <p className="mb-1 text-sm font-medium text-gray-700">Update Status:</p>
+        <OrderStatusUpdater
+          orderId={orderId}
+          currentStatus={status}
+          onStatusChange={newStatus => {
             // Optionally refresh tracking data or update UI
             console.log('Status updated to:', newStatus);
           }}
@@ -152,15 +160,15 @@ export default function LiveTracking({ awb, orderId, isAdmin = true }: { awb: st
   };
 
   return (
-    <div className="border rounded-lg shadow-sm overflow-hidden">
-      <div className="p-4 bg-gray-50 border-b">
+    <div className="overflow-hidden rounded-lg border shadow-sm">
+      <div className="border-b bg-gray-50 p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium text-gray-900">Shipment Tracking</h2>
-          <div className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(status)}`}>
+          <div className={`rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(status)}`}>
             {status}
           </div>
         </div>
-        <p className="text-sm text-gray-500 mt-1">AWB: {awb}</p>
+        <p className="mt-1 text-sm text-gray-500">AWB: {awb}</p>
         {renderStatusUpdater()}
       </div>
 
@@ -172,19 +180,15 @@ export default function LiveTracking({ awb, orderId, isAdmin = true }: { awb: st
       ) : (
         <div className="divide-y divide-gray-200">
           {scans.map((scan, idx) => (
-            <div key={idx} className="p-4 flex items-start gap-3">
-              <div className="flex-shrink-0 mt-1">
-                {getStatusIcon(scan.scan_type)}
-              </div>
-              <div className="flex-1 min-w-0">
+            <div key={idx} className="flex items-start gap-3 p-4">
+              <div className="mt-1 flex-shrink-0">{getStatusIcon(scan.scan_type)}</div>
+              <div className="min-w-0 flex-1">
                 <p className="font-medium text-gray-900">{scan.scan_type}</p>
-                <div className="flex items-center text-sm text-gray-500 mt-1">
-                  <MapPin className="w-4 h-4 mr-1" />
+                <div className="mt-1 flex items-center text-sm text-gray-500">
+                  <MapPin className="mr-1 h-4 w-4" />
                   {scan.scan_location || 'Location not available'}
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
-                  {formatDate(scan.scan_date)}
-                </p>
+                <p className="mt-1 text-sm text-gray-500">{formatDate(scan.scan_date)}</p>
               </div>
             </div>
           ))}

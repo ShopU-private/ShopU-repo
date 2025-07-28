@@ -24,12 +24,13 @@ export function validateCartItems(cartItems: CartItem[]): boolean {
 
   return cartItems.every(item => {
     // Validate each item has either product or medicine reference
-    const hasValidRef = (item.product?.id || item.medicine?.id || item.productId || item.medicineId);
+    const hasValidRef = item.product?.id || item.medicine?.id || item.productId || item.medicineId;
     // Validate quantity
-    const hasValidQuantity = item.quantity && typeof item.quantity === 'number' && item.quantity > 0;
+    const hasValidQuantity =
+      item.quantity && typeof item.quantity === 'number' && item.quantity > 0;
     // Validate price exists somewhere
     const hasValidPrice = item.product?.price || item.medicine?.price;
-    
+
     return hasValidRef && hasValidQuantity && hasValidPrice;
   });
 }
@@ -40,14 +41,16 @@ export function validateCartItems(cartItems: CartItem[]): boolean {
  * @returns Normalized array of order items
  */
 export function prepareOrderItems(cartItems: CartItem[]) {
-  return cartItems.map(item => ({
-    productId: item.product?.id || item.productId || null,
-    medicineId: item.medicine?.id || item.medicineId || null,
-    quantity: item.quantity,
-    price: parseFloat((item.product?.price || item.medicine?.price || 0).toString()),
-    combinationId: item.combinationId || null,
-    trackingInfo: null // Initialize tracking info as null
-  })).filter(item => (item.productId || item.medicineId) && item.quantity > 0);
+  return cartItems
+    .map(item => ({
+      productId: item.product?.id || item.productId || null,
+      medicineId: item.medicine?.id || item.medicineId || null,
+      quantity: item.quantity,
+      price: parseFloat((item.product?.price || item.medicine?.price || 0).toString()),
+      combinationId: item.combinationId || null,
+      trackingInfo: null, // Initialize tracking info as null
+    }))
+    .filter(item => (item.productId || item.medicineId) && item.quantity > 0);
 }
 
 /**
@@ -66,7 +69,9 @@ export function validateAddressId(addressId: string | null | undefined): boolean
  */
 export function validateTrackingNumber(trackingNumber: string | null | undefined): boolean {
   // Basic validation: tracking number should be non-empty string with at least 8 characters
-  return Boolean(trackingNumber && typeof trackingNumber === 'string' && trackingNumber.length >= 8);
+  return Boolean(
+    trackingNumber && typeof trackingNumber === 'string' && trackingNumber.length >= 8
+  );
 }
 
 /**
@@ -76,12 +81,12 @@ export function validateTrackingNumber(trackingNumber: string | null | undefined
  */
 export function formatTrackingNumber(trackingNumber: string | null | undefined): string {
   if (!trackingNumber) return 'Not available';
-  
+
   // Format based on length for readability
   if (trackingNumber.length > 12) {
     return `${trackingNumber.substring(0, 4)}-${trackingNumber.substring(4, 8)}-${trackingNumber.substring(8)}`;
   }
-  
+
   return trackingNumber;
 }
 

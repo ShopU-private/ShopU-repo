@@ -16,9 +16,9 @@ export default function OrderTracking({ trackingNumber }: TrackingProps) {
 
   if (!isTrackingAvailable) {
     return (
-      <div className="mt-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+      <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
         <div className="flex items-center text-gray-500">
-          <Truck className="h-5 w-5 mr-2" />
+          <Truck className="mr-2 h-5 w-5" />
           <p>Tracking information will be available once your order ships.</p>
         </div>
       </div>
@@ -26,24 +26,25 @@ export default function OrderTracking({ trackingNumber }: TrackingProps) {
   }
 
   return (
-    <div className="mt-6 border border-gray-200 rounded-lg overflow-hidden">
-      <div 
-        className="flex items-center justify-between p-4 bg-teal-50 cursor-pointer"
+    <div className="mt-6 overflow-hidden rounded-lg border border-gray-200">
+      <div
+        className="flex cursor-pointer items-center justify-between bg-teal-50 p-4"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center">
-          <Truck className="h-5 w-5 text-teal-600 mr-2" />
+          <Truck className="mr-2 h-5 w-5 text-teal-600" />
           <div>
             <h3 className="font-medium">Package Tracking</h3>
             <p className="text-sm text-gray-600">AWB: {trackingNumber}</p>
           </div>
         </div>
-        {expanded ? 
-          <ChevronUp className="h-5 w-5 text-gray-400" /> :
+        {expanded ? (
+          <ChevronUp className="h-5 w-5 text-gray-400" />
+        ) : (
           <ChevronDown className="h-5 w-5 text-gray-400" />
-        }
+        )}
       </div>
-      
+
       {expanded && (
         <div className="p-4">
           <LiveTracking awb={trackingNumber!} />

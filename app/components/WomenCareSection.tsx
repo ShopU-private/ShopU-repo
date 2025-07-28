@@ -12,7 +12,7 @@ const WomenCareSection = () => {
   const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
-    const router = useRouter();
+  const router = useRouter();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -40,7 +40,7 @@ const WomenCareSection = () => {
     }
   };
 
-    const handleCardClick = () => {
+  const handleCardClick = () => {
     router.push('/product?category=Women Care');
   };
 
@@ -53,7 +53,10 @@ const WomenCareSection = () => {
             Women <span className="text-secondaryColor">Care</span>
             <hr className="bg-background1 mt-1 h-1 w-32 rounded border-0" />
           </h2>
-          <button onClick={handleCardClick} className="bg-background1 cursor-pointer rounded px-3 py-1 text-sm font-medium text-white">
+          <button
+            onClick={handleCardClick}
+            className="bg-background1 cursor-pointer rounded px-3 py-1 text-sm font-medium text-white"
+          >
             View All <span className="text-lg">{'>'}</span>
           </button>
         </div>
@@ -151,7 +154,10 @@ const WomenCareSection = () => {
             Women <span className="text-secondaryColor">Care</span>
             <hr className="bg-background1 mt-1 w-28 rounded border-2" />
           </h2>
-          <button onClick={handleCardClick} className="bg-background text-md text-primaryColor cursor-pointer rounded px-3 py-1 font-semibold">
+          <button
+            onClick={handleCardClick}
+            className="bg-background text-md text-primaryColor cursor-pointer rounded px-3 py-1 font-semibold"
+          >
             View All <span className="text-lg">{'>'}</span>
           </button>
         </div>

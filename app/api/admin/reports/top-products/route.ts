@@ -12,33 +12,33 @@ export async function POST(req: NextRequest) {
     const topProducts = await prisma.orderItem.groupBy({
       by: ['productId'],
       _sum: {
-        quantity: true
+        quantity: true,
       },
       orderBy: {
         _sum: {
-          quantity: 'desc'
-        }
+          quantity: 'desc',
+        },
       },
-      take: 5
+      take: 5,
     });
 
     // Get product details for the top products
     const topProductsData = await Promise.all(
-      topProducts.map(async (item) => {
+      topProducts.map(async item => {
         if (!item.productId) {
           return {
             name: 'Unknown Product',
-            sales: item._sum.quantity || 0
+            sales: item._sum.quantity || 0,
           };
         }
-        
+
         const product = await prisma.product.findUnique({
           where: { id: item.productId },
-          select: { name: true }
+          select: { name: true },
         });
         return {
           name: product?.name || 'Unknown Product',
-          sales: item._sum.quantity || 0
+          sales: item._sum.quantity || 0,
         };
       })
     );

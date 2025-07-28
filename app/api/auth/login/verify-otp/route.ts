@@ -4,11 +4,7 @@ import { prisma } from '@/lib/client';
 import { generateToken } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
 
-
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID!,
-  process.env.TWILIO_AUTH_TOKEN!
-);
+const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
 
 export async function POST(request: NextRequest) {
   try {

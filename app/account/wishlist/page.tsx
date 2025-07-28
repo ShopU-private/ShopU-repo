@@ -81,7 +81,7 @@ export default function WishlistPage() {
   const handleAddToCart = async (productId: string) => {
     setAddingProductId(productId);
     try {
-      await addItem(productId, null,  1);
+      await addItem(productId, null, 1);
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (err) {
       console.error('Add to cart failed:', err);
@@ -124,7 +124,7 @@ export default function WishlistPage() {
                 </thead>
                 <tbody>
                   {wishlist.map(item => (
-                    <tr key={item.id} className="rounded-lg bg-white text-center shadow-sm text-sm">
+                    <tr key={item.id} className="rounded-lg bg-white text-center text-sm shadow-sm">
                       <td className="flex items-center gap-3 px-6 py-4">
                         <Image
                           src={item.image_url}
@@ -135,10 +135,10 @@ export default function WishlistPage() {
                         />
                         <span className="text-gray-800">{item.name}</span>
                       </td>
-                      <td className="text-primaryColor px-6 py-4 font-medium text-md">
+                      <td className="text-primaryColor text-md px-6 py-4 font-medium">
                         ₹{String(item.price).slice(0, 5)}
                       </td>
-                      <td className="px-6 py-4  text-gray-700">
+                      <td className="px-6 py-4 text-gray-700">
                         {new Date(item.createdAt).toLocaleDateString('en-US', {
                           month: 'long',
                           day: 'numeric',
@@ -155,7 +155,7 @@ export default function WishlistPage() {
                         <button
                           onClick={() => handleAddToCart(item.productId)}
                           disabled={addingProductId === item.productId}
-                          className="hover:bg-opacity-90 rounded bg-[#317C80] px-4 py-1  text-white disabled:cursor-not-allowed disabled:opacity-60"
+                          className="hover:bg-opacity-90 rounded bg-[#317C80] px-4 py-1 text-white disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {addingProductId === item.productId ? 'Adding..' : 'ADD'}
                         </button>

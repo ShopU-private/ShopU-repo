@@ -68,16 +68,16 @@ const ProductPage = () => {
 
           {/* Main Content */}
           {loading ? (
-            <div className="flex min-h-[70vh] items-center justify-center flex-1">
+            <div className="flex min-h-[70vh] flex-1 items-center justify-center">
               <div className="text-center">
                 <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
                 <p className="mt-4 text-gray-600">Loading products...</p>
               </div>
             </div>
           ) : products.length === 0 ? (
-            <div className="text-gray-500 text-center w-full">No products found.</div>
+            <div className="w-full text-center text-gray-500">No products found.</div>
           ) : (
-            <main className="space-y-6 flex-1">
+            <main className="flex-1 space-y-6">
               <div className="mb-4 flex flex-col items-center justify-between gap-4 sm:flex-row">
                 <div className="text-md font-semibold">
                   You searched for:{' '}
@@ -99,9 +99,7 @@ const ProductPage = () => {
                     >
                       <span>{filter}</span>
                       <button
-                        onClick={() =>
-                          setSelectedFilters(prev => prev.filter(f => f !== filter))
-                        }
+                        onClick={() => setSelectedFilters(prev => prev.filter(f => f !== filter))}
                         className="text-xl text-gray-600"
                       >
                         &times;
@@ -151,10 +149,9 @@ const ProductPage = () => {
                   <button
                     disabled={currentPage === 1}
                     onClick={() => handlePageChange(currentPage - 1)}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full ${currentPage === 1
-                        ? 'bg-gray-200 text-gray-400'
-                        : 'bg-primaryColor text-white'
-                      }`}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                      currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-primaryColor text-white'
+                    }`}
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
@@ -165,10 +162,11 @@ const ProductPage = () => {
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        className={`h-8 w-8 rounded-full text-sm font-medium ${currentPage === page
+                        className={`h-8 w-8 rounded-full text-sm font-medium ${
+                          currentPage === page
                             ? 'bg-primaryColor text-white'
                             : 'text-black hover:bg-gray-200'
-                          }`}
+                        }`}
                       >
                         {page}
                       </button>
@@ -178,10 +176,11 @@ const ProductPage = () => {
                   <button
                     disabled={currentPage === totalPages}
                     onClick={() => handlePageChange(currentPage + 1)}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full ${currentPage === totalPages
+                    className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                      currentPage === totalPages
                         ? 'bg-gray-200 text-gray-400'
                         : 'bg-primaryColor text-white'
-                      }`}
+                    }`}
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>

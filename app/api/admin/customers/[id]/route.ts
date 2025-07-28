@@ -19,14 +19,14 @@ export async function GET(req: NextRequest, { params }: Params) {
           include: {
             orderItems: {
               include: {
-                product: true
-              }
-            }
+                product: true,
+              },
+            },
           },
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: 'desc' },
         },
-        addresses: true
-      }
+        addresses: true,
+      },
     });
 
     if (!customer) {
@@ -50,8 +50,8 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     const customerWithOrders = await prisma.user.findUnique({
       where: { id: params.id },
       include: {
-        orders: true
-      }
+        orders: true,
+      },
     });
 
     if (!customerWithOrders) {
@@ -59,18 +59,21 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     }
 
     if (customerWithOrders.orders.length > 0) {
-      return NextResponse.json({ 
-        error: 'Cannot delete customer with existing orders' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Cannot delete customer with existing orders',
+        },
+        { status: 400 }
+      );
     }
 
     await prisma.user.delete({
-      where: { id: params.id }
+      where: { id: params.id },
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Customer deleted successfully' 
+    return NextResponse.json({
+      success: true,
+      message: 'Customer deleted successfully',
     });
   } catch (error) {
     console.error('[DELETE /api/admin/customers/[id]]', error);
@@ -98,12 +101,12 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     const updatedCustomer = await prisma.user.update({
       where: { id: params.id },
-      data: updateData
+      data: updateData,
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      customer: updatedCustomer 
+    return NextResponse.json({
+      success: true,
+      customer: updatedCustomer,
     });
   } catch (error) {
     console.error('[PUT /api/admin/customers/[id]]', error);

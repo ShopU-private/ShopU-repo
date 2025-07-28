@@ -2,18 +2,28 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { 
-  PackageOpen, 
-
-  ShoppingBag, 
+import {
+  PackageOpen,
+  ShoppingBag,
   DollarSign,
   ArrowUpRight,
   Loader,
   TrendingUp,
   TrendingDown,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
 interface DashboardStats {
   totalOrders: number;
@@ -38,61 +48,80 @@ interface Order {
   };
 }
 
-
-
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
-  const [salesData, setSalesData] = useState<Array<{month: string; sales: number}>>([]);
-  const [orderStatusData, setOrderStatusData] = useState<Array<{name: string; value: number; color: string; count: number}>>([]);
+  const [salesData, setSalesData] = useState<Array<{ month: string; sales: number }>>([]);
+  const [orderStatusData, setOrderStatusData] = useState<
+    Array<{ name: string; value: number; color: string; count: number }>
+  >([]);
 
   const processOrdersForCharts = (orders: Order[]) => {
     // Process sales data by month
-    const salesByMonth = orders.reduce((acc, order) => {
-      const date = new Date(order.createdAt);
-      const monthKey = date.toLocaleString('default', { month: 'short' });
-      
-      if (!acc[monthKey]) {
-        acc[monthKey] = 0;
-      }
-      acc[monthKey] += parseFloat(String(order.totalAmount || 0));
-      return acc;
-    }, {} as Record<string, number>);
+    const salesByMonth = orders.reduce(
+      (acc, order) => {
+        const date = new Date(order.createdAt);
+        const monthKey = date.toLocaleString('default', { month: 'short' });
+
+        if (!acc[monthKey]) {
+          acc[monthKey] = 0;
+        }
+        acc[monthKey] += parseFloat(String(order.totalAmount || 0));
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     // Convert to chart format and sort by month
-    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthOrder = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     const salesChartData = monthOrder
       .filter(month => salesByMonth[month])
       .map(month => ({
         month,
-        sales: Math.round(salesByMonth[month])
+        sales: Math.round(salesByMonth[month]),
       }));
 
     setSalesData(salesChartData);
 
     // Process order status data
-    const statusCounts = orders.reduce((acc, order) => {
-      const status = order.status || 'PENDING';
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const statusCounts = orders.reduce(
+      (acc, order) => {
+        const status = order.status || 'PENDING';
+        acc[status] = (acc[status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     const totalOrders = orders.length;
     const statusColors = {
-      'DELIVERED': '#10B981',
-      'PROCESSING': '#3B82F6', 
-      'PENDING': '#F59E0B',
-      'CANCELLED': '#EF4444',
-      'SHIPPED': '#8B5CF6'
+      DELIVERED: '#10B981',
+      PROCESSING: '#3B82F6',
+      PENDING: '#F59E0B',
+      CANCELLED: '#EF4444',
+      SHIPPED: '#8B5CF6',
     };
 
     const statusChartData = Object.entries(statusCounts).map(([status, count]) => ({
       name: status.charAt(0) + status.slice(1).toLowerCase(),
-      value: parseFloat(((count as number / totalOrders) * 100).toFixed(1)),
+      value: parseFloat((((count as number) / totalOrders) * 100).toFixed(1)),
       color: statusColors[status as keyof typeof statusColors] || '#6B7280',
-      count: count as number
+      count: count as number,
     }));
 
     setOrderStatusData(statusChartData);
@@ -102,24 +131,30 @@ export default function AdminDashboard() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch all orders to calculate stats and charts
         const ordersRes = await fetch('/api/admin/orders?page=1&limit=1000');
         const ordersData = await ordersRes.json();
-        
+
         if (!ordersData.success) {
           throw new Error('Failed to fetch orders');
         }
 
         const allOrders = ordersData.orders || [];
-        
+
         // Calculate statistics from orders
         const totalOrders = allOrders.length;
         const pendingOrders = allOrders.filter((order: Order) => order.status === 'PENDING').length;
-        const deliveredOrders = allOrders.filter((order: Order) => order.status === 'DELIVERED').length;
-        const processingOrders = allOrders.filter((order: Order) => order.status === 'PROCESSING').length;
-        const cancelledOrders = allOrders.filter((order: Order) => order.status === 'CANCELLED').length;
-        
+        const deliveredOrders = allOrders.filter(
+          (order: Order) => order.status === 'DELIVERED'
+        ).length;
+        const processingOrders = allOrders.filter(
+          (order: Order) => order.status === 'PROCESSING'
+        ).length;
+        const cancelledOrders = allOrders.filter(
+          (order: Order) => order.status === 'CANCELLED'
+        ).length;
+
         // Calculate total revenue
         const totalRevenue = allOrders.reduce((sum: number, order: Order) => {
           return sum + parseFloat(String(order.totalAmount || 0));
@@ -127,15 +162,15 @@ export default function AdminDashboard() {
 
         // Get unique customers
         const uniqueCustomers: number = new Set(allOrders.map((order: Order) => order.userId)).size;
-        
+
         // For products and low stock, you'll need to fetch from products API
         let totalProducts = 0;
         let lowStockItems = 0;
-        
+
         try {
           const productsRes = await fetch('/api/admin/products?page=1&limit=1000');
           const productsData = await productsRes.json();
-          
+
           if (productsData.success) {
             totalProducts = productsData.products?.length || 0;
             // Define product interface
@@ -150,11 +185,12 @@ export default function AdminDashboard() {
               createdAt?: string;
               updatedAt?: string;
             }
-            
+
             // Use the interface in the filter
-            lowStockItems = (productsData.products as Product[] || [])
-              .filter(product => (product.stockQuantity || 0) < 10)
-              .length || 0;
+            lowStockItems =
+              ((productsData.products as Product[]) || []).filter(
+                product => (product.stockQuantity || 0) < 10
+              ).length || 0;
           }
         } catch (productsError) {
           console.warn('Could not fetch products data:', productsError);
@@ -169,19 +205,18 @@ export default function AdminDashboard() {
           lowStockItems,
           deliveredOrders,
           processingOrders,
-          cancelledOrders
+          cancelledOrders,
         };
 
         setStats(calculatedStats);
-        
+
         // Process data for charts
         processOrdersForCharts(allOrders);
-        
+
         // Set recent orders (first 5)
         setRecentOrders(allOrders.slice(0, 5));
-        
+
         setLoading(false);
-        
       } catch (err: unknown) {
         console.error('Error fetching dashboard data:', err);
         setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
@@ -220,7 +255,7 @@ export default function AdminDashboard() {
       iconBg: 'bg-blue-100',
       change: '+12%',
       changeText: 'from last month',
-      isPositive: true
+      isPositive: true,
     },
     {
       title: 'Total Revenue',
@@ -229,7 +264,7 @@ export default function AdminDashboard() {
       iconBg: 'bg-green-100',
       change: '+8.2%',
       changeText: 'from last month',
-      isPositive: true
+      isPositive: true,
     },
     {
       title: 'Total Products',
@@ -238,7 +273,7 @@ export default function AdminDashboard() {
       iconBg: 'bg-purple-100',
       change: '+24',
       changeText: 'new this month',
-      isPositive: true
+      isPositive: true,
     },
     {
       title: 'Low Stock Items',
@@ -247,14 +282,14 @@ export default function AdminDashboard() {
       iconBg: 'bg-red-100',
       change: '+3',
       changeText: 'since yesterday',
-      isPositive: false
-    }
+      isPositive: false,
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="border-b bg-white shadow-sm">
         <div className="px-6 py-4">
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         </div>
@@ -262,70 +297,68 @@ export default function AdminDashboard() {
 
       <div className="p-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {statCards.map((card, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-sm border p-6">
+            <div key={index} className="rounded-lg border bg-white p-6 shadow-sm">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">{card.title}</p>
-                  <p className="text-3xl font-bold text-gray-900 mb-2">{card.value}</p>
+                  <p className="mb-1 text-sm font-medium text-gray-600">{card.title}</p>
+                  <p className="mb-2 text-3xl font-bold text-gray-900">{card.value}</p>
                   <div className="flex items-center text-sm">
                     {card.isPositive ? (
-                      <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                      <TrendingUp className="mr-1 h-4 w-4 text-green-500" />
                     ) : (
-                      <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                      <TrendingDown className="mr-1 h-4 w-4 text-red-500" />
                     )}
                     <span className={card.isPositive ? 'text-green-600' : 'text-red-600'}>
                       {card.change}
                     </span>
-                    <span className="text-gray-500 ml-1">{card.changeText}</span>
+                    <span className="ml-1 text-gray-500">{card.changeText}</span>
                   </div>
                 </div>
-                <div className={`p-3 rounded-full ${card.iconBg}`}>
-                  {card.icon}
-                </div>
+                <div className={`rounded-full p-3 ${card.iconBg}`}>{card.icon}</div>
               </div>
             </div>
           ))}
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Sales Overview Chart */}
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Sales Overview</h3>
+          <div className="rounded-lg border bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">Sales Overview</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={salesData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis 
-                    dataKey="month" 
+                  <XAxis
+                    dataKey="month"
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 12, fill: '#6b7280' }}
                   />
-                  <YAxis 
+                  <YAxis
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 12, fill: '#6b7280' }}
                   />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{
                       backgroundColor: 'white',
                       border: '1px solid #e5e7eb',
-                      borderRadius: '8px'
+                      borderRadius: '8px',
                     }}
                   />
                   <defs>
                     <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1} />
                     </linearGradient>
                   </defs>
-                  <Line 
-                    type="monotone" 
-                    dataKey="sales" 
-                    stroke="#3b82f6" 
+                  <Line
+                    type="monotone"
+                    dataKey="sales"
+                    stroke="#3b82f6"
                     strokeWidth={3}
                     dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
                     activeDot={{ r: 6, fill: '#3b82f6' }}
@@ -336,8 +369,8 @@ export default function AdminDashboard() {
           </div>
 
           {/* Order Status Pie Chart */}
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Status</h3>
+          <div className="rounded-lg border bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">Order Status</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -354,21 +387,21 @@ export default function AdminDashboard() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     formatter={(value, name, props) => [
-                      `${value}% (${props.payload.count} orders)`, 
-                      name
+                      `${value}% (${props.payload.count} orders)`,
+                      name,
                     ]}
                   />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             {/* Legend */}
-            <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="mt-4 grid grid-cols-2 gap-4">
               {orderStatusData.map((item, index) => (
                 <div key={index} className="flex items-center">
-                  <div 
-                    className="w-3 h-3 rounded-full mr-2"
+                  <div
+                    className="mr-2 h-3 w-3 rounded-full"
                     style={{ backgroundColor: item.color }}
                   ></div>
                   <span className="text-sm text-gray-600">
@@ -381,66 +414,73 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Orders */}
-        <div className="bg-white rounded-lg shadow-sm border">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="rounded-lg border bg-white shadow-sm">
+          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
             <h2 className="text-xl font-semibold text-gray-900">Recent Orders</h2>
-            <Link 
+            <Link
               href="/admin/orders"
-              className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+              className="flex items-center text-sm text-blue-600 hover:text-blue-800"
             >
               View all
               <ArrowUpRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Order ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Customer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Date
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {recentOrders.map((order) => (
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {recentOrders.map(order => (
                   <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                    <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-blue-600">
                       <Link href={`/admin/orders/${order.id}`} className="hover:underline">
                         #{order.id.slice(-6)}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-900">
                       {order.user?.name || 'Unknown Customer'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-900">
                       ₹{Number(order.totalAmount || 0).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                        order.status === 'PROCESSING' ? 'bg-blue-100 text-blue-800' :
-                        order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                        order.status === 'SHIPPED' ? 'bg-purple-100 text-purple-800' :
-                        order.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-xs leading-5 font-semibold ${
+                          order.status === 'DELIVERED'
+                            ? 'bg-green-100 text-green-800'
+                            : order.status === 'PROCESSING'
+                              ? 'bg-blue-100 text-blue-800'
+                              : order.status === 'PENDING'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : order.status === 'SHIPPED'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : order.status === 'CANCELLED'
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
                         {order.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
                   </tr>

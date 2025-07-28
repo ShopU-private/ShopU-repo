@@ -1,7 +1,17 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, ShoppingCart, User, MapPin, Menu, X, Loader, ChevronDown ,Shield } from 'lucide-react';
+import {
+  Search,
+  ShoppingCart,
+  User,
+  MapPin,
+  Menu,
+  X,
+  Loader,
+  ChevronDown,
+  Shield,
+} from 'lucide-react';
 import Image from 'next/image';
 import Logo from '../../public/Shop U Logo-03.jpg';
 import LoginModal from './LoginModal';
@@ -12,14 +22,13 @@ import { useCartModal } from '../context/CartModalContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState<number | null>(null);
   const router = useRouter();
   const {
@@ -554,8 +563,7 @@ const Header = () => {
                       <p className="text-sm text-gray-600">{phoneNumber}</p>
                     </div>
                     <div className="space-y-1 py-2">
-
-                          {isAdmin && (
+                      {isAdmin && (
                         <Link
                           href="/admin"
                           className="flex items-center gap-3 px-6 py-1 text-[0.85rem] font-medium text-red-600 hover:bg-gray-50"
@@ -751,8 +759,7 @@ const Header = () => {
                   {/* Dropdown List Items */}
                   {isMobileAccountMenuOpen && (
                     <div className="space-y-1 py-2">
-
-                          {isAdmin && (
+                      {isAdmin && (
                         <Link
                           href="/admin"
                           className="flex items-center gap-3 px-6 py-1 text-[0.85rem] font-medium text-red-600 hover:bg-gray-50"

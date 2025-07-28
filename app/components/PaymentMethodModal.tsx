@@ -482,8 +482,8 @@ export default function PaymentMethodModal({
                   </p>
                 ) : location?.address ? (
                   <p className="mt-1 text-xs text-green-600">
-                    {typeof location.address === 'string' 
-                      ? location.address 
+                    {typeof location.address === 'string'
+                      ? location.address
                       : `${location.address.addressLine1}, ${location.address.city}`}
                   </p>
                 ) : (

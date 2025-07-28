@@ -113,32 +113,32 @@ const ShopUHealthComponent: React.FC = () => {
               ) : (
                 products.map(product => (
                   <div key={product.id} className="max-w-[210px] min-w-[210px] flex-shrink-0">
-                  <ProductCard
-                    product={{
-                      id: product.id,
-                      name: product.name,
-                      price: product.price,
-                      originalPrice: product.originalPrice,
-                      discount: product.discount,
-                      stock: product.stock,
-                      rating: product.rating || 4.5,
-                      reviews: product.reviews || 100,
-                      image: product.imageUrl || '/product-placeholder.jpg',
-                      category: product.category || 'Product',
-                      subtitle: product.description,
-                    }}
-                    isFavorite={favorites.has(product.id)}
-                    onToggleFavorite={() =>
-                      toggleFavorite({
+                    <ProductCard
+                      product={{
                         id: product.id,
                         name: product.name,
+                        price: product.price,
+                        originalPrice: product.originalPrice,
+                        discount: product.discount,
+                        stock: product.stock,
+                        rating: product.rating || 4.5,
+                        reviews: product.reviews || 100,
                         image: product.imageUrl || '/product-placeholder.jpg',
                         category: product.category || 'Product',
-                      })
-                    }
-                    onAddToCart={() => handleAddToCart(product.id)}
-                    isAdding={addingProductId === product.id}
-                  />
+                        subtitle: product.description,
+                      }}
+                      isFavorite={favorites.has(product.id)}
+                      onToggleFavorite={() =>
+                        toggleFavorite({
+                          id: product.id,
+                          name: product.name,
+                          image: product.imageUrl || '/product-placeholder.jpg',
+                          category: product.category || 'Product',
+                        })
+                      }
+                      onAddToCart={() => handleAddToCart(product.id)}
+                      isAdding={addingProductId === product.id}
+                    />
                   </div>
                 ))
               )}
@@ -196,32 +196,32 @@ const ShopUHealthComponent: React.FC = () => {
             ) : (
               products.map(product => (
                 <div key={product.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
-                <ProductCard
-                  product={{
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    originalPrice: product.originalPrice,
-                    discount: product.discount,
-                    stock: product.stock,
-                    rating: product.rating || 4.5,
-                    reviews: product.reviews || 100,
-                    image: product.imageUrl || '/product-placeholder.jpg',
-                    category: product.category || 'Product',
-                    subtitle: product.description,
-                  }}
-                  isFavorite={favorites.has(product.id)}
-                  onToggleFavorite={() =>
-                    toggleFavorite({
+                  <ProductCard
+                    product={{
                       id: product.id,
                       name: product.name,
+                      price: product.price,
+                      originalPrice: product.originalPrice,
+                      discount: product.discount,
+                      stock: product.stock,
+                      rating: product.rating || 4.5,
+                      reviews: product.reviews || 100,
                       image: product.imageUrl || '/product-placeholder.jpg',
                       category: product.category || 'Product',
-                    })
-                  }
-                  onAddToCart={() => handleAddToCart(product.id)}
-                  isAdding={addingProductId === product.id}
-                />
+                      subtitle: product.description,
+                    }}
+                    isFavorite={favorites.has(product.id)}
+                    onToggleFavorite={() =>
+                      toggleFavorite({
+                        id: product.id,
+                        name: product.name,
+                        image: product.imageUrl || '/product-placeholder.jpg',
+                        category: product.category || 'Product',
+                      })
+                    }
+                    onAddToCart={() => handleAddToCart(product.id)}
+                    isAdding={addingProductId === product.id}
+                  />
                 </div>
               ))
             )}

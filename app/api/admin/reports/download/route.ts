@@ -21,18 +21,18 @@ export async function GET(req: NextRequest) {
     const activeCustomers = await prisma.user.count({
       where: {
         orders: {
-          some: {}
-        }
-      }
+          some: {},
+        },
+      },
     });
 
     // New customers this month
     const newThisMonth = await prisma.user.count({
       where: {
         createdAt: {
-          gte: thisMonth
-        }
-      }
+          gte: thisMonth,
+        },
+      },
     });
 
     // New customers last month for growth calculation
@@ -40,74 +40,79 @@ export async function GET(req: NextRequest) {
       where: {
         createdAt: {
           gte: lastMonth,
-          lt: thisMonth
-        }
-      }
+          lt: thisMonth,
+        },
+      },
     });
 
     // Calculate customer growth
-    const customerGrowth = newLastMonth > 0 ? ((newThisMonth - newLastMonth) / newLastMonth) * 100 : 0;
+    const customerGrowth =
+      newLastMonth > 0 ? ((newThisMonth - newLastMonth) / newLastMonth) * 100 : 0;
 
     // Calculate average order value and total revenue
     const orderStats = await prisma.order.aggregate({
       _avg: {
-        totalAmount: true
+        totalAmount: true,
       },
       _count: {
-        id: true
+        id: true,
       },
       _sum: {
-        totalAmount: true
-      }
+        totalAmount: true,
+      },
     });
 
     // Orders this month vs last month for growth calculation
     const ordersThisMonth = await prisma.order.count({
       where: {
         createdAt: {
-          gte: thisMonth
-        }
-      }
+          gte: thisMonth,
+        },
+      },
     });
 
     const ordersLastMonth = await prisma.order.count({
       where: {
         createdAt: {
           gte: lastMonth,
-          lt: thisMonth
-        }
-      }
+          lt: thisMonth,
+        },
+      },
     });
 
-    const ordersGrowth = ordersLastMonth > 0 ? ((ordersThisMonth - ordersLastMonth) / ordersLastMonth) * 100 : 0;
+    const ordersGrowth =
+      ordersLastMonth > 0 ? ((ordersThisMonth - ordersLastMonth) / ordersLastMonth) * 100 : 0;
 
     // Revenue this month vs last month
     const revenueThisMonth = await prisma.order.aggregate({
       where: {
         createdAt: {
-          gte: thisMonth
-        }
+          gte: thisMonth,
+        },
       },
       _sum: {
-        totalAmount: true
-      }
+        totalAmount: true,
+      },
     });
 
     const revenueLastMonth = await prisma.order.aggregate({
       where: {
         createdAt: {
           gte: lastMonth,
-          lt: thisMonth
-        }
+          lt: thisMonth,
+        },
       },
       _sum: {
-        totalAmount: true
-      }
+        totalAmount: true,
+      },
     });
 
     const revenueThisMonthAmount = Number(revenueThisMonth._sum.totalAmount || 0);
     const revenueLastMonthAmount = Number(revenueLastMonth._sum.totalAmount || 0);
-    const revenueGrowth = revenueLastMonthAmount > 0 ? ((revenueThisMonthAmount - revenueLastMonthAmount) / revenueLastMonthAmount) * 100 : 0;
+    const revenueGrowth =
+      revenueLastMonthAmount > 0
+        ? ((revenueThisMonthAmount - revenueLastMonthAmount) / revenueLastMonthAmount) * 100
+        : 0;
 
     // Total products count
     const totalProducts = await prisma.product.count();
@@ -126,7 +131,7 @@ export async function GET(req: NextRequest) {
       totalProducts,
       revenueGrowth: Number(revenueGrowth.toFixed(1)),
       ordersGrowth: Number(ordersGrowth.toFixed(1)),
-      customerGrowth: Number(customerGrowth.toFixed(1))
+      customerGrowth: Number(customerGrowth.toFixed(1)),
     });
   } catch (error) {
     console.error('[GET /api/admin/customers/stats]', error);

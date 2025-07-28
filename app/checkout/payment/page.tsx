@@ -23,7 +23,7 @@ interface RazorpayHandlerResponse {
 
 export default function PaymentPage() {
   const { cartItems, clearCart, isLoading } = useCart();
-  const { location, addressId } = useLocation(); 
+  const { location, addressId } = useLocation();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -33,9 +33,9 @@ export default function PaymentPage() {
   const [amount, setAmount] = useState<number>(0);
 
   const selectedAddressId = searchParams.get('addressId') || addressId;
-  const addressDetails = location; 
+  const addressDetails = location;
   const isAddressLoading = false;
-console.log('Selected Address ID:', location);
+  console.log('Selected Address ID:', location);
   // Calculate amount
   useEffect(() => {
     if (cartItems.length > 0) {
@@ -69,12 +69,12 @@ console.log('Selected Address ID:', location);
 
   // Add a function to ensure Razorpay is loaded properly
   const ensureRazorpayLoaded = (): Promise<boolean> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (window.Razorpay) {
         resolve(true);
         return;
       }
-      
+
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
       script.async = true;
@@ -122,7 +122,7 @@ console.log('Selected Address ID:', location);
         address: addressData,
         totalAmount: amount,
         paymentMethod: selectedMethod,
-        itemCount: validItems.length
+        itemCount: validItems.length,
       });
 
       const orderResponse = await fetch('/api/orders', {
@@ -132,13 +132,15 @@ console.log('Selected Address ID:', location);
           address: addressData,
           totalAmount: amount,
           paymentMethod: selectedMethod === 'cod' ? 'COD' : 'ONLINE',
-          items: validItems
-        })
+          items: validItems,
+        }),
       });
 
       if (!orderResponse.ok) {
         const errorData = await orderResponse.json();
-        throw new Error(errorData.error || `Order creation failed with status: ${orderResponse.status}`);
+        throw new Error(
+          errorData.error || `Order creation failed with status: ${orderResponse.status}`
+        );
       }
 
       const orderData = await orderResponse.json();
@@ -160,8 +162,8 @@ console.log('Selected Address ID:', location);
           orderId: createdOrderId,
           amount: amount,
           currency: 'INR',
-          paymentMethod: selectedMethod
-        })
+          paymentMethod: selectedMethod,
+        }),
       });
 
       if (!response.ok) {
@@ -180,11 +182,11 @@ console.log('Selected Address ID:', location);
         throw new Error('Failed to load Razorpay SDK. Please try again.');
       }
 
-      console.log('Initializing Razorpay with options:', { 
-        ...data, 
+      console.log('Initializing Razorpay with options:', {
+        ...data,
         key: '***hidden***',
         amount: data.amount,
-        order_id: data.order_id
+        order_id: data.order_id,
       });
 
       const options = {
@@ -197,7 +199,7 @@ console.log('Selected Address ID:', location);
         prefill: data.prefill || {},
         notes: {
           ...(data.notes || {}),
-          paymentMethod: selectedMethod
+          paymentMethod: selectedMethod,
         },
         theme: data.theme || { color: '#0d9488' },
         handler: (response: RazorpayHandlerResponse) => {
@@ -207,8 +209,8 @@ console.log('Selected Address ID:', location);
           ondismiss: () => {
             setIsProcessing(false);
             handlePaymentCancellation(createdOrderId);
-          }
-        }
+          },
+        },
       };
 
       try {
@@ -218,10 +220,11 @@ console.log('Selected Address ID:', location);
         console.error('Razorpay initialization error:', razorpayError);
         throw new Error('Could not open payment gateway. Please try again.');
       }
-
     } catch (error) {
       console.error('Payment error:', error);
-      setError(error instanceof Error ? error.message : 'Payment processing failed. Please try again.');
+      setError(
+        error instanceof Error ? error.message : 'Payment processing failed. Please try again.'
+      );
       setIsProcessing(false);
     }
   };
@@ -240,9 +243,9 @@ console.log('Selected Address ID:', location);
             razorpay_order_id: response.razorpay_order_id,
             razorpay_signature: response.razorpay_signature,
             paymentMethod: selectedMethod,
-            statusMapped: mapPaymentStatusToOrderStatus('SUCCESS', 'RAZORPAY')
-          }
-        })
+            statusMapped: mapPaymentStatusToOrderStatus('SUCCESS', 'RAZORPAY'),
+          },
+        }),
       });
 
       await clearCart();
@@ -267,9 +270,9 @@ console.log('Selected Address ID:', location);
             cancelledAt: new Date().toISOString(),
             reason: 'User cancelled payment',
             paymentMethod: selectedMethod,
-            statusMapped: mapPaymentStatusToOrderStatus('CANCELLED', 'RAZORPAY')
-          }
-        })
+            statusMapped: mapPaymentStatusToOrderStatus('CANCELLED', 'RAZORPAY'),
+          },
+        }),
       });
     } catch (error) {
       console.error('Cancel error:', error);
@@ -289,7 +292,10 @@ console.log('Selected Address ID:', location);
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center">
-            <button onClick={() => router.back()} className="mr-4 rounded-full p-2 hover:bg-gray-100">
+            <button
+              onClick={() => router.back()}
+              className="mr-4 rounded-full p-2 hover:bg-gray-100"
+            >
               <ChevronLeft className="h-5 w-5" />
             </button>
             <h1 className="text-xl font-bold text-gray-800">Checkout</h1>
@@ -299,32 +305,34 @@ console.log('Selected Address ID:', location);
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div className="md:col-span-2 space-y-6">
+          <div className="space-y-6 md:col-span-2">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
                 {error}
               </div>
             )}
 
             {/* Address */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-medium text-gray-800 mb-4">Delivery Address</h2>
+            <div className="rounded-lg bg-white p-6 shadow-md">
+              <h2 className="mb-4 text-lg font-medium text-gray-800">Delivery Address</h2>
               {addressDetails ? (
-                <div className="flex items-start gap-3 bg-teal-50 border border-teal-100 rounded-lg p-4">
-                  <MapPin className="h-5 w-5 text-teal-600 flex-shrink-0 mt-0.5" />
+                <div className="flex items-start gap-3 rounded-lg border border-teal-100 bg-teal-50 p-4">
+                  <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 text-teal-600" />
                   <div>
                     <p className="font-medium">
-                      {typeof addressDetails === 'string' 
-                        ? addressDetails 
-                        : JSON.stringify(addressDetails)
-                      }
+                      {typeof addressDetails === 'string'
+                        ? addressDetails
+                        : JSON.stringify(addressDetails)}
                     </p>
                   </div>
                 </div>
               ) : (
-                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
                   <p className="text-yellow-800">No delivery address selected.</p>
-                  <button onClick={() => router.push('/checkout')} className="mt-2 text-sm text-teal-600 hover:underline">
+                  <button
+                    onClick={() => router.push('/checkout')}
+                    className="mt-2 text-sm text-teal-600 hover:underline"
+                  >
                     Go back to select an address
                   </button>
                 </div>
@@ -332,14 +340,22 @@ console.log('Selected Address ID:', location);
             </div>
 
             {/* Payment Methods */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-medium text-gray-800 mb-4">Payment Method</h2>
+            <div className="rounded-lg bg-white p-6 shadow-md">
+              <h2 className="mb-4 text-lg font-medium text-gray-800">Payment Method</h2>
               <form onSubmit={handlePaymentProcessing}>
-                <div className="space-y-3 mb-6">
+                <div className="mb-6 space-y-3">
                   {/* Card */}
-                  <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                  <label className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 p-3 hover:bg-gray-50">
                     <div className="flex items-center">
-                      <input type="radio" name="payment-method" value="card" checked={selectedMethod === 'card'} onChange={() => setSelectedMethod('card')} className="h-4 w-4 text-teal-600" disabled={isProcessing} />
+                      <input
+                        type="radio"
+                        name="payment-method"
+                        value="card"
+                        checked={selectedMethod === 'card'}
+                        onChange={() => setSelectedMethod('card')}
+                        className="h-4 w-4 text-teal-600"
+                        disabled={isProcessing}
+                      />
                       <span className="ml-3 text-gray-700">Credit or Debit Card</span>
                     </div>
                     <div className="flex items-center space-x-1">
@@ -351,28 +367,50 @@ console.log('Selected Address ID:', location);
                   </label>
 
                   {/* UPI */}
-                  <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                  <label className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 p-3 hover:bg-gray-50">
                     <div className="flex items-center">
-                      <input type="radio" name="payment-method" value="upi" checked={selectedMethod === 'upi'} onChange={() => setSelectedMethod('upi')} className="h-4 w-4 text-teal-600" disabled={isProcessing} />
+                      <input
+                        type="radio"
+                        name="payment-method"
+                        value="upi"
+                        checked={selectedMethod === 'upi'}
+                        onChange={() => setSelectedMethod('upi')}
+                        className="h-4 w-4 text-teal-600"
+                        disabled={isProcessing}
+                      />
                       <span className="ml-3 text-gray-700">UPI</span>
                     </div>
                     <UpiIcon className="h-6" />
                   </label>
 
                   {/* COD */}
-                  <label className="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                  <label className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 p-3 hover:bg-gray-50">
                     <div className="flex items-center">
-                      <input type="radio" name="payment-method" value="cod" checked={selectedMethod === 'cod'} onChange={() => setSelectedMethod('cod')} className="h-4 w-4 text-teal-600" disabled={isProcessing} />
+                      <input
+                        type="radio"
+                        name="payment-method"
+                        value="cod"
+                        checked={selectedMethod === 'cod'}
+                        onChange={() => setSelectedMethod('cod')}
+                        className="h-4 w-4 text-teal-600"
+                        disabled={isProcessing}
+                      />
                       <span className="ml-3 text-gray-700">Cash on Delivery</span>
                     </div>
-                    <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Available</div>
+                    <div className="rounded bg-green-100 px-2 py-1 text-xs text-green-800">
+                      Available
+                    </div>
                   </label>
                 </div>
 
-                <button type="submit" disabled={isProcessing || !addressDetails} className={`w-full flex items-center justify-center gap-2 font-medium py-3 rounded-lg transition-colors ${addressDetails && !isProcessing ? 'bg-teal-600 hover:bg-teal-700 text-white' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}>
+                <button
+                  type="submit"
+                  disabled={isProcessing || !addressDetails}
+                  className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 font-medium transition-colors ${addressDetails && !isProcessing ? 'bg-teal-600 text-white hover:bg-teal-700' : 'cursor-not-allowed bg-gray-200 text-gray-500'}`}
+                >
                   {isProcessing ? (
                     <>
-                      <Loader className="animate-spin mr-2 h-4 w-4" />
+                      <Loader className="mr-2 h-4 w-4 animate-spin" />
                       {selectedMethod === 'cod' ? 'Placing Order...' : 'Processing Payment...'}
                     </>
                   ) : (
@@ -388,9 +426,9 @@ console.log('Selected Address ID:', location);
 
           {/* Summary */}
           <div className="md:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h2 className="text-lg font-medium text-gray-800 mb-4">Order Summary</h2>
-              <div className="space-y-3 mb-4">
+            <div className="sticky top-4 rounded-lg bg-white p-6 shadow-md">
+              <h2 className="mb-4 text-lg font-medium text-gray-800">Order Summary</h2>
+              <div className="mb-4 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>
                   <span>₹{amount.toFixed(2)}</span>
@@ -399,25 +437,27 @@ console.log('Selected Address ID:', location);
                   <span className="text-gray-600">Shipping</span>
                   <span className="text-teal-600">Free</span>
                 </div>
-                <div className="border-t border-gray-200 pt-3 mt-3">
+                <div className="mt-3 border-t border-gray-200 pt-3">
                   <div className="flex justify-between font-medium">
                     <span>Total</span>
                     <span className="text-lg">₹{amount.toFixed(2)}</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Inclusive of all taxes</p>
+                  <p className="mt-1 text-xs text-gray-500">Inclusive of all taxes</p>
                 </div>
               </div>
 
               {cartItems.length > 0 && (
-                <div className="border-t border-gray-200 pt-4 mt-4">
-                  <h3 className="text-sm font-medium text-gray-800 mb-2">Items</h3>
-                  <div className="space-y-2 max-h-60 overflow-auto pr-2">
-                    {cartItems.map((item) => {
+                <div className="mt-4 border-t border-gray-200 pt-4">
+                  <h3 className="mb-2 text-sm font-medium text-gray-800">Items</h3>
+                  <div className="max-h-60 space-y-2 overflow-auto pr-2">
+                    {cartItems.map(item => {
                       const name = item.product?.name || item.medicine?.name || 'Item';
                       const price = Number(item.product?.price || item.medicine?.price || 0);
                       return (
                         <div key={item.id} className="flex justify-between text-sm">
-                          <span className="text-gray-600">{name} x {item.quantity}</span>
+                          <span className="text-gray-600">
+                            {name} x {item.quantity}
+                          </span>
                           <span>₹{(price * item.quantity).toFixed(2)}</span>
                         </div>
                       );

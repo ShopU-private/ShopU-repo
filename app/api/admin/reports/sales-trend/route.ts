@@ -11,29 +11,29 @@ export async function POST(req: NextRequest) {
     // Get sales data for the last 7 weeks
     const endDate = new Date();
     const startDate = new Date();
-    startDate.setDate(endDate.getDate() - (7 * 7)); // 7 weeks ago
+    startDate.setDate(endDate.getDate() - 7 * 7); // 7 weeks ago
 
     const orders = await prisma.order.findMany({
       where: {
         createdAt: {
           gte: startDate,
-          lte: endDate
-        }
+          lte: endDate,
+        },
       },
       select: {
         totalAmount: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     // Group orders by week
     const weeklyData = new Map<string, number>();
-    
+
     orders.forEach(order => {
       const weekStart = new Date(order.createdAt);
       weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Start of week (Sunday)
       const weekKey = `Week ${Math.ceil((endDate.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24 * 7))}`;
-      
+
       const currentAmount = weeklyData.get(weekKey) || 0;
       weeklyData.set(weekKey, currentAmount + Number(order.totalAmount));
     });

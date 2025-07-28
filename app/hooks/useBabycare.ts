@@ -66,7 +66,8 @@ export function useProducts(options: UseProductsOptions = {}) {
               stock: product.stock ?? 0,
               imageUrl: product.imageUrl || '/product-placeholder.jpg',
               category: product.subCategory?.name || 'Product',
-              originalPrice: product.originalPrice ?? parseFloat(product.price?.toString() || '0') * 1.15,
+              originalPrice:
+                product.originalPrice ?? parseFloat(product.price?.toString() || '0') * 1.15,
               discount: product.discount ?? 15,
               rating: 4.2,
               reviews: 12,

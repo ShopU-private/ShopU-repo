@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
   const { pathname } = req.nextUrl;
-  const isAdminRoute =
-    pathname.startsWith('/api/admin') || pathname.startsWith('/admin');
+  const isAdminRoute = pathname.startsWith('/api/admin') || pathname.startsWith('/admin');
 
   // Protect admin routes
   if (isAdminRoute) {
@@ -13,7 +12,7 @@ export function middleware(req: NextRequest) {
     if (!token) {
       // console.log('⛔ No token for admin route:', pathname);
       return NextResponse.redirect(
-        new URL(`/login?returnUrl=${encodeURIComponent(pathname)}`, req.url),
+        new URL(`/login?returnUrl=${encodeURIComponent(pathname)}`, req.url)
       );
     }
 

@@ -4,14 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  ArrowLeft,
-  Package,
-  Calendar,
-  Loader,
-  AlertCircle,
-  Truck,
-} from 'lucide-react';
+import { ArrowLeft, Package, Calendar, Loader, AlertCircle, Truck } from 'lucide-react';
 import OrderStatusUpdater from '@/app/components/OrderStatusUpdater';
 import LiveTracking from '@/app/components/LiveTracking';
 
@@ -126,7 +119,7 @@ export default function AdminOrderDetailPage() {
 
   const handleItemStatusUpdate = (itemId: string, newStatus: string) => {
     if (order) {
-      const updatedItems = order.orderItems.map((item) =>
+      const updatedItems = order.orderItems.map(item =>
         item.id === itemId ? { ...item, status: newStatus } : item
       );
       setOrder({ ...order, orderItems: updatedItems });
@@ -144,9 +137,9 @@ export default function AdminOrderDetailPage() {
   if (error || !order) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
-        <div className="text-center bg-red-100 p-6 rounded-lg">
+        <div className="rounded-lg bg-red-100 p-6 text-center">
           <AlertCircle className="mx-auto h-10 w-10 text-red-500" />
-          <h3 className="mt-2 font-semibold text-lg text-gray-800">Error</h3>
+          <h3 className="mt-2 text-lg font-semibold text-gray-800">Error</h3>
           <p className="text-sm text-gray-600">{error || 'Order not found'}</p>
           <button
             onClick={() => router.back()}
@@ -162,23 +155,26 @@ export default function AdminOrderDetailPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Link href="/admin/orders" className="inline-flex items-center text-gray-600 hover:text-gray-900">
+        <Link
+          href="/admin/orders"
+          className="inline-flex items-center text-gray-600 hover:text-gray-900"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Orders
         </Link>
       </div>
 
-      <div className="mb-6 flex flex-col md:flex-row justify-between">
+      <div className="mb-6 flex flex-col justify-between md:flex-row">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Order #{order.id.slice(-6)}</h1>
-          <div className="mt-1 text-sm text-gray-500 flex items-center">
-            <Calendar className="w-4 h-4 mr-1" />
+          <div className="mt-1 flex items-center text-sm text-gray-500">
+            <Calendar className="mr-1 h-4 w-4" />
             {formatDate(order.createdAt)}
           </div>
         </div>
 
         <div className="mt-4 md:mt-0">
-          <p className="text-sm font-semibold text-gray-700 mb-1">Order Status</p>
+          <p className="mb-1 text-sm font-semibold text-gray-700">Order Status</p>
           <OrderStatusUpdater
             orderId={order.id}
             currentStatus={order.status}
@@ -187,9 +183,9 @@ export default function AdminOrderDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="border p-4 rounded-lg bg-white shadow-sm">
-          <h2 className="font-medium mb-3 text-lg">Customer</h2>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="rounded-lg border bg-white p-4 shadow-sm">
+          <h2 className="mb-3 text-lg font-medium">Customer</h2>
           {order.user ? (
             <div>
               <p className="font-semibold">{order.user.name || 'N/A'}</p>
@@ -197,12 +193,12 @@ export default function AdminOrderDetailPage() {
               <p className="text-sm text-gray-600">{order.user.phoneNumber || 'N/A'}</p>
             </div>
           ) : (
-            <p className="text-gray-500 text-sm italic">Customer data not available</p>
+            <p className="text-sm text-gray-500 italic">Customer data not available</p>
           )}
         </div>
 
-        <div className="border p-4 rounded-lg bg-white shadow-sm">
-          <h2 className="font-medium mb-3 text-lg">Shipping Address</h2>
+        <div className="rounded-lg border bg-white p-4 shadow-sm">
+          <h2 className="mb-3 text-lg font-medium">Shipping Address</h2>
           {order.address ? (
             <div className="text-sm text-gray-700">
               <p>{order.address.fullName}</p>
@@ -218,19 +214,19 @@ export default function AdminOrderDetailPage() {
           )}
         </div>
 
-        <div className="border p-4 rounded-lg bg-white shadow-sm">
-          <h2 className="font-medium mb-3 text-lg">Payment Info</h2>
+        <div className="rounded-lg border bg-white p-4 shadow-sm">
+          <h2 className="mb-3 text-lg font-medium">Payment Info</h2>
           <p className="text-sm">Method: {order.paymentMethod}</p>
           <p className="text-sm">Total: ₹{Number(order.totalAmount).toFixed(2)}</p>
           {order.payments?.length ? (
-            <div className="mt-2 text-sm border-t pt-2">
-              {order.payments.map((payment) => (
+            <div className="mt-2 border-t pt-2 text-sm">
+              {order.payments.map(payment => (
                 <div key={payment.id} className="mb-1">
                   <div className="flex justify-between">
                     <span>{payment.provider}</span>
                     <span>₹{payment.amount.toFixed(2)}</span>
                   </div>
-                  <div className="text-xs text-gray-500 flex justify-between">
+                  <div className="flex justify-between text-xs text-gray-500">
                     <span>{new Date(payment.createdAt).toLocaleDateString()}</span>
                     <span className={`rounded px-2 py-0.5 ${getStatusColor(payment.status)}`}>
                       {payment.status}
@@ -244,8 +240,8 @@ export default function AdminOrderDetailPage() {
       </div>
 
       {order.trackingNumber && (
-        <div className="mt-6 border p-4 rounded-lg bg-white shadow-sm">
-          <h2 className="text-lg font-medium mb-2">Tracking</h2>
+        <div className="mt-6 rounded-lg border bg-white p-4 shadow-sm">
+          <h2 className="mb-2 text-lg font-medium">Tracking</h2>
           <p className="flex items-center gap-2 text-sm text-gray-700">
             <Truck className="h-4 w-4" />
             {order.trackingNumber}
@@ -256,12 +252,12 @@ export default function AdminOrderDetailPage() {
         </div>
       )}
 
-      <div className="mt-6 bg-white rounded-lg shadow-sm border">
-        <h2 className="text-lg font-semibold bg-gray-50 border-b px-6 py-3">Order Items</h2>
+      <div className="mt-6 rounded-lg border bg-white shadow-sm">
+        <h2 className="border-b bg-gray-50 px-6 py-3 text-lg font-semibold">Order Items</h2>
         <ul className="divide-y">
-          {order.orderItems.map((item) => (
-            <li key={item.id} className="flex flex-col sm:flex-row p-6">
-              <div className="h-20 w-20 flex-shrink-0 border rounded-md bg-gray-100 relative">
+          {order.orderItems.map(item => (
+            <li key={item.id} className="flex flex-col p-6 sm:flex-row">
+              <div className="relative h-20 w-20 flex-shrink-0 rounded-md border bg-gray-100">
                 {item.product?.productImage?.[0]?.url ? (
                   <Image
                     src={item.product.productImage[0].url}
@@ -276,12 +272,14 @@ export default function AdminOrderDetailPage() {
                 )}
               </div>
               <div className="ml-4 flex-1">
-                <h3 className="text-base font-semibold">{item.product?.name || 'Unnamed product'}</h3>
+                <h3 className="text-base font-semibold">
+                  {item.product?.name || 'Unnamed product'}
+                </h3>
                 <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
-                <p className="text-sm text-gray-800 font-medium mt-1">₹{item.price}</p>
+                <p className="mt-1 text-sm font-medium text-gray-800">₹{item.price}</p>
                 {item.trackingNumber && (
-                  <div className="text-sm text-gray-500 mt-1 flex items-center">
-                    <Truck className="w-4 h-4 mr-1" />
+                  <div className="mt-1 flex items-center text-sm text-gray-500">
+                    <Truck className="mr-1 h-4 w-4" />
                     {item.trackingNumber}
                   </div>
                 )}
@@ -290,7 +288,7 @@ export default function AdminOrderDetailPage() {
                     orderId={order.id}
                     itemId={item.id}
                     currentStatus={item.status}
-                    onStatusChange={(newStatus) => handleItemStatusUpdate(item.id, newStatus)}
+                    onStatusChange={newStatus => handleItemStatusUpdate(item.id, newStatus)}
                   />
                 </div>
               </div>

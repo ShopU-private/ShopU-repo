@@ -6,7 +6,6 @@ interface Product {
   name: string;
   image: string;
   category: string;
-  
 }
 interface WishlistItem {
   productId: number | string;
@@ -37,7 +36,6 @@ export function useWishlist() {
 
     fetchWishlist();
   }, []);
-
 
   const toggleFavorite = async (product: Product) => {
     if (favorites.has(product.id)) {

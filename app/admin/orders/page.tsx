@@ -2,13 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Filter, 
-  Loader, 
-  Package
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Filter, Loader, Package } from 'lucide-react';
 import OrderStatusUpdater from '../../components/OrderStatusUpdater';
 
 interface Order {
@@ -60,7 +54,7 @@ export default function AdminOrdersPage() {
       }
 
       const response = await fetch(`/api/admin/orders?${params.toString()}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch orders');
       }
@@ -85,9 +79,9 @@ export default function AdminOrdersPage() {
   }, [fetchOrders]);
 
   const handleStatusChange = (orderId: string, newStatus: string) => {
-    setOrders(orders.map(order => 
-      order.id === orderId ? { ...order, status: newStatus } : order
-    ));
+    setOrders(
+      orders.map(order => (order.id === orderId ? { ...order, status: newStatus } : order))
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -114,10 +108,7 @@ export default function AdminOrdersPage() {
       <div className="p-8 text-center">
         <h1 className="text-2xl font-bold text-red-600">Error</h1>
         <p className="mt-2">{error}</p>
-        <button
-          onClick={fetchOrders}
-          className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-md"
-        >
+        <button onClick={fetchOrders} className="mt-4 rounded-md bg-teal-600 px-4 py-2 text-white">
           Try Again
         </button>
       </div>
@@ -126,23 +117,23 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Order Management</h1>
-      
+      <h1 className="mb-6 text-2xl font-bold">Order Management</h1>
+
       {/* Filters */}
-      <div className="flex items-center mb-6 gap-4">
+      <div className="mb-6 flex items-center gap-4">
         <div className="flex items-center">
-          <Filter className="w-4 h-4 mr-2" />
+          <Filter className="mr-2 h-4 w-4" />
           <span className="text-sm font-medium">Filter by status:</span>
         </div>
         <select
           value={filterStatus}
-          onChange={(e) => {
+          onChange={e => {
             setFilterStatus(e.target.value);
             setPagination(prev => ({ ...prev, page: 1 }));
           }}
-          className="text-sm border rounded-md px-3 py-1.5 focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+          className="rounded-md border px-3 py-1.5 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
         >
-          {statusOptions.map((option) => (
+          {statusOptions.map(option => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -151,37 +142,37 @@ export default function AdminOrdersPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <Loader className="w-8 h-8 text-teal-600 animate-spin" />
+        <div className="flex items-center justify-center py-20">
+          <Loader className="h-8 w-8 animate-spin text-teal-600" />
         </div>
       ) : (
         <>
           {/* Orders Table */}
-          <div className="overflow-x-auto bg-white rounded-lg shadow">
+          <div className="overflow-x-auto rounded-lg bg-white shadow">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Order ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Customer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 bg-white">
                 {orders.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
@@ -190,31 +181,31 @@ export default function AdminOrdersPage() {
                     </td>
                   </tr>
                 ) : (
-                  orders.map((order) => (
+                  orders.map(order => (
                     <tr key={order.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                      <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-blue-600">
                         <Link href={`/admin/orders/${order.id}`} className="hover:underline">
                           #{order.id.slice(-6)}
                         </Link>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                         {formatDate(order.createdAt)}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         <div>{order.user.name}</div>
                         <div className="text-xs text-gray-500">{order.user.email}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900">
                         ₹{Number(order.totalAmount).toFixed(2)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <OrderStatusUpdater
                           orderId={order.id}
                           currentStatus={order.status}
-                          onStatusChange={(newStatus) => handleStatusChange(order.id, newStatus)}
+                          onStatusChange={newStatus => handleStatusChange(order.id, newStatus)}
                         />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                         <Link
                           href={`/admin/orders/${order.id}`}
                           className="text-teal-600 hover:text-teal-900"
@@ -231,7 +222,7 @@ export default function AdminOrdersPage() {
 
           {/* Pagination */}
           {pagination.pages > 0 && (
-            <div className="flex justify-between items-center mt-6">
+            <div className="mt-6 flex items-center justify-between">
               <div className="text-sm text-gray-500">
                 Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
                 {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
@@ -241,21 +232,23 @@ export default function AdminOrdersPage() {
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                   disabled={pagination.page === 1}
-                  className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="rounded-md border border-gray-300 p-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="h-4 w-4" />
                 </button>
-                
-                <div className="flex items-center px-4 py-2 border border-gray-300 rounded-md">
-                  <span className="text-sm">{pagination.page} / {pagination.pages}</span>
+
+                <div className="flex items-center rounded-md border border-gray-300 px-4 py-2">
+                  <span className="text-sm">
+                    {pagination.page} / {pagination.pages}
+                  </span>
                 </div>
-                
+
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                   disabled={pagination.page >= pagination.pages}
-                  className="p-2 rounded-md border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="rounded-md border border-gray-300 p-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             </div>

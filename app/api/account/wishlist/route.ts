@@ -78,7 +78,7 @@ export async function GET(req: NextRequest) {
         product: {
           select: {
             stock: true,
-            price: true, 
+            price: true,
           },
         },
       },
@@ -96,7 +96,6 @@ export async function GET(req: NextRequest) {
     }));
 
     return NextResponse.json(response, { status: 200 });
-
   } catch (error) {
     console.error('Error fetching wishlist:', error);
     return NextResponse.json({ message: 'Failed to fetch wishlist', error }, { status: 500 });

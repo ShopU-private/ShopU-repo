@@ -13,8 +13,7 @@ export async function POST(req: NextRequest) {
     const { filters = {}, searchQuery = '', selectedCustomers } = body;
     // Build where clause based on filters
     const where: Prisma.UserWhereInput = {};
- 
-    
+
     if (selectedCustomers && selectedCustomers.length > 0) {
       where.id = { in: selectedCustomers };
     } else {
@@ -28,7 +27,7 @@ export async function POST(req: NextRequest) {
         where.OR = [
           { name: { contains: searchQuery, mode: 'insensitive' } },
           { email: { contains: searchQuery, mode: 'insensitive' } },
-          { phoneNumber: { contains: searchQuery } }
+          { phoneNumber: { contains: searchQuery } },
         ];
       }
 
@@ -46,8 +45,8 @@ export async function POST(req: NextRequest) {
           select: {
             id: true,
             totalAmount: true,
-            createdAt: true
-          }
+            createdAt: true,
+          },
         },
         addresses: {
           where: { isDefault: true },
@@ -55,37 +54,40 @@ export async function POST(req: NextRequest) {
             city: true,
             state: true,
             addressLine1: true,
-            postalCode: true
-          }
-        }
+            postalCode: true,
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
 
     // Transform to CSV format
     const csvData = customers.map(customer => {
       const totalOrders = customer.orders.length;
       const totalSpent = customer.orders.reduce((sum, order) => sum + Number(order.totalAmount), 0);
-      const lastOrderDate = customer.orders.length > 0 
-        ? customer.orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0].createdAt
-        : customer.createdAt;
-      
+      const lastOrderDate =
+        customer.orders.length > 0
+          ? customer.orders.sort(
+              (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            )[0].createdAt
+          : customer.createdAt;
+
       const defaultAddress = customer.addresses[0];
-      
+
       return {
         'Customer ID': customer.id,
-        'Name': customer.name || 'N/A',
-        'Email': customer.email || 'N/A',
+        Name: customer.name || 'N/A',
+        Email: customer.email || 'N/A',
         'Phone Number': customer.phoneNumber,
         'Total Orders': totalOrders,
         'Total Spent': totalSpent.toFixed(2),
         'Last Order Date': lastOrderDate.toISOString().split('T')[0],
-        'Status': totalOrders > 0 ? 'Active' : 'Inactive',
+        Status: totalOrders > 0 ? 'Active' : 'Inactive',
         'Join Date': customer.createdAt.toISOString().split('T')[0],
-        'City': defaultAddress?.city || 'N/A',
-        'State': defaultAddress?.state || 'N/A',
-        'Address': defaultAddress?.addressLine1 || 'N/A',
-        'Postal Code': defaultAddress?.postalCode || 'N/A'
+        City: defaultAddress?.city || 'N/A',
+        State: defaultAddress?.state || 'N/A',
+        Address: defaultAddress?.addressLine1 || 'N/A',
+        'Postal Code': defaultAddress?.postalCode || 'N/A',
       };
     });
 
@@ -97,22 +99,24 @@ export async function POST(req: NextRequest) {
     const headers = Object.keys(csvData[0]);
     const csvContent = [
       headers.join(','),
-      ...csvData.map(row => 
-        headers.map(header => {
-          const value = row[header as keyof typeof row];
-          // Escape commas and quotes in CSV
-          return typeof value === 'string' && (value.includes(',') || value.includes('"')) 
-            ? `"${value.replace(/"/g, '""')}"` 
-            : value;
-        }).join(',')
-      )
+      ...csvData.map(row =>
+        headers
+          .map(header => {
+            const value = row[header as keyof typeof row];
+            // Escape commas and quotes in CSV
+            return typeof value === 'string' && (value.includes(',') || value.includes('"'))
+              ? `"${value.replace(/"/g, '""')}"`
+              : value;
+          })
+          .join(',')
+      ),
     ].join('\n');
 
     return new Response(csvContent, {
       headers: {
         'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="customers-export-${new Date().toISOString().split('T')[0]}.csv"`
-      }
+        'Content-Disposition': `attachment; filename="customers-export-${new Date().toISOString().split('T')[0]}.csv"`,
+      },
     });
   } catch (error) {
     console.error('[POST /api/admin/customers/export]', error);

@@ -1,8 +1,29 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Download, TrendingUp, TrendingDown, DollarSign, ShoppingBag, Users, Package } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
+import {
+  Download,
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  ShoppingBag,
+  Users,
+  Package,
+} from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+} from 'recharts';
 
 interface ReportFilters {
   reportType: string;
@@ -45,7 +66,7 @@ export default function AdminReportsPage() {
     warehouse: 'All Warehouses',
     groupBy: 'Day',
     startDate: '',
-    endDate: ''
+    endDate: '',
   });
 
   const [stats, setStats] = useState<ReportStats>({
@@ -54,7 +75,7 @@ export default function AdminReportsPage() {
     totalCustomers: 0,
     totalProducts: 0,
     revenueGrowth: 0,
-    ordersGrowth: 0
+    ordersGrowth: 0,
   });
 
   const [salesTrendData, setSalesTrendData] = useState<SalesTrendData[]>([]);
@@ -74,7 +95,7 @@ export default function AdminReportsPage() {
 
       if (!statsResponse.ok) throw new Error('Failed to fetch stats');
       const statsData = await statsResponse.json();
-      
+
       // Ensure all stats have default values
       setStats({
         totalRevenue: statsData.totalRevenue || 0,
@@ -82,14 +103,14 @@ export default function AdminReportsPage() {
         totalCustomers: statsData.totalCustomers || 0,
         totalProducts: statsData.totalProducts || 0,
         revenueGrowth: statsData.revenueGrowth || 0,
-        ordersGrowth: statsData.ordersGrowth || 0
+        ordersGrowth: statsData.ordersGrowth || 0,
       });
 
       // Fetch sales trend data
       const trendResponse = await fetch('/api/admin/reports/sales-trend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(filters)
+        body: JSON.stringify(filters),
       });
 
       if (!trendResponse.ok) throw new Error('Failed to fetch sales trend');
@@ -100,7 +121,7 @@ export default function AdminReportsPage() {
       const categoryResponse = await fetch('/api/admin/reports/revenue-category', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(filters)
+        body: JSON.stringify(filters),
       });
 
       if (!categoryResponse.ok) throw new Error('Failed to fetch category data');
@@ -111,17 +132,16 @@ export default function AdminReportsPage() {
       const productsResponse = await fetch('/api/admin/reports/top-products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(filters)
+        body: JSON.stringify(filters),
       });
 
       if (!productsResponse.ok) throw new Error('Failed to fetch top products');
       const productsData = await productsResponse.json();
       setTopProductsData(productsData);
-
     } catch (error) {
       console.error('Error fetching reports data:', error);
       setError(error instanceof Error ? error.message : 'Failed to fetch data');
-      
+
       // Set default values on error
       setSalesTrendData([]);
       setRevenueCategoryData([]);
@@ -154,7 +174,7 @@ export default function AdminReportsPage() {
       const response = await fetch('/api/admin/reports/download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(filters)
+        body: JSON.stringify(filters),
       });
 
       if (!response.ok) throw new Error('Failed to download report');
@@ -177,11 +197,11 @@ export default function AdminReportsPage() {
   const resetFilters = () => {
     setFilters({
       reportType: 'Sales Report',
-      timePeriod: 'This Month', 
+      timePeriod: 'This Month',
       warehouse: 'All Warehouses',
       groupBy: 'Day',
       startDate: '',
-      endDate: ''
+      endDate: '',
     });
   };
 
@@ -194,27 +214,27 @@ export default function AdminReportsPage() {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gray-50 p-6">
       {error && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div className="mb-4 rounded border border-red-400 bg-red-100 p-4 text-red-700">
           {error}
         </div>
       )}
 
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Reports</h1>
+        <h1 className="mb-2 text-2xl font-bold text-gray-900">Reports</h1>
         <p className="text-gray-600">Generate and analyze business reports</p>
       </div>
 
       {/* Filters Section */}
-      <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+      <div className="mb-6 rounded-lg border bg-white p-6 shadow-sm">
+        <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
+            <label className="mb-2 block text-sm font-medium text-gray-700">Report Type</label>
             <select
               value={filters.reportType}
-              onChange={(e) => handleFilterChange('reportType', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              onChange={e => handleFilterChange('reportType', e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
             >
               <option value="Sales Report">Sales Report</option>
               <option value="Revenue Report">Revenue Report</option>
@@ -224,11 +244,11 @@ export default function AdminReportsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Time Period</label>
+            <label className="mb-2 block text-sm font-medium text-gray-700">Time Period</label>
             <select
               value={filters.timePeriod}
-              onChange={(e) => handleFilterChange('timePeriod', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              onChange={e => handleFilterChange('timePeriod', e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
             >
               <option value="This Month">This Month</option>
               <option value="Last Month">Last Month</option>
@@ -240,11 +260,11 @@ export default function AdminReportsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Warehouse</label>
+            <label className="mb-2 block text-sm font-medium text-gray-700">Warehouse</label>
             <select
               value={filters.warehouse}
-              onChange={(e) => handleFilterChange('warehouse', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              onChange={e => handleFilterChange('warehouse', e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
             >
               <option value="All Warehouses">All Warehouses</option>
               <option value="Main Warehouse">Main Warehouse</option>
@@ -254,11 +274,11 @@ export default function AdminReportsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Group By</label>
+            <label className="mb-2 block text-sm font-medium text-gray-700">Group By</label>
             <select
               value={filters.groupBy}
-              onChange={(e) => handleFilterChange('groupBy', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              onChange={e => handleFilterChange('groupBy', e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
             >
               <option value="Day">Day</option>
               <option value="Week">Week</option>
@@ -269,23 +289,23 @@ export default function AdminReportsPage() {
         </div>
 
         {filters.timePeriod === 'Custom Range' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+              <label className="mb-2 block text-sm font-medium text-gray-700">Start Date</label>
               <input
                 type="date"
                 value={filters.startDate}
-                onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                onChange={e => handleFilterChange('startDate', e.target.value)}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+              <label className="mb-2 block text-sm font-medium text-gray-700">End Date</label>
               <input
                 type="date"
                 value={filters.endDate}
-                onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                onChange={e => handleFilterChange('endDate', e.target.value)}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
           </div>
@@ -294,112 +314,123 @@ export default function AdminReportsPage() {
         <div className="flex flex-wrap gap-3">
           <button
             onClick={generateReport}
-            className="bg-teal-600 text-white px-6 py-2 rounded-md hover:bg-teal-700 transition-colors"
+            className="rounded-md bg-teal-600 px-6 py-2 text-white transition-colors hover:bg-teal-700"
           >
             Generate Report
           </button>
           <button
             onClick={resetFilters}
-            className="bg-gray-100 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-200 transition-colors"
+            className="rounded-md bg-gray-100 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-200"
           >
             Reset Filters
           </button>
           <button
             onClick={downloadReport}
-            className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center gap-2"
+            className="flex items-center gap-2 rounded-md bg-green-600 px-6 py-2 text-white transition-colors hover:bg-green-700"
           >
-            <Download className="w-4 h-4" />
+            <Download className="h-4 w-4" />
             Download Report
           </button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
               <p className="text-2xl font-bold text-gray-900">
                 ₹{(stats.totalRevenue || 0).toLocaleString()}
               </p>
-              <div className="flex items-center mt-2">
+              <div className="mt-2 flex items-center">
                 {(stats.revenueGrowth || 0) >= 0 ? (
-                  <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                  <TrendingUp className="mr-1 h-4 w-4 text-green-500" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                  <TrendingDown className="mr-1 h-4 w-4 text-red-500" />
                 )}
-                <span className={`text-sm font-medium ${(stats.revenueGrowth || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {(stats.revenueGrowth || 0) >= 0 ? '+' : ''}{(stats.revenueGrowth || 0).toFixed(1)}%
+                <span
+                  className={`text-sm font-medium ${(stats.revenueGrowth || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                >
+                  {(stats.revenueGrowth || 0) >= 0 ? '+' : ''}
+                  {(stats.revenueGrowth || 0).toFixed(1)}%
                 </span>
-                <span className="text-gray-500 text-sm ml-1">vs last month</span>
+                <span className="ml-1 text-sm text-gray-500">vs last month</span>
               </div>
             </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <DollarSign className="w-6 h-6 text-green-600" />
+            <div className="rounded-full bg-green-100 p-3">
+              <DollarSign className="h-6 w-6 text-green-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-900">{(stats.totalOrders || 0).toLocaleString()}</p>
-              <div className="flex items-center mt-2">
-                <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-green-600 text-sm font-medium">+{(stats.ordersGrowth || 0).toFixed(1)}%</span>
-                <span className="text-gray-500 text-sm ml-1">vs last month</span>
+              <p className="text-2xl font-bold text-gray-900">
+                {(stats.totalOrders || 0).toLocaleString()}
+              </p>
+              <div className="mt-2 flex items-center">
+                <TrendingUp className="mr-1 h-4 w-4 text-green-500" />
+                <span className="text-sm font-medium text-green-600">
+                  +{(stats.ordersGrowth || 0).toFixed(1)}%
+                </span>
+                <span className="ml-1 text-sm text-gray-500">vs last month</span>
               </div>
             </div>
-            <div className="p-3 bg-blue-100 rounded-full">
-              <ShoppingBag className="w-6 h-6 text-blue-600" />
+            <div className="rounded-full bg-blue-100 p-3">
+              <ShoppingBag className="h-6 w-6 text-blue-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Customers</p>
-              <p className="text-2xl font-bold text-gray-900">{(stats.totalCustomers || 0).toLocaleString()}</p>
-              <div className="flex items-center mt-2">
-                <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-green-600 text-sm font-medium">+5.2%</span>
-                <span className="text-gray-500 text-sm ml-1">vs last month</span>
+              <p className="text-2xl font-bold text-gray-900">
+                {(stats.totalCustomers || 0).toLocaleString()}
+              </p>
+              <div className="mt-2 flex items-center">
+                <TrendingUp className="mr-1 h-4 w-4 text-green-500" />
+                <span className="text-sm font-medium text-green-600">+5.2%</span>
+                <span className="ml-1 text-sm text-gray-500">vs last month</span>
               </div>
             </div>
-            <div className="p-3 bg-purple-100 rounded-full">
-              <Users className="w-6 h-6 text-purple-600" />
+            <div className="rounded-full bg-purple-100 p-3">
+              <Users className="h-6 w-6 text-purple-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Products</p>
-              <p className="text-2xl font-bold text-gray-900">{(stats.totalProducts || 0).toLocaleString()}</p>
-              <div className="flex items-center mt-2">
-                <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
-                <span className="text-red-600 text-sm font-medium">-2.1%</span>
-                <span className="text-gray-500 text-sm ml-1">vs last month</span>
+              <p className="text-2xl font-bold text-gray-900">
+                {(stats.totalProducts || 0).toLocaleString()}
+              </p>
+              <div className="mt-2 flex items-center">
+                <TrendingDown className="mr-1 h-4 w-4 text-red-500" />
+                <span className="text-sm font-medium text-red-600">-2.1%</span>
+                <span className="ml-1 text-sm text-gray-500">vs last month</span>
               </div>
             </div>
-            <div className="p-3 bg-orange-100 rounded-full">
-              <Package className="w-6 h-6 text-orange-600" />
+            <div className="rounded-full bg-orange-100 p-3">
+              <Package className="h-6 w-6 text-orange-600" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Sales Trend Chart */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Sales Trend</h3>
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
+          <h3 className="mb-4 text-lg font-semibold text-gray-900">Sales Trend</h3>
           {loading ? (
-            <div className="h-80 flex items-center justify-center">
+            <div className="flex h-80 items-center justify-center">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-t-teal-600" />
             </div>
           ) : (
@@ -407,28 +438,28 @@ export default function AdminReportsPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={salesTrendData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis 
-                    dataKey="week" 
+                  <XAxis
+                    dataKey="week"
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 12, fill: '#6b7280' }}
                   />
-                  <YAxis 
+                  <YAxis
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 12, fill: '#6b7280' }}
                   />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{
                       backgroundColor: 'white',
                       border: '1px solid #e5e7eb',
-                      borderRadius: '8px'
+                      borderRadius: '8px',
                     }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="sales" 
-                    stroke="#0891b2" 
+                  <Line
+                    type="monotone"
+                    dataKey="sales"
+                    stroke="#0891b2"
                     strokeWidth={3}
                     dot={{ fill: '#0891b2', strokeWidth: 2, r: 4 }}
                     activeDot={{ r: 6, fill: '#0891b2' }}
@@ -440,10 +471,10 @@ export default function AdminReportsPage() {
         </div>
 
         {/* Revenue by Category Chart */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue by Category</h3>
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
+          <h3 className="mb-4 text-lg font-semibold text-gray-900">Revenue by Category</h3>
           {loading ? (
-            <div className="h-80 flex items-center justify-center">
+            <div className="flex h-80 items-center justify-center">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-t-teal-600" />
             </div>
           ) : (
@@ -464,17 +495,15 @@ export default function AdminReportsPage() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      formatter={(value, name) => [`${value}%`, name]}
-                    />
+                    <Tooltip formatter={(value, name) => [`${value}%`, name]} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="mt-4 grid grid-cols-2 gap-4">
                 {revenueCategoryData.map((item, index) => (
                   <div key={index} className="flex items-center">
-                    <div 
-                      className="w-3 h-3 rounded-full mr-2"
+                    <div
+                      className="mr-2 h-3 w-3 rounded-full"
                       style={{ backgroundColor: item.color }}
                     ></div>
                     <span className="text-sm text-gray-600">
@@ -489,10 +518,10 @@ export default function AdminReportsPage() {
       </div>
 
       {/* Top Selling Products */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Selling Products</h3>
+      <div className="rounded-lg border bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">Top Selling Products</h3>
         {loading ? (
-          <div className="h-80 flex items-center justify-center">
+          <div className="flex h-80 items-center justify-center">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-t-teal-600" />
           </div>
         ) : (
@@ -501,10 +530,10 @@ export default function AdminReportsPage() {
               <BarChart data={topProductsData} layout="horizontal">
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis type="number" axisLine={false} tickLine={false} />
-                <YAxis 
-                  type="category" 
-                  dataKey="name" 
-                  axisLine={false} 
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  axisLine={false}
                   tickLine={false}
                   width={150}
                   tick={{ fontSize: 12, fill: '#6b7280' }}
