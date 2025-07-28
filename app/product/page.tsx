@@ -134,7 +134,6 @@ const ProductPage = () => {
                         toggleFavorite({
                           id: product.id,
                           name: product.name,
-                          price: product.price,
                           image: product.imageUrl || '/product-placeholder.jpg',
                           category: product.category || 'Product',
                         })

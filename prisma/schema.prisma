@@ -126,7 +126,6 @@ model CartItem {
 model Wishlist {
   id         String   @id @default(uuid())
   name       String
-  price      Decimal
   image_url  String
   productId  String
   is_active  Boolean  @default(true)

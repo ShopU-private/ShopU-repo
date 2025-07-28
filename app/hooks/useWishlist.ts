@@ -4,9 +4,9 @@ import toast from 'react-hot-toast';
 interface Product {
   id: number | string;
   name: string;
-  price: number;
   image: string;
   category: string;
+  
 }
 interface WishlistItem {
   productId: number | string;
@@ -77,7 +77,6 @@ export function useWishlist() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: product.name,
-          price: product.price,
           image_url: product.image,
           productId: product.id,
         }),

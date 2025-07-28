@@ -109,7 +109,6 @@ const EverydayEssentialsSection = () => {
                       toggleFavorite({
                         id: medicine.id,
                         name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                        price: medicine.price,
                         image: medicine.imageUrl || '/medicine-placeholder.jpg',
                         category: medicine.type || 'Medicine',
                       })
@@ -191,7 +190,6 @@ const EverydayEssentialsSection = () => {
                     toggleFavorite({
                       id: medicine.id,
                       name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                      price: medicine.price,
                       image: medicine.imageUrl || '/medicine-placeholder.jpg',
                       category: medicine.type || 'Medicine',
                     })

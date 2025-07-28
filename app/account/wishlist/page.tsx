@@ -13,7 +13,7 @@ interface WishlistItem {
   id: string;
   name: string;
   image_url: string;
-  price: number;
+  price?: number;
   createdAt: string;
   stock?: number;
 }
@@ -124,7 +124,7 @@ export default function WishlistPage() {
                 </thead>
                 <tbody>
                   {wishlist.map(item => (
-                    <tr key={item.id} className="rounded-lg bg-white text-center shadow-sm">
+                    <tr key={item.id} className="rounded-lg bg-white text-center shadow-sm text-sm">
                       <td className="flex items-center gap-3 px-6 py-4">
                         <Image
                           src={item.image_url}
@@ -133,18 +133,18 @@ export default function WishlistPage() {
                           height={50}
                           className="rounded"
                         />
-                        <span className="text-sm text-gray-800">{item.name}</span>
+                        <span className="text-gray-800">{item.name}</span>
                       </td>
-                      <td className="text-primaryColor px-6 py-4 text-sm font-medium">
+                      <td className="text-primaryColor px-6 py-4 font-medium text-md">
                         ₹{String(item.price).slice(0, 5)}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
+                      <td className="px-6 py-4  text-gray-700">
                         {new Date(item.createdAt).toLocaleDateString('en-US', {
                           month: 'long',
                           day: 'numeric',
                         })}
                       </td>
-                      <td className="px-6 py-4 text-sm text-green-600">
+                      <td className="px-6 py-4 text-green-600">
                         <span
                           className={Number(item.stock) > 5 ? 'text-green-600' : 'text-red-600'}
                         >
@@ -155,7 +155,7 @@ export default function WishlistPage() {
                         <button
                           onClick={() => handleAddToCart(item.productId)}
                           disabled={addingProductId === item.productId}
-                          className="hover:bg-opacity-90 rounded bg-[#317C80] px-4 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
+                          className="hover:bg-opacity-90 rounded bg-[#317C80] px-4 py-1  text-white disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {addingProductId === item.productId ? 'Adding..' : 'ADD'}
                         </button>

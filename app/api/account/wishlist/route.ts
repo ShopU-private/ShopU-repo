@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 // Add product to wishlist
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, price, image_url, productId } = body;
+  const { name, image_url, productId } = body;
 
   const token = req.cookies.get('token')?.value;
 
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   const payload = verifyToken(token);
   const userId = payload.id;
 
-  if (!name || !price || !image_url || !productId) {
+  if (!name || !image_url || !productId) {
     return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
   }
 
@@ -41,7 +41,6 @@ export async function POST(req: NextRequest) {
     const item = await prisma.wishlist.create({
       data: {
         name,
-        price,
         image_url,
         productId,
         userId,
@@ -79,6 +78,7 @@ export async function GET(req: NextRequest) {
         product: {
           select: {
             stock: true,
+            price: true, 
           },
         },
       },
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
     const response = items.map(item => ({
       id: item.id,
       name: item.name,
-      price: item.price,
+      price: item.product?.price, // include price if available
       image_url: item.image_url,
       productId: item.productId,
       createdAt: item.createdAt,
