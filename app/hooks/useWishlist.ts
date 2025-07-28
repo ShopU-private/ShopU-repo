@@ -15,18 +15,20 @@ export function useWishlist() {
   const [favorites, setFavorites] = useState<Set<number | string>>(new Set());
 
   useEffect(() => {
+    const cached = localStorage.getItem('wishlist');
+    if (cached) {
+      setFavorites(new Set(JSON.parse(cached)));
+    }
+
     const fetchWishlist = async () => {
       try {
         const res = await fetch('/api/account/wishlist');
         const data = await res.json();
 
         if (res.ok && Array.isArray(data)) {
-          const favSet = new Set((data as WishlistItem[]).map(item => item.productId));
+          const favSet = new Set(data.map((item: WishlistItem) => item.productId));
           setFavorites(favSet);
-        } else if (res.status === 401) {
-          console.warn('User is not logged in ');
-        } else {
-          toast.error(data.message || 'Failed to load wishlist');
+          localStorage.setItem('wishlist', JSON.stringify([...favSet]));
         }
       } catch (error) {
         console.error('Wishlist fetch error:', error);
@@ -35,6 +37,7 @@ export function useWishlist() {
 
     fetchWishlist();
   }, []);
+
 
   const toggleFavorite = async (product: Product) => {
     if (favorites.has(product.id)) {

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import { Loader } from 'lucide-react'; 
+import { Loader } from 'lucide-react';
 import Navroute from '@/app/components/navroute';
 
 interface Product {
@@ -19,7 +19,7 @@ interface OrderItem {
   quantity: number;
   image?: string;
   product?: Product;
-  status?: string;
+
 }
 
 interface Order {
@@ -30,6 +30,7 @@ interface Order {
   paymentMethod?: string;
   createdAt: string;
   updatedAt: string;
+  status?: string;
 }
 
 export default function OrdersPage() {
@@ -67,12 +68,14 @@ export default function OrdersPage() {
     switch (status.toLowerCase()) {
       case 'pending':
         return 'text-yellow-500';
-      case 'cancelled':
-        return 'text-red-600';
+      case 'processing':
+        return 'text-blue-600';
+      case 'shipped':
+        return 'text-purple-600';
       case 'confirmed':
         return 'text-green-600';
-      case 'shipped':
-        return 'text-blue-600';
+      case 'cancelled':
+        return 'text-red-600';
       default:
         return 'text-gray-600';
     }
@@ -135,9 +138,9 @@ export default function OrdersPage() {
                         <td className="px-4 py-4 text-sm">{item.quantity}</td>
                         <td className="px-4 py-4 text-sm">{formatDate(order.createdAt)}</td>
                         <td
-                          className={`px-4 py-4 text-sm font-medium ${getStatusColor(item.status)}`}
+                          className={`px-4 py-4 text-sm font-medium ${getStatusColor(order.status)}`}
                         >
-                          {item.status?.toUpperCase()}
+                          {order.status?.toUpperCase()}
                         </td>
                       </tr>
                     ))
@@ -180,8 +183,8 @@ export default function OrdersPage() {
                         <span className="text-primaryColor">₹{item.price}</span>
                       </div>
                     </div>
-                    <span className={`${getStatusColor(item.status)} font-medium`}>
-                      {item.status?.toUpperCase()}
+                    <span className={`${getStatusColor(order.status)} font-medium`}>
+                      {order.status?.toUpperCase()}
                     </span>
                   </div>
                 ))

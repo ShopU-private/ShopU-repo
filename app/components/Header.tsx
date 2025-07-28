@@ -603,6 +603,7 @@ const Header = () => {
 
                             if (res.ok && data.success) {
                               console.log('Logged out successfully');
+                              localStorage.removeItem('wishlist');
                               setIsLoggedIn(false);
                               setIsLoginModalOpen(false);
                               window.location.href = '/';
@@ -799,6 +800,7 @@ const Header = () => {
 
                             if (res.ok && data.success) {
                               console.log('Logged out successfully');
+                              localStorage.removeItem('wishlist');
                               setIsLoggedIn(false);
                               setIsLoginModalOpen(false);
                               window.location.href = '/';
