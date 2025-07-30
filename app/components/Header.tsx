@@ -644,7 +644,7 @@ const Header = () => {
               onClick={openCartModal}
               className="hover:text-primaryColor relative rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50"
             >
-              <ShoppingCart className="h-6 w-6 text-[#317C80]" />
+              <ShoppingCart className="text-primaryColor h-6 w-6" />
               {isLoadingCart ? (
                 <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
                   <Loader className="h-3 w-3 animate-spin text-teal-600" />
@@ -667,7 +667,7 @@ const Header = () => {
         </div>
 
         {/* Mobile Search */}
-        <div className="mt-4 md:hidden">
+        <div className="mt-4 mb-2 md:hidden">
           <div className="relative">
             <input
               type="text"

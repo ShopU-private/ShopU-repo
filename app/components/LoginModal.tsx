@@ -4,7 +4,7 @@ import { X, Phone, Lock } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import Logo from '../../public/Shop U Logo-02.jpg';
+import Logo from '../../public/Shop U Logo-03.jpg';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -107,7 +107,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <Image
             src={Logo}
             alt="ShopU Logo"
-            className="mb-2 h-28 w-auto"
+            className="mb-6 h-18 w-auto"
             width={200}
             height={112}
           />
@@ -134,6 +134,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   className="focus:ring-primaryColor w-full rounded-xl border border-gray-300 py-3 pr-4 pl-24 transition-all focus:border-transparent focus:ring-2 focus:outline-none"
                   placeholder="Enter your phone number"
                   disabled={loading}
+                  minLength={10}
+                  maxLength={10}
                 />
               </div>
             </div>
@@ -164,6 +166,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   className="focus:ring-primaryColor w-full rounded-xl border border-gray-300 py-3 pr-4 pl-12 transition-all focus:border-transparent focus:ring-2 focus:outline-none"
                   placeholder="Enter 6-digit OTP"
                   disabled={loading}
+                  maxLength={6}
+                  minLength={6}
                 />
               </div>
             </div>

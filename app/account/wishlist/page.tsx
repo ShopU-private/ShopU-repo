@@ -95,7 +95,7 @@ export default function WishlistPage() {
       <Navroute />
       <div className="mx-auto max-w-7xl px-4 py-8">
         {loading ? (
-          <div className="flex min-h-[70vh] items-center justify-center">
+          <div className="flex min-h-[80vh] items-center justify-center">
             <div className="text-center">
               <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
               <p className="mt-4 text-gray-600">Loading your orders...</p>
@@ -113,19 +113,19 @@ export default function WishlistPage() {
               </h2>
               <table className="min-w-full border-separate border-spacing-y-4">
                 <thead>
-                  <tr className="bg-[#D5F3F6] text-center text-sm text-gray-800">
-                    <th className="px-4 py-4">Product</th>
+                  <tr className="bg-[#D5F3F6] text-center text-md text-gray-800">
+                    <th className="w-94 px-6 py-4">Product</th>
                     <th className="px-6 py-4">Price</th>
                     <th className="px-6 py-4">Date Added</th>
                     <th className="px-6 py-4">Stock</th>
-                    <th className="px-6 py-4">Add to Cart</th>
+                    <th className="px-6 py-4 w-40">Add to Cart</th>
                     <th className="px-6 py-4"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {wishlist.map(item => (
-                    <tr key={item.id} className="rounded-lg bg-white text-center text-sm shadow-sm">
-                      <td className="flex items-center gap-3 px-6 py-4">
+                    <tr key={item.id} className="rounded-lg bg-white text-center text-md shadow-sm">
+                      <td className="flex items-center gap-10 px-6 py-4">
                         <Image
                           src={item.image_url}
                           alt={item.name.length > 5 ? item.name.slice(0, 5) + '…' : item.name}
@@ -135,32 +135,32 @@ export default function WishlistPage() {
                         />
                         <span className="text-gray-800">{item.name}</span>
                       </td>
-                      <td className="text-primaryColor text-md px-6 py-4 font-medium">
+                      <td className="text-primaryColor text-md p-4 font-medium">
                         ₹{String(item.price).slice(0, 5)}
                       </td>
-                      <td className="px-6 py-4 text-gray-700">
+                      <td className="p-4 text-gray-700">
                         {new Date(item.createdAt).toLocaleDateString('en-US', {
                           month: 'long',
                           day: 'numeric',
                         })}
                       </td>
-                      <td className="px-6 py-4 text-green-600">
+                      <td className="p-4 text-green-600">
                         <span
                           className={Number(item.stock) > 5 ? 'text-green-600' : 'text-red-600'}
                         >
                           {Number(item.stock) > 5 ? 'In Stock' : 'Only few left'}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <button
                           onClick={() => handleAddToCart(item.productId)}
                           disabled={addingProductId === item.productId}
-                          className="hover:bg-opacity-90 rounded bg-[#317C80] px-4 py-1 text-white disabled:cursor-not-allowed disabled:opacity-60"
+                          className="hover:bg-opacity-90 rounded bg-background1 px-4 py-1 text-white disabled:cursor-not-allowed disabled:opacity-60 text-sm"
                         >
                           {addingProductId === item.productId ? 'Adding..' : 'ADD'}
                         </button>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <button
                           onClick={() => handleRemove(item.productId)}
                           className="text-gray-500 hover:text-red-500 disabled:opacity-60"
@@ -199,7 +199,7 @@ export default function WishlistPage() {
                       {Number(item.stock) > 5 ? 'In Stock' : 'Only few left'}
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 py-6 font-medium">
+                  <div className="flex items-center gap-4 py-4 font-medium">
                     <Image
                       src={item.image_url}
                       alt={item.name.length > 10 ? item.name.slice(0, 10) + '…' : item.name}

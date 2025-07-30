@@ -72,7 +72,7 @@ export default function ContactPage() {
                 <div key={index} className="rounded bg-white py-1 shadow-sm">
                   <button
                     onClick={() => setActiveIndex(index === activeIndex ? -1 : index)}
-                    className="text-md flex w-full items-center justify-between px-4 py-4 text-left font-semibold text-gray-900"
+                    className="text-md flex w-full items-center justify-between p-4 text-left font-semibold text-gray-900"
                   >
                     {faq.question}
                     <ChevronDown
@@ -82,7 +82,7 @@ export default function ContactPage() {
                     />
                   </button>
                   {index === activeIndex && (
-                    <div className="border-t border-gray-200 px-4 py-4 text-sm text-gray-600">
+                    <div className="border-t border-gray-200 p-4 text-sm text-gray-600">
                       {faq.answer}
                     </div>
                   )}
@@ -158,7 +158,7 @@ export default function ContactPage() {
                     />
                   </button>
                   {index === activeIndex && (
-                    <div className="border-t border-gray-200 px-4 py-4 text-sm text-gray-600">
+                    <div className="border-t border-gray-200 p-4 text-sm text-gray-600">
                       {faq.answer}
                     </div>
                   )}

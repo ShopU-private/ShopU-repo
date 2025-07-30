@@ -2,19 +2,29 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ArrowLeft, Search, ShoppingCart } from 'lucide-react';
 
 export default function Navroute() {
   const pathname = usePathname();
-
+  const router = useRouter();
   // Get path segments (excluding empty string)
-  const segments = pathname.split('/').filter(seg => seg);
+  // Get path segments excluding empty string and UUIDs
+  const segments = pathname
+    .split('/')
+    .filter(
+      seg =>
+        seg &&
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(seg)
+    );
 
   // Build cumulative routes for linking
   const crumbs = segments.map((seg, idx) => {
+    const name = decodeURIComponent(seg)
+      .replace(/_/g, ' ') // replace underscores with space
+      .replace(/\b\w/g, l => l.toUpperCase()); // capitalize each word
     const href = '/' + segments.slice(0, idx + 1).join('/');
-    return { name: decodeURIComponent(seg), href };
+    return { name, href };
   });
 
   return (
@@ -47,13 +57,15 @@ export default function Navroute() {
 
       {/* Mobile View */}
       <div className="sm:hidden">
-        <div className="bg-background1 flex justify-between px-4 py-4">
-          <div className="">
-            <ArrowLeft className="h-6 w-10 text-3xl text-white" />
+        <div className="bg-background1 flex items-center justify-between p-4">
+          <div>
+            <button onClick={() => router.back()}>
+              <ArrowLeft className="h-7 w-10 text-white" />
+            </button>
           </div>
           <div className="flex">
-            <Search className="h-7 w-14 text-white" />
-            <ShoppingCart className="h-7 w-14 text-white" />
+            <Search className="h-6 w-14 text-white" />
+            <ShoppingCart className="h-6 w-14 text-white" />
           </div>
         </div>
 

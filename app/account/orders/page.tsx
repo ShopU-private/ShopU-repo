@@ -68,10 +68,12 @@ export default function OrdersPage() {
       case 'pending':
         return 'text-yellow-500';
       case 'processing':
-        return 'text-blue-600';
+        return 'text-indigo-500';
       case 'shipped':
         return 'text-purple-600';
-      case 'confirmed':
+      case 'out_for_delivery':
+        return 'text-orange-600';
+      case 'delivered':
         return 'text-green-600';
       case 'cancelled':
         return 'text-red-600';
@@ -79,13 +81,16 @@ export default function OrdersPage() {
         return 'text-gray-600';
     }
   };
+  const handleCardClick = (orderId: string) => {
+    router.push(`/account/orders/order_details/${orderId}`);
+  };
 
   return (
     <>
       <Navroute />
       <div className="mx-auto max-w-7xl px-4 py-8">
         {isLoading ? (
-          <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="flex min-h-[80vh] items-center justify-center">
             <div className="text-center">
               <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
               <p className="mt-4 text-gray-600">Loading your orders...</p>
@@ -103,7 +108,7 @@ export default function OrdersPage() {
               </h2>
               <table className="min-w-full border-separate border-spacing-y-4">
                 <thead>
-                  <tr className="bg-[#D5F3F6] text-center text-sm text-gray-800">
+                  <tr className="bg-[#D5F3F6] text-center text-md text-gray-800">
                     <th className="px-6 py-4">Order ID</th>
                     <th className="px-6 py-4">Product</th>
                     <th className="px-6 py-4">Price</th>
@@ -117,29 +122,24 @@ export default function OrdersPage() {
                     (order.orderItems ?? []).map((item, index) => (
                       <tr
                         key={`${order.id}-${index}`}
-                        className="rounded-lg bg-white text-center shadow-sm"
+                        className="rounded-lg bg-white text-center text-md shadow-sm"
                       >
-                        <td className="px-4 py-4 text-sm text-gray-700">
-                          #ORD{order.id.slice(-15)}
-                        </td>
-                        <td className="flex items-center justify-center gap-3 px-4 py-4">
+                        <td className="p-4 text-gray-700">#ORD{order.id.slice(-10)}</td>
+                        <td className="flex items-center justify-center gap-3 p-4">
                           <Image
                             src={item.product?.image_url || '/placeholder.png'}
                             alt={item?.name || 'Product'}
                             width={50}
                             height={50}
                             className="rounded"
+                            onClick={() => handleCardClick(order.id)}
                           />
                         </td>
-                        <td className="text-primaryColor px-4 py-4 text-sm font-medium">
-                          ₹{item.price}
-                        </td>
-                        <td className="px-4 py-4 text-sm">{item.quantity}</td>
-                        <td className="px-4 py-4 text-sm">{formatDate(order.createdAt)}</td>
-                        <td
-                          className={`px-4 py-4 text-sm font-medium ${getStatusColor(order.status)}`}
-                        >
-                          {order.status?.toUpperCase()}
+                        <td className="text-primaryColor p-4 font-medium">₹{item.price}</td>
+                        <td className="p-4">{item.quantity}</td>
+                        <td className="p-4">{formatDate(order.createdAt)}</td>
+                        <td className={`p-4 font-medium ${getStatusColor(order.status)}`}>
+                          {order.status?.toUpperCase().split('_').join(' ')}
                         </td>
                       </tr>
                     ))
@@ -166,7 +166,10 @@ export default function OrdersPage() {
                         {formatDate(order.createdAt)}
                       </span>
                     </div>
-                    <div className="mb-4 flex items-center gap-4 border-b border-gray-200 py-4">
+                    <div
+                      onClick={() => handleCardClick(order.id)}
+                      className="mb-4 flex items-center gap-4 border-b border-gray-200 py-4"
+                    >
                       <Image
                         src={item.product?.image_url || '/placeholder.png'}
                         alt={item?.name ?? 'Product'}
@@ -182,8 +185,8 @@ export default function OrdersPage() {
                         <span className="text-primaryColor">₹{item.price}</span>
                       </div>
                     </div>
-                    <span className={`${getStatusColor(order.status)} font-medium`}>
-                      {order.status?.toUpperCase()}
+                    <span className={`p-4 font-medium ${getStatusColor(order.status)}`}>
+                      {order.status?.toUpperCase().split('_').join(' ')}
                     </span>
                   </div>
                 ))

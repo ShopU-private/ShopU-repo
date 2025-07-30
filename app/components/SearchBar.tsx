@@ -108,7 +108,7 @@ export default function Searchbar() {
         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
         {isSearching && (
           <div className="absolute top-1/2 right-3 -translate-y-1/2 transform">
-            <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-[#317C80]"></div>
+            <div className="border-primaryColor h-5 w-5 animate-spin rounded-full border-b-2"></div>
           </div>
         )}
         {searchQuery && (

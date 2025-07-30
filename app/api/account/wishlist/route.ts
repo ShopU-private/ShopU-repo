@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
     const response = items.map(item => ({
       id: item.id,
       name: item.name,
-      price: item.product?.price, // include price if available
+      price: item.product?.price ?? 0, // include price if available
       image_url: item.image_url,
       productId: item.productId,
       createdAt: item.createdAt,
