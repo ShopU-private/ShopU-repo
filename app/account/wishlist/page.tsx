@@ -5,8 +5,8 @@ import { Loader, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Navroute from '../../components/navroute';
 import toast from 'react-hot-toast';
-import { useCart } from '../../hooks/useCart';
 import { useRouter } from 'next/navigation';
+import useAddToCart from '@/app/hooks/handleAddToCart';
 
 interface WishlistItem {
   productId: string;
@@ -22,8 +22,7 @@ export default function WishlistPage() {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [removingProductId, setRemovingProductId] = useState<string | null>(null);
-  const [addingProductId, setAddingProductId] = useState<string | null>(null);
-  const { addItem } = useCart();
+  const { handleAddToCart, addingProductId } = useAddToCart();
   const router = useRouter();
 
   useEffect(() => {
@@ -75,18 +74,6 @@ export default function WishlistPage() {
       toast.error('Something went wrong while deleting');
     } finally {
       setRemovingProductId(null);
-    }
-  };
-
-  const handleAddToCart = async (productId: string) => {
-    setAddingProductId(productId);
-    try {
-      await addItem(productId, null, 1);
-      window.dispatchEvent(new CustomEvent('cartUpdated'));
-    } catch (err) {
-      console.error('Add to cart failed:', err);
-    } finally {
-      setAddingProductId(null);
     }
   };
 

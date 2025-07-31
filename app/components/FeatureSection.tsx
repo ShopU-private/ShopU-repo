@@ -14,7 +14,7 @@ const FeatureCards = () => {
       desc: 'If your items have damage we agree to refund it',
     },
     {
-      icon: <Truck className="h-6 w-6 text-gray-700" />,
+      icon: <Truck className="mx-2 h-6 w-8 text-gray-700" />,
       title: 'Fast delivery',
       desc: 'Get your order delivered in minutes – fast, fresh, and right at your door!',
     },

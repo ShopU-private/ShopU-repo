@@ -196,9 +196,11 @@ export default function OrderDetails() {
               >
                 <h3>#ORD{order.id.slice(-10)}</h3>
                 <div className="flex items-center space-x-4">
-                  <img
+                  <Image
                     src={item.product.imageUrl}
                     alt={item.product.name}
+                    width={60}
+                    height={60}
                     className="h-16 w-12 object-contain"
                   />
                 </div>
