@@ -113,18 +113,18 @@ export default function WishlistPage() {
               </h2>
               <table className="min-w-full border-separate border-spacing-y-4">
                 <thead>
-                  <tr className="bg-[#D5F3F6] text-center text-md text-gray-800">
+                  <tr className="text-md bg-[#D5F3F6] text-center text-gray-800">
                     <th className="w-94 px-6 py-4">Product</th>
                     <th className="px-6 py-4">Price</th>
                     <th className="px-6 py-4">Date Added</th>
                     <th className="px-6 py-4">Stock</th>
-                    <th className="px-6 py-4 w-40">Add to Cart</th>
+                    <th className="w-40 px-6 py-4">Add to Cart</th>
                     <th className="px-6 py-4"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {wishlist.map(item => (
-                    <tr key={item.id} className="rounded-lg bg-white text-center text-md shadow-sm">
+                    <tr key={item.id} className="text-md rounded-lg bg-white text-center shadow-sm">
                       <td className="flex items-center gap-10 px-6 py-4">
                         <Image
                           src={item.image_url}
@@ -155,7 +155,7 @@ export default function WishlistPage() {
                         <button
                           onClick={() => handleAddToCart(item.productId)}
                           disabled={addingProductId === item.productId}
-                          className="hover:bg-opacity-90 rounded bg-background1 px-4 py-1 text-white disabled:cursor-not-allowed disabled:opacity-60 text-sm"
+                          className="hover:bg-opacity-90 bg-background1 rounded px-4 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {addingProductId === item.productId ? 'Adding..' : 'ADD'}
                         </button>

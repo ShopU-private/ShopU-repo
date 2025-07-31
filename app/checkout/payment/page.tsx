@@ -406,7 +406,7 @@ export default function PaymentPage() {
                 <button
                   type="submit"
                   disabled={isProcessing || !addressDetails}
-                  className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 font-medium transition-colors ${addressDetails && !isProcessing ? 'bg-teal-600 text-white hover:bg-teal-700' : 'cursor-not-allowed bg-gray-200 text-gray-500'}`}
+                  className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3 font-medium transition-colors ${addressDetails && !isProcessing ? 'bg-background1 text-white' : 'cursor-not-allowed bg-gray-200 text-gray-500'}`}
                 >
                   {isProcessing ? (
                     <>

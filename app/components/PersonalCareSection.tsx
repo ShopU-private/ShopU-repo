@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import ProductCard from './ProductCard';
-import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
 import { useProducts } from '../hooks/useBabycare';
+import useAddToCart from '../hooks/handleAddToCart';
 
 const PersonalCareSection = () => {
-  const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
   const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { addItem } = useCart();
+  const { handleAddToCart, addingProductId } = useAddToCart();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -25,18 +24,6 @@ const PersonalCareSection = () => {
     category: 'Personal Care',
     limit: 10,
   });
-
-  const handleAddToCart = async (productId: string) => {
-    setAddingProductId(productId);
-    try {
-      await addItem(productId, null, 1);
-      window.dispatchEvent(new CustomEvent('cartUpdated'));
-    } catch (error) {
-      console.error('Add to cart failed:', error);
-    } finally {
-      setAddingProductId(null);
-    }
-  };
 
   return (
     <section className="min-h-xl">
@@ -109,7 +96,6 @@ const PersonalCareSection = () => {
                       toggleFavorite({
                         id: product.id,
                         name: product.name,
-                        price: product.price,
                         image: product.imageUrl || '/product-placeholder.jpg',
                         category: product.category || 'Product',
                       })
@@ -191,7 +177,6 @@ const PersonalCareSection = () => {
                     toggleFavorite({
                       id: product.id,
                       name: product.name,
-                      price: product.price,
                       image: product.imageUrl || '/product-placeholder.jpg',
                       category: product.category || 'Product',
                     })

@@ -108,7 +108,7 @@ export default function OrdersPage() {
               </h2>
               <table className="min-w-full border-separate border-spacing-y-4">
                 <thead>
-                  <tr className="bg-[#D5F3F6] text-center text-md text-gray-800">
+                  <tr className="text-md bg-[#D5F3F6] text-center text-gray-800">
                     <th className="px-6 py-4">Order ID</th>
                     <th className="px-6 py-4">Product</th>
                     <th className="px-6 py-4">Price</th>
@@ -122,7 +122,7 @@ export default function OrdersPage() {
                     (order.orderItems ?? []).map((item, index) => (
                       <tr
                         key={`${order.id}-${index}`}
-                        className="rounded-lg bg-white text-center text-md shadow-sm"
+                        className="text-md rounded-lg bg-white text-center shadow-sm"
                       >
                         <td className="p-4 text-gray-700">#ORD{order.id.slice(-10)}</td>
                         <td className="flex items-center justify-center gap-3 p-4">

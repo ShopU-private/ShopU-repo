@@ -1,17 +1,16 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import ProductCard from './ProductCard';
-import { useCart } from '../hooks/useCart';
 import { useRouter } from 'next/navigation';
 import { useWishlist } from '../hooks/useWishlist';
 import { useProducts } from '../hooks/useBabycare';
+import useAddToCart from '../hooks/handleAddToCart';
 
 const BabyCareSection = () => {
-  const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
   const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { addItem } = useCart();
+  const { handleAddToCart, addingProductId } = useAddToCart();
   const router = useRouter();
 
   const scroll = (direction: 'left' | 'right') => {
@@ -27,18 +26,6 @@ const BabyCareSection = () => {
     category: 'Baby Care',
     limit: 10,
   });
-
-  const handleAddToCart = async (productId: string) => {
-    setAddingProductId(productId);
-    try {
-      await addItem(productId, null, 1);
-      window.dispatchEvent(new CustomEvent('cartUpdated'));
-    } catch (error) {
-      console.error('Add to cart failed:', error);
-    } finally {
-      setAddingProductId(null);
-    }
-  };
 
   const handleCardClick = () => {
     router.push('/product?category=Baby Care');

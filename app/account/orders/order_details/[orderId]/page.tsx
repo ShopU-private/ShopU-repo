@@ -276,14 +276,16 @@ export default function OrderDetails() {
                 <div key={index} className="relative flex items-start pb-18">
                   {!isLast && (
                     <div
-                      className={`absolute top-8 left-[22px] h-full w-1 ${isNextCompleted ? 'bg-green-600' : 'bg-background1'
-                        }`}
+                      className={`absolute top-8 left-[22px] h-full w-1 ${
+                        isNextCompleted ? 'bg-green-600' : 'bg-background1'
+                      }`}
                     />
                   )}
 
                   <div
-                    className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full ${isCompleted ? 'bg-green-600' : 'bg-background1'
-                      }`}
+                    className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full ${
+                      isCompleted ? 'bg-green-600' : 'bg-background1'
+                    }`}
                   >
                     {step.icon}
                   </div>

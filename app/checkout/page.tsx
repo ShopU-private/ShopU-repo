@@ -103,7 +103,7 @@ export default function CheckoutPage() {
 
   if (isLoading || isLoadingAddresses) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="flex min-h-[80vh] items-center justify-center">
         <Loader className="h-8 w-8 animate-spin text-teal-600" />
       </div>
     );
@@ -111,7 +111,7 @@ export default function CheckoutPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-[60vh] px-4 py-8">
+      <div className="min-h-[80vh] px-4 py-8">
         <div className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-md">
           <div className="flex flex-col items-center justify-center py-12">
             <h2 className="mb-2 text-2xl font-medium text-gray-700">Your cart is empty</h2>
@@ -120,7 +120,7 @@ export default function CheckoutPage() {
             </p>
             <Link
               href="/"
-              className="rounded-lg bg-teal-600 px-6 py-3 text-white transition-all hover:bg-teal-700"
+              className="bg-background1 rounded-lg px-6 py-3 text-white transition-all hover:bg-teal-700"
             >
               Browse Products
             </Link>
@@ -140,7 +140,7 @@ export default function CheckoutPage() {
           {addresses.length === 0 ? (
             <div className="py-4 text-center">
               <p className="mb-3 text-gray-600">No saved addresses found.</p>
-              <Link href="/account/addresses" className="text-teal-600 hover:underline">
+              <Link href="/account/myAddresses" className="text-primaryColor hover:underline">
                 Add a new address
               </Link>
             </div>
@@ -213,7 +213,7 @@ export default function CheckoutPage() {
               Continue Shopping
             </Link>
             <button
-              className={`rounded-lg ${!selectedAddressId || addresses.length === 0 ? 'cursor-not-allowed bg-gray-400' : 'bg-teal-600 hover:bg-teal-700'} px-6 py-2 text-white`}
+              className={`rounded-lg ${!selectedAddressId || addresses.length === 0 ? 'cursor-not-allowed bg-gray-400' : 'bg-background1'} cursor-pointer px-6 py-2 text-white duration-300 hover:scale-102`}
               onClick={handleProceedToPayment}
               disabled={!selectedAddressId || addresses.length === 0}
             >
