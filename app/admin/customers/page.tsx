@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Search,
   Filter,
@@ -35,16 +35,28 @@ interface CustomerFilters {
   location: string;
 }
 
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [entriesPerPage, setEntriesPerPage] = useState(10);
+  const [entriesPerPage, setEntriesPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    page: 1,
+    limit: 25,
+    total: 0,
+    pages: 0,
+  });
 
   const [filters, setFilters] = useState<CustomerFilters>({
     status: '',
@@ -60,18 +72,37 @@ export default function AdminCustomersPage() {
     avgOrderValue: 0,
   });
 
-  // Fetch customers data
-  useEffect(() => {
-    fetchCustomers();
-    fetchCustomerStats();
-  }, []);
+  // Debounced search to avoid too many API calls
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
-  const fetchCustomers = async () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Cache for stats with 5-minute expiry
+  const [statsCache, setStatsCache] = useState<{
+    data: any;
+    timestamp: number;
+  } | null>(null);
+
+  const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/admin/customers/stats', {
+      // Build query parameters for server-side filtering
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: entriesPerPage.toString(),
+      });
+
+      if (filters.status) params.append('status', filters.status);
+      if (debouncedSearchQuery) params.append('search', debouncedSearchQuery);
+
+      const response = await fetch(`/api/admin/customers?${params}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -80,17 +111,24 @@ export default function AdminCustomersPage() {
 
       const data = await response.json();
       setCustomers(data.customers || []);
-      setFilteredCustomers(data.customers || []);
+      setPagination(data.pagination);
     } catch (error) {
       console.error('Error fetching customers:', error);
       setError(error instanceof Error ? error.message : 'Failed to fetch customers');
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, entriesPerPage, filters.status, debouncedSearchQuery]);
 
-  const fetchCustomerStats = async () => {
+  const fetchCustomerStats = useCallback(async () => {
     try {
+      // Check cache first
+      const now = Date.now();
+      if (statsCache && now - statsCache.timestamp < 5 * 60 * 1000) {
+        setStats(statsCache.data);
+        return;
+      }
+
       const response = await fetch('/api/admin/customers/stats', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -100,30 +138,36 @@ export default function AdminCustomersPage() {
 
       const data = await response.json();
       setStats(data);
+
+      // Update cache
+      setStatsCache({
+        data,
+        timestamp: now,
+      });
     } catch (error) {
       console.error('Error fetching customer stats:', error);
     }
-  };
+  }, [statsCache]);
 
-  // Filter customers based on search and filters
-  const applyFilters = useCallback(() => {
+  // Fetch data on component mount and when dependencies change
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
+
+  useEffect(() => {
+    fetchCustomerStats();
+  }, []);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
+  }, [filters, debouncedSearchQuery]);
+
+  // Client-side filtering for non-server-side filters
+  const filteredCustomers = useMemo(() => {
     let result = [...customers];
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        customer =>
-          customer.name.toLowerCase().includes(query) ||
-          customer.email.toLowerCase().includes(query) ||
-          customer.phoneNumber.includes(query) ||
-          customer.city.toLowerCase().includes(query) ||
-          customer.state.toLowerCase().includes(query)
-      );
-    }
-
-    if (filters.status) {
-      result = result.filter(customer => customer.status === filters.status);
-    }
 
     if (filters.minOrders) {
       const minOrders = parseInt(filters.minOrders);
@@ -153,19 +197,14 @@ export default function AdminCustomersPage() {
           dateThreshold.setDate(now.getDate() - 90);
           break;
         default:
-          dateThreshold = new Date(0); // All time
+          dateThreshold = new Date(0);
       }
 
       result = result.filter(customer => new Date(customer.lastOrderDate) >= dateThreshold);
     }
 
-    setFilteredCustomers(result);
-    setCurrentPage(1);
-  }, [searchQuery, filters, customers]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [applyFilters]);
+    return result;
+  }, [customers, filters.minOrders, filters.location, filters.dateRange]);
 
   const resetFilters = () => {
     setFilters({
@@ -175,6 +214,7 @@ export default function AdminCustomersPage() {
       location: '',
     });
     setSearchQuery('');
+    setCurrentPage(1);
   };
 
   const exportCustomers = async () => {
@@ -184,7 +224,7 @@ export default function AdminCustomersPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           filters,
-          searchQuery,
+          searchQuery: debouncedSearchQuery,
           selectedCustomers: selectedCustomers.length > 0 ? selectedCustomers : undefined,
         }),
       });
@@ -217,7 +257,8 @@ export default function AdminCustomersPage() {
 
       if (!response.ok) throw new Error('Failed to delete customer');
 
-      setCustomers(prev => prev.filter(c => c.id !== customerId));
+      // Refresh the customers list
+      fetchCustomers();
       setSelectedCustomers(prev => prev.filter(id => id !== customerId));
     } catch (error) {
       console.error('Error deleting customer:', error);
@@ -232,7 +273,7 @@ export default function AdminCustomersPage() {
   };
 
   const handleSelectAll = () => {
-    const currentPageCustomers = paginatedCustomers.map(c => c.id);
+    const currentPageCustomers = filteredCustomers.map(c => c.id);
     const allSelected = currentPageCustomers.every(id => selectedCustomers.includes(id));
 
     if (allSelected) {
@@ -253,11 +294,6 @@ export default function AdminCustomersPage() {
   const getStatusColor = (status: string) => {
     return status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
   };
-
-  // Pagination
-  const totalPages = Math.ceil(filteredCustomers.length / entriesPerPage);
-  const startIndex = (currentPage - 1) * entriesPerPage;
-  const paginatedCustomers = filteredCustomers.slice(startIndex, startIndex + entriesPerPage);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -297,7 +333,9 @@ export default function AdminCustomersPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Customers</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalCustomers}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.totalCustomers.toLocaleString()}
+                </p>
               </div>
               <div className="rounded-full bg-blue-100 p-3">
                 <Users className="h-6 w-6 text-blue-600" />
@@ -309,7 +347,9 @@ export default function AdminCustomersPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Active Customers</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.activeCustomers}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.activeCustomers.toLocaleString()}
+                </p>
               </div>
               <div className="rounded-full bg-green-100 p-3">
                 <TrendingUp className="h-6 w-6 text-green-600" />
@@ -321,7 +361,9 @@ export default function AdminCustomersPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">New This Month</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.newThisMonth}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.newThisMonth.toLocaleString()}
+                </p>
               </div>
               <div className="rounded-full bg-purple-100 p-3">
                 <Calendar className="h-6 w-6 text-purple-600" />
@@ -334,7 +376,7 @@ export default function AdminCustomersPage() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ₹{Math.round(stats.avgOrderValue)}
+                  ₹{Math.round(stats.avgOrderValue).toLocaleString()}
                 </p>
               </div>
               <div className="rounded-full bg-orange-100 p-3">
@@ -435,12 +477,16 @@ export default function AdminCustomersPage() {
               <span className="text-sm text-gray-700">Show</span>
               <select
                 value={entriesPerPage}
-                onChange={e => setEntriesPerPage(Number(e.target.value))}
+                onChange={e => {
+                  setEntriesPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
                 className="mx-2 rounded border border-gray-300 px-2 py-1 text-sm"
               >
                 <option value={10}>10</option>
                 <option value={25}>25</option>
                 <option value={50}>50</option>
+                <option value={100}>100</option>
               </select>
               <span className="text-sm text-gray-700">entries</span>
             </div>
@@ -449,9 +495,9 @@ export default function AdminCustomersPage() {
             )}
           </div>
           <div className="text-sm text-gray-600">
-            Showing {startIndex + 1} to{' '}
-            {Math.min(startIndex + entriesPerPage, filteredCustomers.length)} of{' '}
-            {filteredCustomers.length} customers
+            Showing {((currentPage - 1) * entriesPerPage) + 1} to{' '}
+            {Math.min(currentPage * entriesPerPage, pagination.total)} of{' '}
+            {pagination.total} customers
           </div>
         </div>
 
@@ -464,8 +510,8 @@ export default function AdminCustomersPage() {
                     type="checkbox"
                     onChange={handleSelectAll}
                     checked={
-                      paginatedCustomers.length > 0 &&
-                      paginatedCustomers.every(c => selectedCustomers.includes(c.id))
+                      filteredCustomers.length > 0 &&
+                      filteredCustomers.every(c => selectedCustomers.includes(c.id))
                     }
                     className="rounded border-gray-300"
                   />
@@ -506,14 +552,14 @@ export default function AdminCustomersPage() {
                     </div>
                   </td>
                 </tr>
-              ) : paginatedCustomers.length === 0 ? (
+              ) : filteredCustomers.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
                     No customers found
                   </td>
                 </tr>
               ) : (
-                paginatedCustomers.map(customer => (
+                filteredCustomers.map(customer => (
                   <tr key={customer.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <input
@@ -578,10 +624,10 @@ export default function AdminCustomersPage() {
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
+        {pagination.pages > 1 && (
           <div className="flex items-center justify-between border-t border-gray-200 px-6 py-4">
             <div className="text-sm text-gray-600">
-              Page {currentPage} of {totalPages}
+              Page {pagination.page} of {pagination.pages}
             </div>
             <div className="flex space-x-2">
               <button
@@ -591,9 +637,27 @@ export default function AdminCustomersPage() {
               >
                 Previous
               </button>
+              {/* Page numbers */}
+              {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
+                const page = Math.max(1, currentPage - 2) + i;
+                if (page > pagination.pages) return null;
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`rounded border px-3 py-1 text-sm ${
+                      page === currentPage
+                        ? 'bg-teal-600 text-white border-teal-600'
+                        : 'border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
               <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.pages))}
+                disabled={currentPage === pagination.pages}
                 className="rounded border border-gray-300 px-3 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
