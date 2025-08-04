@@ -578,18 +578,18 @@ const Header = () => {
                       >
                         My Orders
                       </Link>
-                      <a
+                      <Link
                         href="/account/myAddresses"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
                       >
                         Saved Addresses
-                      </a>
-                      <a
+                      </Link>
+                      <Link
                         href="/account/wishlist"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
                       >
                         Wishlist
-                      </a>
+                      </Link>
                       <Link
                         href="/account/faq"
                         className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
@@ -774,24 +774,24 @@ const Header = () => {
                       >
                         My Orders
                       </Link>
-                      <a
+                      <Link
                         href="/account/myAddresses"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
                       >
                         Saved Addresses
-                      </a>
-                      <a
+                      </Link>
+                      <Link
                         href="/account/wishlist"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
                       >
                         Wishlist
-                      </a>
-                      <a
+                      </Link>
+                      <Link
                         href="/account/faq"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
                       >
                         FAQ
-                      </a>
+                      </Link>
                       <a
                         href="#"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"

@@ -96,7 +96,7 @@ export default function WishlistPage() {
             <div className="hidden overflow-x-auto px-10 sm:block">
               <h2 className="text-primaryColor mb-4 text-xl font-semibold">
                 Wish<span className="text-secondaryColor">list</span>
-                <hr className="bg-background1 mt-1 h-1 w-24 rounded border-0" />
+                <hr className="bg-background1 mt-1 h-1 w-22 rounded border-0" />
               </h2>
               <table className="min-w-full border-separate border-spacing-y-4">
                 <thead>
