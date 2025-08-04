@@ -560,6 +560,7 @@ export default function AdminCustomersPage() {
                 </tr>
               ) : (
                 filteredCustomers.map(customer => (
+                  console.log(customer),
                   <tr key={customer.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <input
@@ -571,6 +572,7 @@ export default function AdminCustomersPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div>
+                      
                         <div className="text-sm font-medium text-gray-900">{customer.name}</div>
                         <div className="text-sm text-gray-500">
                           Joined {formatDate(customer.joinDate)}
