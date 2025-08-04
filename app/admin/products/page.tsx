@@ -326,9 +326,9 @@ export default function AdminProductsPage() {
             value={selectedType}
             onChange={e => setSelectedType(e.target.value)}
           >
-            <option value="">All Types</option>
+            <option key="all-types" value="">All Types</option>
             {types.map(type => (
-              <option key={type} value={type}>
+              <option key={`type-${type}`} value={type}>
                 {type}
               </option>
             ))}
@@ -341,9 +341,9 @@ export default function AdminProductsPage() {
             value={selectedManufacturer}
             onChange={e => setSelectedManufacturer(e.target.value)}
           >
-            <option value="">All Manufacturers</option>
+            <option key="all-manufacturers" value="">All Manufacturers</option>
             {manufacturers.map(manufacturer => (
-              <option key={manufacturer} value={manufacturer}>
+              <option key={`manufacturer-${manufacturer}`} value={manufacturer}>
                 {manufacturer}
               </option>
             ))}
@@ -357,7 +357,7 @@ export default function AdminProductsPage() {
             onChange={e => setSelectedStockStatus(e.target.value)}
           >
             {stockStatuses.map(status => (
-              <option key={status} value={status}>
+              <option key={`stock-${status}`} value={status}>
                 {status}
               </option>
             ))}
@@ -453,9 +453,9 @@ export default function AdminProductsPage() {
                     className="w-full rounded-md border border-gray-300 px-3 py-2"
                     required
                   >
-                    <option value="">Select Type</option>
+                    <option key="add-select-type" value="">Select Type</option>
                     {types.map(type => (
-                      <option key={type} value={type}>
+                      <option key={`add-type-${type}`} value={type}>
                         {type}
                       </option>
                     ))}
@@ -609,9 +609,9 @@ export default function AdminProductsPage() {
                     className="w-full rounded-md border border-gray-300 px-3 py-2"
                     required
                   >
-                    <option value="">Select Type</option>
+                    <option key="edit-select-type" value="">Select Type</option>
                     {types.map(type => (
-                      <option key={type} value={type}>
+                      <option key={`edit-type-${type}`} value={type}>
                         {type}
                       </option>
                     ))}
@@ -712,10 +712,10 @@ export default function AdminProductsPage() {
               value={entriesPerPage}
               onChange={e => setEntriesPerPage(Number(e.target.value))}
             >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
+              <option key="entries-10" value={10}>10</option>
+              <option key="entries-25" value={25}>25</option>
+              <option key="entries-50" value={50}>50</option>
+              <option key="entries-100" value={100}>100</option>
             </select>
             <span className="ml-2">entries</span>
           </div>

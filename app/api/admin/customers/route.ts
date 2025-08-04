@@ -10,28 +10,18 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const limit = parseInt(searchParams.get('limit') || '25'); // Increased default limit
     const status = searchParams.get('status');
     const search = searchParams.get('search');
     const skip = (page - 1) * limit;
 
-    // Build where clause
-    const where: {
-      orders?: {
-        some?: object;
-        none?: object;
-      };
-      OR?: Array<{
-        name?: { contains: string; mode: 'insensitive' };
-        email?: { contains: string; mode: 'insensitive' };
-        phoneNumber?: { contains: string };
-      }>;
-    } = {};
+    // Build optimized where clause
+    const where: any = {};
 
     if (status === 'Active') {
-      where.orders = { some: {} }; // Has at least one order
+      where.orders = { some: {} };
     } else if (status === 'Inactive') {
-      where.orders = { none: {} }; // No orders
+      where.orders = { none: {} };
     }
 
     if (search) {
@@ -42,59 +32,85 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    // Fetch customers with aggregated data
-    const customers = await prisma.user.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        orders: {
-          select: {
-            id: true,
-            totalAmount: true,
-            createdAt: true,
+    // Run queries in parallel with optimized includes
+    const [customers, totalCustomers] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          // Only get essential order data for performance
+          orders: {
+            select: {
+              id: true,
+              totalAmount: true,
+              createdAt: true,
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 1, // Only get the latest order for performance
+          },
+          // Only get default address
+          addresses: {
+            where: { isDefault: true },
+            select: {
+              city: true,
+              state: true,
+            },
+            take: 1,
+          },
+          // Get order count separately for better performance
+          _count: {
+            select: {
+              orders: true,
+            },
           },
         },
-        addresses: {
-          where: { isDefault: true },
-          select: {
-            city: true,
-            state: true,
-          },
-        },
+      }),
+      prisma.user.count({ where }),
+    ]);
+
+    // Get order totals in a separate optimized query
+    const customerIds = customers.map(c => c.id);
+    const orderTotals = await prisma.order.groupBy({
+      by: ['userId'],
+      where: {
+        userId: { in: customerIds },
+      },
+      _sum: {
+        totalAmount: true,
       },
     });
 
-    // Transform data to match frontend expectations
+    // Create a map for quick lookup
+    const orderTotalsMap = new Map(
+      orderTotals.map(total => [total.userId, Number(total._sum.totalAmount || 0)])
+    );
+
+    // Transform data efficiently
     const transformedCustomers = customers.map(customer => {
-      const totalOrders = customer.orders.length;
-      const totalSpent = customer.orders.reduce((sum, order) => sum + Number(order.totalAmount), 0);
+      const totalOrders = customer._count.orders;
+      const totalSpent = orderTotalsMap.get(customer.id) || 0;
       const lastOrderDate =
         customer.orders.length > 0
-          ? customer.orders.sort(
-              (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            )[0].createdAt
+          ? customer.orders[0].createdAt
           : customer.createdAt;
-
       const defaultAddress = customer.addresses[0];
 
       return {
         id: customer.id,
         name: customer.name || 'N/A',
         email: customer.email || 'N/A',
-        phoneNumber: customer.phoneNumber,
+        phoneNumber: customer.phoneNumber || 'N/A',
         totalOrders,
         totalSpent,
         lastOrderDate: lastOrderDate.toISOString(),
-        status: totalOrders > 0 ? 'Active' : 'Inactive',
+        status: (totalOrders > 0 ? 'Active' : 'Inactive') as 'Active' | 'Inactive',
         joinDate: customer.createdAt.toISOString(),
         city: defaultAddress?.city || 'N/A',
         state: defaultAddress?.state || 'N/A',
       };
     });
-
-    const totalCustomers = await prisma.user.count({ where });
 
     return NextResponse.json({
       success: true,

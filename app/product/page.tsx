@@ -10,33 +10,21 @@ import ProductCard from '../components/ProductCard';
 import { useWishlist } from '../hooks/useWishlist';
 import { useCart } from '../hooks/useCart';
 import { useProducts } from '../hooks/useBabycare';
+import useAddToCart from '../hooks/handleAddToCart';
 
 const ProductPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [addingProductId, setAddingProductId] = useState<string | null>(null);
+  const { handleAddToCart, addingProductId } = useAddToCart();
   const searchParams = useSearchParams();
   const category = searchParams.get('category') || 'All';
 
   const { favorites, toggleFavorite } = useWishlist();
-  const { addItem } = useCart();
 
   const { products, loading } = useProducts({
     category: category === 'All' ? undefined : category,
     limit: 100,
   });
-
-  const handleAddToCart = async (productId: string) => {
-    setAddingProductId(productId);
-    try {
-      await addItem(productId, null, 1);
-      window.dispatchEvent(new CustomEvent('cartUpdated'));
-    } catch (error) {
-      console.error('Add to cart failed:', error);
-    } finally {
-      setAddingProductId(null);
-    }
-  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

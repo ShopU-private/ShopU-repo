@@ -131,7 +131,7 @@ export default function OrderDetails() {
       {/* Desktop view */}
       <div className="hidden sm:block">
         <div>
-          <div className="mx-auto max-w-7xl px-16 py-6 text-gray-800">
+          <div className="mx-auto max-w-7xl px-16 py-8 text-gray-800">
             <h2 className="text-primaryColor mb-4 text-xl font-semibold">
               Order <span className="text-secondaryColor">Details</span>
               <hr className="bg-background1 mt-1 h-1 w-32 rounded border-0" />

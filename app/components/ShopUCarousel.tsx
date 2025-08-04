@@ -51,7 +51,7 @@ const ShopUCarousel = () => {
                   <Image
                     src={slide.image}
                     alt={slide.title}
-                    width={1200}
+                    width={720}
                     height={400}
                     className="max-h-110 w-full object-cover"
                     priority

@@ -25,7 +25,7 @@ interface ProductFromApi {
 
 const DealOfTheWeek = () => {
   const [timeLeft, setTimeLeft] = useState({
-    days: 71,
+    days: 6,
     hours: 20,
     minutes: 60,
     seconds: 0,
@@ -43,20 +43,20 @@ const DealOfTheWeek = () => {
     const fetchDeals = async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/product?discount=true&limit=4');
+        const res = await fetch('/api/products?discount=true&limit=4');
 
         if (res.ok) {
           const data = await res.json();
           const dealsProducts: Product[] =
             data.products?.map((product: ProductFromApi) => ({
-              id: Number(product.id),
+              id: Number(product.id) || Math.floor(Math.random() * 1000000),
               name: product.name,
               price: `₹${product.price}`,
               features: [
                 product.description?.split('.')[0] || 'Quality product',
                 product.subCategory?.name || 'Essential item',
-                `${product.discount || 20}% discount`,
-              ],
+                `${product.discount ?? 20}% discount`,
+              ].filter(Boolean),
               isOnSale: true,
             })) || [];
 
@@ -150,9 +150,6 @@ const DealOfTheWeek = () => {
 
   const visibleProducts = products.slice(currentIndex, currentIndex + itemsPerPage);
 
-  console.log('Products:', products);
-  console.log('Visible:', visibleProducts);
-
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl p-4 sm:p-6">
@@ -176,65 +173,122 @@ const DealOfTheWeek = () => {
     );
   }
 
-  // if (visibleProducts.length === 0) {
-  //   return <div className="text-center py-10 text-gray-500">No deals available.</div>;
-  // }
-
   const ProductCard = () => (
-    <div className={`grid gap-4 ${itemsPerPage === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
-      {visibleProducts.map(product => (
-        <div
-          key={product.id}
-          className="rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-md"
-        >
-          <div className="flex gap-4 sm:flex-row">
-            <div className="relative">
-              <div className="flex h-28 w-28 items-center justify-center rounded-lg bg-gray-200 sm:h-32 sm:w-32">
-                <Camera className="h-6 w-6 text-gray-400" />
-              </div>
-              {product.isOnSale && (
-                <span className="absolute -top-2 -left-2 rounded bg-teal-600 px-2 py-1 text-xs text-white">
-                  Sale
-                </span>
-              )}
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-teal-800">{product.name}</h3>
-              <p className="text-xl font-bold text-teal-700">{product.price}</p>
-              <ul className="mt-2 space-y-1">
-                {product.features.map((f, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
-                    <Check className="h-4 w-4 text-teal-500" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => handleAddToCart(product)}
-                disabled={addingProductId === product.id}
-                className="mt-4 flex items-center gap-1 rounded bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
-              >
-                {addingProductId === product.id ? (
-                  <span>Adding...</span>
-                ) : (
-                  <>
-                    <Plus className="h-4 w-4" />
-                    <span>ADD</span>
-                  </>
+    <>
+      {/* Desktop view */}
+      <div
+        className={`grid hidden gap-4 sm:grid ${itemsPerPage === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}
+      >
+        {visibleProducts.map(product => (
+          <div key={product.id} className="rounded-lg">
+            <div className="flex gap-4 sm:flex-row">
+              <div className="relative">
+                <div className="flex h-70 w-65 items-center justify-center bg-white">
+                  <img
+                    src="/Sirum.png"
+                    alt=""
+                    className="w-full p-4 transition-transform duration-300 hover:scale-102"
+                  />
+                </div>
+                {product.isOnSale && (
+                  <span className="bg-background2 absolute top-3 left-3 rounded-lg px-2.5 py-0.5 text-xs text-white">
+                    Sale
+                  </span>
                 )}
-              </button>
+              </div>
+              <div className="flex-1 border-2 border-gray-200 p-4">
+                <h3 className="text-lg font-medium">{product.name}</h3>
+                <p className="text-primaryColor text-xl font-bold">{product.price}</p>
+                <ul className="mt-2 space-y-1">
+                  {product.features.filter(Boolean).map((f, i) => (
+                    <li
+                      key={`${product.id}-${i}`}
+                      className="flex items-center gap-2 text-sm text-gray-600"
+                    >
+                      <Check className="text-secondaryColor h-3 w-3" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => handleAddToCart(product)}
+                  disabled={addingProductId === product.id}
+                  className="bg-background1 mt-4 flex cursor-pointer items-center gap-1 rounded px-4 py-1 text-white"
+                >
+                  {addingProductId === product.id ? (
+                    <span className="text-md">Adding...</span>
+                  ) : (
+                    <>
+                      <span>ADD</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+
+      {/* Mobile view */}
+      <div
+        className={`grid gap-2 pt-2 sm:hidden ${itemsPerPage === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}
+      >
+        {visibleProducts.map(product => (
+          <div key={product.id} className="rounded-lg">
+            <div className="flex h-62 gap-2 sm:flex-row">
+              <div className="relative">
+                <div className="flex h-full w-45 items-center justify-center bg-white">
+                  <img src="/Sirum.png" alt="" className="py-4" />
+                </div>
+                {product.isOnSale && (
+                  <span className="bg-background2 absolute top-3 left-3 rounded-lg px-2.5 py-0.5 text-xs text-white">
+                    Sale
+                  </span>
+                )}
+              </div>
+              <div className="flex-1 border-2 border-gray-200 p-2">
+                <div className="mx-auto flex flex-col">
+                  <h3 className="text-md font-medium">{product.name}</h3>
+                  <p className="text-primaryColor text-lg font-bold">{product.price}</p>
+                  <ul className="mt-2 space-y-1">
+                    {product.features.filter(Boolean).map((f, i) => (
+                      <li
+                        key={`${product.id}-${i}`}
+                        className="flex items-center gap-2 text-sm text-gray-600"
+                      >
+                        <Check className="text-secondaryColor h-3 w-3" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <button
+                  onClick={() => handleAddToCart(product)}
+                  disabled={addingProductId === product.id}
+                  className="bg-background1 mt-4 flex cursor-pointer items-center gap-1 rounded px-3 text-white"
+                >
+                  {addingProductId === product.id ? (
+                    <span>Adding...</span>
+                  ) : (
+                    <>
+                      <span>ADD</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
   );
 
   return (
     <>
       {/* Desktop view */}
-      <section className="mx-auto hidden max-w-6xl p-6 sm:block">
-        <div className="mb-6 flex items-center justify-between">
+      <section className="mx-auto hidden max-w-6xl px-4 py-8 sm:block">
+        <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h2 className="text-primaryColor text-2xl font-semibold">
               Deal of <span className="text-secondaryColor">The Week</span>

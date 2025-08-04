@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { prisma } from '../../../../lib/client';
+
 export async function POST(req: NextRequest) {
   try {
     // Verify user authentication
-
     const token = req.cookies.get('token')?.value;
 
     if (!token) {
