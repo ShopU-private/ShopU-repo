@@ -1,85 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { verifyToken } from '@/lib/auth';
-import { userAddressSchema } from '@/lib/schema/userAddress.schema';
 
 export async function GET(req: NextRequest) {
   try {
-    const token = req.cookies.get('token')?.value;
-    if (!token) {
-      return NextResponse.json({ success: false, error: 'Please login first' }, { status: 401 });
-    }
+      const token = req.cookies.get('token')?.value;
+  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const payload = verifyToken(token);
-    const userId = payload.id;
+  const user = verifyToken(token);
+  if (!user){
+  return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+  } 
 
-    const addresses = await prisma.userAddress.findMany({
-      where: { userId },
-      orderBy: { isDefault: 'desc' }, // Show default address first
-    });
+  const address = await prisma.userAddress.findMany({
+    where: { userId: user.id },
+  });
 
-    return NextResponse.json({ success: true, addresses });
+  return NextResponse.json({ address });
   } catch (error) {
-    console.error('[GET /api/account/address]', error);
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    console.error("API ERROR at GET /api/account/address:", error);
+    return NextResponse.json(
+      {error: "Function not implemented or internal error"},
+      {status: 500}
+    )
   }
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const token = req.cookies.get('token')?.value;
+  const token = req.cookies.get('token')?.value;
+  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    if (!token) {
-      return NextResponse.json({ success: false, error: 'Please login first' }, { status: 401 });
-    }
+  const user = verifyToken(token);
+  if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-    const payload = verifyToken(token);
-    const userId = payload.id;
+  const body = await req.json();
 
-    const body = await req.json();
-    const parsed = userAddressSchema.safeParse(body);
-    if (!parsed.success) {
-      const errors = parsed.error.flatten().fieldErrors;
-      return NextResponse.json({ success: false, error: errors }, { status: 400 });
-    }
-    const {
-      addressLine1,
-      addressLine2,
-      city,
-      state,
-      postalCode,
-      country,
-      isDefault = false,
-    } = parsed.data;
+  const newAddress = await prisma.userAddress.create({
+    data: {
+      userId: user.id,
+      fullName: body.fullName,
+      addressLine1: body.addressLine1,
+      city: body.city,
+      state: body.state,
+      country: body.country,
+      postalCode: body.postalCode,
+      phoneNumber: body.phoneNumber,
+      latitude: body.latitude ? parseFloat(body.latitude) : 0.0,
+      longitude: body.longitude ? parseFloat(body.longitude) : 0.0,
+      isDefault: false,
+    },
+  });
 
-    // Create new address
-    const newAddress = await prisma.userAddress.create({
-      data: {
-        userId,
-        addressLine1,
-        addressLine2,
-        city,
-        state,
-        postalCode,
-        country,
-        isDefault,
-      },
-    });
-
-    //if curr address is default, update all other to false
-    if (isDefault) {
-      await prisma.userAddress.updateMany({
-        where: {
-          userId,
-          NOT: { id: newAddress.id },
-        },
-        data: { isDefault: false },
-      });
-    }
-
-    return NextResponse.json({ success: true, address: newAddress }, { status: 201 });
-  } catch (error) {
-    console.error('[POST /api/account/address]', error);
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
-  }
+  return NextResponse.json({ address: newAddress });
 }
