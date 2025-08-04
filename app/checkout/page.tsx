@@ -100,9 +100,19 @@ export default function CheckoutPage() {
   };
 
     const handleAddressSave = (newAddress: Address) => {
+  if (formMode === "edit") {
+    // Update existing address
+    setAddress(prev => 
+      prev.map(addr => 
+        addr.id === newAddress.id ? newAddress : addr
+      )
+    );
+  } else {
+    // Add new address
     setAddress(prev => [...prev, newAddress]);
-    setSelectedAddressId(newAddress.id ?? '');
-  };
+  }
+  setSelectedAddressId(newAddress.id ?? '');
+};
 
   if (isLoading || isLoadingAddress) {
     return (
