@@ -106,7 +106,7 @@ export default function CheckoutPage() {
 
   if (isLoading || isLoadingAddress) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="flex min-h-[80vh] items-center justify-center">
         <Loader className="h-8 w-8 animate-spin text-teal-600" />
       </div>
     );
@@ -114,7 +114,7 @@ export default function CheckoutPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-[60vh] px-4 py-8">
+      <div className="min-h-[80vh] px-4 py-8">
         <div className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-md">
           <div className="flex flex-col items-center justify-center py-12">
             <h2 className="mb-2 text-2xl font-medium text-gray-700">Your cart is empty</h2>
@@ -123,7 +123,7 @@ export default function CheckoutPage() {
             </p>
             <Link
               href="/"
-              className="rounded-lg bg-teal-600 px-6 py-3 text-white transition-all hover:bg-teal-700"
+              className="bg-background1 rounded-lg px-6 py-3 text-white transition-all hover:bg-teal-700"
             >
               Browse Products
             </Link>

@@ -132,7 +132,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ message: 'Item not found in wishlist' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: 'Removed item from wishlist' }, { status: 200 });
+    return NextResponse.json({ message: 'Removed from wishlist' }, { status: 200 });
   } catch (error) {
     console.error('Error removing from wishlist:', error);
     return NextResponse.json({ message: 'Failed to remove item' }, { status: 500 });

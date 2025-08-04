@@ -65,7 +65,7 @@ export default function OrderSuccessPage() {
 
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-6 py-3 text-white transition-all hover:bg-teal-700"
+                className="bg-background1 inline-flex items-center gap-2 rounded-lg px-6 py-3 text-white transition-all hover:scale-102"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Return to Home

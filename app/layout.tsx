@@ -80,7 +80,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${karla.className} antialiased`}>
-        <Toaster position="top-right" toastOptions={{ duration: 2000 }} />
+        <Toaster position="top-right" toastOptions={{ duration: 1500 }} />
         <LocationProvider>
           <CartModalProvider>
             <Header />
