@@ -1,48 +1,59 @@
-import Navroute from '@/app/components/navroute';
-import { Trash2, Home, Plus } from 'lucide-react';
+"use client";
 
-const Addresses = () => {
-  const addresses = [
-    {
-      id: 1,
-      name: 'Saravana Kumar',
-      address: 'I46, Manickam Palayam, Posari thottam, Erode',
-    },
-  ];
+import { useState, useEffect } from "react";
+import AddAddress from "@/app/components/AddAddress"; // path sahi rakhna
+import { UserAddress } from "@prisma/client"; // ya jo bhi type hai
+
+export default function AddressPage() {
+  const [addresses, setAddresses] = useState<UserAddress[]>([]);
+  const [showForm, setShowForm] = useState(false);
+
+  const fetchAddresses = async () => {
+    const res = await fetch("/api/addresses");
+    const data = await res.json();
+    setAddresses(data);
+  };
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const handleSave = (newAddress: UserAddress) => {
+    setAddresses((prev) => [...prev, newAddress]);
+    setShowForm(false);
+  };
 
   return (
-    <>
-      <Navroute />
-      <div className="min-h-screen bg-[#f5f5f5] px-20 py-6">
-        <div className="mx-auto max-w-7xl bg-transparent">
-          {/* Header */}
-          <h2 className="text-primaryColor mb-6 text-lg font-semibold sm:text-xl">
-            My <span className="text-secondaryColor">Addresses</span>
-            <hr className="bg-background1 mt-1 w-36 rounded border-2" />{' '}
-          </h2>
+    <div className="p-6">
+      <h2 className="text-xl font-bold mb-4">Your Addresses</h2>
 
-          {/* Add New Address */}
-          <button className="mb-4 flex items-center gap-2 text-sm font-medium text-green-600">
-            <Plus className="h-4 w-4" />
-            Add new address
-          </button>
+      <button
+        onClick={() => setShowForm(true)}
+        className="bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        Add Another Address
+      </button>
 
-          {/* Address Card */}
-          <div className="flex items-center justify-between rounded bg-white px-6 py-6 shadow-sm">
-            <div className="flex items-center gap-3">
-              <Home className="text-teal-600" />
-              <span className="text-sm text-gray-800">
-                {addresses[0].name}, {addresses[0].address}
-              </span>
-            </div>
-            <button className="text-gray-500 hover:text-red-500">
-              <Trash2 className="h-4 w-4" />
-            </button>
+      <div className="mt-6 space-y-4">
+        {addresses.map((addr) => (
+          <div
+            key={addr.id}
+            className="border rounded-lg p-4 shadow-sm bg-gray-50"
+          >
+            <p><strong>{addr.fullName}</strong></p>
+            <p>{addr.addressLine1}, {addr.city}, {addr.state}</p>
+            <p>{addr.country} - {addr.postalCode}</p>
+            <p>Phone: {addr.phoneNumber}</p>
           </div>
-        </div>
+        ))}
       </div>
-    </>
-  );
-};
 
-export default Addresses;
+      {showForm && (
+        <AddAddress
+          onCancel={() => setShowForm(false)}
+          onSave={handleSave}
+        />
+      )}
+    </div>
+  );
+}

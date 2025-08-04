@@ -7,71 +7,71 @@ import Link from 'next/link';
 import { useLocation } from '../context/LocationContext';
 import { useRouter } from 'next/navigation';
 import { logCheckoutEvent, validateAddressId } from '@/lib/checkout-utils';
+import AddAddressForm from '../components/AddAddress';
+
+type Address = {
+  id?: string;
+  fullName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  phoneNumber: string;
+};
+
+type Props= {
+  mode: "add" | "edit";
+  initialData: Address | null
+  onCancel: () => void
+  onSave: (data:Address)=>void
+};
 
 export default function CheckoutPage() {
   const { cartItems, isLoading } = useCart();
-  const { location, setAddressId } = useLocation();
+  const { setAddressId } = useLocation();
   const [subtotal, setSubtotal] = useState(0);
   const router = useRouter();
 
-  interface Address {
-    id: string;
-    fullName: string;
-    addressLine1: string;
-    addressLine2?: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    phoneNumber: string;
-    isDefault: boolean;
-  }
-
-  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [address, setAddress] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
-  const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
+  const [isLoadingAddress, setIsLoadingAddress] = useState(true);
+  const [showAddAddressForm, setShowAddAddressForm] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [formMode, setFormMode] = useState<"add" | "edit">("add");
 
   useEffect(() => {
-    let addressesFromContext: Address[] = [];
+    console.log("fetching address ");
+    
+    const fetchAddress = async () => {
+      try {
+        setIsLoadingAddress(true);
+        const res = await fetch("/api/account/address", {
+          method: "GET",
+          credentials: "include",
+          cache: 'no-store'
+        });
+        console.log("res status", res.status);
+        
+        if (!res.ok) 
+          throw new Error("Failed to fetch address");
 
-    if (location?.address) {
-      if (typeof location.address === 'object') {
-        addressesFromContext = [location.address as Address];
-      } else if (typeof location.address === 'string') {
-        // Create a normalized address object with required fields for API
-        addressesFromContext = [
-          {
-            id: 'temp-address-id', // We'll replace this on the backend
-            fullName: 'Delivery Address',
-            addressLine1: location.address,
-            city: location.city || 'Unknown',
-            state: location.state || 'Unknown',
-            postalCode: location.pincode || '503301',
-            phoneNumber: '9999999999',
-            isDefault: true,
-          },
-        ];
+        const json = await res.json();
+        console.log("address list:", json?.address || []);        
+        setAddress(json?.address|| [])
+        
+      } catch (error) {
+        console.error("Error fetching address:", error);
+      } finally {
+        setIsLoadingAddress(false);
       }
-    }
-
-    setAddresses(addressesFromContext);
-
-    if (addressesFromContext.length > 0) {
-      const defaultAddress = addressesFromContext.find(addr => addr.isDefault);
-      const selected = defaultAddress || addressesFromContext[0];
-      setSelectedAddressId(selected.id);
-      logCheckoutEvent(
-        defaultAddress ? 'Selected default address' : 'Selected first address',
-        selected.id
-      );
-    }
-
-    setIsLoadingAddresses(false);
-  }, [location?.address, location?.pincode, location?.city, location?.state]);
+    };
+    fetchAddress();
+  }, []);
 
   useEffect(() => {
-    if (selectedAddressId) {
-      logCheckoutEvent('Address selection changed', selectedAddressId);
-    }
+    logCheckoutEvent('Address selection changed', selectedAddressId);
   }, [selectedAddressId]);
 
   useEffect(() => {
@@ -89,10 +89,8 @@ export default function CheckoutPage() {
     }
 
     setAddressId(selectedAddressId);
-
-    logCheckoutEvent('Proceeding to payment with address', selectedAddressId);
-
     const totalAmount = subtotal + (subtotal > 500 ? 0 : 40);
+
     if (totalAmount <= 0) {
       alert('Invalid order amount');
       return;
@@ -101,7 +99,12 @@ export default function CheckoutPage() {
     router.push(`/checkout/payment?addressId=${selectedAddressId}&amount=${totalAmount}`);
   };
 
-  if (isLoading || isLoadingAddresses) {
+    const handleAddressSave = (newAddress: Address) => {
+    setAddress(prev => [...prev, newAddress]);
+    setSelectedAddressId(newAddress.id ?? '');
+  };
+
+  if (isLoading || isLoadingAddress) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center">
         <Loader className="h-8 w-8 animate-spin text-teal-600" />
@@ -130,6 +133,23 @@ export default function CheckoutPage() {
     );
   }
 
+  const handleDelAddress = async (id: string) =>{ 
+    try {
+      const res = await fetch (`/api/account/address/${id}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+
+      if (res.ok) {
+        setAddress((prev) => prev.filter((addr) => addr.id !==id ))
+      }else{
+        console.error("Delete failed:", await res.text())
+      }
+    } catch (error) {
+      console.error("Error deleting address:" , error)
+    }
+  }
+
   return (
     <div className="min-h-[60vh] px-4 py-8">
       <div className="mx-auto max-w-4xl">
@@ -137,59 +157,85 @@ export default function CheckoutPage() {
 
         <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
           <h2 className="mb-4 text-lg font-semibold">Delivery Address</h2>
-          {addresses.length === 0 ? (
+
+          {address.length === 0 ? (
             <div className="py-4 text-center">
               <p className="mb-3 text-gray-600">No saved addresses found.</p>
-              <Link href="/account/myAddresses" className="text-primaryColor hover:underline">
-                Add a new address
-              </Link>
+              <button
+                onClick={() => {
+                  setFormMode("add")
+                  setShowAddAddressForm(true)
+                  setSelectedAddress(null)
+                }}
+                className="text-teal-600 hover:underline"
+              >
+                + Add a new address
+              </button>
             </div>
           ) : (
-            <div className="space-y-3">
-              {addresses.map(address => (
+            <div className="space-y-3 relative">
+              {address.map(address => (
                 <div
                   key={address.id}
-                  className={`cursor-pointer rounded-lg border p-3 ${selectedAddressId === address.id ? 'border-teal-600 bg-teal-50' : 'border-gray-200 hover:border-gray-300'}`}
-                  onClick={() => setSelectedAddressId(address.id)}
+                  className={`cursor-pointer rounded-lg border p-3 ${selectedAddressId === address.id
+                    ? 'border-teal-600 bg-teal-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  onClick={() => setSelectedAddressId(address.id ?? "")}
                 >
+                
                   <div className="flex items-start">
                     <input
                       type="radio"
                       checked={selectedAddressId === address.id}
-                      onChange={() => setSelectedAddressId(address.id)}
+                      onChange={() => setSelectedAddressId(address.id ?? "")}
                       className="mt-1 h-4 w-4 text-teal-600"
                     />
                     <div className="ml-3">
                       <p className="font-medium">{address.fullName}</p>
                       <p className="text-sm text-gray-600">
                         {address.addressLine1}
-                        {address.addressLine2 && `, ${address.addressLine2}`}
+                        {address.addressLine2 ?  `,${address.addressLine2}` : ""}
                       </p>
                       <p className="text-sm text-gray-600">
-                        {address.city}, {address.state} {address.postalCode}
+                        {address.city} {address.state} {address.postalCode}
                       </p>
                       <p className="text-sm text-gray-600">{address.phoneNumber}</p>
-                      {address.isDefault && (
-                        <span className="mt-1 inline-block rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-800">
-                          Default
-                        </span>
-                      )}
+                      <button onClick={() =>{
+                        setFormMode("edit")
+                        setSelectedAddress(address)
+                        setShowAddAddressForm(true)
+                      }}>
+                          Edit
+                      </button>
+                      <button 
+                      className='text-red-600 cursor-pointer'
+                      onClick={() => handleDelAddress(address.id ?? "")}>
+                        Delete
+                      </button>
                     </div>
                   </div>
                 </div>
               ))}
+
+              <button
+                onClick={() => setShowAddAddressForm(true)}
+                className="absolute right-0 -bottom-8 text-sm mt-2 text-teal-600 hover:underline"
+              >
+                + Add another address
+              </button>
             </div>
           )}
         </div>
 
         <div className="rounded-lg bg-white p-6 shadow-md">
           <h2 className="mb-4 text-lg font-semibold">Your Order Summary</h2>
-          <div className="mb-6 space-y-1">
-            <div className="flex justify-between text-sm">
+          <div className="mb-6 space-y-1 text-sm">
+            <div className="flex justify-between">
               <span>Items ({cartItems.reduce((sum, item) => sum + item.quantity, 0)})</span>
               <span>₹{subtotal.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between">
               <span>Shipping</span>
               <span>{subtotal > 500 ? 'Free' : '₹40.00'}</span>
             </div>
@@ -213,15 +259,36 @@ export default function CheckoutPage() {
               Continue Shopping
             </Link>
             <button
-              className={`rounded-lg ${!selectedAddressId || addresses.length === 0 ? 'cursor-not-allowed bg-gray-400' : 'bg-background1'} cursor-pointer px-6 py-2 text-white duration-300 hover:scale-102`}
+              className={`rounded-lg ${!selectedAddressId || address.length === 0
+                ? 'cursor-not-allowed bg-gray-400'
+                : 'bg-teal-600 hover:bg-teal-700'
+                } px-6 py-2 text-white`}
               onClick={handleProceedToPayment}
-              disabled={!selectedAddressId || addresses.length === 0}
+              disabled={!selectedAddressId || address.length === 0}
             >
               Proceed to Pay
             </button>
           </div>
         </div>
       </div>
+
+      {showAddAddressForm && (
+        <AddAddressForm
+        formMode={formMode}
+        initialData={selectedAddress}
+          onCancel={() => {
+            setShowAddAddressForm(false)          
+            setSelectedAddress(null)
+            setFormMode("add")
+          }}
+          onSave={(data) => {
+            handleAddressSave(data)
+            setShowAddAddressForm(false)
+            setSelectedAddress(null)
+            setFormMode("add")
+          }}
+        />
+      )}
     </div>
   );
 }
