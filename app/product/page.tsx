@@ -8,7 +8,7 @@ import Navroute from '../components/navroute';
 import Sidebar from '../components/FilterSidebar';
 import ProductCard from '../components/ProductCard';
 import { useWishlist } from '../hooks/useWishlist';
-import { useCart } from '../hooks/useCart';
+// import { useCart } from '../hooks/useCart';
 import { useProducts } from '../hooks/useBabycare';
 import useAddToCart from '../hooks/handleAddToCart';
 

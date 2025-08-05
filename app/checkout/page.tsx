@@ -21,12 +21,12 @@ type Address = {
   phoneNumber: string;
 };
 
-type Props= {
-  mode: "add" | "edit";
-  initialData: Address | null
-  onCancel: () => void
-  onSave: (data:Address)=>void
-};
+// type Props= {
+//   mode: "add" | "edit";
+//   initialData: Address | null
+//   onCancel: () => void
+//   onSave: (data:Address)=>void
+// };
 
 export default function CheckoutPage() {
   const { cartItems, isLoading } = useCart();
@@ -75,9 +75,10 @@ export default function CheckoutPage() {
   }, [selectedAddressId]);
 
   useEffect(() => {
-    const total = cartItems.reduce((sum, item) => {
-      const itemPrice = item.product?.price || item.medicine?.price || 0;
-      return sum + itemPrice * item.quantity;
+    const total = cartItems.reduce((sum: number, item) => {
+      const itemPrice: number = Number(item.product?.price ?? item.medicine?.price ?? 0);
+      const quantity: number = typeof item.quantity === 'number' ? item.quantity : 0;
+      return Number(sum) + itemPrice * quantity;
     }, 0);
     setSubtotal(total);
   }, [cartItems]);
