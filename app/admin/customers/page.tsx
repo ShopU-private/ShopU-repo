@@ -84,7 +84,7 @@ export default function AdminCustomersPage() {
 
   // Cache for stats with 5-minute expiry
   const [statsCache, setStatsCache] = useState<{
-    data: any;
+    data: typeof stats;
     timestamp: number;
   } | null>(null);
 

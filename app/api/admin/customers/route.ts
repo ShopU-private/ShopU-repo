@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
+import { Prisma } from '@prisma/client';
 
 export async function GET(req: NextRequest) {
   try {
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Build optimized where clause
-    const where: any = {};
+    const where: Prisma.UserWhereInput = {};
 
     if (status === 'Active') {
       where.orders = { some: {} };

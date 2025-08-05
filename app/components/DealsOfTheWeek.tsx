@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, ChevronLeft, ChevronRight, Camera, Check } from 'lucide-react';
+import {  ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
-
+import Image from 'next/image';
 interface Product {
   id: number;
   name: string;
@@ -177,16 +177,18 @@ const DealOfTheWeek = () => {
     <>
       {/* Desktop view */}
       <div
-        className={`grid hidden gap-4 sm:grid ${itemsPerPage === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}
+        className={`grid  gap-4 sm:grid ${itemsPerPage === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}
       >
         {visibleProducts.map(product => (
           <div key={product.id} className="rounded-lg">
             <div className="flex gap-4 sm:flex-row">
               <div className="relative">
                 <div className="flex h-70 w-65 items-center justify-center bg-white">
-                  <img
+                  <Image
                     src="/Sirum.png"
-                    alt=""
+                      alt="Sirum logo"
+                      width={400}
+                      height={300}
                     className="w-full p-4 transition-transform duration-300 hover:scale-102"
                   />
                 </div>
@@ -238,7 +240,11 @@ const DealOfTheWeek = () => {
             <div className="flex h-62 gap-2 sm:flex-row">
               <div className="relative">
                 <div className="flex h-full w-45 items-center justify-center bg-white">
-                  <img src="/Sirum.png" alt="" className="py-4" />
+                  <Image src="/Sirum.png" 
+                  alt="Sirum logo"
+                  width={400}
+                  height={300}
+                  className="py-4" />
                 </div>
                 {product.isOnSale && (
                   <span className="bg-background2 absolute top-3 left-3 rounded-lg px-2.5 py-0.5 text-xs text-white">
