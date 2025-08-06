@@ -177,7 +177,7 @@ const DealOfTheWeek = () => {
     <>
       {/* Desktop view */}
       <div
-        className={`grid  gap-4 sm:grid ${itemsPerPage === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}
+        className={`grid hidden gap-4 sm:grid ${itemsPerPage === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}
       >
         {visibleProducts.map(product => (
           <div key={product.id} className="rounded-lg">
