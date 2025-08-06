@@ -9,7 +9,9 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "db:push": "prisma db push",
-    "seed": "prisma db push && npx tsx prisma/seed.ts"
+    "seed": "prisma db push && npx tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
+
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
