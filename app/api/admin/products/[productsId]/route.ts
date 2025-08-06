@@ -3,50 +3,56 @@ import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
 import { UTApi } from 'uploadthing/server';
 import { updateProductSchema } from '@/lib/schema/adminSchema';
-export const utapi = new UTApi();
-interface Params {
-  params: { productsId: string };
-}
 
-export async function GET(_req: Request, { params }: Params) {
-  const product = await prisma.product.findUnique({
-    where: { id: params.productsId },
-    include: {
-      variantTypes: {
-        include: {
-          values: true,
+export async function GET(req: Request, { params }: { params: Promise<{ productsId: string }> }) {
+  try {
+    const { productsId } = await params;
+
+    const product = await prisma.product.findUnique({
+      where: { id: productsId },
+      include: {
+        variantTypes: {
+          include: {
+            values: true,
+          },
         },
-      },
-      combinations: {
-        include: {
-          values: {
-            include: {
-              variantValue: true,
+        combinations: {
+          include: {
+            values: {
+              include: {
+                variantValue: true,
+              },
             },
           },
         },
       },
-    },
-  });
+    });
 
-  if (!product) {
-    return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    if (!product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error('[GET /api/admin/products/[productsId]]', error);
+    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
   }
-
-  return NextResponse.json(product);
 }
 
-export async function DELETE(req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ productsId: string }> }) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const productId = params.productsId;
+    const { productsId } = await params;
+
+    // Create UTApi instance inside the function
+    const utapi = new UTApi();
 
     // 1. Find all images for this product
     const images = await prisma.productImage.findMany({
-      where: { productId },
+      where: { productId: productsId },
     });
 
     // 2. Delete all files from UploadThing
@@ -63,7 +69,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
 
     // 3. Delete product (and Prisma will cascade delete productImages)
     await prisma.product.delete({
-      where: { id: productId },
+      where: { id: productsId },
     });
 
     return NextResponse.json({ message: 'Product deleted successfully' });
@@ -73,20 +79,21 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   }
 }
 
-export async function PUT(req: NextRequest, { params }: Params) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ productsId: string }> }) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const parsed = updateProductSchema.safeParse(await req.json());
-
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
-  }
-
   try {
+    const { productsId } = await params;
+    const parsed = updateProductSchema.safeParse(await req.json());
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+
     const updatedProduct = await prisma.product.update({
-      where: { id: params.productsId },
+      where: { id: productsId },
       data: parsed.data,
     });
 

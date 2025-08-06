@@ -3,36 +3,40 @@ import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
 import { createVariantTypeSchema } from '@/lib/schema/adminSchema';
 
-interface Params {
-  params: { productsId: string };
-}
-
-export async function POST(request: NextRequest, { params }: Params) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ productsId: string }> }) {
   if (!isAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const body = await request.json();
 
-  const parsed = createVariantTypeSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
+  try {
+    const { productsId } = await params;
+    const body = await request.json();
+
+    const parsed = createVariantTypeSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
+    }
+
+    const { name } = parsed.data;
+
+    if (!name) {
+      return NextResponse.json({ error: 'Name required' }, { status: 400 });
+    }
+
+    const variantType = await prisma.variantType.create({
+      data: {
+        name,
+        productId: productsId,
+      },
+    });
+
+    return NextResponse.json(variantType);
+  } catch (error) {
+    console.error('[POST /api/admin/products/[productsId]/variant-types]', error);
+    return NextResponse.json({ error: 'Failed to create variant type' }, { status: 500 });
   }
-
-  const { name } = parsed.data;
-
-  if (!name) {
-    return NextResponse.json({ error: 'Name required' }, { status: 400 });
-  }
-
-  const variantType = await prisma.variantType.create({
-    data: {
-      name,
-      productId: params.productsId,
-    },
-  });
-
-  return NextResponse.json(variantType);
 }
+
 export async function GET(request: NextRequest) {
   if (!isAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

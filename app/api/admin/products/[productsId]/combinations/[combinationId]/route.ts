@@ -3,19 +3,16 @@ import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
 import { createCombinationSchema } from '@/lib/schema/adminSchema';
 
-interface Params {
-  params: { productsId: string; combinationId?: string };
-}
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { productsId: string; combinationId: string } }
+  { params }: { params: Promise<{ productsId: string; combinationId: string }> }
 ) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const { combinationId } = params;
+    const { combinationId } = await params;
 
     await prisma.productVariantCombination.delete({
       where: {
@@ -30,29 +27,31 @@ export async function DELETE(
   }
 }
 
-export async function PUT(req: NextRequest, { params }: Params) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ productsId: string; combinationId: string }> }
+) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body = await req.json();
-  const parsed = createCombinationSchema.safeParse(body);
-
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
-  }
-
-  const { price, stock, imageUrl, variantValueIds } = parsed.data;
-
   try {
-    // First, remove old variant values (combinationValue)
+    const { combinationId } = await params;
+    const body = await req.json();
+    const parsed = createCombinationSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
+    }
+
+    const { price, stock, imageUrl, variantValueIds } = parsed.data;
+
     await prisma.combinationValue.deleteMany({
-      where: { combinationId: params.combinationId },
+      where: { combinationId },
     });
 
-    // Then update the combination
     const updatedCombination = await prisma.productVariantCombination.update({
-      where: { id: params.combinationId },
+      where: { id: combinationId },
       data: {
         price,
         stock,

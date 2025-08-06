@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { getUserFromToken } from '@/lib/auth'; // implement this helper
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const orderItemId = params.id;
+    const { id: orderItemId } = await params;
 
     // Authenticate user
     const token = req.cookies.get('token')?.value;

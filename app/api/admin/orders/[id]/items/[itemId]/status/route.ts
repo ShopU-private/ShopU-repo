@@ -4,14 +4,14 @@ import { isAdmin } from '@/lib/auth';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string; itemId: string } }
+  { params }: { params: Promise<{ id: string; itemId: string }> }
 ) {
   try {
     if (!isAdmin(req)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const orderItemId = params.itemId;
+    const { itemId: orderItemId } = await params;
     const { status, reason } = await req.json();
 
     // Validate status

@@ -2,18 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
 
-interface Params {
-  params: { id: string };
-}
-
-export async function GET(req: NextRequest, { params }: Params) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     if (!isAdmin(req)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
+
     const customer = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         orders: {
           include: {
@@ -40,15 +38,17 @@ export async function GET(req: NextRequest, { params }: Params) {
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     if (!isAdmin(req)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
+
     // Check if customer has orders
     const customerWithOrders = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         orders: true,
       },
@@ -68,7 +68,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     }
 
     await prisma.user.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({
@@ -81,12 +81,13 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   }
 }
 
-export async function PUT(req: NextRequest, { params }: Params) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     if (!isAdmin(req)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     const body = await req.json();
     const { name, email, phoneNumber } = body;
 
@@ -100,7 +101,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     if (phoneNumber) updateData.phoneNumber = phoneNumber;
 
     const updatedCustomer = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
     });
 

@@ -85,23 +85,28 @@ export function isAdmin(req: NextRequest): boolean {
 // ✅ Utility: Get full user from token
 export async function getUserFromToken(token: string) {
   try {
-    const payload = verifyToken(token);
+    const payload = jwtDecode<TokenPayload>(token);
+    
+    // Verify token hasn't expired
+    if (payload.exp && Date.now() >= payload.exp * 1000) {
+      return null;
+    }
+
+    // Get user from database to ensure they still exist
     const user = await prisma.user.findUnique({
-      where: {
-        id: payload.id,
-      },
+      where: { id: payload.id },
       select: {
         id: true,
         name: true,
         email: true,
         phoneNumber: true,
         role: true,
-        isProfileComplete: true,
       },
     });
+
     return user;
   } catch (error) {
-    console.error('[getUserFromToken]', error);
+    console.error('Error getting user from token:', error);
     return null;
   }
 }

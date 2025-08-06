@@ -3,10 +3,6 @@ import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
 import { updateSubCategorySchema } from '@/lib/schema/adminSchema';
 
-interface Params {
-  params: { id: string };
-}
-
 export async function GET(req: NextRequest) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -28,14 +24,14 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const id = params.id;
-
   try {
+    const { id } = await params;
+
     await prisma.subCategory.delete({ where: { id } });
     return NextResponse.json({ message: 'Subcategory deleted' });
   } catch {
@@ -43,14 +39,13 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   }
 }
 
-export async function PUT(req: NextRequest, { params }: Params) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const subCategoryId = params.id;
-
   try {
+    const { id: subCategoryId } = await params;
     const body = await req.json();
     const parsed = updateSubCategorySchema.safeParse(body);
 

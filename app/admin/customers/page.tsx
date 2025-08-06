@@ -152,11 +152,11 @@ export default function AdminCustomersPage() {
   // Fetch data on component mount and when dependencies change
   useEffect(() => {
     fetchCustomers();
-  }, [fetchCustomers]);
+  }, [filters, searchQuery, currentPage, fetchCustomers]);
 
   useEffect(() => {
     fetchCustomerStats();
-  }, []);
+  }, [fetchCustomerStats]);
 
   // Reset to first page when filters change
   useEffect(() => {
