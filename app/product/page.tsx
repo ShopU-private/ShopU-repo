@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { ChevronLeft, ChevronRight, Loader } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 
@@ -8,13 +8,13 @@ import Navroute from '../components/navroute';
 import Sidebar from '../components/FilterSidebar';
 import ProductCard from '../components/ProductCard';
 import { useWishlist } from '../hooks/useWishlist';
-// import { useCart } from '../hooks/useCart';
 import { useProducts } from '../hooks/useBabycare';
 import useAddToCart from '../hooks/handleAddToCart';
 
-const ProductPage = () => {
+// Create a separate component that uses useSearchParams
+function ProductPageContent() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  // Removed unused selectedFilters state
   const { handleAddToCart, addingProductId } = useAddToCart();
   const searchParams = useSearchParams();
   const category = searchParams.get('category') || 'All';
@@ -26,35 +26,31 @@ const ProductPage = () => {
     limit: 100,
   });
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleAddFilter = (filter: string) => {
-    setSelectedFilters(prev =>
-      prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]
-    );
-  };
-
-  const filteredProducts = products.filter(product =>
-    selectedFilters.length > 0 ? selectedFilters.includes(product.category || '') : true
-  );
-
-  const productsPerPage = 12;
-  const start = (currentPage - 1) * productsPerPage;
-  const end = start + productsPerPage;
-  const paginatedProducts = filteredProducts.slice(start, end);
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const itemsPerPage = 20;
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = products.slice(startIndex, endIndex);
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50">
       <Navroute />
-      <div className="min-h-xl bg-background px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl justify-between gap-4 px-10">
-          {/* Sidebar */}
-          <Sidebar onCategorySelect={handleAddFilter} />
+      <div className="container mx-auto flex gap-6 px-4 py-6">
+        <aside className="w-64 flex-shrink-0">
+          <Sidebar
+            onCategorySelect={(category) => {
+              // Handle category selection
+              console.log('Selected category:', category);
+            }}
+          />
+        </aside>
 
-          {/* Main Content */}
+        <div className="flex-1">
           {loading ? (
             <div className="flex min-h-[70vh] flex-1 items-center justify-center">
               <div className="text-center">
@@ -75,32 +71,14 @@ const ProductPage = () => {
                   <option>Default Sorting</option>
                   <option>Price: Low to High</option>
                   <option>Price: High to Low</option>
+                  <option>Rating: High to Low</option>
                 </select>
               </div>
 
-              {selectedFilters.length > 0 && (
-                <div className="mb-4 flex flex-wrap gap-2">
-                  {selectedFilters.map(filter => (
-                    <div
-                      key={filter}
-                      className="flex items-center gap-2 rounded-full bg-white px-4 text-xs text-gray-600"
-                    >
-                      <span>{filter}</span>
-                      <button
-                        onClick={() => setSelectedFilters(prev => prev.filter(f => f !== filter))}
-                        className="text-xl text-gray-600"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Product Grid */}
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {paginatedProducts.map(product => (
-                  <div key={product.id} className="max-w-[210px] min-w-[210px]">
+              {/* Products Grid */}
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {currentProducts.map(product => (
+                  <div key={product.id} className="flex justify-center">
                     <ProductCard
                       product={{
                         id: product.id,
@@ -138,52 +116,52 @@ const ProductPage = () => {
                     disabled={currentPage === 1}
                     onClick={() => handlePageChange(currentPage - 1)}
                     className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                      currentPage === 1 ? 'bg-gray-200 text-gray-400' : 'bg-primaryColor text-white'
+                      currentPage === 1
+                        ? 'cursor-not-allowed bg-gray-200 text-gray-400'
+                        : 'bg-teal-600 text-white hover:bg-teal-700'
                     }`}
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
 
-                  {[...Array(totalPages)].map((_, index) => {
-                    const page = index + 1;
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => handlePageChange(page)}
-                        className={`h-8 w-8 rounded-full text-sm font-medium ${
-                          currentPage === page
-                            ? 'bg-primaryColor text-white'
-                            : 'text-black hover:bg-gray-200'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    );
-                  })}
+                  <span className="text-sm text-gray-600">
+                    Page {currentPage} of {totalPages}
+                  </span>
 
                   <button
                     disabled={currentPage === totalPages}
                     onClick={() => handlePageChange(currentPage + 1)}
                     className={`flex h-8 w-8 items-center justify-center rounded-full ${
                       currentPage === totalPages
-                        ? 'bg-gray-200 text-gray-400'
-                        : 'bg-primaryColor text-white'
+                        ? 'cursor-not-allowed bg-gray-200 text-gray-400'
+                        : 'bg-teal-600 text-white hover:bg-teal-700'
                     }`}
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>
-                </div>
-
-                <div className="pl-6 text-sm text-gray-700">
-                  Showing {start + 1}-{Math.min(end, filteredProducts.length)} of{' '}
-                  {filteredProducts.length} results
                 </div>
               </div>
             </main>
           )}
         </div>
       </div>
-    </>
+    </div>
+  );
+}
+
+// Main component wrapped with Suspense
+const ProductPage = () => {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    }>
+      <ProductPageContent />
+    </Suspense>
   );
 };
 

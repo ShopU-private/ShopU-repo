@@ -163,7 +163,7 @@ export default function AdminCustomersPage() {
     if (currentPage !== 1) {
       setCurrentPage(1);
     }
-  }, [filters, debouncedSearchQuery]);
+  }, [filters, debouncedSearchQuery, currentPage]); // Added currentPage to dependencies
 
   // Client-side filtering for non-server-side filters
   const filteredCustomers = useMemo(() => {

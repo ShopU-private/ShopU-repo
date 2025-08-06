@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle2, ArrowLeft, Loader } from 'lucide-react';
 
-export default function OrderSuccessPage() {
+// Create a separate component that uses useSearchParams
+function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const paymentMethod = searchParams.get('method');
   const paymentId = searchParams.get('paymentId');
@@ -15,19 +16,16 @@ export default function OrderSuccessPage() {
   useEffect(() => {
     // If this was a real implementation, we would check the payment status here
     async function verifyPayment() {
-      if (orderId && paymentId) {
-        setIsLoading(true);
-        try {
-          // Verify payment with backend
-          const response = await fetch(`/api/payment?orderId=${orderId}`);
-          // Handle response
-          const data = await response.json();
-          console.log('Payment verification:', data);
-        } catch (error) {
-          console.error('Error verifying payment:', error);
-        } finally {
-          setIsLoading(false);
-        }
+      if (!orderId || !paymentId) return;
+
+      setIsLoading(true);
+      try {
+        // Simulate payment verification
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } catch (error) {
+        console.error('Payment verification failed:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -75,5 +73,23 @@ export default function OrderSuccessPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Main component wrapped with Suspense
+export default function OrderSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[70vh] items-center justify-center">
+          <div className="text-center">
+            <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
+            <p className="mt-4 text-gray-600">Loading order confirmation...</p>
+          </div>
+        </div>
+      }
+    >
+      <OrderSuccessContent />
+    </Suspense>
   );
 }

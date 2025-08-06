@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useCart } from '@/app/hooks/useCart';
 import { useLocation } from '@/app/context/LocationContext';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -21,11 +21,12 @@ interface RazorpayHandlerResponse {
   razorpay_signature: string;
 }
 
-export default function PaymentPage() {
-  const { cartItems, clearCart, isLoading } = useCart();
-  const { location, addressId } = useLocation();
+// Create a separate component that uses useSearchParams
+function PaymentContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { cartItems, clearCart, isLoading } = useCart();
+  const { location, addressId } = useLocation();
 
   const [selectedMethod, setSelectedMethod] = useState<string>('cod');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -289,12 +290,12 @@ export default function PaymentPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+      <header className="border-b bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => router.back()}
-              className="mr-4 rounded-full p-2 hover:bg-gray-100"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -470,5 +471,21 @@ export default function PaymentPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main component wrapped with Suspense
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
+          <p className="mt-4 text-gray-600">Loading payment page...</p>
+        </div>
+      </div>
+    }>
+      <PaymentContent />
+    </Suspense>
   );
 }

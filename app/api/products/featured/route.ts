@@ -29,10 +29,13 @@ export async function GET(req: NextRequest) {
     // Paginated product fetch
     const products = await prisma.product.findMany({
       where: {
-        imageUrl: {
-          not: null,
-          not: '',
-        },
+        AND: [
+          {
+            imageUrl: {
+              not: '',
+            },
+          },
+        ],
         ...(category && {
           subCategory: {
             category: {
@@ -59,7 +62,7 @@ export async function GET(req: NextRequest) {
     // Add discount/originalPrice field
     const productsWithDiscount = products.map(product => {
       const discount = Math.floor(Math.random() * 40) + 10;
-      const originalPrice = Math.ceil(product.price * (100 / (100 - discount)));
+      const originalPrice = Math.ceil(Number(product.price) * (100 / (100 - discount)));
       return {
         ...product,
         discount,

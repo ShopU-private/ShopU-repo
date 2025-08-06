@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
           include: {
             product: {
               include: {
-                productImage: true,
+                productImages: true,
               },
             },
             combination: {
