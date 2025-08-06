@@ -2,7 +2,7 @@ import { prisma } from '@/lib/client';
 import { verifyToken } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest, context: { params: { orderId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ orderId: string }> }) {
   try {
     const token = req.cookies.get('token')?.value;
 
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest, context: { params: { orderId: string
     const payload = verifyToken(token);
     const userId = payload.id;
 
-    const { orderId } = context.params;
+    const { orderId } = await params;
 
     if (!orderId) {
       return NextResponse.json({ message: 'Order ID is required' }, { status: 400 });

@@ -3,23 +3,21 @@ import { prisma } from '@/lib/client';
 import { updateVariantTypeSchema } from '@/lib/schema/adminSchema';
 import { isAdmin } from '@/lib/auth';
 
-interface Params {
-  params: { productId: string; variantTypeId: string };
-}
-
-export async function PUT(req: NextRequest, { params }: Params) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ productId: string; variantTypeId: string }> }) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const parsed = updateVariantTypeSchema.safeParse(await req.json());
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
-  }
-
   try {
+    const { variantTypeId } = await params;
+    const parsed = updateVariantTypeSchema.safeParse(await req.json());
+    
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+
     const updated = await prisma.variantType.update({
-      where: { id: params.variantTypeId },
+      where: { id: variantTypeId },
       data: {
         name: parsed.data.name,
       },
@@ -32,14 +30,16 @@ export async function PUT(req: NextRequest, { params }: Params) {
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Params) {
-  if (!isAdmin(_req)) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ productId: string; variantTypeId: string }> }) {
+  if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
+    const { variantTypeId } = await params;
+
     await prisma.variantType.delete({
-      where: { id: params.variantTypeId },
+      where: { id: variantTypeId },
     });
 
     return NextResponse.json({ success: true, message: 'Variant type deleted' });

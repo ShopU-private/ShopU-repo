@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const productId = params.id;
+    const { id: productId } = await params;
 
     if (!productId) {
       return NextResponse.json(
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         subCategory: {
           include: { category: true },
         },
-        productImage: true,
+        productImages: true,
         variantTypes: {
           include: {
             values: true,

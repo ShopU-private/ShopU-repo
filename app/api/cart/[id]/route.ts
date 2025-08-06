@@ -3,9 +3,9 @@ import { prisma } from '@/lib/client';
 import { verifyToken } from '@/lib/auth';
 
 // PUT - update cart item quantity
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const cartItemId = params.id;
+    const { id: cartItemId } = await params;
     const token = req.cookies.get('token')?.value;
 
     if (!token) {
@@ -13,7 +13,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     const payload = verifyToken(token);
-
     const userId = payload.id;
 
     const { quantity } = await req.json();
@@ -55,9 +54,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE - remove an item from the cart
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const cartItemId = params.id;
+    const { id: cartItemId } = await params;
     const token = req.cookies.get('token')?.value;
 
     if (!token) {
@@ -65,7 +64,6 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     }
 
     const payload = verifyToken(token);
-
     const userId = payload.id;
     // Verify the cart item belongs to the user
     const cartItem = await prisma.cartItem.findFirst({
