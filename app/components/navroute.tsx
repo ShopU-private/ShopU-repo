@@ -2,14 +2,18 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Search, ShoppingCart } from 'lucide-react';
 
 export default function Navroute() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
-  // Get path segments (excluding empty string)
-  // Get path segments excluding empty string and UUIDs
+
+  // Extract category from query params
+  const categorySlug = searchParams.get('category');
+
+  // Get path segments excluding UUIDs and empty strings
   const segments = pathname
     .split('/')
     .filter(
@@ -18,14 +22,24 @@ export default function Navroute() {
         !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(seg)
     );
 
-  // Build cumulative routes for linking
+  // Build path crumbs
   const crumbs = segments.map((seg, idx) => {
     const name = decodeURIComponent(seg)
-      .replace(/_/g, ' ') // replace underscores with space
-      .replace(/\b\w/g, l => l.toUpperCase()); // capitalize each word
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, l => l.toUpperCase());
     const href = '/' + segments.slice(0, idx + 1).join('/');
     return { name, href };
   });
+
+  // Add Category Crumb if category param exists
+  if (categorySlug) {
+    crumbs.push({
+      name: decodeURIComponent(categorySlug)
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase()),
+      href: pathname + '?category=' + encodeURIComponent(categorySlug),
+    });
+  }
 
   return (
     <nav className="bg-white text-sm text-gray-500">
