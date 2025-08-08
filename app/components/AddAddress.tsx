@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, MapPin, Search, Home, Briefcase, Building, MoreHorizontal } from "lucide-react";
+import { X, MapPin, Search, Home, Briefcase, MoreHorizontal } from "lucide-react";
 
 type Address = {
   id?: string;
@@ -104,7 +104,7 @@ export default function AddAddressForm({
   const handleCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        () => {
           // Mock reverse geocoding - in real app, use Google Maps API
           setFormData(prev => ({
             ...prev,
@@ -122,8 +122,6 @@ export default function AddAddressForm({
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl w-full max-w-6xl h-[90vh] shadow-2xl overflow-hidden flex">
-        
-        {/* Map Section - Hidden on mobile */}
         <div className="hidden md:flex flex-1 relative bg-gray-100">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50">
             {/* Mock Map Interface */}
@@ -219,19 +217,6 @@ export default function AddAddressForm({
                   >
                     <Briefcase className="w-4 h-4" />
                     Work
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => setSelectedAddressType("hotel")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
-                      selectedAddressType === "hotel"
-                        ? "bg-teal-50 border-teal-500 text-teal-700"
-                        : "bg-white border-gray-300 text-gray-600 hover:border-gray-400"
-                    }`}
-                  >
-                    <Building className="w-4 h-4" />
-                    Hotel
                   </button>
                   
                   <button
