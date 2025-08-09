@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, MapPin, Search, Home, Briefcase, MoreHorizontal } from "lucide-react";
 
+
 type Address = {
   id?: string;
   fullName: string;
@@ -282,7 +283,7 @@ export default function AddAddressForm({
               {/* Personal Details */}
               <div className="pt-4 border-t border-gray-100">
                 <p className="text-sm text-teal-600 font-medium mb-4">
-                  Enter your details for seamless delivery experience
+                  Enter your details for seamless delivery experiencej
                 </p>
                 
                 <div className="space-y-4">
