@@ -39,7 +39,10 @@ export async function POST(request: NextRequest) {
       role: user.role,
     });
 
-    const response = NextResponse.json({ success: true });
+    const response = NextResponse.json(
+      { success: true, messgae: 'OTP verified successfully' }, 
+      { status: 201 }
+    );
     response.cookies.set('token', token, {
       httpOnly: true,
       secure: true,
