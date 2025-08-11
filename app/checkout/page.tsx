@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useCart } from '@/app/hooks/useCart';
 import { Loader } from 'lucide-react';
 import Link from 'next/link';
+import { MdDeleteOutline } from "react-icons/md";
+import { FaRegEdit } from "react-icons/fa";
 import { useLocation } from '../context/LocationContext';
 import { useRouter } from 'next/navigation';
 import { logCheckoutEvent, validateAddressId } from '@/lib/checkout-utils';
@@ -206,20 +208,19 @@ export default function CheckoutPage() {
                         {address.city} {address.state} {address.postalCode}
                       </p>
                       <p className="text-sm text-gray-600">{address.phoneNumber}</p>
-                      <button
-                        onClick={() => {
-                          setFormMode('edit');
-                          setSelectedAddress(address);
-                          setShowAddAddressForm(true);
-                        }}
-                      >
-                        Edit
+                      <button 
+                        className='mt-[4px] text-lg cursor-pointer pr-2.5 text-teal-700'
+                        onClick={() =>{
+                        setFormMode("edit")
+                        setSelectedAddress(address)
+                        setShowAddAddressForm(true)
+                      }}>
+                          <FaRegEdit />
                       </button>
-                      <button
-                        className="cursor-pointer text-red-600"
-                        onClick={() => handleDelAddress(address.id ?? '')}
-                      >
-                        Delete
+                      <button 
+                      className='mt-3 text-xl cursor-pointer text-teal-700'
+                      onClick={() => handleDelAddress(address.id ?? "")}>
+                        <MdDeleteOutline />
                       </button>
                     </div>
                   </div>
