@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     });
 
     const response = NextResponse.json(
-      { success: true, messgae: 'OTP verified successfully' }, 
+      { success: true, messgae: 'OTP verified successfully' },
       { status: 201 }
     );
     response.cookies.set('token', token, {

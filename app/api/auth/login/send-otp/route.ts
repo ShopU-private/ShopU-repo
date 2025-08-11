@@ -25,13 +25,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: true, message: 'OTP send successfully' },
         { status: 201 }
-      )
-    }
-    else {
-      return NextResponse.json(
-        { success: false, message: 'OTP send Failed' },
-        { status: 400 }
-      )
+      );
+    } else {
+      return NextResponse.json({ success: false, message: 'OTP send Failed' }, { status: 400 });
     }
   } catch (error) {
     console.error('Somthing wents wrong:', error);
