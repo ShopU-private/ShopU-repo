@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {  ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import Image from 'next/image';
 interface Product {
@@ -186,9 +186,9 @@ const DealOfTheWeek = () => {
                 <div className="flex h-70 w-65 items-center justify-center bg-white">
                   <Image
                     src="/Sirum.png"
-                      alt="Sirum logo"
-                      width={400}
-                      height={300}
+                    alt="Sirum logo"
+                    width={400}
+                    height={300}
                     className="w-full p-4 transition-transform duration-300 hover:scale-102"
                   />
                 </div>
@@ -240,11 +240,13 @@ const DealOfTheWeek = () => {
             <div className="flex h-62 gap-2 sm:flex-row">
               <div className="relative">
                 <div className="flex h-full w-45 items-center justify-center bg-white">
-                  <Image src="/Sirum.png" 
-                  alt="Sirum logo"
-                  width={400}
-                  height={300}
-                  className="py-4" />
+                  <Image
+                    src="/Sirum.png"
+                    alt="Sirum logo"
+                    width={400}
+                    height={300}
+                    className="py-4"
+                  />
                 </div>
                 {product.isOnSale && (
                   <span className="bg-background2 absolute top-3 left-3 rounded-lg px-2.5 py-0.5 text-xs text-white">
@@ -318,9 +320,7 @@ const DealOfTheWeek = () => {
               onClick={handlePrev}
               disabled={currentIndex === 0}
               className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                currentIndex === 0
-                  ? 'bg-gray-200 text-gray-400'
-                  : 'bg-teal-100 text-teal-600 hover:bg-teal-200'
+                currentIndex === 0 ? 'bg-gray-200 text-gray-400' : 'bg-background1 text-white'
               }`}
             >
               <ChevronLeft />
@@ -331,7 +331,7 @@ const DealOfTheWeek = () => {
               className={`flex h-10 w-10 items-center justify-center rounded-full ${
                 currentIndex + itemsPerPage >= products.length
                   ? 'bg-gray-200 text-gray-400'
-                  : 'bg-teal-600 text-white hover:bg-teal-700'
+                  : 'bg-background1 text-white'
               }`}
             >
               <ChevronRight />

@@ -10,7 +10,6 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    // Fetch total count for frontend pagination (optional but useful)
     const totalCount = await prisma.product.count({
       where: {
         ...(category && {

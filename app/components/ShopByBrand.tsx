@@ -36,7 +36,7 @@ const BrandSection = () => {
                   alt={category.name}
                   width={100}
                   height={60}
-                  className="rounded-lg object-contain transition-transform duration-300 group-hover:scale-105"
+                  className="object-contain transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
             ))}

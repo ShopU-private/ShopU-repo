@@ -22,11 +22,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     return NextResponse.json({ address });
   } catch (error) {
-    console.error("API ERROR at GET /api/account/address/[id]:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('API ERROR at GET /api/account/address/[id]:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -57,11 +54,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     return NextResponse.json({ address: updatedAddress });
   } catch (error) {
-    console.error("API ERROR at PATCH /api/account/address/[id]:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('API ERROR at PATCH /api/account/address/[id]:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -90,10 +84,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     return NextResponse.json({ message: 'Address deleted' });
   } catch (error) {
-    console.error("API ERROR at DELETE /api/account/address/[id]:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('API ERROR at DELETE /api/account/address/[id]:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

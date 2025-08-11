@@ -17,6 +17,7 @@ const ProductPage = () => {
   const searchParams = useSearchParams();
   const category = searchParams.get('category') || 'All';
   const { favorites, toggleFavorite } = useWishlist();
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
 
   const { products, loading } = useProducts({
     category: category === 'All' ? undefined : category,
@@ -34,9 +35,14 @@ const ProductPage = () => {
     );
   };
 
-  const filteredProducts = products.filter(product =>
-    selectedFilters.length > 0 ? selectedFilters.includes(product.category || '') : true
-  );
+  const filteredProducts = products.filter(product => {
+    const matchesCategory =
+      selectedFilters.length > 0 ? selectedFilters.includes(product.category || '') : true;
+
+    const matchesPrice = product.price >= priceRange.min && product.price <= priceRange.max;
+
+    return matchesCategory && matchesPrice;
+  });
 
   const productsPerPage = 20;
   const start = (currentPage - 1) * productsPerPage;
@@ -48,22 +54,26 @@ const ProductPage = () => {
     <>
       <Navroute />
       {loading ? (
-        <div className="flex min-h-[80vh] flex-1 items-center justify-center">
+        <div className="flex min-h-[70vh] flex-1 items-center justify-center">
           <div className="text-center">
             <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
             <p className="mt-4 text-gray-600">Loading products...</p>
           </div>
         </div>
       ) : products.length === 0 ? (
-        <div className="w-full text-center text-gray-500">No products found.</div>
+        <div className="min-h-[70vh] pt-4 text-center text-gray-500">No products found.</div>
       ) : (
         <div className="min-h-xl bg-background p-4 sm:px-6 lg:px-8">
+          {/* Desktop view */}
           <div className="mx-auto flex hidden max-w-7xl justify-between gap-4 px-10 py-4 sm:flex">
             <>
               {/* Sidebar */}
-              <Sidebar onCategorySelect={handleAddFilter} />
+              <Sidebar
+                onCategorySelect={handleAddFilter}
+                onPriceFilter={(min: number, max: number) => setPriceRange({ min, max })}
+              />
 
-            {/* Main Content */}
+              {/* Main Content */}
               <main className="flex-1 space-y-6">
                 <div className="mb-4 flex flex-col items-center justify-between gap-4 sm:flex-row">
                   <div className="text-md font-semibold">
@@ -130,46 +140,47 @@ const ProductPage = () => {
                   ))}
                 </div>
 
-              {/* Pagination */}
-              <div className="mt-8 flex items-center justify-around">
-                <div className="flex items-center gap-2">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                      currentPage === 1
-                        ? 'cursor-not-allowed bg-gray-200 text-gray-400'
-                        : 'bg-background1 text-white'
-                    }`}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </button>
+                {/* Pagination */}
+                <div className="mt-8 flex items-center justify-around">
+                  <div className="flex items-center gap-2">
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                        currentPage === 1
+                          ? 'cursor-not-allowed bg-gray-200 text-gray-400'
+                          : 'bg-background1 text-white'
+                      }`}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
 
-                  <span className="text-sm text-gray-600">
-                    Page {currentPage} of {totalPages}
-                  </span>
+                    <span className="text-sm text-gray-600">
+                      Page {currentPage} of {totalPages}
+                    </span>
 
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                      currentPage === totalPages
-                        ? 'cursor-not-allowed bg-gray-200 text-gray-400'
-                        : 'bg-background1 text-white'
-                    }`}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                        currentPage === totalPages
+                          ? 'cursor-not-allowed bg-gray-200 text-gray-400'
+                          : 'bg-background1 text-white'
+                      }`}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="text-xs text-gray-700">
+                    Showing {start + 1}-{Math.min(end, filteredProducts.length)} of{' '}
+                    {filteredProducts.length} results
+                  </div>
                 </div>
-                                    <div className="text-xs text-gray-700">
-                      Showing {start + 1}-{Math.min(end, filteredProducts.length)} of{' '}
-                      {filteredProducts.length} results
-                    </div>
-              </div>
               </main>
             </>
           </div>
 
+          {/* Mobile view */}
           <div className="flex justify-between sm:hidden">
             <>
               <main className="flex-1 space-y-2">
@@ -250,44 +261,31 @@ const ProductPage = () => {
                 </div>
 
                 {/* Pagination */}
-                <div className="position-fixed right-0 bottom-0 left-0 mt-8 flex items-center justify-around p-4">
+                <div className="mt-8 flex items-center justify-around">
                   <div className="flex items-center gap-2">
                     <button
                       disabled={currentPage === 1}
                       onClick={() => handlePageChange(currentPage - 1)}
                       className={`flex h-8 w-8 items-center justify-center rounded-full ${
                         currentPage === 1
-                          ? 'bg-gray-200 text-gray-400'
-                          : 'bg-primaryColor text-white'
+                          ? 'cursor-not-allowed bg-gray-200 text-gray-400'
+                          : 'bg-background1 text-white'
                       }`}
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </button>
 
-                    {[...Array(totalPages)].map((_, index) => {
-                      const page = index + 1;
-                      return (
-                        <button
-                          key={page}
-                          onClick={() => handlePageChange(page)}
-                          className={`h-8 w-8 rounded-full text-sm font-medium ${
-                            currentPage === page
-                              ? 'bg-primaryColor text-white'
-                              : 'text-black hover:bg-gray-200'
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      );
-                    })}
+                    <span className="text-sm text-gray-600">
+                      Page {currentPage} of {totalPages}
+                    </span>
 
                     <button
                       disabled={currentPage === totalPages}
                       onClick={() => handlePageChange(currentPage + 1)}
                       className={`flex h-8 w-8 items-center justify-center rounded-full ${
                         currentPage === totalPages
-                          ? 'bg-gray-200 text-gray-400'
-                          : 'bg-primaryColor text-white'
+                          ? 'cursor-not-allowed bg-gray-200 text-gray-400'
+                          : 'bg-background1 text-white'
                       }`}
                     >
                       <ChevronRight className="h-4 w-4" />

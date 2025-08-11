@@ -14,11 +14,18 @@ interface Category {
   subCategories: SubCategory[];
 }
 
-const Sidebar = ({ onCategorySelect }: { onCategorySelect: (subCategoryId: string) => void }) => {
+type SidebarProps = {
+  onCategorySelect: (subCategoryId: string) => void;
+  onPriceFilter: (min: number, max: number) => void;
+};
+
+const Sidebar = ({ onCategorySelect, onPriceFilter }: SidebarProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const categorySlug = searchParams.get('category');
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(1000);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -51,7 +58,47 @@ const Sidebar = ({ onCategorySelect }: { onCategorySelect: (subCategoryId: strin
 
   return (
     <aside className="h-full w-64 rounded bg-white p-4 shadow-sm">
-      <input type="range" min="0" max="1000" className="accent-primaryColor my-4 w-full" />
+      <div className="mb-4">
+        <div className="mb-4 flex items-center justify-center gap-8">
+          <div className="flex w-18 flex-col">
+            <label className="mb-2 text-sm text-gray-800">Minimum</label>
+            <input
+              type="text"
+              inputMode="numeric" // shows numeric keyboard on mobile
+              placeholder="Min"
+              className="text-md h-8 rounded bg-gray-100 px-4 py-1 text-gray-700 outline-none"
+              value={minPrice}
+              onChange={e => {
+                const val = e.target.value;
+                if (/^\d*$/.test(val)) {
+                  const num = Number(val);
+                  setMinPrice(num);
+                  onPriceFilter(num, maxPrice);
+                }
+              }}
+            />
+          </div>
+          <div className="flex w-18 flex-col">
+            <label className="mb-2 text-sm text-gray-800">Maximum</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="Max"
+              className="h-8 rounded bg-gray-100 px-4 py-1 text-sm text-gray-700 outline-none"
+              value={maxPrice}
+              onChange={e => {
+                const val = e.target.value;
+                if (/^\d*$/.test(val)) {
+                  const num = Number(val);
+                  setMaxPrice(num);
+                  onPriceFilter(minPrice, num);
+                }
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
       <h3 className="mb-2 text-xl font-semibold text-teal-700">Categories</h3>
       <hr className="mb-4 border text-gray-300" />
       <ul className="space-y-3">

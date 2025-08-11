@@ -30,11 +30,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     return NextResponse.json({ order });
   } catch (error) {
-    console.error("API ERROR at GET /api/account/orders/[id]:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('API ERROR at GET /api/account/orders/[id]:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -61,7 +58,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     // Only allow updating certain fields
     const allowedUpdates = ['status', 'notes'] as const;
     const updateData: { status?: string; notes?: string } = {};
-    
+
     for (const key of allowedUpdates) {
       if (body[key] !== undefined) {
         updateData[key as keyof typeof updateData] = body[key];
@@ -83,10 +80,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     return NextResponse.json({ order: updatedOrder });
   } catch (error) {
-    console.error("API ERROR at PATCH /api/account/orders/[id]:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('API ERROR at PATCH /api/account/orders/[id]:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

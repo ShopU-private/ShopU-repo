@@ -20,7 +20,6 @@ interface ProductCardProps {
   product: Product;
   isFavorite: boolean;
   onToggleFavorite: (product: Product) => void;
-
   onAddToCart: (product: Product) => void;
   isAdding: boolean;
 }

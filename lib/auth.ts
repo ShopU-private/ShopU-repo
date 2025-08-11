@@ -86,7 +86,7 @@ export function isAdmin(req: NextRequest): boolean {
 export async function getUserFromToken(token: string) {
   try {
     const payload = jwtDecode<TokenPayload>(token);
-    
+
     // Verify token hasn't expired
     if (payload.exp && Date.now() >= payload.exp * 1000) {
       return null;

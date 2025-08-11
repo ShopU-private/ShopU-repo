@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
         status: status || existingPayment.status,
         providerPaymentId: providerPaymentId || existingPayment.providerPaymentId,
         metadata: {
-          ...(existingPayment.metadata as Record<string, unknown> || {}),
+          ...((existingPayment.metadata as Record<string, unknown>) || {}),
           ...metadata,
           updatedAt: new Date().toISOString(),
         },

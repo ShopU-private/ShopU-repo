@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useWishlist } from '../hooks/useWishlist';
 import { useProducts } from '../hooks/useBabycare';
 import useAddToCart from '../hooks/handleAddToCart';
+import { ChevronRight } from 'lucide-react';
 
 const BabyCareSection = () => {
   const { favorites, toggleFavorite } = useWishlist();
@@ -43,9 +44,9 @@ const BabyCareSection = () => {
 
           <button
             onClick={handleCardClick}
-            className="cursor-pointer rounded bg-[#317C80] px-3 py-1 text-sm font-medium text-white"
+            className="bg-background1 flex cursor-pointer rounded py-2 pr-2 pl-3 text-sm font-medium text-white"
           >
-            View All <span className="text-lg">{'>'}</span>
+            View All <ChevronRight size={20} />
           </button>
         </div>
 

@@ -82,14 +82,14 @@ export default function WishlistPage() {
       <Navroute />
       <div className="mx-auto max-w-7xl px-4 py-8">
         {loading ? (
-          <div className="flex min-h-[80vh] items-center justify-center">
+          <div className="flex min-h-[70vh] items-center justify-center">
             <div className="text-center">
               <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
               <p className="mt-4 text-gray-600">Loading your orders...</p>
             </div>
           </div>
         ) : wishlist.length === 0 ? (
-          <div className="text-gray-500">Your wishlist is empty.</div>
+          <div className="min-h-[70vh] text-center text-gray-500">Your wishlist is empty.</div>
         ) : (
           <>
             {/* Desktop Table View */}
@@ -120,7 +120,7 @@ export default function WishlistPage() {
                           height={50}
                           className="rounded"
                         />
-                        <span className="text-gray-800">{item.name}</span>
+                        <span className="text-left text-gray-800">{item.name}</span>
                       </td>
                       <td className="text-primaryColor text-md p-4 font-medium">
                         ₹{String(item.price).slice(0, 5)}

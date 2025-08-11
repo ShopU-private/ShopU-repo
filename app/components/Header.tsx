@@ -130,102 +130,28 @@ const Header = () => {
     checkLoginStatus();
   }, [checkLoginStatus]);
 
-  const handleClick = () => {
+  const handleClickHome = () => {
     router.push('/');
   };
+
+  const handleClick = () => {
+    router.push('/product');
+  };
+
   const categories = [
-    {
-      name: 'Baby Care',
-      subcategories: [
-        'Diapering',
-        'Diaper By Weight',
-        'Baby Food',
-        'Baby Skin Care',
-        'Baby Food By Age',
-        'Baby Hair Care',
-        'Baby Bath',
-      ],
-    },
-    {
-      name: 'Nutritional Drinks',
-      subcategories: [
-        'Nutritional Drinks',
-        'Sports Nutrition',
-        'Vitamins & Supplements',
-        'Minerals',
-        'Omega & Fish Oil',
-      ],
-    },
-    {
-      name: 'Women Care',
-      subcategories: [
-        'Feminine Hygiene',
-        'Gyno Care',
-        'Women Supplements',
-        'Pregnancy',
-        'Grooming',
-      ],
-    },
-    {
-      name: 'Personal Care',
-      subcategories: [
-        'Skin Care',
-        'Hair Care',
-        'Oral Care',
-        'Mens Grooming',
-        'Sexual Wellness',
-        'Fragrances',
-      ],
-    },
-    {
-      name: 'Ayurveda',
-      subcategories: ['Health Concers', 'Herbs', 'Herbal Juices', 'Chyawanprash', 'Honey'],
-    },
-    {
-      name: 'Health Devices',
-      subcategories: [
-        'Bp Monitors',
-        'Covid Test Kits',
-        'Glucometers & Test Strips',
-        'Thermometers',
-        'Plus Oximeters',
-        'Pregnancy test Kit',
-        'Heating Belts',
-        'Weighing machine',
-        'Nebulizer',
-        'Supports & Splints',
-        'Health Accessories',
-      ],
-    },
-    {
-      name: 'Home Essentials',
-      subcategories: [
-        'Insect Repellents',
-        'Antiseptic Liquids',
-        'Room Freshners',
-        'Cleaning Essentials',
-        'Batteries',
-        'Pet Food',
-      ],
-    },
-    {
-      name: 'Health Condition',
-      subcategories: [
-        'Mental Wellness',
-        'Liver Care',
-        'Diabetic',
-        'Pain Relief',
-        'Cardiac',
-        'Kidney Care',
-        'Stomach Care',
-        'Eye Care',
-        'Cold & Cough',
-        'Wound Care',
-        'Sleep Aids',
-        'Bone, Joint & Muscle',
-      ],
-    },
+    { name: 'Baby Care' },
+    { name: 'Nutritional Drinks' },
+    { name: 'Women Care' },
+    { name: 'Personal Care' },
+    { name: 'Ayurveda' },
+    { name: 'Health Devices' },
+    { name: 'Home Essentials' },
+    { name: 'Health Condition' },
   ];
+
+  const handleCategoryClick = (categoryName: string) => {
+    router.push(`/product?category=${encodeURIComponent(categoryName)}`);
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -375,6 +301,7 @@ const Header = () => {
               width={400}
               height={80}
               priority
+              onClick={handleClickHome}
             />
           </div>
           <div className="px-4 sm:hidden">
@@ -696,28 +623,10 @@ const Header = () => {
               <div key={index} className="relative">
                 <button
                   className="hover:text-primaryColor rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
-                  onClick={() => setActiveCategoryIndex(prev => (prev === index ? null : index))}
+                  onClick={() => handleCategoryClick(category.name)}
                 >
                   {category.name}
                 </button>
-
-                {/* Show popup if current index is active */}
-                {activeCategoryIndex === index && category.subcategories.length > 0 && (
-                  <div className="absolute top-full left-0 z-50 mt-3 min-w-36 bg-white shadow-md">
-                    {category.subcategories.map((sub, subIdx) => (
-                      <button
-                        key={subIdx}
-                        className="hover:bg-primaryColor w-full px-3 py-2 text-left text-sm text-gray-800 hover:text-white"
-                        onClick={() => {
-                          console.log('Clicked:', sub);
-                          setActiveCategoryIndex(null); // close dropdown after click
-                        }}
-                      >
-                        {sub}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -913,6 +822,7 @@ const Header = () => {
                     <button
                       key={index}
                       className="rounded-lg border border-gray-200 p-2 text-left text-xs text-gray-700 hover:border-teal-200 hover:bg-teal-50"
+                      onClick={() => handleCategoryClick(category.name)}
                     >
                       {category.name}
                     </button>

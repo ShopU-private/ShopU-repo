@@ -3,7 +3,10 @@ import { prisma } from '@/lib/client';
 import { updateVariantTypeSchema } from '@/lib/schema/adminSchema';
 import { isAdmin } from '@/lib/auth';
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ productId: string; variantTypeId: string }> }) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ productId: string; variantTypeId: string }> }
+) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -11,7 +14,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ prod
   try {
     const { variantTypeId } = await params;
     const parsed = updateVariantTypeSchema.safeParse(await req.json());
-    
+
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
@@ -30,7 +33,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ prod
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ productId: string; variantTypeId: string }> }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ productId: string; variantTypeId: string }> }
+) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

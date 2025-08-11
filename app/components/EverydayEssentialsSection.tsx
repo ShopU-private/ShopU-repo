@@ -5,6 +5,7 @@ import ProductCard from './ProductCard';
 import { useMedicines } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
+import { ChevronRight } from 'lucide-react';
 
 const EverydayEssentialsSection = () => {
   const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
@@ -47,8 +48,8 @@ const EverydayEssentialsSection = () => {
             Everyday <span className="text-secondaryColor">Essentials</span>
             <hr className="bg-background1 mt-1 h-1 w-48 rounded border-0" />
           </h2>
-          <button className="bg-background1 cursor-pointer rounded px-3 py-1 text-sm font-medium text-white">
-            View All <span className="text-lg">{'>'}</span>
+          <button className="bg-background1 flex cursor-pointer rounded py-2 pr-2 pl-3 text-sm font-medium text-white">
+            View All <ChevronRight size={20} />
           </button>
         </div>
 

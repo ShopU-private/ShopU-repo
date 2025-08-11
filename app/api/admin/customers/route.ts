@@ -93,9 +93,7 @@ export async function GET(req: NextRequest) {
       const totalOrders = customer._count.orders;
       const totalSpent = orderTotalsMap.get(customer.id) || 0;
       const lastOrderDate =
-        customer.orders.length > 0
-          ? customer.orders[0].createdAt
-          : customer.createdAt;
+        customer.orders.length > 0 ? customer.orders[0].createdAt : customer.createdAt;
       const defaultAddress = customer.addresses[0];
 
       return {

@@ -4,7 +4,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAdmin } from '@/lib/auth';
 import { prisma } from '@/lib/client';
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   if (!isAdmin(request)) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
