@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const token = await generateToken({
+    const token = generateToken({
       id: user.id,
       phoneNumber: user.phoneNumber,
       role: user.role,
@@ -43,12 +43,14 @@ export async function POST(request: NextRequest) {
       { success: true, messgae: 'OTP verified successfully' },
       { status: 201 }
     );
-    response.cookies.set('token', token, {
+    response.cookies.set({
+      name: 'token',
+      value: token,
       httpOnly: true,
-      secure: true,
-      maxAge: 30 * 24 * 60 * 60,
-      path: '/',
-    });
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: true,
+      maxAge: 30 * 24 * 24 * 60 * 1000
+    })
 
     return response;
   } catch (error) {
