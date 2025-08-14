@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { Loader } from 'lucide-react';
@@ -86,18 +86,18 @@ export default function OrdersPage() {
   };
 
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <Navroute />
       <div className="mx-auto max-w-7xl px-4 py-8">
         {isLoading ? (
-          <div className="flex min-h-[80vh] items-center justify-center">
+          <div className="flex min-h-[70vh] items-center justify-center">
             <div className="text-center">
               <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
               <p className="mt-4 text-gray-600">Loading your orders...</p>
             </div>
           </div>
         ) : orders.length === 0 ? (
-          <p className="text-gray-500">You have no orders.</p>
+          <p className="min-h-[70vh] text-center text-gray-500">You have no orders.</p>
         ) : (
           <>
             {/* Desktop Table View */}
@@ -195,6 +195,6 @@ export default function OrdersPage() {
           </>
         )}
       </div>
-    </>
+    </Suspense>
   );
 }

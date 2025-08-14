@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Navroute from '@/app/components/navroute';
 import { CheckCircle, PackageCheck, Truck, MapPin, Loader, Phone, User } from 'lucide-react';
@@ -81,20 +81,20 @@ export default function OrderDetails() {
 
   if (loading) {
     return (
-      <>
+      <Suspense fallback={<div>Loading...</div>}>
         <Navroute />
-        <div className="flex min-h-[80vh] items-center justify-center">
+        <div className="flex min-h-[70vh] items-center justify-center">
           <div className="text-center">
             <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
             <p className="mt-4 text-gray-600">Loading your order details...</p>
           </div>
         </div>
-      </>
+      </Suspense>
     );
   }
 
   if (!order) {
-    return <div className="py-10 text-center text-gray-600">Order not found.</div>;
+    return <div className="min-h-[70vh] py-10 text-center text-gray-600">Order not found.</div>;
   }
 
   const mappedStatus = statusMap[order.status] || 'Confirmed';
@@ -315,7 +315,11 @@ export default function OrderDetails() {
               <div className="mb-4 flex items-center gap-4 border-b border-gray-200 py-4">
                 <Image
                   src={item.product.imageUrl}
-                  alt={item.product.name}
+                  alt={
+                    item.product.name.length > 15
+                      ? item.product.name.slice(0, 15) + '…'
+                      : item.product.name
+                  }
                   width={60}
                   height={60}
                   className="mb-2 w-16 rounded"

@@ -1,7 +1,7 @@
 'use client';
 
 import type { FormEvent } from 'react';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Navroute from '../../components/navroute';
 import { ChevronDown } from 'lucide-react';
 
@@ -54,7 +54,7 @@ export default function ContactPage() {
   };
 
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <Navroute />
       {/* Desktop view */}
       <div className="mx-auto hidden max-w-7xl px-16 py-10 sm:block">
@@ -206,6 +206,6 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-    </>
+    </Suspense>
   );
 }

@@ -289,9 +289,9 @@ function PaymentContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-xl bg-gray-50">
       <header className="border-b bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto max-w-7xl px-4 py-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.back()}
@@ -304,7 +304,7 @@ function PaymentContent() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto max-w-7xl px-4 py-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div className="space-y-6 md:col-span-2">
             {error && (
@@ -477,14 +477,16 @@ function PaymentContent() {
 // Main component wrapped with Suspense
 export default function PaymentPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
-          <p className="mt-4 text-gray-600">Loading payment page...</p>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
+            <p className="mt-4 text-gray-600">Loading payment page...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <PaymentContent />
     </Suspense>
   );

@@ -39,7 +39,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ products
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ productsId: string }> }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ productsId: string }> }
+) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -79,7 +82,10 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ p
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ productsId: string }> }) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ productsId: string }> }
+) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

@@ -5,11 +5,14 @@ import ProductCard from './ProductCard';
 import { useWishlist } from '../hooks/useWishlist';
 import { useProducts } from '../hooks/useBabycare';
 import useAddToCart from '../hooks/handleAddToCart';
+import { useRouter } from 'next/navigation';
+import { ChevronRight } from 'lucide-react';
 
 const PersonalCareSection = () => {
   const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { handleAddToCart, addingProductId } = useAddToCart();
+  const router = useRouter();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -25,6 +28,10 @@ const PersonalCareSection = () => {
     limit: 10,
   });
 
+  const handleCardClick = () => {
+    router.push('/product?category=Personal Care');
+  };
+
   return (
     <section className="min-h-xl">
       {/* Desktop view */}
@@ -32,10 +39,13 @@ const PersonalCareSection = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-primaryColor mb-4 text-xl font-semibold sm:text-xl">
             Personal <span className="text-secondaryColor">Care</span>
-            <hr className="bg-background1 mt-1 h-1 w-32 rounded border-0" />{' '}
+            <hr className="bg-background1 mt-1 h-1 w-34 rounded border-0" />{' '}
           </h2>
-          <button className="bg-background1 cursor-pointer rounded px-3 py-1 text-sm font-medium text-white">
-            View All <span className="text-lg">{'>'}</span>
+          <button
+            onClick={handleCardClick}
+            className="bg-background1 flex cursor-pointer rounded py-2 pr-2 pl-3 text-sm font-medium text-white"
+          >
+            View All <ChevronRight size={20} />
           </button>
         </div>
 

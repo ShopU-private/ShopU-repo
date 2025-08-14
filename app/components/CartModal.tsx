@@ -59,8 +59,8 @@
 //       quantity: item.quantity,
 //       product: {
 //         name: item.product?.name || item.medicine?.name || 'Unknown Item',
-//         price: typeof (item.product?.price || item.medicine?.price) === 'string' 
-//           ? parseFloat((item.product?.price || item.medicine?.price) as string) 
+//         price: typeof (item.product?.price || item.medicine?.price) === 'string'
+//           ? parseFloat((item.product?.price || item.medicine?.price) as string)
 //           : (item.product?.price || item.medicine?.price),
 //         imageUrl: item.product?.imageUrl || item.medicine?.imageUrl,
 //       },

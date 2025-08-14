@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     const user = verifyToken(token);
     if (!user) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-    } 
+    }
 
     const address = await prisma.userAddress.findMany({
       where: { userId: user.id },
@@ -18,11 +18,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ address });
   } catch (error) {
-    console.error("API ERROR at GET /api/account/address:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('API ERROR at GET /api/account/address:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -54,10 +51,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ address: newAddress });
   } catch (error) {
-    console.error("API ERROR at POST /api/account/address:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('API ERROR at POST /api/account/address:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -495,9 +495,9 @@ export default function AdminCustomersPage() {
             )}
           </div>
           <div className="text-sm text-gray-600">
-            Showing {((currentPage - 1) * entriesPerPage) + 1} to{' '}
-            {Math.min(currentPage * entriesPerPage, pagination.total)} of{' '}
-            {pagination.total} customers
+            Showing {(currentPage - 1) * entriesPerPage + 1} to{' '}
+            {Math.min(currentPage * entriesPerPage, pagination.total)} of {pagination.total}{' '}
+            customers
           </div>
         </div>
 
@@ -559,67 +559,70 @@ export default function AdminCustomersPage() {
                   </td>
                 </tr>
               ) : (
-                filteredCustomers.map(customer => (
-                  console.log(customer),
-                  <tr key={customer.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedCustomers.includes(customer.id)}
-                        onChange={() => handleSelectCustomer(customer.id)}
-                        className="rounded border-gray-300"
-                      />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                      
-                        <div className="text-sm font-medium text-gray-900">{customer.name}</div>
-                        <div className="text-sm text-gray-500">
-                          Joined {formatDate(customer.joinDate)}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="text-sm text-gray-900">{customer.email}</div>
-                        <div className="text-sm text-gray-500">{customer.phoneNumber}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {customer.city}, {customer.state}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{customer.totalOrders}</td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      ₹{customer.totalSpent.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {formatDate(customer.lastOrderDate)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(customer.status)}`}
-                      >
-                        {customer.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <button className="text-blue-600 hover:text-blue-800">
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button className="text-gray-600 hover:text-gray-800">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => deleteCustomer(customer.id)}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                filteredCustomers.map(
+                  customer => (
+                    console.log(customer),
+                    (
+                      <tr key={customer.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4">
+                          <input
+                            type="checkbox"
+                            checked={selectedCustomers.includes(customer.id)}
+                            onChange={() => handleSelectCustomer(customer.id)}
+                            className="rounded border-gray-300"
+                          />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{customer.name}</div>
+                            <div className="text-sm text-gray-500">
+                              Joined {formatDate(customer.joinDate)}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div>
+                            <div className="text-sm text-gray-900">{customer.email}</div>
+                            <div className="text-sm text-gray-500">{customer.phoneNumber}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          {customer.city}, {customer.state}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{customer.totalOrders}</td>
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                          ₹{customer.totalSpent.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-500">
+                          {formatDate(customer.lastOrderDate)}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(customer.status)}`}
+                          >
+                            {customer.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <div className="flex items-center space-x-2">
+                            <button className="text-blue-600 hover:text-blue-800">
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            <button className="text-gray-600 hover:text-gray-800">
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => deleteCustomer(customer.id)}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  )
+                )
               )}
             </tbody>
           </table>
@@ -649,7 +652,7 @@ export default function AdminCustomersPage() {
                     onClick={() => setCurrentPage(page)}
                     className={`rounded border px-3 py-1 text-sm ${
                       page === currentPage
-                        ? 'bg-teal-600 text-white border-teal-600'
+                        ? 'border-teal-600 bg-teal-600 text-white'
                         : 'border-gray-300 hover:bg-gray-50'
                     }`}
                   >

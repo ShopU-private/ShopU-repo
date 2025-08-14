@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useCart } from '@/app/hooks/useCart';
 import { Loader } from 'lucide-react';
 import Link from 'next/link';
-import { MdDeleteOutline } from "react-icons/md";
-import { FaRegEdit } from "react-icons/fa";
+import { MdDeleteOutline } from 'react-icons/md';
+import { FaRegEdit } from 'react-icons/fa';
 import { useLocation } from '../context/LocationContext';
 import { useRouter } from 'next/navigation';
 import { logCheckoutEvent, validateAddressId } from '@/lib/checkout-utils';
@@ -41,30 +41,28 @@ export default function CheckoutPage() {
   const [isLoadingAddress, setIsLoadingAddress] = useState(true);
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
-  const [formMode, setFormMode] = useState<"add" | "edit">("add");
+  const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
 
   useEffect(() => {
-    console.log("fetching address ");
-    
+    console.log('fetching address ');
+
     const fetchAddress = async () => {
       try {
         setIsLoadingAddress(true);
-        const res = await fetch("/api/account/address", {
-          method: "GET",
-          credentials: "include",
-          cache: 'no-store'
+        const res = await fetch('/api/account/address', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
         });
-        console.log("res status", res.status);
-        
-        if (!res.ok) 
-          throw new Error("Failed to fetch address");
+        console.log('res status', res.status);
+
+        if (!res.ok) throw new Error('Failed to fetch address');
 
         const json = await res.json();
-        console.log("address list:", json?.address || []);        
-        setAddress(json?.address|| [])
-        
+        console.log('address list:', json?.address || []);
+        setAddress(json?.address || []);
       } catch (error) {
-        console.error("Error fetching address:", error);
+        console.error('Error fetching address:', error);
       } finally {
         setIsLoadingAddress(false);
       }
@@ -102,20 +100,16 @@ export default function CheckoutPage() {
     router.push(`/checkout/payment?addressId=${selectedAddressId}&amount=${totalAmount}`);
   };
 
-    const handleAddressSave = (newAddress: Address) => {
-  if (formMode === "edit") {
-    // Update existing address
-    setAddress(prev => 
-      prev.map(addr => 
-        addr.id === newAddress.id ? newAddress : addr
-      )
-    );
-  } else {
-    // Add new address
-    setAddress(prev => [...prev, newAddress]);
-  }
-  setSelectedAddressId(newAddress.id ?? '');
-};
+  const handleAddressSave = (newAddress: Address) => {
+    if (formMode === 'edit') {
+      // Update existing address
+      setAddress(prev => prev.map(addr => (addr.id === newAddress.id ? newAddress : addr)));
+    } else {
+      // Add new address
+      setAddress(prev => [...prev, newAddress]);
+    }
+    setSelectedAddressId(newAddress.id ?? '');
+  };
 
   if (isLoading || isLoadingAddress) {
     return (
@@ -146,22 +140,22 @@ export default function CheckoutPage() {
     );
   }
 
-  const handleDelAddress = async (id: string) =>{ 
+  const handleDelAddress = async (id: string) => {
     try {
-      const res = await fetch (`/api/account/address/${id}`, {
-        method: "DELETE",
-        credentials: "include"
+      const res = await fetch(`/api/account/address/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
       });
 
       if (res.ok) {
-        setAddress((prev) => prev.filter((addr) => addr.id !==id ))
-      }else{
-        console.error("Delete failed:", await res.text())
+        setAddress(prev => prev.filter(addr => addr.id !== id));
+      } else {
+        console.error('Delete failed:', await res.text());
       }
     } catch (error) {
-      console.error("Error deleting address:" , error)
+      console.error('Error deleting address:', error);
     }
-  }
+  };
 
   return (
     <div className="min-h-[60vh] px-4 py-8">
@@ -176,9 +170,9 @@ export default function CheckoutPage() {
               <p className="mb-3 text-gray-600">No saved addresses found.</p>
               <button
                 onClick={() => {
-                  setFormMode("add")
-                  setShowAddAddressForm(true)
-                  setSelectedAddress(null)
+                  setFormMode('add');
+                  setShowAddAddressForm(true);
+                  setSelectedAddress(null);
                 }}
                 className="text-teal-600 hover:underline"
               >
@@ -186,46 +180,48 @@ export default function CheckoutPage() {
               </button>
             </div>
           ) : (
-            <div className="space-y-3 relative">
+            <div className="relative space-y-3">
               {address.map(address => (
                 <div
                   key={address.id}
-                  className={`cursor-pointer rounded-lg border p-3 ${selectedAddressId === address.id
-                    ? 'border-teal-600 bg-teal-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  onClick={() => setSelectedAddressId(address.id ?? "")}
+                  className={`cursor-pointer rounded-lg border p-3 ${
+                    selectedAddressId === address.id
+                      ? 'border-teal-600 bg-teal-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedAddressId(address.id ?? '')}
                 >
-                
                   <div className="flex items-start">
                     <input
                       type="radio"
                       checked={selectedAddressId === address.id}
-                      onChange={() => setSelectedAddressId(address.id ?? "")}
+                      onChange={() => setSelectedAddressId(address.id ?? '')}
                       className="mt-1 h-4 w-4 text-teal-600"
                     />
                     <div className="ml-3">
                       <p className="font-medium">{address.fullName}</p>
                       <p className="text-sm text-gray-600">
                         {address.addressLine1}
-                        {address.addressLine2 ?  `,${address.addressLine2}` : ""}
+                        {address.addressLine2 ? `,${address.addressLine2}` : ''}
                       </p>
                       <p className="text-sm text-gray-600">
                         {address.city} {address.state} {address.postalCode}
                       </p>
                       <p className="text-sm text-gray-600">{address.phoneNumber}</p>
-                      <button 
-                        className='mt-[4px] text-lg cursor-pointer pr-2.5 text-teal-700'
-                        onClick={() =>{
-                        setFormMode("edit")
-                        setSelectedAddress(address)
-                        setShowAddAddressForm(true)
-                      }}>
-                          <FaRegEdit />
+                      <button
+                        className="mt-[4px] cursor-pointer pr-2.5 text-lg text-teal-700"
+                        onClick={() => {
+                          setFormMode('edit');
+                          setSelectedAddress(address);
+                          setShowAddAddressForm(true);
+                        }}
+                      >
+                        <FaRegEdit />
                       </button>
-                      <button 
-                      className='mt-3 text-xl cursor-pointer text-teal-700'
-                      onClick={() => handleDelAddress(address.id ?? "")}>
+                      <button
+                        className="mt-3 cursor-pointer text-xl text-teal-700"
+                        onClick={() => handleDelAddress(address.id ?? '')}
+                      >
                         <MdDeleteOutline />
                       </button>
                     </div>
@@ -235,7 +231,7 @@ export default function CheckoutPage() {
 
               <button
                 onClick={() => setShowAddAddressForm(true)}
-                className="absolute right-0 -bottom-8 text-sm mt-2 text-teal-600 hover:underline"
+                className="absolute right-0 -bottom-8 mt-2 text-sm text-teal-600 hover:underline"
               >
                 + Add another address
               </button>
@@ -274,10 +270,11 @@ export default function CheckoutPage() {
               Continue Shopping
             </Link>
             <button
-              className={`rounded-lg ${!selectedAddressId || address.length === 0
-                ? 'cursor-not-allowed bg-gray-400'
-                : 'bg-teal-600 hover:bg-teal-700'
-                } px-6 py-2 text-white`}
+              className={`rounded-lg ${
+                !selectedAddressId || address.length === 0
+                  ? 'cursor-not-allowed bg-gray-400'
+                  : 'bg-background1'
+              } cursor-pointer px-6 py-2 text-white transition-transform duration-300 hover:scale-102`}
               onClick={handleProceedToPayment}
               disabled={!selectedAddressId || address.length === 0}
             >
@@ -289,18 +286,18 @@ export default function CheckoutPage() {
 
       {showAddAddressForm && (
         <AddAddressForm
-        formMode={formMode}
-        initialData={selectedAddress}
+          formMode={formMode}
+          initialData={selectedAddress}
           onCancel={() => {
-            setShowAddAddressForm(false)          
-            setSelectedAddress(null)
-            setFormMode("add")
+            setShowAddAddressForm(false);
+            setSelectedAddress(null);
+            setFormMode('add');
           }}
-          onSave={(data) => {
-            handleAddressSave(data)
-            setShowAddAddressForm(false)
-            setSelectedAddress(null)
-            setFormMode("add")
+          onSave={data => {
+            handleAddressSave(data);
+            setShowAddAddressForm(false);
+            setSelectedAddress(null);
+            setFormMode('add');
           }}
         />
       )}

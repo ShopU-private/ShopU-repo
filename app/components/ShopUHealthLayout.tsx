@@ -6,6 +6,7 @@ import HealthCategoryGrid from '../components/HealthCategoryGrid';
 import { useWishlist } from '../hooks/useWishlist';
 import { useProducts } from '../hooks/useBabycare';
 import useAddToCart from '../hooks/handleAddToCart';
+import { ChevronRight } from 'lucide-react';
 
 interface HealthCategory {
   id: string;
@@ -56,8 +57,8 @@ const ShopUHealthComponent: React.FC = () => {
               Super Saver <span className="text-secondaryColor">Up to 50% off</span>
               <hr className="bg-background1 mt-1 h-1 rounded border-0" />
             </h2>
-            <button className="bg-background1 cursor-pointer rounded px-3 py-1 text-sm font-medium text-white">
-              View All <span className="text-lg">{'>'}</span>
+            <button className="bg-background1 flex cursor-pointer rounded py-2 pr-2 pl-3 text-sm font-medium text-white">
+              View All <ChevronRight size={20} />
             </button>
           </div>
 
@@ -78,27 +79,31 @@ const ShopUHealthComponent: React.FC = () => {
               </svg>
             </button>
 
-            <div
-              ref={scrollRef}
-              className="no-scrollbar flex gap-5 overflow-x-auto scroll-smooth py-4"
-            >
-              {loading ? (
-                [...Array(5)].map((_, index) => (
+            {loading ? (
+              <div className="no-scrollbar flex gap-4 overflow-x-auto px-1">
+                {[...Array(5)].map((_, index) => (
                   <div key={index} className="min-w-[210px] animate-pulse">
                     <div className="mb-2 h-52 rounded-lg bg-gray-200"></div>
                     <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
                     <div className="h-4 w-1/2 rounded bg-gray-200"></div>
                   </div>
-                ))
-              ) : error ? (
-                <div className="text-secondaryColor py-8 text-center">
-                  Failed to load medicines. Please try again.
-                </div>
-              ) : products.length === 0 ? (
-                <div className="py-8 text-center text-gray-500">No medicines available.</div>
-              ) : (
-                products.map(product => (
-                  <div key={product.id} className="max-w-[210px] min-w-[210px] flex-shrink-0">
+                ))}
+              </div>
+            ) : error ? (
+              <div className="text-secondaryColor py-8 text-center">
+                Failed to load super saver products. Please try again.
+              </div>
+            ) : products.length === 0 ? (
+              <div className="py-8 text-center text-gray-500">
+                No super saver products available.
+              </div>
+            ) : (
+              <div
+                ref={scrollRef}
+                className="no-scrollbar flex gap-5 overflow-x-auto scroll-smooth py-4"
+              >
+                {products.map(product => (
+                  <div key={product.id} className="max-w-[210px] min-w-[210px]">
                     <ProductCard
                       product={{
                         id: product.id,
@@ -126,9 +131,9 @@ const ShopUHealthComponent: React.FC = () => {
                       isAdding={addingProductId === product.id}
                     />
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Right Arrow */}
             <button

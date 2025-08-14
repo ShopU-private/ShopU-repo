@@ -3,7 +3,10 @@ import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
 import { createCombinationSchema } from '@/lib/schema/adminSchema';
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ productsId: string }> }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ productsId: string }> }
+) {
   if (!isAdmin(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

@@ -21,7 +21,14 @@ export async function POST(request: NextRequest) {
         channel: 'sms',
       });
 
-    return NextResponse.json({ success: twilioResponse.status === 'pending' });
+    if (twilioResponse && ['pending', 'send'].includes(twilioResponse.status)) {
+      return NextResponse.json(
+        { success: true, message: 'OTP send successfully' },
+        { status: 201 }
+      );
+    } else {
+      return NextResponse.json({ success: false, message: 'OTP send Failed' }, { status: 400 });
+    }
   } catch (error) {
     console.error('Somthing wents wrong:', error);
     return NextResponse.json({ success: false, message: 'Internal Error' }, { status: 500 });

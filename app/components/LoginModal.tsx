@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Phone, Lock } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -18,8 +18,16 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const t = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [resendTimer]);
 
   const handleSendOtp = async () => {
     if (!phoneNumber || phoneNumber.length !== 10) {
@@ -33,9 +41,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     try {
       const response = await fetch('/api/auth/login/send-otp', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phoneNumber }),
       });
 
@@ -44,13 +50,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       if (data.success || data.sent) {
         toast.success('OTP sent successfully!');
         setShowOtpInput(true);
-        setError('');
+        setResendTimer(30); // start cooldown
       } else {
         toast.error(data.message || 'Failed to send OTP');
       }
     } catch (err) {
       toast.error('Something went wrong. Please try again.');
-      console.error('Somthing wents wrong:', err);
+      console.error('Error sending OTP:', err);
     } finally {
       setLoading(false);
     }
@@ -68,9 +74,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     try {
       const response = await fetch('/api/auth/login/verify-otp', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phoneNumber, otp }),
       });
 
@@ -79,15 +83,21 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       if (data.success) {
         toast.success('Login successful!');
         onClose();
-        router.push('/'); // redirect to home
+        router.push('/');
       } else {
         toast.error(data.message || 'Invalid OTP');
       }
     } catch (err) {
       toast.error('Something went wrong. Please try again.');
-      console.error('Somthing wents wrong:', err);
+      console.error('Error verifying OTP:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendOtp = () => {
+    if (resendTimer === 0) {
+      handleSendOtp();
     }
   };
 
@@ -171,6 +181,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 />
               </div>
             </div>
+
             <button
               onClick={handleVerifyOtp}
               className="bg-background1 hover:bg-background1 w-full transform rounded-xl px-4 py-3 font-medium text-white shadow-lg shadow-teal-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -178,6 +189,19 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             >
               {loading ? 'Verifying...' : 'Verify OTP'}
             </button>
+
+            <div className="flex justify-end">
+              <button
+                onClick={handleResendOtp}
+                className={`text-md px-4 ${
+                  resendTimer > 0
+                    ? 'cursor-not-allowed text-gray-400'
+                    : 'text-primaryColor cursor-pointer'
+                }`}
+              >
+                {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
+              </button>
+            </div>
           </div>
         )}
 

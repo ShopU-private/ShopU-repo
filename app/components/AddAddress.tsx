@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -18,25 +19,20 @@ type Address = {
 type Props = {
   onCancel: () => void;
   onSave: (address: Address) => void;
-  formMode: "add" | "edit";
+  formMode: 'add' | 'edit';
   initialData: Address | null;
 };
 
-export default function AddAddressForm({
-  onCancel,
-  onSave,
-  formMode,
-  initialData,
-}: Props) {
+export default function AddAddressForm({ onCancel, onSave, formMode, initialData }: Props) {
   const [formData, setFormData] = useState<Address>({
-    fullName: "",
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    country: "",
-    postalCode: "",
-    phoneNumber: "",
+    fullName: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    country: '',
+    postalCode: '',
+    phoneNumber: '',
   });
 
 
@@ -48,17 +44,18 @@ export default function AddAddressForm({
 
   const apikey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
+
   useEffect(() => {
-    if (formMode === "edit" && initialData) {
+    if (formMode === 'edit' && initialData) {
       setFormData({
-        fullName: initialData.fullName || "",
-        addressLine1: initialData.addressLine1 || "",
-        addressLine2: initialData.addressLine2 || "",
-        city: initialData.city || "",
-        state: initialData.state || "",
-        country: initialData.country || "",
-        postalCode: initialData.postalCode || "",
-        phoneNumber: initialData.phoneNumber || "",
+        fullName: initialData.fullName || '',
+        addressLine1: initialData.addressLine1 || '',
+        addressLine2: initialData.addressLine2 || '',
+        city: initialData.city || '',
+        state: initialData.state || '',
+        country: initialData.country || '',
+        postalCode: initialData.postalCode || '',
+        phoneNumber: initialData.phoneNumber || '',
         id: initialData.id,
       });
     }
@@ -66,7 +63,7 @@ export default function AddAddressForm({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
@@ -89,22 +86,24 @@ export default function AddAddressForm({
 
       let res;
       if (formMode === "edit" && formData.id) {
+
         res = await fetch(`/api/account/address/${formData.id}`, {
-          method: "PATCH",
+          method: 'PATCH',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           credentials: "include",
           body: JSON.stringify(submitData),
         });
       } else {
-        res = await fetch("/api/account/address", {
-          method: "POST",
+        res = await fetch('/api/account/address', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           credentials: "include",
           body: JSON.stringify(submitData),
+
         });
       }
 
@@ -360,10 +359,10 @@ export default function AddAddressForm({
             </div>
 
             {/* Mock Map Content */}
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="flex h-full w-full items-center justify-center">
               <div className="text-center">
-                <div className="w-32 h-32 bg-white rounded-full shadow-lg flex items-center justify-center mb-4 mx-auto">
-                  <MapPin className="w-16 h-16 text-teal-600" />
+                <div className="mx-auto mb-4 flex h-32 w-32 items-center justify-center rounded-full bg-white shadow-lg">
+                  <MapPin className="h-16 w-16 text-teal-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">Select Your Location</h3>
                 <p className="text-gray-500 mb-4">Choose your delivery address on the map</p>
@@ -380,28 +379,28 @@ export default function AddAddressForm({
             </div>
 
             {/* Mock Location Markers */}
-            <div className="absolute top-1/3 left-1/3 w-8 h-8 bg-red-500 rounded-full border-4 border-white shadow-lg animate-pulse"></div>
-            <div className="absolute top-1/2 right-1/3 w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg"></div>
+            <div className="absolute top-1/3 left-1/3 h-8 w-8 animate-pulse rounded-full border-4 border-white bg-red-500 shadow-lg"></div>
+            <div className="absolute top-1/2 right-1/3 h-6 w-6 rounded-full border-2 border-white bg-blue-500 shadow-lg"></div>
           </div>
         </div>
 
         {/* Form Section */}
-        <div className="flex-1 max-w-md bg-white flex flex-col">
+        <div className="flex max-w-md flex-1 flex-col bg-white">
           {/* Header */}
-          <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+          <div className="flex items-center justify-between border-b border-gray-100 p-6">
             <div>
               <h2 className="text-xl font-semibold text-gray-800">
-                {formMode === "edit" ? "Edit Address" : "Add Address"}
+                {formMode === 'edit' ? 'Edit Address' : 'Add Address'}
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="mt-1 text-sm text-gray-500">
                 Enter your details for seamless delivery experience
               </p>
             </div>
             <button
               onClick={onCancel}
-              className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200"
             >
-              <X className="w-4 h-4 text-gray-600" />
+              <X className="h-4 w-4 text-gray-600" />
             </button>
           </div>
 
@@ -411,10 +410,10 @@ export default function AddAddressForm({
 
               {/* Address Type Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="mb-3 block text-sm font-medium text-gray-700">
                   Save address as
                 </label>
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => setSelectedAddressType("home")}
@@ -423,7 +422,7 @@ export default function AddAddressForm({
                         : "bg-white border-gray-300 text-gray-600 hover:border-gray-400"
                       }`}
                   >
-                    <Home className="w-4 h-4" />
+                    <Home className="h-4 w-4" />
                     Home
                   </button>
 
@@ -435,10 +434,9 @@ export default function AddAddressForm({
                         : "bg-white border-gray-300 text-gray-600 hover:border-gray-400"
                       }`}
                   >
-                    <Briefcase className="w-4 h-4" />
+                    <Briefcase className="h-4 w-4" />
                     Work
                   </button>
-
                   <button
                     type="button"
                     onClick={() => setSelectedAddressType("hotel")}
@@ -459,7 +457,7 @@ export default function AddAddressForm({
                         : "bg-white border-gray-300 text-gray-600 hover:border-gray-400"
                       }`}
                   >
-                    <MoreHorizontal className="w-4 h-4" />
+                    <MoreHorizontal className="h-4 w-4" />
                     Other
                   </button>
                 </div>
@@ -473,7 +471,7 @@ export default function AddAddressForm({
                     value={formData.addressLine1}
                     onChange={handleChange}
                     placeholder="Flat / House no / Building name"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 transition-all outline-none focus:border-transparent focus:ring-2 focus:ring-teal-500"
                     required
                   />
                 </div>
@@ -484,7 +482,7 @@ export default function AddAddressForm({
                     value={formData.addressLine2}
                     onChange={handleChange}
                     placeholder="Floor (optional)"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 transition-all outline-none focus:border-transparent focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
 
@@ -494,7 +492,7 @@ export default function AddAddressForm({
                     value={formData.city}
                     onChange={handleChange}
                     placeholder="Area / Sector / Locality"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 transition-all outline-none focus:border-transparent focus:ring-2 focus:ring-teal-500"
                     required
                   />
                 </div>
@@ -505,7 +503,7 @@ export default function AddAddressForm({
                     value={formData.state}
                     onChange={handleChange}
                     placeholder="Nearby landmark (optional)"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 transition-all outline-none focus:border-transparent focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
               </div>
@@ -522,7 +520,7 @@ export default function AddAddressForm({
                     value={formData.fullName}
                     onChange={handleChange}
                     placeholder="Name"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 transition-all outline-none focus:border-transparent focus:ring-2 focus:ring-teal-500"
                     required
                   />
 
@@ -531,7 +529,7 @@ export default function AddAddressForm({
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     placeholder="Your Phone Number"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 transition-all outline-none focus:border-transparent focus:ring-2 focus:ring-teal-500"
                     required
                   />
                 </div>
@@ -558,11 +556,12 @@ export default function AddAddressForm({
           </div>
 
           {/* Footer */}
-          <div className="p-6 border-t border-gray-100">
+          <div className="border-t border-gray-100 p-6">
             <button
               onClick={handleSubmit}
               disabled={isLoading}
               className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-4 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+
             >
               {isLoading ? "Saving..." : "Continue"}
             </button>
@@ -572,3 +571,4 @@ export default function AddAddressForm({
     </div>
   );
 };
+

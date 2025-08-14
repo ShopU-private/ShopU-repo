@@ -66,18 +66,15 @@ export default function AdminOrdersPage() {
       } else {
         throw new Error(data.error || 'Failed to load orders');
       }
-    } 
-  catch (err: unknown) {
-  if (err instanceof Error) {
-    setError(err.message);
-    console.error('Error fetching orders:', err);
-  } else {
-    setError('An unexpected error occurred.');
-    console.error('Unknown error:', err);
-  }
-}
-
-    finally {
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        console.error('Error fetching orders:', err);
+      } else {
+        setError('An unexpected error occurred.');
+        console.error('Unknown error:', err);
+      }
+    } finally {
       setLoading(false);
     }
   }, [pagination.page, pagination.limit, filterStatus]);

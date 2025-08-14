@@ -60,11 +60,21 @@ export default function Footer() {
           <div className="text-white">
             <h3 className="mb-3 text-xl font-semibold">Categorys</h3>
             <ul className="space-y-4 py-1 font-medium">
-              <li>Baby Care</li>
-              <li>Women Care</li>
-              <li>Personal Care</li>
-              <li>Ayurveda</li>
-              <li>Health Device</li>
+              <li>
+                <Link href="/product?category=Baby%20Care">Baby Care</Link>
+              </li>
+              <li>
+                <Link href="/product?category=Women%20Care">Women Care</Link>
+              </li>
+              <li>
+                <Link href="/product?category=Personal%20Care">Personal Care</Link>
+              </li>
+              <li>
+                <Link href="/product?category=Ayurveda">Ayurveda</Link>
+              </li>
+              <li>
+                <Link href="/product?category=Health%20Device">Health Device</Link>
+              </li>
             </ul>
           </div>
 
@@ -84,11 +94,15 @@ export default function Footer() {
           <div className="text-white">
             <h3 className="mb-3 text-xl font-semibold">Account</h3>
             <ul className="space-y-4 py-1 font-medium">
-              <li>Wishlist</li>
+              <li>
+                <Link href="/account/wishlist">Wishlist</Link>
+              </li>
               <li>
                 <Link href="/cart">Cart</Link>
               </li>
-              <li>Track Order</li>
+              <li>
+                <Link href="/account/orders">Track Order</Link>
+              </li>
               <li>Shipping Details</li>
             </ul>
           </div>
@@ -102,17 +116,25 @@ export default function Footer() {
             {/* Payment Icons */}
             <Image src="/visa.png" alt="Visa" width={64} height={34} />
             <Image src="/mastercard.png" alt="MasterCard" width={64} height={34} />
-
-            {/* Add PayPal back if needed: */}
-            {/* <img src="/paypal.png" alt="Paypal" className="h-6" /> */}
           </div>
 
           {/* Social Icons */}
           <div className="flex gap-4 text-[#E4F3F4]">
-            <FaFacebookF className="cursor-pointer hover:text-gray-800" />
-            <FaLinkedinIn className="cursor-pointer hover:text-gray-800" />
-            <FaInstagram className="cursor-pointer hover:text-gray-800" />
-            <FaTwitter className="cursor-pointer hover:text-gray-800" />
+            <Link href="https://www.facebook.com" target="_blank">
+              <FaFacebookF className="cursor-pointer hover:text-gray-800" />
+            </Link>
+
+            <Link href="https://www.linkedin.com" target="_blank">
+              <FaLinkedinIn className="cursor-pointer hover:text-gray-800" />
+            </Link>
+
+            <Link href="https://www.instagram.com" target="_blank">
+              <FaInstagram className="cursor-pointer hover:text-gray-800" />
+            </Link>
+
+            <Link href="https://www.twitter.com" target="_blank">
+              <FaTwitter className="cursor-pointer hover:text-gray-800" />
+            </Link>
           </div>
         </div>
       </div>
@@ -157,11 +179,21 @@ export default function Footer() {
             <div className="text-white">
               <h3 className="mb-3 text-xl font-semibold">Categorys</h3>
               <ul className="space-y-4 py-1 font-medium">
-                <li>Baby Care</li>
-                <li>Women Care</li>
-                <li>Personal Care</li>
-                <li>Ayurveda</li>
-                <li>Health Device</li>
+                <li>
+                  <Link href="/product?category=Baby%20Care">Baby Care</Link>
+                </li>
+                <li>
+                  <Link href="/product?category=Women%20Care">Women Care</Link>
+                </li>
+                <li>
+                  <Link href="/product?category=Personal%20Care">Personal Care</Link>
+                </li>
+                <li>
+                  <Link href="/product?category=Ayurveda">Ayurveda</Link>
+                </li>
+                <li>
+                  <Link href="/product?category=Health%20Device">Health Device</Link>
+                </li>
               </ul>
             </div>
 
@@ -184,11 +216,15 @@ export default function Footer() {
             <div className="text-white">
               <h3 className="mb-3 text-xl font-semibold">Account</h3>
               <ul className="space-y-4 py-1 font-medium">
-                <li>Wishlist</li>
+                <li>
+                  <Link href="/account/wishlist">Wishlist</Link>
+                </li>
                 <li>
                   <Link href="/cart">Cart</Link>
                 </li>
-                <li>Track Order</li>
+                <li>
+                  <Link href="/account/orders">Track Order</Link>
+                </li>
                 <li>Shipping Details</li>
               </ul>
             </div>
@@ -196,10 +232,21 @@ export default function Footer() {
             <div className="w-28">
               {/* Social Icons */}
               <div className="text-primaryColor grid h-28 grid-cols-2 gap-4 p-2 text-4xl">
-                <FaFacebookF className="cursor-pointer rounded-full bg-white p-2" />
-                <FaLinkedinIn className="cursor-pointer rounded-full bg-white p-2" />
-                <FaInstagram className="cursor-pointer rounded-full bg-white p-2" />
-                <FaTwitter className="cursor-pointer rounded-full bg-white p-2" />
+                <Link href="https://www.facebook.com" target="_blank">
+                  <FaFacebookF className="cursor-pointer rounded-full bg-white p-2" />
+                </Link>
+
+                <Link href="https://www.linkedin.com" target="_blank">
+                  <FaLinkedinIn className="cursor-pointer rounded-full bg-white p-2" />
+                </Link>
+
+                <Link href="https://www.instagram.com" target="_blank">
+                  <FaInstagram className="cursor-pointer rounded-full bg-white p-2" />
+                </Link>
+
+                <Link href="https://www.twitter.com" target="_blank">
+                  <FaTwitter className="cursor-pointer rounded-full bg-white p-2" />
+                </Link>
               </div>
 
               {/* Payment Icons */}
