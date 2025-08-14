@@ -4,12 +4,16 @@ export async function POST(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
 
   if (!token) {
-    return NextResponse.json({ success: true, error: 'User already logged out' }, { status: 200 });
+    return NextResponse.json(
+      { success: false, error: true, message: 'User already logged out' },
+      { status: 200 }
+    );
   }
 
   try {
     const response = NextResponse.json({
       success: true,
+      error: false,
       message: 'Logged out successfully',
     });
 
@@ -23,6 +27,9 @@ export async function POST(req: NextRequest) {
     return response;
   } catch (error) {
     console.error('Logout failed:', error);
-    return NextResponse.json({ success: false, message: 'Logout failed' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: true, message: 'Logout failed' },
+      { status: 500 }
+    );
   }
 }

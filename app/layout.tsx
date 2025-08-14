@@ -54,10 +54,10 @@ import './globals.css';
 import { LocationProvider } from './context/LocationContext';
 import { CartModalProvider } from './context/CartModalContext';
 import CartModalWrapper from './components/CartModalWrapper';
-import Header from './components/Header';
 import Footer from './components/Footer';
 import Script from 'next/script';
 import { Toaster } from 'react-hot-toast';
+import HeaderWrapper from './components/HeaderWrapper';
 
 const karla = Karla({
   weight: '400',
@@ -83,7 +83,7 @@ export default function RootLayout({
         <Toaster position="top-right" toastOptions={{ duration: 2000 }} />
         <LocationProvider>
           <CartModalProvider>
-            <Header />
+            <HeaderWrapper />
             <main className="bg-background min-h-[calc(100vh-200px)]">{children}</main>
             <Footer />
             <CartModalWrapper />

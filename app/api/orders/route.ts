@@ -194,9 +194,13 @@ export async function GET(req: NextRequest) {
     // Fetch orders for the user using Prisma
     const orders = await prisma.order.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' }, // Most recent first
+      orderBy: { createdAt: 'desc' },
       include: {
-        orderItems: true,
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
         address: true,
       },
     });

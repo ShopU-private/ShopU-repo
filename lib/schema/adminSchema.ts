@@ -19,9 +19,9 @@ export const createSubCategorySchema = z.object({
 export const createProductSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
-  price: z.number().nonnegative(),
-  stock: z.number().int().nonnegative(),
-  imageUrl: z.string().url(),
+  price: z.coerce.number().nonnegative(),
+  stock: z.coerce.number().int().nonnegative(),
+  imageUrl: z.string().min(1), // allow relative path
   subCategoryId: z.string().uuid(),
 });
 

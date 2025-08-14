@@ -10,7 +10,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
   }
   try {
-    const categories = await prisma.category.findMany();
+    const categories = await prisma.category.findMany({
+      include: {
+        subCategories: true,
+      },
+    });
     return NextResponse.json({ categories }, { status: 200 });
   } catch (error) {
     console.log(error);

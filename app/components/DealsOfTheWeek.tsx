@@ -344,9 +344,9 @@ const DealOfTheWeek = () => {
       {/* Mobile view*/}
       <section className="block p-4 sm:hidden">
         <div className="mb-4 flex items-center justify-center gap-2">
-          <h2 className="text-primaryColor text-md mt-1 text-center font-semibold">
+          <h2 className="text-primaryColor mt-1 text-center text-lg font-semibold">
             Deal of <span className="text-secondaryColor">The Week</span>
-            <hr className="mt-2 w-36 border-2" />
+            <hr className="mt-1 w-36 border-2" />
           </h2>
           <div className="flex justify-center gap-2">
             {['days', 'hours', 'minutes', 'seconds'].map(unit => (
@@ -366,9 +366,7 @@ const DealOfTheWeek = () => {
             onClick={handlePrev}
             disabled={currentIndex === 0}
             className={`flex h-9 w-9 items-center justify-center rounded-full ${
-              currentIndex === 0
-                ? 'bg-gray-200 text-gray-400'
-                : 'bg-teal-100 text-teal-600 hover:bg-teal-200'
+              currentIndex === 0 ? 'bg-gray-200 text-gray-400' : 'bg-background1 text-white'
             }`}
           >
             <ChevronLeft />
@@ -379,7 +377,7 @@ const DealOfTheWeek = () => {
             className={`flex h-9 w-9 items-center justify-center rounded-full ${
               currentIndex + itemsPerPage >= products.length
                 ? 'bg-gray-200 text-gray-400'
-                : 'bg-teal-600 text-white hover:bg-teal-700'
+                : 'bg-background1 text-white'
             }`}
           >
             <ChevronRight />

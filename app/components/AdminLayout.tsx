@@ -3,8 +3,20 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { PackageOpen, Users, ShoppingBag, FileBarChart, Menu, X, Home } from 'lucide-react';
-
+import {
+  Users,
+  FileBarChart,
+  Menu,
+  X,
+  Home,
+  Bell,
+  LayoutGrid,
+  ShoppingCart,
+  Package,
+  Truck,
+  Settings,
+} from 'lucide-react';
+import Image from 'next/image';
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
@@ -57,20 +69,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       name: 'Dashboard',
       href: '/admin',
-      icon: <Home className="h-5 w-5" />,
+      icon: <LayoutGrid className="h-5 w-5" />,
       active: pathname === '/admin',
     },
     {
       name: 'Orders',
       href: '/admin/orders',
-      icon: <PackageOpen className="h-5 w-5" />,
+      icon: <ShoppingCart className="h-5 w-5" />,
       active: pathname.startsWith('/admin/orders'),
-    },
-    {
-      name: 'Products',
-      href: '/admin/products',
-      icon: <ShoppingBag className="h-5 w-5" />,
-      active: pathname.startsWith('/admin/products'),
     },
     {
       name: 'Customers',
@@ -79,10 +85,34 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       active: pathname.startsWith('/admin/customers'),
     },
     {
+      name: 'Logistics',
+      href: '#',
+      icon: <Truck className="h-5 w-5" />,
+      active: pathname.startsWith('#'),
+    },
+    {
+      name: 'Products',
+      href: '/admin/products',
+      icon: <Package className="h-5 w-5" />,
+      active: pathname.startsWith('/admin/products'),
+    },
+    {
+      name: 'Notifications',
+      href: '#',
+      icon: <Bell className="h-5 w-5" />,
+      active: pathname.startsWith('#'),
+    },
+    {
       name: 'Reports',
       href: '/admin/reports',
       icon: <FileBarChart className="h-5 w-5" />,
       active: pathname.startsWith('/admin/reports'),
+    },
+    {
+      name: 'Setting',
+      href: '#',
+      icon: <Settings className="h-5 w-5" />,
+      active: pathname.startsWith('#'),
     },
   ];
 
@@ -111,9 +141,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* Sidebar for desktop */}
-      <div className="hidden bg-white shadow-md lg:flex lg:w-64 lg:flex-col">
+      <div className="hidden bg-black lg:flex lg:w-58 lg:flex-col">
         <div className="flex items-center justify-center border-b border-gray-200 px-4 py-5">
-          <h1 className="text-xl font-bold text-teal-700">Admin Dashboard</h1>
+          <Image src={'/Group.png'} alt={'logo'} width={140} height={100} />
         </div>
 
         <nav className="flex-1 space-y-1 px-2 py-4">
@@ -122,7 +152,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               key={item.name}
               href={item.href}
               className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${
-                item.active ? 'bg-teal-100 text-teal-900' : 'text-gray-700 hover:bg-gray-100'
+                item.active ? 'bg-background1 text-white' : 'text-gray-300'
               }`}
             >
               <span className="mr-3">{item.icon}</span>
@@ -134,7 +164,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="border-t border-gray-200 px-4 py-4">
           <Link
             href="/"
-            className="flex items-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            className="hover:bg-primaryColor flex items-center rounded-md px-4 py-2 text-sm font-medium text-white"
           >
             <Home className="mr-3 h-5 w-5" />
             Back to Shop
@@ -193,7 +223,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto bg-gray-50 pt-16 lg:pt-0">{children}</main>
+        <main className="bg-background no-scrollbar flex-1 overflow-y-auto pt-16 lg:pt-0">
+          <div className="hidden bg-white shadow-sm sm:block">
+            <div className="flex justify-end px-6 py-4">
+              <Bell size={20} />
+            </div>
+          </div>
+          {children}
+        </main>
       </div>
     </div>
   );

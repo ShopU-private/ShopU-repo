@@ -122,7 +122,11 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="p-6">
-      <h1 className="mb-6 text-2xl font-bold">Order Management</h1>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Order Management</h1>
+
+        <p>Track and manage all customer orders across medicine and supply categories.</p>
+      </div>
 
       {/* Filters */}
       <div className="mb-6 flex items-center gap-4">

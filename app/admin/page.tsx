@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
-  PackageOpen,
   ShoppingBag,
   DollarSign,
   ArrowUpRight,
@@ -11,6 +10,7 @@ import {
   TrendingUp,
   TrendingDown,
   AlertTriangle,
+  ShoppingCart,
 } from 'lucide-react';
 import {
   LineChart,
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
         processOrdersForCharts(allOrders);
 
         // Set recent orders (first 5)
-        setRecentOrders(allOrders.slice(0, 5));
+        setRecentOrders(allOrders.slice(0, 4));
 
         setLoading(false);
       } catch (err: unknown) {
@@ -251,17 +251,15 @@ export default function AdminDashboard() {
     {
       title: 'Total Orders',
       value: stats.totalOrders.toLocaleString(),
-      icon: <PackageOpen className="h-6 w-6 text-blue-600" />,
-      iconBg: 'bg-blue-100',
+      icon: <ShoppingCart className="h-5 w-5 text-gray-400" />,
       change: '+12%',
       changeText: 'from last month',
       isPositive: true,
     },
     {
-      title: 'Total Revenue',
+      title: 'Revenue',
       value: `₹${stats.totalRevenue.toLocaleString()}`,
-      icon: <DollarSign className="h-6 w-6 text-green-600" />,
-      iconBg: 'bg-green-100',
+      icon: <DollarSign className="h-5 w-5 text-gray-400" />,
       change: '+8.2%',
       changeText: 'from last month',
       isPositive: true,
@@ -269,18 +267,16 @@ export default function AdminDashboard() {
     {
       title: 'Total Products',
       value: stats.totalProducts.toLocaleString(),
-      icon: <ShoppingBag className="h-6 w-6 text-purple-600" />,
-      iconBg: 'bg-purple-100',
-      change: '+24',
+      icon: <ShoppingBag className="h-5 w-5 text-gray-400" />,
+      change: '+24%',
       changeText: 'new this month',
       isPositive: true,
     },
     {
       title: 'Low Stock Items',
       value: stats.lowStockItems.toString(),
-      icon: <AlertTriangle className="h-6 w-6 text-red-600" />,
-      iconBg: 'bg-red-100',
-      change: '+3',
+      icon: <AlertTriangle className="h-5 w-5 text-gray-400" />,
+      change: '-3.1%',
       changeText: 'since yesterday',
       isPositive: false,
     },
@@ -289,21 +285,25 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="border-b bg-white shadow-sm">
-        <div className="px-6 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        </div>
+      <div className="px-6 py-4">
+        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+        <p className="text-md text-gray-500">
+          Welcome back! Here&apos;s what&apos;s happening with your e-pharmacy today.
+        </p>
       </div>
 
-      <div className="p-6">
+      <div className="px-6 py-2">
         {/* Stats Cards */}
-        <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {statCards.map((card, index) => (
-            <div key={index} className="rounded-lg border bg-white p-6 shadow-sm">
+            <div
+              key={index}
+              className="rounded-lg border-1 border-gray-300 bg-white px-6 py-4 shadow-sm"
+            >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="mb-1 text-sm font-medium text-gray-600">{card.title}</p>
-                  <p className="mb-2 text-3xl font-bold text-gray-900">{card.value}</p>
+                  <p className="mb-1 text-sm font-medium">{card.title}</p>
+                  <p className="mb-2 text-2xl font-medium text-gray-900">{card.value}</p>
                   <div className="flex items-center text-sm">
                     {card.isPositive ? (
                       <TrendingUp className="mr-1 h-4 w-4 text-green-500" />
@@ -316,7 +316,7 @@ export default function AdminDashboard() {
                     <span className="ml-1 text-gray-500">{card.changeText}</span>
                   </div>
                 </div>
-                <div className={`rounded-full p-3 ${card.iconBg}`}>{card.icon}</div>
+                <div className="rounded-full">{card.icon}</div>
               </div>
             </div>
           ))}
@@ -324,8 +324,141 @@ export default function AdminDashboard() {
 
         {/* Charts Section */}
         <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="flex justify-between gap-4">
+            {/* Recent Orders */}
+            <div className="w-full rounded-lg border-1 border-gray-300 bg-white shadow-sm">
+              <div className="flex items-center justify-between px-6 py-4">
+                <div>
+                  <h2 className="flex items-center gap-2 text-xl">
+                    <ShoppingCart size={20} /> Recent Orders
+                  </h2>
+                  <p>Latest customer orders and their status</p>
+                </div>
+                <Link
+                  href="/admin/orders"
+                  className="flex items-center text-sm text-blue-600 hover:text-blue-800"
+                >
+                  View all
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </Link>
+              </div>
+
+              <div className="overflow-x-auto">
+                <div className="min-w-full divide-y divide-gray-200">
+                  <div className="px-6 py-2">
+                    {recentOrders.map(order => (
+                      <div key={order.id} className="mb-4 rounded-lg border-1 border-gray-300">
+                        <div className="flex items-center justify-between px-4 py-2">
+                          <div>
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="text-md font-medium whitespace-nowrap">ORD-001</p>
+                              <p
+                                className={`inline-flex rounded-full px-2 py-0.5 text-xs leading-5 font-semibold ${
+                                  order.status === 'DELIVERED'
+                                    ? 'bg-green-100 text-green-800'
+                                    : order.status === 'PROCESSING'
+                                      ? 'bg-blue-100 text-blue-800'
+                                      : order.status === 'PENDING'
+                                        ? 'bg-yellow-100 text-yellow-800'
+                                        : order.status === 'SHIPPED'
+                                          ? 'bg-purple-100 text-purple-800'
+                                          : order.status === 'CANCELLED'
+                                            ? 'bg-red-100 text-red-800'
+                                            : 'bg-gray-100 text-gray-800'
+                                }`}
+                              >
+                                {order.status}
+                              </p>
+                            </div>
+
+                            <div>
+                              <p className="py-1 text-sm whitespace-nowrap text-gray-600">
+                                {order.user?.name || 'Unknown Customer'}
+                              </p>
+                            </div>
+
+                            <div className="flex items-center text-sm">
+                              <p className="font-medium whitespace-nowrap text-blue-600">
+                                <Link
+                                  href={`/admin/orders/${order.id}`}
+                                  className="hover:underline"
+                                >
+                                  #{order.id.slice(-6)}
+                                </Link>
+                              </p>
+                              <p className="px-2 whitespace-nowrap text-gray-500">
+                                {new Date(order.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-md whitespace-nowrap text-gray-900">
+                              ₹{Number(order.totalAmount || 0).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {recentOrders.length === 0 && (
+                      <div>
+                        <span className="px-6 py-8 text-center text-gray-500">
+                          No recent orders found
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Order Status Pie Chart */}
+          <div className="rounded-lg border-1 border-gray-300 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">Order Status</h3>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={orderStatusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={120}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {orderStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value, name, props) => [
+                      `${value}% (${props.payload.count} orders)`,
+                      name,
+                    ]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Legend */}
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              {orderStatusData.map((item, index) => (
+                <div key={index} className="flex items-center">
+                  <div
+                    className="mr-2 h-3 w-3 rounded-full"
+                    style={{ backgroundColor: item.color }}
+                  ></div>
+                  <span className="text-sm text-gray-600">
+                    {item.name} ({item.value}%)
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Sales Overview Chart */}
-          <div className="rounded-lg border bg-white p-6 shadow-sm">
+          <div className="rounded-lg border-1 border-gray-300 bg-white p-6 shadow-sm">
             <h3 className="mb-4 text-lg font-semibold text-gray-900">Sales Overview</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -366,134 +499,6 @@ export default function AdminDashboard() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          </div>
-
-          {/* Order Status Pie Chart */}
-          <div className="rounded-lg border bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">Order Status</h3>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={orderStatusData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={120}
-                    paddingAngle={2}
-                    dataKey="value"
-                  >
-                    {orderStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value, name, props) => [
-                      `${value}% (${props.payload.count} orders)`,
-                      name,
-                    ]}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            {/* Legend */}
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              {orderStatusData.map((item, index) => (
-                <div key={index} className="flex items-center">
-                  <div
-                    className="mr-2 h-3 w-3 rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  ></div>
-                  <span className="text-sm text-gray-600">
-                    {item.name} ({item.value}%)
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Orders */}
-        <div className="rounded-lg border bg-white shadow-sm">
-          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-            <h2 className="text-xl font-semibold text-gray-900">Recent Orders</h2>
-            <Link
-              href="/admin/orders"
-              className="flex items-center text-sm text-blue-600 hover:text-blue-800"
-            >
-              View all
-              <ArrowUpRight className="ml-1 h-4 w-4" />
-            </Link>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Order ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Customer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Amount
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {recentOrders.map(order => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-blue-600">
-                      <Link href={`/admin/orders/${order.id}`} className="hover:underline">
-                        #{order.id.slice(-6)}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-900">
-                      {order.user?.name || 'Unknown Customer'}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-900">
-                      ₹{Number(order.totalAmount || 0).toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex rounded-full px-2 py-1 text-xs leading-5 font-semibold ${
-                          order.status === 'DELIVERED'
-                            ? 'bg-green-100 text-green-800'
-                            : order.status === 'PROCESSING'
-                              ? 'bg-blue-100 text-blue-800'
-                              : order.status === 'PENDING'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : order.status === 'SHIPPED'
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : order.status === 'CANCELLED'
-                                    ? 'bg-red-100 text-red-800'
-                                    : 'bg-gray-100 text-gray-800'
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-                {recentOrders.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                      No recent orders found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
           </div>
         </div>
       </div>

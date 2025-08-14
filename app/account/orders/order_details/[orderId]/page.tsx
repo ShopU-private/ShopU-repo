@@ -42,7 +42,7 @@ const steps = [
 ];
 
 const statusMap: Record<string, string> = {
-  PENDING: 'Confirmed',
+  PENDING: 'Pending',
   PROCESSING: 'Confirmed',
   SHIPPED: 'Packed',
   OUT_FOR_DELIVERY: 'Out For Delivery',
@@ -97,7 +97,7 @@ export default function OrderDetails() {
     return <div className="min-h-[70vh] py-10 text-center text-gray-600">Order not found.</div>;
   }
 
-  const mappedStatus = statusMap[order.status] || 'Confirmed';
+  const mappedStatus = statusMap[order.status] || 'Pending';
   const currentStepIndex = steps.findIndex(step => step.label === mappedStatus);
 
   const formattedDate = new Date(order.createdAt).toLocaleDateString('en-US', {
@@ -170,15 +170,25 @@ export default function OrderDetails() {
               {/* Step Circles */}
               {steps.map((step, index) => {
                 const isCompleted = index <= currentStepIndex;
+                const isPending = step.label === 'Confirmed' && order.status === 'PENDING';
+
                 return (
                   <div key={index} className="z-10 flex w-1/4 flex-col items-center text-center">
                     <span
-                      className={`mb-2 text-sm font-semibold ${isCompleted ? 'text-green-600' : 'text-primaryColor'}`}
+                      className={`mb-2 text-sm font-semibold ${
+                        isPending
+                          ? 'text-green-600'
+                          : isCompleted
+                            ? 'text-green-600'
+                            : 'text-primaryColor'
+                      }`}
                     >
-                      {step.label}
+                      {isPending ? 'Pending' : step.label}
                     </span>
                     <div
-                      className={`rounded-full p-2 ${isCompleted ? 'bg-green-600' : 'bg-background1'}`}
+                      className={`rounded-full p-2 ${
+                        isPending ? 'bg-green-600' : isCompleted ? 'bg-green-600' : 'bg-background1'
+                      }`}
                     >
                       {step.icon}
                     </div>
@@ -273,6 +283,7 @@ export default function OrderDetails() {
               const isCompleted = index <= currentStepIndex;
               const isNextCompleted = index + 1 <= currentStepIndex;
               const isLast = index === steps.length - 1;
+              const isPending = step.label === 'Confirmed' && order.status === 'PENDING';
 
               return (
                 <div key={index} className="relative flex items-start pb-18">
@@ -286,7 +297,7 @@ export default function OrderDetails() {
 
                   <div
                     className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full ${
-                      isCompleted ? 'bg-green-600' : 'bg-background1'
+                      isPending ? 'bg-green-600' : isCompleted ? 'bg-green-600' : 'bg-background1'
                     }`}
                   >
                     {step.icon}
@@ -294,9 +305,15 @@ export default function OrderDetails() {
 
                   <div className="ml-4">
                     <p
-                      className={`text-md font-semibold ${isCompleted ? 'text-green-600' : 'text-primaryColor'}`}
+                      className={`text-md font-semibold ${
+                        isPending
+                          ? 'text-green-600'
+                          : isCompleted
+                            ? 'text-green-600'
+                            : 'text-primaryColor'
+                      }`}
                     >
-                      {step.label}
+                      {isPending ? 'Pending' : step.label}
                     </p>
                     <p className="text-sm whitespace-pre-line text-gray-500">Step {index + 1}</p>
                   </div>
@@ -316,8 +333,8 @@ export default function OrderDetails() {
                 <Image
                   src={item.product.imageUrl}
                   alt={
-                    item.product.name.length > 15
-                      ? item.product.name.slice(0, 15) + '…'
+                    item.product.name.length > 10
+                      ? item.product.name.slice(0, 10) + '…'
                       : item.product.name
                   }
                   width={60}

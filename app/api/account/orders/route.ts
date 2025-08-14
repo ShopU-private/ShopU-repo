@@ -7,7 +7,10 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
 
     if (!token) {
-      return NextResponse.json({ success: false, error: 'Need to login first' }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: true, message: 'Need to login first' },
+        { status: 401 }
+      );
     }
 
     const payload = verifyToken(token);
@@ -44,9 +47,12 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true, orders });
+    return NextResponse.json({ success: true, error: false, orders });
   } catch (err) {
     console.error('[GET /api/account/orders]', err);
-    return NextResponse.json({ success: false, error: 'Failed to fetch orders' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: true, message: 'Failed to fetch orders' },
+      { status: 500 }
+    );
   }
 }

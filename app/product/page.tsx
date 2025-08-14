@@ -18,6 +18,7 @@ const ProductPage = () => {
   const category = searchParams.get('category') || 'All';
   const { favorites, toggleFavorite } = useWishlist();
   const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const { products, loading } = useProducts({
     category: category === 'All' ? undefined : category,
@@ -63,9 +64,9 @@ const ProductPage = () => {
       ) : products.length === 0 ? (
         <div className="min-h-[70vh] pt-4 text-center text-gray-500">No products found.</div>
       ) : (
-        <div className="min-h-xl bg-background p-4 sm:px-6 lg:px-8">
+        <div className="min-h-xl bg-background p-4 md:px-2 lg:px-8">
           {/* Desktop view */}
-          <div className="mx-auto flex hidden max-w-7xl justify-between gap-4 px-10 py-4 sm:flex">
+          <div className="mx-auto flex hidden max-w-7xl justify-between gap-6 px-6 py-4 sm:flex md:px-6 lg:px-10">
             <>
               {/* Sidebar */}
               <Sidebar
@@ -184,47 +185,38 @@ const ProductPage = () => {
           <div className="flex justify-between sm:hidden">
             <>
               <main className="flex-1 space-y-2">
-                <div className="mb-4 items-end justify-between">
-                  <div className="text-md font-semibold">
+                <div className="text-md mb-4 items-end justify-between">
+                  <div className="mb-2 px-2 font-semibold">
                     You searched for:{' '}
                     <span className="text-primaryColor text-lg capitalize">{category}</span>
                   </div>
 
-                  <div className="mt-2 flex items-center justify-between">
-                    <div className="flex gap-2 text-sm">
-                      <button className="flex gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => setIsFilterOpen(true)} // Open sidebar
+                        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2"
+                      >
                         <SlidersVertical size={20} className="text-primaryColor" />
                         Filter
                       </button>
-                      <button className="flex gap-2 rounded-full border border-gray-300 bg-white px-2 py-2">
-                        Sort by <ChevronDown size={20} className="text-primaryColor" />
+                      <Sidebar
+                        onCategorySelect={handleAddFilter}
+                        onPriceFilter={(min: number, max: number) => setPriceRange({ min, max })}
+                        isOpen={isFilterOpen}
+                        onClose={() => setIsFilterOpen(false)}
+                      />
+
+                      <button className="flex items-center gap-1 rounded-full border border-gray-300 bg-white px-3 py-2">
+                        Sort By <ChevronDown size={24} className="text-primaryColor" />
                       </button>
                     </div>
-                    <div className="text-xs text-gray-700">
+                    <div className="text-xs">
                       Showing {start + 1}-{Math.min(end, filteredProducts.length)} of{' '}
                       {filteredProducts.length} results
                     </div>
                   </div>
                 </div>
-
-                {selectedFilters.length > 0 && (
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {selectedFilters.map(filter => (
-                      <div
-                        key={filter}
-                        className="flex items-center gap-2 rounded-full bg-white px-3 text-xs text-gray-800"
-                      >
-                        <span>{filter}</span>
-                        <button
-                          onClick={() => setSelectedFilters(prev => prev.filter(f => f !== filter))}
-                          className="hover:text-secondaryColor text-2xl text-gray-600"
-                        >
-                          &times;
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
 
                 {/* Product Grid */}
                 <div className="grid grid-cols-2 gap-2">

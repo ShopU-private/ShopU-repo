@@ -44,7 +44,7 @@ export default function Navroute() {
   return (
     <nav className="bg-white text-sm text-gray-500">
       {/* Desktop View */}
-      <div className="mx-auto hidden max-w-7xl p-4 sm:block">
+      <div className="mx-auto hidden max-w-7xl p-4 md:block">
         <ol className="flex items-center space-x-2 px-12">
           <li>
             <Link href="/" className="hover:underline">
@@ -70,7 +70,7 @@ export default function Navroute() {
       </div>
 
       {/* Mobile View */}
-      <div className="sm:hidden">
+      <div className="md:hidden">
         <div className="bg-background1 flex items-center justify-between p-4">
           <div>
             <button onClick={() => router.back()}>

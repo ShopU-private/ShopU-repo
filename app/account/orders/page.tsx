@@ -14,7 +14,6 @@ interface Product {
 
 interface OrderItem {
   productId: string;
-  name: string;
   price: number;
   quantity: number;
   image?: string;
@@ -42,10 +41,11 @@ export default function OrdersPage() {
       try {
         const res = await fetch('/api/orders');
         if (!res.ok) {
-          if (res.status === 401) router.push('/');
-          else {
-            const err = await res.json();
-            toast.error(err.message || 'Failed to fetch orders');
+          const err = await res.json();
+          if (res.status === 401) {
+            router.push('/');
+          } else {
+            toast.error(err.message || 'Something went wrong');
           }
           return;
         }
@@ -122,15 +122,21 @@ export default function OrdersPage() {
                     (order.orderItems ?? []).map((item, index) => (
                       <tr
                         key={`${order.id}-${index}`}
-                        className="text-md rounded-lg bg-white text-center shadow-sm"
+                        className="text-md bg-white text-center shadow-sm"
                       >
                         <td className="p-4 text-gray-700">#ORD{order.id.slice(-10)}</td>
                         <td className="flex items-center justify-center gap-3 p-4">
                           <Image
                             src={item.product?.image_url || '/placeholder.png'}
-                            alt={item?.name || 'Product'}
-                            width={50}
-                            height={50}
+                            alt={
+                              item.product?.name
+                                ? item.product.name.length > 5
+                                  ? item.product.name.slice(0, 5) + '...'
+                                  : item.product.name
+                                : 'Product'
+                            }
+                            width={55}
+                            height={55}
                             className="rounded"
                             onClick={() => handleCardClick(order.id)}
                           />
@@ -168,11 +174,17 @@ export default function OrdersPage() {
                     </div>
                     <div
                       onClick={() => handleCardClick(order.id)}
-                      className="mb-4 flex items-center gap-4 border-b border-gray-200 py-4"
+                      className="mb-4 flex items-center gap-6 border-b border-gray-200 py-4"
                     >
                       <Image
-                        src={item.product?.image_url || '/placeholder.png'}
-                        alt={item?.name ?? 'Product'}
+                        src={item.product?.image_url || '/Placeholder.png'}
+                        alt={
+                          item.product?.name
+                            ? item.product.name.length > 15
+                              ? item.product.name.slice(0, 15) + '...'
+                              : item.product.name
+                            : 'Product'
+                        }
                         width={60}
                         height={60}
                         className="rounded"
