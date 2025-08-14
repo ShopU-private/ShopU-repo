@@ -1,7 +1,8 @@
-'use client';
 
-import { useEffect, useState } from 'react';
-import { X, MapPin, Search, Home, Briefcase, MoreHorizontal } from 'lucide-react';
+"use client";
+
+import { useEffect, useState } from "react";
+import { X, MapPin, Search, Home, Briefcase, Building, MoreHorizontal } from "lucide-react";
 
 type Address = {
   id?: string;
@@ -34,10 +35,15 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     phoneNumber: '',
   });
 
-  const [selectedAddressType, setSelectedAddressType] = useState<
-    'home' | 'work' | 'hotel' | 'other'
-  >('home');
-  const [searchLocation, setSearchLocation] = useState('');
+
+  const [selectedAddressType, setSelectedAddressType] = useState<"home" | "work" | "hotel" | "other">("home");
+  const [searchLocation, setSearchLocation] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  const apikey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
 
   useEffect(() => {
     if (formMode === 'edit' && initialData) {
@@ -60,20 +66,34 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    // Validation check
+    if (!formData.fullName || !formData.phoneNumber || !formData.addressLine1 || !formData.city) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
-      let res;
+      const submitData = {
+        ...formData,
+        addressType: selectedAddressType, // Include address type
+        country: formData.country || "India",
+        postalCode: formData.postalCode || "000000",
+        state: formData.state || formData.city,
+      };
 
-      if (formMode === 'edit' && formData.id) {
+      let res;
+      if (formMode === "edit" && formData.id) {
+
         res = await fetch(`/api/account/address/${formData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
-          body: JSON.stringify(formData),
+          credentials: "include",
+          body: JSON.stringify(submitData),
         });
       } else {
         res = await fetch('/api/account/address', {
@@ -81,8 +101,9 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
-          body: JSON.stringify(formData),
+          credentials: "include",
+          body: JSON.stringify(submitData),
+
         });
       }
 
@@ -91,47 +112,249 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
         onSave(data.address || data);
         onCancel();
       } else {
-        console.error('Failed to save address:', await res.text());
+        const errorText = await res.text();
+        console.error("Failed to save address:", errorText);
+        alert("Failed to save address. Please try again.");
       }
     } catch (err) {
-      console.error('Error:', err);
+      console.error("Error:", err);
+      alert("Network error. Please check your connection.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const searchLocationAPI = async (query: string) => {
+    if (!query || query.length < 3) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&components=country:in&key=${apikey}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.predictions) {
+          setSearchResults(data.predictions);
+          setShowSearchResults(true);
+        }
+      } else {
+        console.error("Google Places API error:", response.status);
+      }
+    } catch (error) {
+      console.error("Search failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearchSelect = async (result: any) => {
+    try {
+      setIsLoading(true);
+
+      // Get place details using place_id
+      const detailsResponse = await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${result.place_id}&fields=address_components,geometry,formatted_address&key=${apikey}`
+      );
+
+      if (detailsResponse.ok) {
+        const detailsData = await detailsResponse.json();
+        const addressComponents = detailsData.result.address_components;
+
+        // Parse address components
+        let city = "";
+        let state = "";
+        let country = "India";
+        let postalCode = "";
+        let route = "";
+        let streetNumber = "";
+
+        addressComponents.forEach((component: any) => {
+          const types = component.types;
+
+          if (types.includes("locality") || types.includes("sublocality")) {
+            city = component.long_name;
+          } else if (types.includes("administrative_area_level_1")) {
+            state = component.long_name;
+          } else if (types.includes("country")) {
+            country = component.long_name;
+          } else if (types.includes("postal_code")) {
+            postalCode = component.long_name;
+          } else if (types.includes("route")) {
+            route = component.long_name;
+          } else if (types.includes("street_number")) {
+            streetNumber = component.long_name;
+          }
+        });
+
+        setFormData(prev => ({
+          ...prev,
+          city: city,
+          state: state,
+          country: country,
+          postalCode: postalCode,
+          addressLine1: `${streetNumber} ${route}`.trim() || result.description.split(',')[0],
+          addressLine2: ""
+        }));
+
+        setSearchLocation(result.description);
+        setShowSearchResults(false);
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Error getting place details:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleCurrentLocation = () => {
     if (navigator.geolocation) {
+      setIsLoading(true);
       navigator.geolocation.getCurrentPosition(
-        () => {
-          // Mock reverse geocoding - in real app, use Google Maps API
-          setFormData(prev => ({
-            ...prev,
-            city: 'Current City',
-            state: 'Current State',
-          }));
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+
+          try {
+            // Using OpenStreetMap Nominatim API (free alternative to Google Maps)
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`
+            );
+
+            if (response.ok) {
+              const data = await response.json();
+              const address = data.address;
+
+              setFormData(prev => ({
+                ...prev,
+                city: address.city || address.town || address.village || address.suburb || "",
+                state: address.state || address.region || "",
+                country: address.country || "India",
+                postalCode: address.postcode || "",
+                addressLine1: `${address.house_number || ""} ${address.road || ""}`.trim() ||
+                  `Near ${address.amenity || address.shop || "Current Location"}`,
+                addressLine2: address.neighbourhood || address.suburb || ""
+              }));
+
+              console.log("Location detected:", data);
+            } else {
+              // Fallback if API fails
+              setFormData(prev => ({
+                ...prev,
+                city: "Location Detected",
+                state: "Please update manually",
+                addressLine1: `Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}`
+              }));
+            }
+          } catch (error) {
+            console.error("Reverse geocoding failed:", error);
+            // Fallback with coordinates
+            setFormData(prev => ({
+              ...prev,
+              city: "Location Found",
+              state: "Update manually",
+              addressLine1: `Coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+            }));
+          } finally {
+            setIsLoading(false);
+          }
         },
-        error => {
-          console.error('Error getting location:', error);
+        (error) => {
+          setIsLoading(false);
+          console.error("Error getting location:", error);
+          let errorMessage = "Could not get your location. ";
+
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage += "Please allow location access.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage += "Location information unavailable.";
+              break;
+            case error.TIMEOUT:
+              errorMessage += "Location request timed out.";
+              break;
+            default:
+              errorMessage += "Unknown error occurred.";
+              break;
+          }
+
+          alert(errorMessage);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000
         }
       );
+    } else {
+      alert("Geolocation is not supported by this browser.");
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="flex h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <div className="relative hidden flex-1 bg-gray-100 md:flex">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl w-full max-w-6xl h-[90vh] shadow-2xl overflow-hidden flex">
+
+        {/* Map Section - Hidden on mobile */}
+        <div className="hidden md:flex flex-1 relative bg-gray-100">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50">
             {/* Mock Map Interface */}
-            <div className="absolute top-4 right-4 left-4 z-10">
-              <div className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-lg">
-                <Search className="h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search your Location"
-                  value={searchLocation}
-                  onChange={e => setSearchLocation(e.target.value)}
-                  className="flex-1 text-gray-700 outline-none"
-                />
+            <div className="absolute top-4 left-4 right-4 z-10">
+              <div className="bg-white rounded-xl shadow-lg p-3 relative">
+                <div className="flex items-center gap-3">
+                  <Search className="w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search your Location"
+                    value={searchLocation}
+                    onChange={(e) => {
+                      setSearchLocation(e.target.value);
+                      searchLocationAPI(e.target.value);
+                    }}
+                    className="flex-1 outline-none text-gray-700"
+                  />
+                  {isLoading && <div className="w-4 h-4 border-2 border-teal-600 border-t-transparent rounded-full animate-spin"></div>}
+                </div>
+
+                {/* Search Results Dropdown */}
+                {showSearchResults && searchResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto z-20">
+                    {searchResults.map((result, index) => (
+                      <div
+                        key={result.place_id || index}
+                        onClick={() => handleSearchSelect(result)}
+                        className="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="flex items-start gap-2">
+                          <MapPin className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-sm text-gray-800">
+                              {result.structured_formatting?.main_text || result.description.split(',')[0]}
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {result.structured_formatting?.secondary_text || result.description}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* No Results */}
+                {showSearchResults && searchResults.length === 0 && searchLocation.length >= 3 && !isLoading && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-20">
+                    <div className="text-sm text-gray-500 text-center">
+                      No locations found for "{searchLocation}"
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -141,15 +364,16 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 <div className="mx-auto mb-4 flex h-32 w-32 items-center justify-center rounded-full bg-white shadow-lg">
                   <MapPin className="h-16 w-16 text-teal-600" />
                 </div>
-                <h3 className="mb-2 text-xl font-semibold text-gray-700">Select Your Location</h3>
-                <p className="mb-4 text-gray-500">Choose your delivery address on the map</p>
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">Select Your Location</h3>
+                <p className="text-gray-500 mb-4">Choose your delivery address on the map</p>
 
                 <button
                   onClick={handleCurrentLocation}
-                  className="mx-auto flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white transition-colors hover:bg-teal-700"
+                  disabled={isLoading}
+                  className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors mx-auto disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <MapPin className="h-4 w-4" />
-                  Go to current location
+                  <MapPin className="w-4 h-4" />
+                  {isLoading ? "Getting Location..." : "Go to current location"}
                 </button>
               </div>
             </div>
@@ -183,6 +407,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
           {/* Form Content */}
           <div className="flex-1 overflow-y-auto p-6">
             <div className="space-y-6">
+
               {/* Address Type Selection */}
               <div>
                 <label className="mb-3 block text-sm font-medium text-gray-700">
@@ -191,12 +416,11 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => setSelectedAddressType('home')}
-                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
-                      selectedAddressType === 'home'
-                        ? 'border-teal-500 bg-teal-50 text-teal-700'
-                        : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                    }`}
+                    onClick={() => setSelectedAddressType("home")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${selectedAddressType === "home"
+                        ? "bg-teal-50 border-teal-500 text-teal-700"
+                        : "bg-white border-gray-300 text-gray-600 hover:border-gray-400"
+                      }`}
                   >
                     <Home className="h-4 w-4" />
                     Home
@@ -204,25 +428,34 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
 
                   <button
                     type="button"
-                    onClick={() => setSelectedAddressType('work')}
-                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
-                      selectedAddressType === 'work'
-                        ? 'border-teal-500 bg-teal-50 text-teal-700'
-                        : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                    }`}
+                    onClick={() => setSelectedAddressType("work")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${selectedAddressType === "work"
+                        ? "bg-teal-50 border-teal-500 text-teal-700"
+                        : "bg-white border-gray-300 text-gray-600 hover:border-gray-400"
+                      }`}
                   >
                     <Briefcase className="h-4 w-4" />
                     Work
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAddressType("hotel")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${selectedAddressType === "hotel"
+                        ? "bg-teal-50 border-teal-500 text-teal-700"
+                        : "bg-white border-gray-300 text-gray-600 hover:border-gray-400"
+                      }`}
+                  >
+                    <Building className="w-4 h-4" />
+                    Hotel
+                  </button>
 
                   <button
                     type="button"
-                    onClick={() => setSelectedAddressType('other')}
-                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
-                      selectedAddressType === 'other'
-                        ? 'border-teal-500 bg-teal-50 text-teal-700'
-                        : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                    }`}
+                    onClick={() => setSelectedAddressType("other")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${selectedAddressType === "other"
+                        ? "bg-teal-50 border-teal-500 text-teal-700"
+                        : "bg-white border-gray-300 text-gray-600 hover:border-gray-400"
+                      }`}
                   >
                     <MoreHorizontal className="h-4 w-4" />
                     Other
@@ -276,9 +509,9 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
               </div>
 
               {/* Personal Details */}
-              <div className="border-t border-gray-100 pt-4">
-                <p className="mb-4 text-sm font-medium text-teal-600">
-                  Enter your details for seamless delivery experiencej
+              <div className="pt-4 border-t border-gray-100">
+                <p className="text-sm text-teal-600 font-medium mb-4">
+                  Enter your details for seamless delivery experience
                 </p>
 
                 <div className="space-y-4">
@@ -302,13 +535,21 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 </div>
               </div>
 
-              {/* Hidden fields for complete address */}
-              <div className="hidden">
-                <input name="country" value={formData.country || 'India'} onChange={handleChange} />
+              {/* Additional fields that might be needed */}
+              <div className="space-y-4">
+                <input
+                  name="country"
+                  value={formData.country || "India"}
+                  onChange={handleChange}
+                  placeholder="Country"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
+                />
                 <input
                   name="postalCode"
-                  value={formData.postalCode || '000000'}
+                  value={formData.postalCode}
                   onChange={handleChange}
+                  placeholder="Postal Code"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
                 />
               </div>
             </div>
@@ -318,13 +559,16 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
           <div className="border-t border-gray-100 p-6">
             <button
               onClick={handleSubmit}
-              className="w-full transform rounded-xl bg-teal-600 py-4 font-medium text-white shadow-lg transition-colors duration-200 hover:-translate-y-0.5 hover:bg-teal-700 hover:shadow-xl"
+              disabled={isLoading}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-4 rounded-xl transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+
             >
-              Continue
+              {isLoading ? "Saving..." : "Continue"}
             </button>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
