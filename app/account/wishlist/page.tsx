@@ -7,6 +7,7 @@ import Navroute from '../../components/navroute';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useAddToCart from '@/app/hooks/handleAddToCart';
+import { Suspense } from 'react';
 
 interface WishlistItem {
   productId: string;
@@ -78,7 +79,7 @@ export default function WishlistPage() {
   };
 
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <Navroute />
       <div className="mx-auto max-w-7xl px-4 py-8">
         {loading ? (
@@ -228,6 +229,6 @@ export default function WishlistPage() {
           </>
         )}
       </div>
-    </>
+    </Suspense>
   );
 }

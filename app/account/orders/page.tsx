@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { Loader } from 'lucide-react';
@@ -86,7 +86,7 @@ export default function OrdersPage() {
   };
 
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <Navroute />
       <div className="mx-auto max-w-7xl px-4 py-8">
         {isLoading ? (
@@ -207,6 +207,6 @@ export default function OrdersPage() {
           </>
         )}
       </div>
-    </>
+    </Suspense>
   );
 }

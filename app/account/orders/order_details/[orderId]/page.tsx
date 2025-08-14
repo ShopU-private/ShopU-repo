@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Navroute from '@/app/components/navroute';
 import { CheckCircle, PackageCheck, Truck, MapPin, Loader, Phone, User } from 'lucide-react';
@@ -81,7 +81,7 @@ export default function OrderDetails() {
 
   if (loading) {
     return (
-      <>
+      <Suspense fallback={<div>Loading...</div>}>
         <Navroute />
         <div className="flex min-h-[70vh] items-center justify-center">
           <div className="text-center">
@@ -89,7 +89,7 @@ export default function OrderDetails() {
             <p className="mt-4 text-gray-600">Loading your order details...</p>
           </div>
         </div>
-      </>
+      </Suspense>
     );
   }
 

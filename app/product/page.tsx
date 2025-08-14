@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, Loader, SlidersVertical } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import Navroute from '../components/navroute';
@@ -10,7 +10,8 @@ import { useWishlist } from '../hooks/useWishlist';
 import { useProducts } from '../hooks/useBabycare';
 import useAddToCart from '../hooks/handleAddToCart';
 
-const ProductPage = () => {
+// Move all logic and hooks into a child component
+function ProductPageContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const { handleAddToCart, addingProductId } = useAddToCart();
@@ -291,6 +292,20 @@ const ProductPage = () => {
       )}
     </>
   );
-};
+}
+
+// Top-level page only renders Suspense and the content component
+const ProductPage = () => (
+  <Suspense
+    fallback={
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
+        <span className="ml-2">Loading products...</span>
+      </div>
+    }
+  >
+    <ProductPageContent />
+  </Suspense>
+);
 
 export default ProductPage;
