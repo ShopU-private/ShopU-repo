@@ -87,7 +87,10 @@ export async function PUT(
   { params }: { params: Promise<{ productsId: string }> }
 ) {
   if (!isAdmin(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: true, message: 'Unauthorized' },
+      { status: 401 }
+    );
   }
 
   try {
@@ -103,9 +106,12 @@ export async function PUT(
       data: parsed.data,
     });
 
-    return NextResponse.json({ success: true, product: updatedProduct });
+    return NextResponse.json({ success: true, error: false, product: updatedProduct });
   } catch (error) {
     console.error('[PUT /api/admin/products/:productId]', error);
-    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: true, message: 'Failed to update product' },
+      { status: 500 }
+    );
   }
 }

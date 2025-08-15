@@ -9,14 +9,11 @@ interface Product {
   id: string;
   name: string;
   price: number;
-  isDiscontinued: boolean;
-  manufacturerName: string;
-  type: string;
-  packSizeLabel: string;
-  composition1: string;
-  composition2: string;
-  quantity: number;
+  isActive: boolean;
+  description: string;
+  stock: number;
   imageUrl?: string;
+  subCategoryId?: string;
 }
 
 interface Category {
@@ -31,11 +28,13 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubCategory, setSelectedSubCategory] = useState('');
+  const [isAddSubCategoryDialogOpen, setIsAddSubCategoryDialogOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newSubCategoryName, setNewSubCategoryName] = useState('');
+  const [selectedCategoryForSub, setSelectedCategoryForSub] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -47,7 +46,11 @@ export default function AdminProductsPage() {
   });
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Filter states
+  // Edit state
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+
+  // Filters
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedManufacturer, setSelectedManufacturer] = useState<string>('');
   const [selectedStockStatus, setSelectedStockStatus] = useState<string>('');
@@ -56,76 +59,56 @@ export default function AdminProductsPage() {
   const [entriesPerPage, setEntriesPerPage] = useState<number>(10);
 
   const types = ['allopathy', 'ayurveda', 'homeopathy'];
-  const manufacturers = Array.from(new Set(products.map(p => p.manufacturerName))).sort();
+  const manufacturers = Array.from(new Set(products.map(p => p.description))).sort();
   const stockStatuses = ['All', 'In Stock', 'Low Stock', 'Out of Stock'];
 
-  // Fetch products data from API
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch('/api/products');
+      if (!response.ok) throw new Error('Failed to fetch products');
+
+      const data = await response.json();
+      const productArray = Array.isArray(data.products)
+        ? data.products
+        : Array.isArray(data)
+          ? data
+          : [];
+
+      setProducts(productArray);
+      setFilteredProducts(productArray);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError('Failed to load products. Please try again later.');
+      setProducts([]);
+      setFilteredProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch products
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await fetch('/api/products', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
-
-        const data = await response.json();
-        console.log('API Response:', data); // Debug log
-
-        const productArray = Array.isArray(data.products)
-          ? data.products
-          : Array.isArray(data)
-            ? data
-            : [];
-
-        console.log('Product Array:', productArray); // Debug log
-        setProducts(productArray);
-        setFilteredProducts(productArray);
-      } catch (err) {
-        console.error('Error fetching products:', err);
-        setError('Failed to load products. Please try again later.');
-        setProducts([]);
-        setFilteredProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
   }, []);
 
-  // Filter products based on selected filters
+  // Filter logic
   useEffect(() => {
-    if (!Array.isArray(products)) {
-      setFilteredProducts([]);
-      return;
-    }
-
     let result = [...products];
 
-    if (selectedType) {
-      result = result.filter(product => product.type === selectedType);
-    }
-
     if (selectedManufacturer) {
-      result = result.filter(product => product.manufacturerName === selectedManufacturer);
+      result = result.filter(product => product.description === selectedManufacturer);
     }
 
     if (selectedStockStatus && selectedStockStatus !== 'All') {
       if (selectedStockStatus === 'Low Stock') {
-        result = result.filter(product => product.quantity > 0 && product.quantity <= 10);
+        result = result.filter(product => product.stock > 0 && product.stock <= 10);
       } else if (selectedStockStatus === 'In Stock') {
-        result = result.filter(product => product.quantity > 10);
+        result = result.filter(product => product.stock > 10);
       } else if (selectedStockStatus === 'Out of Stock') {
-        result = result.filter(product => product.quantity === 0);
+        result = result.filter(product => product.stock === 0);
       }
     }
 
@@ -134,9 +117,7 @@ export default function AdminProductsPage() {
       result = result.filter(
         product =>
           product.name.toLowerCase().includes(lowerCaseQuery) ||
-          product.manufacturerName.toLowerCase().includes(lowerCaseQuery) ||
-          product.composition1.toLowerCase().includes(lowerCaseQuery) ||
-          (product.composition2 && product.composition2.toLowerCase().includes(lowerCaseQuery))
+          product.description.toLowerCase().includes(lowerCaseQuery)
       );
     }
 
@@ -145,10 +126,7 @@ export default function AdminProductsPage() {
       result = result.filter(
         product =>
           product.name.toLowerCase().includes(lowerCaseQuery) ||
-          product.manufacturerName.toLowerCase().includes(lowerCaseQuery) ||
-          product.composition1.toLowerCase().includes(lowerCaseQuery) ||
-          (product.composition2 && product.composition2.toLowerCase().includes(lowerCaseQuery)) ||
-          product.packSizeLabel.toLowerCase().includes(lowerCaseQuery)
+          product.description.toLowerCase().includes(lowerCaseQuery)
       );
     }
 
@@ -182,23 +160,15 @@ export default function AdminProductsPage() {
     return 'In Stock';
   };
 
+  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch('/api/admin/category');
-        if (!response.ok) {
-          console.error('Failed to fetch categories');
-        }
         const data = await response.json();
-
-        if (Array.isArray(data)) {
-          setCategories(data);
-        } else if (Array.isArray(data.categories)) {
-          setCategories(data.categories);
-        } else {
-          console.error('Unexpected categories format:', data);
-          setCategories([]);
-        }
+        if (Array.isArray(data)) setCategories(data);
+        else if (Array.isArray(data.categories)) setCategories(data.categories);
+        else setCategories([]);
       } catch (err) {
         console.error('Error fetching categories:', err);
         setCategories([]);
@@ -208,114 +178,166 @@ export default function AdminProductsPage() {
     fetchCategories();
   }, []);
 
+  // Open Add Product modal
+  const openAddDialog = () => {
+    setIsEditMode(false);
+    setEditingProductId(null);
+    setFormData({
+      name: '',
+      description: '',
+      price: '',
+      stock: '',
+      imageUrl: '',
+      subCategoryId: '',
+    });
+    setSelectedCategory('');
+    setSelectedSubCategory('');
+    setIsAddDialogOpen(true);
+  };
+
+  // Open Edit Product modal
+  const openEditDialog = (product: Product) => {
+    setIsEditMode(true);
+    setEditingProductId(product.id);
+    setFormData({
+      name: product.name,
+      description: product.description,
+      price: String(product.price),
+      stock: String(product.stock),
+      imageUrl: product.imageUrl || '',
+      subCategoryId: product.subCategoryId || '',
+    });
+
+    const category = categories.find(cat =>
+      cat.subCategories.some(sub => sub.id === product.subCategoryId)
+    );
+    if (category) {
+      setSelectedCategory(category.id);
+      setSelectedSubCategory(product.subCategoryId || '');
+    }
+
+    setIsAddDialogOpen(true);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Add / Edit submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const payload = {
+      ...formData,
+      subCategoryId: selectedSubCategory,
+      price: Number(formData.price),
+      stock: Number(formData.stock),
+    };
+
     try {
-      const res = await fetch('/api/admin/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, subCategoryId: selectedSubCategory }),
-      });
+      let res;
+      if (isEditMode && editingProductId) {
+        res = await fetch(`/api/admin/products/${editingProductId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        res = await fetch('/api/admin/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
 
       if (res.ok) {
-        toast.success('Product Added!');
-        // Reset form fields
-        setFormData({
-          name: '',
-          description: '',
-          price: '',
-          stock: '',
-          imageUrl: '',
-          subCategoryId: '',
-        });
-        // Reset category selections
-        setSelectedCategory('');
-        setSelectedSubCategory('');
-        // Close the dialog (optional)
-
-        // Refresh products list (if needed)
-        // fetchProducts();
+        toast.success(isEditMode ? 'Product Updated!' : 'Product Added!');
+        if (!isEditMode) {
+          setFormData({
+            name: '',
+            description: '',
+            price: '',
+            stock: '',
+            imageUrl: '',
+            subCategoryId: '',
+          });
+          setSelectedCategory('');
+        }
+        setIsAddDialogOpen(true);
+        fetchProducts();
       } else {
-        toast.error('Failed to add product');
+        toast.error('Failed to save product');
       }
     } catch (error) {
       console.error('Error:', error);
       toast.error('An error occurred. Please try again.');
+      setFormError('Failed. Please try again.');
     }
   };
 
-  const handleEditProduct = async (e: React.FormEvent) => {
+  const handleCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editProduct) return;
-    setFormError(null);
 
-    if (
-      !editProduct.name ||
-      !editProduct.manufacturerName ||
-      !editProduct.type ||
-      !editProduct.packSizeLabel ||
-      !editProduct.composition1
-    ) {
-      setFormError(
-        'Please fill in all required fields (Name, Manufacturer, Type, Pack Size, Composition 1).'
-      );
-      return;
+    try {
+      const res = await fetch('/api/admin/category', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newCategoryName,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message || 'Category Added!');
+        setNewCategoryName('');
+        // Refresh categories
+        const updatedCategories = await fetch('/api/admin/category').then(res => res.json());
+        setCategories(
+          Array.isArray(updatedCategories) ? updatedCategories : updatedCategories.categories || []
+        );
+      } else {
+        toast.error(data.message || 'Failed to add category');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('An error occurred');
     }
+  };
 
-    if (editProduct.price < 0 || editProduct.quantity < 0) {
-      setFormError('Price and Quantity cannot be negative.');
+  const handleSubCategorySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCategoryForSub || !newSubCategoryName.trim()) {
+      toast.error('Please select a category and enter subcategory name');
       return;
     }
 
     try {
-      const response = await fetch(`/api/products/${editProduct.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editProduct),
+      const res = await fetch('/api/admin/subcategory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          categoryId: selectedCategoryForSub,
+          name: newSubCategoryName,
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update product');
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message || 'Subcategory Added!');
+        setIsAddSubCategoryDialogOpen(false);
+        // Refresh categories
+        const updatedCategories = await fetch('/api/admin/category').then(res => res.json());
+        setCategories(
+          Array.isArray(updatedCategories) ? updatedCategories : updatedCategories.categories || []
+        );
+      } else {
+        toast.error(data.message || 'Failed to add subcategory');
       }
-
-      const updatedProduct = await response.json();
-
-      setProducts(products.map(p => (p.id === updatedProduct.id ? updatedProduct : p)));
-      setFilteredProducts(
-        filteredProducts.map(p => (p.id === updatedProduct.id ? updatedProduct : p))
-      );
-      setIsEditDialogOpen(false);
-      setEditProduct(null);
     } catch (err) {
-      console.error('Error updating product:', err);
-      setFormError('Failed to update product. Please try again.');
+      console.error(err);
+      toast.error('An error occurred');
     }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const updatedValue =
-      type === 'checkbox'
-        ? (e.target as HTMLInputElement).checked
-        : name === 'price' || name === 'quantity'
-          ? parseFloat(value) || 0
-          : value;
-
-    if (isEditDialogOpen && editProduct) {
-      setEditProduct(prev => (prev ? { ...prev, [name]: updatedValue } : prev));
-    }
-  };
-
-  const openEditDialog = (product: Product) => {
-    setEditProduct({ ...product });
-    setIsEditDialogOpen(true);
   };
 
   return (
@@ -325,14 +347,29 @@ export default function AdminProductsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Product Management</h1>
           <p>Manage inventory, add new products, and update pricing information.</p>
         </div>
-        <button
-          onClick={() => setIsAddDialogOpen(true)}
-          className="bg-background1 flex items-center rounded-md px-4 py-2 text-white"
-        >
-          <Plus className="mr-2 h-5 w-5" />
-          Add Product
-        </button>
+        <div className="flex gap-4">
+          <button
+            onClick={() => {
+              setSelectedCategoryForSub('');
+              setNewSubCategoryName('');
+              setIsAddSubCategoryDialogOpen(true);
+            }}
+            className="bg-background1 flex items-center rounded-md px-3 py-2 text-white"
+          >
+            <Plus className="h-5 w-5" />
+            Add Category
+          </button>
+
+          <button
+            onClick={openAddDialog}
+            className="bg-background1 flex items-center rounded-md px-4 py-2 text-white"
+          >
+            <Plus className="mr-2 h-5 w-5" />
+            Add Product
+          </button>
+        </div>
       </div>
+
       <div className="space-y-4">
         <div className="rounded-xl border border-gray-200 bg-white p-4">
           {/* Filters */}
@@ -458,22 +495,13 @@ export default function AdminProductsPage() {
                     Product Name
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Manufacturer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Type
+                    Description
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Price
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Stock
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Composition
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                    Pack Size
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Actions
@@ -524,10 +552,7 @@ export default function AdminProductsPage() {
                         <div className="text-sm font-medium text-gray-900">{product.name}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{product.manufacturerName}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{product.type}</div>
+                        <div className="text-sm text-gray-900">{product.description}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
@@ -535,18 +560,9 @@ export default function AdminProductsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className={`text-sm ${getStockClassName(product.quantity)}`}>
-                          {getStockStatus(product.quantity)} ({product.quantity})
+                        <div className={`text-sm ${getStockClassName(product.stock)}`}>
+                          {getStockStatus(product.stock)} ({product.stock})
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {product.composition1}
-                          {product.composition2 && `, ${product.composition2}`}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{product.packSizeLabel}</div>
                       </td>
                       <td className="px-6 py-4 text-sm whitespace-nowrap">
                         <div className="flex space-x-2">
@@ -598,18 +614,20 @@ export default function AdminProductsPage() {
       {/* Error Message */}
       {error && <div className="mb-4 rounded-md bg-red-100 p-4 text-red-700">{error}</div>}
 
-      {/* Add Product Dialog */}
+      {/* Modal */}
       {isAddDialogOpen && (
         <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="no-scrollbar max-h-[90vh] w-full max-w-2xl items-center overflow-y-auto rounded-lg bg-white p-8">
             <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">Add New Product</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                {isEditMode ? 'Edit Product' : 'Add New Product'}
+              </h2>
               <button
                 onClick={() => setIsAddDialogOpen(false)}
                 className="rounded-full p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
                 aria-label="Close dialog"
               >
-                <X className="h-8 w-8" />
+                <X className="h-6 w-6" />
               </button>
             </div>
             {formError && (
@@ -618,9 +636,7 @@ export default function AdminProductsPage() {
             <form onSubmit={handleSubmit} className="w-full space-y-4 rounded px-8 py-4">
               <div className="grid grid-cols-2 items-center gap-4">
                 <div>
-                  <label className="text-md font-medium">
-                    Product Name <span className="text-lg text-red-600">*</span>
-                  </label>
+                  <label className="text-md font-medium">Product Name *</label>
                   <input
                     type="text"
                     name="name"
@@ -628,13 +644,11 @@ export default function AdminProductsPage() {
                     value={formData.name}
                     onChange={handleChange}
                     className="w-full rounded border p-2"
+                    required
                   />
                 </div>
-
                 <div>
-                  <label className="text-md font-medium">
-                    Price <span className="text-lg text-red-600">*</span>
-                  </label>
+                  <label className="text-md font-medium">Price *</label>
                   <input
                     type="number"
                     name="price"
@@ -642,12 +656,11 @@ export default function AdminProductsPage() {
                     value={formData.price}
                     onChange={handleChange}
                     className="w-full rounded border p-2"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="text-md font-medium">
-                    Description <span className="text-lg text-red-600">*</span>
-                  </label>
+                  <label className="text-md font-medium">Description *</label>
                   <input
                     type="text"
                     name="description"
@@ -655,14 +668,11 @@ export default function AdminProductsPage() {
                     value={formData.description}
                     onChange={handleChange}
                     className="w-full rounded border p-2"
+                    required
                   />
                 </div>
-
-                {/* Category Dropdown */}
                 <div>
-                  <label className="text-md font-medium">
-                    Category <span className="text-lg text-red-600">*</span>
-                  </label>
+                  <label className="text-md font-medium">Category *</label>
                   <select
                     value={selectedCategory}
                     onChange={e => {
@@ -670,21 +680,18 @@ export default function AdminProductsPage() {
                       setSelectedSubCategory('');
                     }}
                     className="w-full rounded border p-2"
+                    required
                   >
                     <option value="">Select Category</option>
-                    {categories &&
-                      categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
-
                 <div>
-                  <label className="text-md font-medium">
-                    Image Url <span className="text-lg text-red-600">*</span>
-                  </label>
+                  <label className="text-md font-medium">Image Url *</label>
                   <input
                     type="text"
                     name="imageUrl"
@@ -692,19 +699,17 @@ export default function AdminProductsPage() {
                     value={formData.imageUrl}
                     onChange={handleChange}
                     className="w-full rounded border p-2"
+                    required
                   />
                 </div>
-
-                {/* SubCategory Dropdown */}
                 <div>
-                  <label className="text-md font-medium">
-                    Sub Category <span className="text-lg text-red-600">*</span>
-                  </label>
+                  <label className="text-md font-medium">Sub Category *</label>
                   <select
                     value={selectedSubCategory}
                     onChange={e => setSelectedSubCategory(e.target.value)}
                     className="w-full rounded border p-2"
                     disabled={!selectedCategory}
+                    required
                   >
                     <option value="">Select SubCategory</option>
                     {selectedCategory &&
@@ -717,11 +722,8 @@ export default function AdminProductsPage() {
                         ))}
                   </select>
                 </div>
-
                 <div>
-                  <label className="text-md font-medium">
-                    Stock <span className="text-lg text-red-600">*</span>
-                  </label>
+                  <label className="text-md font-medium">Stock *</label>
                   <input
                     type="number"
                     name="stock"
@@ -729,20 +731,22 @@ export default function AdminProductsPage() {
                     value={formData.stock}
                     onChange={handleChange}
                     className="w-full rounded border p-2"
+                    required
                   />
                 </div>
                 <div className="mt-7 flex justify-center gap-4">
                   <button
+                    type="button"
                     onClick={() => setIsAddDialogOpen(false)}
                     className="cursor-pointer rounded bg-gray-300 px-4 py-2 text-gray-700"
                   >
-                    Cancle
+                    Cancel
                   </button>
                   <button
                     type="submit"
                     className="cursor-pointer rounded bg-blue-500 px-4 py-2 text-white"
                   >
-                    Add Product
+                    {isEditMode ? 'Update Product' : 'Add Product'}
                   </button>
                 </div>
               </div>
@@ -751,157 +755,95 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* Edit Product Dialog */}
-      {isEditDialogOpen && editProduct && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-8">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">Edit Product</h2>
+      {/* Error Message */}
+      {error && <div className="mb-4 rounded-md bg-red-100 p-4 text-red-700">{error}</div>}
+
+      {isAddSubCategoryDialogOpen && (
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-lg bg-white p-8">
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">Add New Subcategory</h2>
               <button
-                onClick={() => setIsEditDialogOpen(false)}
-                className="rounded-full p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
-                aria-label="Close dialog"
+                onClick={() => setIsAddSubCategoryDialogOpen(false)}
+                className="rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
               >
-                <X className="h-8 w-8" />
+                <X className="h-6 w-6" />
               </button>
             </div>
             {formError && (
               <div className="mb-4 rounded-md bg-red-100 p-2 text-red-700">{formError}</div>
             )}
-            <form onSubmit={handleEditProduct}>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={editProduct.name}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Price *</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={editProduct.price}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Manufacturer *</label>
-                  <input
-                    type="text"
-                    name="manufacturerName"
-                    value={editProduct.manufacturerName}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Type *</label>
+            <form
+              onSubmit={handleCategorySubmit}
+              className="flex items-center justify-between space-y-4"
+            >
+              <div className="w-88">
+                <label className="text-md font-medium">Category Name *</label>
+                <input
+                  type="text"
+                  value={newCategoryName}
+                  onChange={e => setNewCategoryName(e.target.value)}
+                  className="w-full rounded border p-2"
+                  placeholder="Enter Subcategory Name"
+                  required
+                />
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="cursor-pointer rounded bg-blue-500 px-2 py-2 text-white"
+                >
+                  Add Category
+                </button>
+              </div>
+            </form>
+            {formError && (
+              <div className="mb-4 rounded-md bg-red-100 p-2 text-red-700">{formError}</div>
+            )}
+            <form onSubmit={handleSubCategorySubmit} className="space-y-4">
+              <div className="flex justify-between gap-5">
+                <div className="w-full">
+                  <label className="text-md font-medium">Category *</label>
                   <select
-                    name="type"
-                    value={editProduct.type}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
+                    value={selectedCategoryForSub}
+                    onChange={e => setSelectedCategoryForSub(e.target.value)}
+                    className="h-10 w-full rounded border p-2"
                     required
                   >
-                    <option key="edit-select-type" value="">
-                      Select Type
-                    </option>
-                    {types.map(type => (
-                      <option key={`edit-type-${type}`} value={type}>
-                        {type}
+                    <option value="">Select Category</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
                       </option>
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Pack Size *</label>
+                <div className="w-full">
+                  <label className="text-md font-medium">Subcategory Name *</label>
                   <input
                     type="text"
-                    name="packSizeLabel"
-                    value={editProduct.packSizeLabel}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
+                    value={newSubCategoryName}
+                    onChange={e => setNewSubCategoryName(e.target.value)}
+                    className="w-full rounded border p-2"
+                    placeholder="Enter Subcategory Name"
                     required
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Composition 1 *</label>
-                  <input
-                    type="text"
-                    name="composition1"
-                    value={editProduct.composition1}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Composition 2</label>
-                  <input
-                    type="text"
-                    name="composition2"
-                    value={editProduct.composition2}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Quantity *</label>
-                  <input
-                    type="number"
-                    name="quantity"
-                    value={editProduct.quantity}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
-                    min="0"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                  <input
-                    type="text"
-                    name="imageUrl"
-                    value={editProduct.imageUrl || ''}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
-                  />
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="isDiscontinued"
-                    checked={editProduct.isDiscontinued}
-                    onChange={handleInputChange}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600"
-                  />
-                  <label className="ml-2 text-sm font-medium text-gray-700">Discontinued</label>
                 </div>
               </div>
-              <div className="mt-6 flex justify-end gap-4">
+
+              <div className="flex justify-end gap-4">
                 <button
                   type="button"
-                  onClick={() => setIsEditDialogOpen(false)}
-                  className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+                  onClick={() => setIsAddSubCategoryDialogOpen(false)}
+                  className="cursor-pointer rounded bg-gray-300 px-4 py-2 text-gray-700"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className="cursor-pointer rounded bg-blue-500 px-4 py-2 text-white"
                 >
-                  Update Product
+                  Add Subcategory
                 </button>
               </div>
             </form>

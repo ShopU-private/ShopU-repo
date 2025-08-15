@@ -17,11 +17,11 @@ export const createSubCategorySchema = z.object({
 });
 
 export const createProductSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, 'Product name is required'),
   description: z.string().min(1),
   price: z.coerce.number().nonnegative(),
   stock: z.coerce.number().int().nonnegative(),
-  imageUrl: z.string().min(1), // allow relative path
+  imageUrl: z.string().min(1),
   subCategoryId: z.string().uuid(),
 });
 
@@ -30,8 +30,8 @@ export const updateProductSchema = z.object({
   description: z.string().optional(),
   price: z.number().nonnegative().optional(),
   stock: z.number().int().nonnegative().optional(),
-  imageUrl: z.string().url().optional(),
-  subCategoryId: z.string().cuid('Invalid subcategory ID').optional(),
+  imageUrl: z.string().min(1),
+  subCategoryId: z.string().uuid().optional(),
 });
 
 export const createVariantTypeSchema = z.object({

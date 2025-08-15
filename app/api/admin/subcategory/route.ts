@@ -6,7 +6,10 @@ import { createSubCategorySchema } from '@/lib/schema/adminSchema';
 
 export async function GET(req: NextRequest) {
   if (!isAdmin(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: true, message: 'Unauthorized' },
+      { status: 401 }
+    );
   }
 
   const { searchParams } = new URL(req.url);
@@ -14,14 +17,17 @@ export async function GET(req: NextRequest) {
 
   try {
     const subCategories = await prisma.subCategory.findMany({
-      where: categoryId ? { categoryId } : undefined, //fetches category under category id if avl else all subCategories
+      where: categoryId ? { categoryId } : undefined,
       include: { category: true },
     });
 
-    return NextResponse.json(subCategories, { status: 200 });
+    return NextResponse.json({ success: true, error: false, subCategories }, { status: 200 });
   } catch (error) {
     console.error('Somthing wents wrong:', error);
-    return NextResponse.json({ error: 'Failed to fetch subcategories' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: true, message: 'Failed to fetch subcategories' },
+      { status: 500 }
+    );
   }
 }
 
@@ -41,8 +47,22 @@ export async function POST(req: NextRequest) {
 
     if (!name || !categoryId) {
       return NextResponse.json(
-        { success: false, error: 'name and categoryId are required' },
+        { success: false, error: true, message: 'Name and categoryId are required' },
         { status: 400 }
+      );
+    }
+
+    const existing = await prisma.subCategory.findFirst({
+      where: {
+        name: { equals: name, mode: 'insensitive' },
+        categoryId,
+      },
+    });
+
+    if (existing) {
+      return NextResponse.json(
+        { success: false, error: true, message: 'Already exists subcategory!' },
+        { status: 409 }
       );
     }
 
@@ -50,11 +70,14 @@ export async function POST(req: NextRequest) {
       data: { name, categoryId },
     });
 
-    return NextResponse.json({ success: true, newSubCategory }, { status: 201 });
+    return NextResponse.json(
+      { success: true, error: false, message: 'Subcategory Added!', newSubCategory },
+      { status: 200 }
+    );
   } catch (err) {
     console.error('Somthing wents wrong:', err);
     return NextResponse.json(
-      { success: false, error: 'Failed to create subcategory' },
+      { success: false, error: true, message: 'Failed to create subcategory' },
       { status: 500 }
     );
   }

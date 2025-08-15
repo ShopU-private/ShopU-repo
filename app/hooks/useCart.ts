@@ -98,7 +98,7 @@ export function useCart() {
         }
 
         if (!response.ok) {
-          toast.error('Failed to fetch cart');
+          console.error('Failed to fetch cart');
           return;
         }
 

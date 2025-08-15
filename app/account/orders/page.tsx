@@ -9,7 +9,7 @@ import Navroute from '@/app/components/navroute';
 
 interface Product {
   name: string;
-  image_url: string;
+  imageUrl: string;
 }
 
 interface OrderItem {
@@ -127,7 +127,7 @@ export default function OrdersPage() {
                         <td className="p-4 text-gray-700">#ORD{order.id.slice(-10)}</td>
                         <td className="flex items-center justify-center gap-3 p-4">
                           <Image
-                            src={item.product?.image_url || '/placeholder.png'}
+                            src={item.product?.imageUrl || '/placeholder.png'}
                             alt={
                               item.product?.name
                                 ? item.product.name.length > 5
@@ -177,7 +177,7 @@ export default function OrdersPage() {
                       className="mb-4 flex items-center gap-6 border-b border-gray-200 py-4"
                     >
                       <Image
-                        src={item.product?.image_url || '/Placeholder.png'}
+                        src={item.product?.imageUrl || '/Placeholder.png'}
                         alt={
                           item.product?.name
                             ? item.product.name.length > 15

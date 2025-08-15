@@ -6,7 +6,7 @@ import HealthCategoryGrid from '../components/HealthCategoryGrid';
 import { useWishlist } from '../hooks/useWishlist';
 import { useProducts } from '../hooks/useBabycare';
 import useAddToCart from '../hooks/handleAddToCart';
-import { ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface HealthCategory {
   id: string;
@@ -68,15 +68,7 @@ const ShopUHealthComponent: React.FC = () => {
               onClick={() => scroll('left')}
               className="bg-background1 absolute top-1/2 left-[-15px] z-10 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md sm:flex"
             >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
+              <ChevronLeft size={20} className="mr-1" />
             </button>
 
             {loading ? (
@@ -140,15 +132,7 @@ const ShopUHealthComponent: React.FC = () => {
               onClick={() => scroll('right')}
               className="bg-background1 absolute top-1/2 right-[-10px] z-10 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md sm:flex"
             >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
+              <ChevronRight size={20} className="ml-1" />
             </button>
           </div>
         </div>

@@ -16,7 +16,9 @@ async function main() {
 
     const medicines = batch.map((medicine: any) => {
       const rawQuantity = medicine.qunatity ?? medicine.quantity;
-      const quantity = Number.isFinite(rawQuantity) ? Number(rawQuantity) : Math.floor(Math.random() * 20 + 1); // 1–20
+      const quantity = Number.isFinite(rawQuantity)
+        ? Number(rawQuantity)
+        : Math.floor(Math.random() * 20 + 1); // 1–20
 
       return {
         name: medicine.name,

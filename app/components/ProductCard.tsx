@@ -39,7 +39,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="relative h-40 w-full">
           <div>
             <Image
-              src={'/pediasure.png'}
+              src={'/Pediasure.png'}
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
