@@ -28,22 +28,9 @@ export function HeaderWrapper() {
 
 export function FooterWrapper() {
   const pathname = usePathname();
-
   const isAdminRoute = pathname.startsWith('/admin');
 
-  return (
-    <>
-      {!isAdminRoute && (
-        <div className="hidden md:block">
-          <Footer />
-        </div>
-      )}
+  if (isAdminRoute) return null;
 
-      {pathname === '/' && !isAdminRoute && (
-        <div className="block md:hidden">
-          <Footer />
-        </div>
-      )}
-    </>
-  );
+  return <Footer />;
 }

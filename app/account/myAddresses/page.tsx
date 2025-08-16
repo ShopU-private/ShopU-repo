@@ -1,8 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import AddAddress from '@/app/components/AddAddress';
 import { UserAddress } from '@prisma/client';
+import Navroute from '@/app/components/navroute';
+import { Edit, Home, Loader, Plus, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 // Define the Address type to match what AddAddress component expects
 type Address = {
@@ -18,12 +21,14 @@ type Address = {
 };
 
 export default function AddressPage() {
+  const [loading, setLoading] = useState(true);
   const [addresses, setAddresses] = useState<UserAddress[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
   const fetchAddresses = async () => {
     try {
+      setLoading(true);
       const res = await fetch('/api/account/address', {
         method: 'GET',
         credentials: 'include',
@@ -34,6 +39,8 @@ export default function AddressPage() {
       }
     } catch (error) {
       console.error('Error fetching addresses:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,76 +97,110 @@ export default function AddressPage() {
     setShowForm(true);
   };
 
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   const handleDelete = async (addressId: string) => {
-    if (confirm('Are you sure you want to delete this address?')) {
-      try {
-        const res = await fetch(`/api/account/address/${addressId}`, {
-          method: 'DELETE',
-          credentials: 'include',
-        });
-        if (res.ok) {
-          fetchAddresses(); // Refresh the list
-        }
-      } catch (error) {
-        console.error('Error deleting address:', error);
+    try {
+      setDeletingId(addressId); // Start loader
+      const res = await fetch(`/api/account/address/${addressId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        toast.success('Address Deleted!');
+        fetchAddresses();
+      } else {
+        console.error('Failed to delete address');
       }
+    } catch (error) {
+      console.error('Error deleting address:', error);
+    } finally {
+      setDeletingId(null); // Stop loader
     }
   };
 
   return (
-    <div className="p-6">
-      <h2 className="mb-4 text-xl font-bold">Your Addresses</h2>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Navroute />
+      <div className="min-h-screen px-20 py-6">
+        <div className="mx-auto max-w-7xl">
+          {/* Header */}
+          <h2 className="text-primaryColor mb-6 text-lg font-semibold sm:text-xl">
+            My <span className="text-secondaryColor">Addresses</span>
+            <hr className="bg-background1 mt-1 w-34 rounded border-2" />{' '}
+          </h2>
 
-      <button
-        onClick={() => {
-          setEditingAddress(null);
-          setShowForm(true);
-        }}
-        className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-      >
-        Add New Address
-      </button>
+          {/* Add New Address */}
+          <button
+            onClick={() => {
+              setEditingAddress(null);
+              setShowForm(true);
+            }}
+            className="flex items-center gap-2 text-sm font-medium text-green-600"
+          >
+            <Plus className="h-4 w-4" />
+            Add new address
+          </button>
 
-      <div className="mt-6 space-y-4">
-        {addresses.map(addr => (
-          <div key={addr.id} className="rounded-lg border bg-gray-50 p-4 shadow-sm">
-            <p>
-              <strong>{addr.fullName}</strong>
-            </p>
-            <p>
-              {addr.addressLine1}
-              {addr.addressLine2 ? `, ${addr.addressLine2}` : ''}
-            </p>
-            <p>
-              {addr.city}, {addr.state}
-            </p>
-            <p>
-              {addr.country} - {addr.postalCode}
-            </p>
-            <p>Phone: {addr.phoneNumber}</p>
-
-            <div className="mt-3 space-x-2">
-              <button
-                onClick={() => handleEdit(addr)}
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(addr.id)}
-                className="text-sm text-red-600 hover:underline"
-              >
-                Delete
-              </button>
+          {loading ? (
+            <div className="flex min-h-[60vh] items-center justify-center">
+              <div className="text-center">
+                <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
+                <p className="mt-4 text-gray-600">Loading your addresses...</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ) : addresses.length === 0 ? (
+            <div className="min-h-[60vh] text-center text-gray-500">
+              No addresses found. Add your first address to get started.
+            </div>
+          ) : (
+            <div className="mt-4 space-y-4">
+              {/* Address Card */}
+              {addresses.map(addr => (
+                <div
+                  key={addr.id}
+                  className="flex items-center justify-between rounded bg-white px-6 py-4 shadow-sm"
+                >
+                  <div className="text-md flex items-center gap-5 text-gray-800">
+                    <Home className="text-primaryColor" />
+                    <div>
+                      <span>
+                        {addr.fullName}, {addr.addressLine1},
+                        {addr.addressLine2 ? `, ${addr.addressLine2}` : ''} {addr.city},{' '}
+                        {addr.state}
+                      </span>
+                      <span>
+                        {addr.country} {addr.postalCode}
+                      </span>
+                      <br />
+                      <span>Phone: {addr.phoneNumber}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <button
+                      onClick={() => handleEdit(addr)}
+                      className="cursor-pointer text-sm text-blue-600"
+                    >
+                      <Edit className="h-5 w-5 text-gray-500" />
+                    </button>
 
-        {addresses.length === 0 && (
-          <p className="py-8 text-center text-gray-500">
-            No addresses found. Add your first address to get started.
-          </p>
-        )}
+                    <button
+                      onClick={() => handleDelete(addr.id)}
+                      className="cursor-pointer text-gray-500 hover:text-red-500 disabled:opacity-60"
+                      disabled={deletingId === addr.id}
+                    >
+                      {deletingId === addr.id ? (
+                        <Loader className="h-5 w-5 animate-spin text-red-500" />
+                      ) : (
+                        <Trash2 className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {showForm && (
@@ -173,6 +214,6 @@ export default function AddressPage() {
           onSave={handleSave}
         />
       )}
-    </div>
+    </Suspense>
   );
 }

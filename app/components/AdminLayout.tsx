@@ -142,8 +142,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Sidebar for desktop */}
       <div className="hidden bg-black lg:flex lg:w-58 lg:flex-col">
-        <div className="flex items-center justify-center border-b border-gray-200 px-4 py-5">
-          <Image src={'/Group.png'} alt={'logo'} width={140} height={100} />
+        <div className="flex items-center justify-center border-b border-gray-200 p-4">
+          <Image src={'/Group.png'} alt={'logo'} width={500} height={200} className="h-10 w-36" />
         </div>
 
         <nav className="flex-1 space-y-1 px-2 py-4">

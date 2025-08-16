@@ -262,8 +262,11 @@ export default function AdminProductsPage() {
             subCategoryId: '',
           });
           setSelectedCategory('');
+          setIsAddDialogOpen(true);
+        } else {
+          setIsAddDialogOpen(false);
         }
-        setIsAddDialogOpen(true);
+
         fetchProducts();
       } else {
         toast.error('Failed to save product');
@@ -369,7 +372,9 @@ export default function AdminProductsPage() {
           </button>
         </div>
       </div>
-
+      <div className="rounded bg-blue-100 px-4 py-2 text-blue-800">
+        Total Products: {filteredProducts.length}
+      </div>
       <div className="space-y-4">
         <div className="rounded-xl border border-gray-200 bg-white p-4">
           {/* Filters */}

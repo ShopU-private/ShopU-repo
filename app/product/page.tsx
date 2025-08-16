@@ -300,7 +300,7 @@ const ProductPage = () => (
     fallback={
       <div className="flex min-h-[70vh] items-center justify-center">
         <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
-        <span className="ml-2">Loading products...</span>
+        <p className="mt-4 text-gray-600">Loading products...</p>
       </div>
     }
   >
