@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Users,
-  FileBarChart,
   Menu,
   X,
   Home,
@@ -15,6 +14,10 @@ import {
   Package,
   Truck,
   Settings,
+  ChevronDown,
+  UserCog,
+  FileText,
+  UserCheck,
 } from 'lucide-react';
 import Image from 'next/image';
 interface AdminLayoutProps {
@@ -26,6 +29,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const [openUsers, setOpenUsers] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -79,10 +83,29 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       active: pathname.startsWith('/admin/orders'),
     },
     {
-      name: 'Customers',
-      href: '/admin/customers',
+      name: 'Users',
+      href: '#',
       icon: <Users className="h-5 w-5" />,
-      active: pathname.startsWith('/admin/customers'),
+      children: [
+        {
+          name: 'Customers',
+          href: '/admin/customers',
+          icon: <Users className="h-4 w-4" />,
+          active: pathname.startsWith('/admin/customers'),
+        },
+        {
+          name: 'Delivery Staff',
+          href: '#',
+          icon: <UserCheck className="h-4 w-4" />,
+          active: pathname.startsWith('#'),
+        },
+        {
+          name: 'Admin Users',
+          href: '#',
+          icon: <UserCog className="h-4 w-4" />,
+          active: pathname.startsWith('#'),
+        },
+      ],
     },
     {
       name: 'Logistics',
@@ -103,13 +126,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       active: pathname.startsWith('#'),
     },
     {
-      name: 'Reports',
+      name: 'Content',
       href: '/admin/reports',
-      icon: <FileBarChart className="h-5 w-5" />,
+      icon: <FileText className="h-5 w-5" />,
       active: pathname.startsWith('/admin/reports'),
     },
     {
-      name: 'Setting',
+      name: 'Settings',
       href: '#',
       icon: <Settings className="h-5 w-5" />,
       active: pathname.startsWith('#'),
@@ -141,27 +164,62 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* Sidebar for desktop */}
-      <div className="hidden bg-black lg:flex lg:w-58 lg:flex-col">
+      <div className="hidden bg-black lg:flex lg:w-56 lg:flex-col">
         <div className="flex items-center justify-center border-b border-gray-200 p-4">
           <Image src={'/Group.png'} alt={'logo'} width={500} height={200} className="h-10 w-36" />
         </div>
 
         <nav className="flex-1 space-y-1 px-2 py-4">
-          {navigationItems.map(item => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${
-                item.active ? 'bg-background1 text-white' : 'text-gray-300'
-              }`}
-            >
-              <span className="mr-3">{item.icon}</span>
-              {item.name}
-            </Link>
-          ))}
+          {navigationItems.map(item =>
+            item.children ? (
+              <div key={item.name}>
+                <button
+                  onClick={() => setOpenUsers(!openUsers)}
+                  className="flex w-full items-center justify-between rounded-md px-4 py-2 text-sm font-medium"
+                >
+                  <span className="flex items-center gap-2 text-gray-300">
+                    {item.icon}
+                    {item.name}
+                  </span>
+                  <ChevronDown
+                    className={`h-4 w-4 text-gray-300 transition-transform ${
+                      openUsers ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                {openUsers && (
+                  <div className="mt-1 ml-6 space-y-1">
+                    {item.children.map(child => (
+                      <Link
+                        key={child.name}
+                        href={child.href}
+                        className={`flex items-center rounded-md px-3 py-2 text-sm ${
+                          child.active ? 'bg-primaryColor text-white' : 'text-gray-300'
+                        }`}
+                      >
+                        <span className="mr-2">{child.icon}</span>
+                        {child.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${
+                  item.active ? 'bg-primaryColor text-white' : 'text-gray-300'
+                }`}
+              >
+                <span className="mr-3">{item.icon}</span>
+                {item.name}
+              </Link>
+            )
+          )}
         </nav>
 
-        <div className="border-t border-gray-200 px-4 py-4">
+        <div className="border-t border-gray-200 p-4">
           <Link
             href="/"
             className="hover:bg-primaryColor flex items-center rounded-md px-4 py-2 text-sm font-medium text-white"

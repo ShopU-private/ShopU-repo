@@ -71,7 +71,7 @@ export default function Navroute() {
 
       {/* Mobile View */}
       <div className="md:hidden">
-        <div className="bg-background1 flex items-center justify-between p-4">
+        <div className="bg-background1 flex items-center justify-between px-4 py-3">
           <div>
             <button onClick={() => router.back()}>
               <ArrowLeft className="h-7 w-10 text-white" />

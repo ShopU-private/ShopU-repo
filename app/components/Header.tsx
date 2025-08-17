@@ -290,8 +290,8 @@ const Header = () => {
   return (
     <header className="bg-white shadow-lg">
       {/* Main Navbar */}
-      <div className="mx-auto max-w-7xl border-b border-gray-100 px-4 py-1">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-10">
+      <div className="border-b border-gray-100 bg-white px-4 xl:fixed xl:top-0 xl:left-0 xl:z-50 xl:w-full">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-8">
           {/* Logo */}
           <div className="hidden px-4 sm:block">
             <Image
@@ -299,7 +299,7 @@ const Header = () => {
               alt="ShopU - Shop Unlimited with ShopU"
               className="h-16 w-36 py-2 transition-transform hover:scale-105 md:h-20"
               width={400}
-              height={80}
+              height={100}
               priority
               onClick={handleClickHome}
             />
@@ -308,7 +308,7 @@ const Header = () => {
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
-              className="h-18 w-34 py-2 md:h-20"
+              className="h-20 w-36 py-2"
               width={500}
               height={80}
               priority
@@ -463,12 +463,12 @@ const Header = () => {
           </div>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden max-w-2xl flex-1 md:block">
+          <div className="hidden max-w-xl flex-1 md:block">
             <Searchbar />
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             {/* User Account */}
             {isLoggedIn ? (
               <div className="relative" ref={userMenuRef}>
@@ -569,7 +569,7 @@ const Header = () => {
             {/* Shopping Cart */}
             <button
               onClick={openCartModal}
-              className="hover:text-primaryColor relative rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50"
+              className="hover:text-primaryColor relative mr-4 rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50"
             >
               <ShoppingCart className="text-primaryColor h-6 w-6" />
               {isLoadingCart ? (
@@ -607,7 +607,7 @@ const Header = () => {
       </div>
 
       {/* Categories Navigation */}
-      <div className="bg-background1 hidden md:block">
+      <div className="bg-background1 hidden md:block xl:mt-20">
         <div className="mx-auto max-w-7xl px-6">
           <div
             className="relative z-30 flex items-center justify-between gap-4 py-3"

@@ -36,22 +36,33 @@ export default function Footer() {
           {/* ShopU Logo */}
           <div className="flex flex-col items-center sm:items-start">
             <Image
-              src="/ShopULogo.png"
+              src="/Group.png"
               alt="Shopu Logo"
-              width={144} // w-36 = 9rem = 144px
+              width={144}
               height={40}
-              className="object-contain"
+              className="object-contain py-2"
             />
 
-            <div className="mt-4 space-y-2 text-lg text-white">
-              <p className="flex items-center justify-center gap-2 sm:justify-start">
-                <Phone size={16} /> 1233-777
-              </p>
-              <p className="flex items-center justify-center gap-2 py-1 sm:justify-start">
-                <Mail size={16} /> shopU@contact.com
-              </p>
-              <p className="flex items-center justify-center gap-2 py-1 sm:justify-start">
-                <MapPin size={16} /> Boring Road, Patna
+            <div className="text-md mt-4 space-y-2 text-white">
+              <Link
+                href="tel:7070472634"
+                className="flex items-center justify-center gap-2 sm:justify-start"
+              >
+                <Phone size={16} />
+                Call Us: +91 7070472634
+              </Link>
+              <Link
+                href="mailto:shipulogistics@gmail.com"
+                className="flex items-center justify-center gap-2 py-1 sm:justify-start"
+              >
+                <Mail size={16} />
+                Email: shipulogistics@gmail.com
+              </Link>
+
+              <p className="flex justify-center gap-2 py-1 sm:justify-start">
+                <MapPin size={28} />
+                Address: N C 105, NEAR SBI OFFICER, KANKARBAGH, <br /> Ashok Nagar (Patna),
+                Sampatchak, Patna- 800020
               </p>
             </div>
           </div>
@@ -95,13 +106,16 @@ export default function Footer() {
             <h3 className="mb-3 text-xl font-semibold">Account</h3>
             <ul className="space-y-4 py-1 font-medium">
               <li>
-                <Link href="/account/wishlist">Wishlist</Link>
+                <Link href="/account/terms?otracker=footer_navlinks">Terms & conditions</Link>
               </li>
               <li>
-                <Link href="/cart">Cart</Link>
+                <Link href="/account/wishlist?otracker=footer_navlinks">Wishlist</Link>
               </li>
               <li>
-                <Link href="/account/orders">Track Order</Link>
+                <Link href="/cart?otracker=footer_navlinks">Cart</Link>
+              </li>
+              <li>
+                <Link href="/account/orders?otracker=footer_navlinks">Track Order</Link>
               </li>
               <li>Shipping Details</li>
             </ul>
@@ -147,28 +161,29 @@ export default function Footer() {
             <div className="h-18 w-44">
               {/* Mobile ShopU Logo */}
               <Image
-                src="/ShopULogo.png"
+                src="/Group.png"
                 alt="Shopu Logo"
-                width={176} // w-44 = 11rem = 176px
+                width={200}
                 height={72}
-                className="object-contain"
+                className="object-contain py-2"
               />
             </div>
 
-            <div className="mt-4 space-y-2 text-lg text-white">
-              <p className="flex items-center gap-2 py-2">
+            <div className="space-y-2 text-lg text-white">
+              <Link href="tel:7070472634" className="flex items-center gap-2 py-2">
                 <Phone size={24} />
-                Call Us: 1233-777
-              </p>
-              <p className="flex items-center gap-2 py-2">
+                Call Us: +91 7070472634
+              </Link>
+
+              <Link href="mailto:shipulogistics@gmail.com" className="flex items-center gap-2 py-2">
                 <Mail size={24} />
-                Email: groceyish@contact.com
-              </p>
-              <p className="flex gap-2 py-2">
-                <MapPin size={24} />
-                Address: 1762 School House Road
+                Email: shipulogistics@gmail.com
+              </Link>
+              <p className="flex gap-2 py-2 text-left">
+                <MapPin size={40} />
+                Address: N C 105, NEAR SBI OFFICER, KANKARBAGH,
+                <br /> Ashok Nagar (Patna), Sampatchak, Patna- 800020
                 <br />
-                Tamilnadu
               </p>
             </div>
           </div>
@@ -211,25 +226,28 @@ export default function Footer() {
           </div>
           <hr className="text-white" />
 
-          <div className="flex justify-between text-left">
+          <div className="flex items-center justify-between text-left">
             {/* Account */}
             <div className="text-white">
               <h3 className="mb-3 text-xl font-semibold">Account</h3>
               <ul className="space-y-4 py-1 font-medium">
                 <li>
-                  <Link href="/account/wishlist">Wishlist</Link>
+                  <Link href="/account/terms?otracker=footer_navlinks">Terms & conditions</Link>
                 </li>
                 <li>
-                  <Link href="/cart">Cart</Link>
+                  <Link href="/account/wishlist?otracker=footer_navlinks">Wishlist</Link>
                 </li>
                 <li>
-                  <Link href="/account/orders">Track Order</Link>
+                  <Link href="/cart?otracker=footer_navlinks">Cart</Link>
+                </li>
+                <li>
+                  <Link href="/account/orders?otracker=footer_navlinks">Track Order</Link>
                 </li>
                 <li>Shipping Details</li>
               </ul>
             </div>
 
-            <div className="w-28">
+            <div className="mt-12 w-28">
               {/* Social Icons */}
               <div className="text-primaryColor grid h-28 grid-cols-2 gap-4 p-2 text-4xl">
                 <Link href="https://www.facebook.com" target="_blank">
@@ -250,7 +268,7 @@ export default function Footer() {
               </div>
 
               {/* Payment Icons */}
-              <div className="flex justify-center py-6">
+              <div className="flex justify-center py-4">
                 <Image src="/visa.png" alt="Visa" width={64} height={32} />
                 <Image src="/mastercard.png" alt="MasterCard" width={64} height={32} />
               </div>

@@ -44,7 +44,10 @@ export async function DELETE(
   { params }: { params: Promise<{ productsId: string }> }
 ) {
   if (!isAdmin(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: true, message: 'Unauthorized' },
+      { status: 401 }
+    );
   }
 
   try {
@@ -75,7 +78,10 @@ export async function DELETE(
       where: { id: productsId },
     });
 
-    return NextResponse.json({ message: 'Product deleted successfully' });
+    return NextResponse.json(
+      { success: true, error: false, message: 'Product deleted successfully!' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('[DELETE /api/admin/products/[productsId]]', error);
     return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
