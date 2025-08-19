@@ -1,7 +1,10 @@
 'use client';
 
+import { Suspense } from "react";
+
 export default function ShippingAndDelivery() {
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <section className="mx-auto max-w-7xl px-6 py-6 md:px-14">
       <div className="rounded-lg bg-white p-8 shadow-md">
         <h1 className="mb-6 text-3xl font-bold text-gray-900">Shipping and Delivery</h1>
@@ -31,5 +34,7 @@ export default function ShippingAndDelivery() {
         </p>
       </div>
     </section>
+    </Suspense>
+
   );
 }
