@@ -1,4 +1,3 @@
-// components/OlaVectorMap.tsx
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -12,8 +11,8 @@ export default function OlaVectorMap() {
     if (mapContainer.current && !mapInstance.current) {
       mapInstance.current = new maplibregl.Map({
         container: mapContainer.current,
-        style: `https://api.olamaps.io/tiles/vector/v1/styles/roadmap/style.json?api_key=${process.env.NEXT_PUBLIC_OLA_MAPS_API_KEY}`,
-        center: [77.5946, 12.9716], // [lon, lat] → Bangalore
+        style: `https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json?key=${process.env.NEXT_PUBLIC_OLA_MAPS_API_KEY}`,
+        center: [77.5946, 12.9716], // Bangalore
         zoom: 12,
       });
 
@@ -21,7 +20,15 @@ export default function OlaVectorMap() {
     }
 
     return () => {
-      mapInstance.current?.remove();
+      if (mapInstance.current) {
+        try {
+          mapInstance.current.remove();
+        } catch (e) {
+          console.warn('Map already removed:', e);
+        } finally {
+          mapInstance.current = null;
+        }
+      }
     };
   }, []);
 
