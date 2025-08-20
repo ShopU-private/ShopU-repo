@@ -109,11 +109,11 @@ export default function Footer() {
                 <Link href="/pages/terms?otracker=footer_navlinks">Terms & conditions</Link>
               </li>
               <li>
-                <Link href="/pages/shipping?otracker=footer_navlinks">Shipping And delivery</Link>
+                <Link href="/pages/shipping?otracker=footer_navlinks">Shipping & Delivery</Link>
               </li>
 
               <li>
-                <Link href="/pages/privacy?otracker=footer_navlinks">Privacy</Link>
+                <Link href="/pages/privacy?otracker=footer_navlinks">Privacy Policy</Link>
               </li>
               <li>
                 <Link href="/pages/cancellation?otracker=footer_navlinks">
