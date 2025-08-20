@@ -277,7 +277,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useCart } from '@/app/hooks/useCart';
 import { Loader, ChevronUp, X, ShoppingBag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useLocation } from '../context/LocationContext';
 import dynamic from 'next/dynamic';
 
 // Updated CartItem interface to match the one expected by CartItemList
@@ -317,13 +316,13 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
   const { cartItems: rawCartItems, isLoading, refreshCart, totals } = useCart();
   const [processingAction, setProcessingAction] = useState<{ [key: string]: string }>({});
   const router = useRouter();
-  const { location } = useLocation();
+  // const { location } = useLocation();
 
-  const deliveryAddress = useMemo(
-    () =>
-      location ? `${location.address}, PIN: ${location.pincode}` : 'Please set delivery location',
-    [location]
-  );
+  // const deliveryAddress = useMemo(
+  //   () =>
+  //     location ? `${location.address}, PIN: ${location.pincode}` : 'Please set delivery location',
+  //   [location]
+  // );
 
   // Transform cart items to match expected interface
   const cartItems = useMemo(() => {
@@ -471,7 +470,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
         </div>
 
         {/* Delivery Address */}
-        <div className="border-t border-gray-200 bg-white">
+        {/* <div className="border-t border-gray-200 bg-white">
           <div className="flex items-start justify-between gap-3 p-4">
             <div className="flex items-start gap-2">
               <div className="mt-1 h-4 w-4 flex-shrink-0 rounded-full border-2 border-teal-500"></div>
@@ -490,7 +489,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
               Change
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     );
   };
