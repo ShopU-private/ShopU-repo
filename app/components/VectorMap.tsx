@@ -14,7 +14,7 @@ export default function OlaVectorMap() {
         style: `https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json?api_key=${process.env.NEXT_PUBLIC_OLA_MAPS_API_KEY}`,
         center: [77.5946, 12.9716], // Bangalore
         zoom: 12,
-        transformRequest: (url) => {
+        transformRequest: url => {
           if (url.includes('api.olamaps.io')) {
             const separator = url.includes('?') ? '&' : '?';
             return {
@@ -25,9 +25,7 @@ export default function OlaVectorMap() {
         },
       });
 
-      new maplibregl.Marker()
-        .setLngLat([77.5946, 12.9716])
-        .addTo(mapInstance.current);
+      new maplibregl.Marker().setLngLat([77.5946, 12.9716]).addTo(mapInstance.current);
     }
 
     return () => {
@@ -43,10 +41,5 @@ export default function OlaVectorMap() {
     };
   }, []);
 
-  return (
-    <div
-      ref={mapContainer}
-      className="h-[500px] w-full rounded-xl shadow"
-    />
-  );
+  return <div ref={mapContainer} className="h-[500px] w-full rounded-xl shadow" />;
 }

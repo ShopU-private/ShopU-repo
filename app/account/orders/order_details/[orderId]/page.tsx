@@ -207,15 +207,15 @@ export default function OrderDetails() {
                 <h3>#ORD{order.id.slice(-10)}</h3>
                 <div className="flex items-center space-x-4">
                   <Image
-                    src={item.product.imageUrl}
-                    alt={item.product.name}
+                    src={item.product?.imageUrl || '/placeholder.png'}
+                    alt={item.product?.name || 'Product Image'}
                     width={60}
                     height={60}
                     className="h-16 w-12 object-contain"
                   />
                 </div>
                 <div>
-                  <p>{item.product.name}</p>
+                  <p>{item.product?.name}</p>
                   <p>Qty: {item.quantity}</p>
                 </div>
                 <div>
@@ -331,18 +331,18 @@ export default function OrderDetails() {
               </div>
               <div className="mb-4 flex items-center gap-4 border-b border-gray-200 py-4">
                 <Image
-                  src={item.product.imageUrl}
+                  src={item.product?.imageUrl || '/pediasure.png'}
                   alt={
-                    item.product.name.length > 10
-                      ? item.product.name.slice(0, 10) + '…'
-                      : item.product.name
+                    item.product?.name.length > 10
+                      ? item.product?.name.slice(0, 10) + '…'
+                      : item.product?.name || 'Product Image'
                   }
                   width={60}
                   height={60}
                   className="mb-2 w-16 rounded"
                 />
                 <div className="text-md flex-1 text-gray-800">
-                  <h2 className="pr-2 font-medium">{item.product.name}</h2>
+                  <h2 className="pr-2 font-medium">{item.product?.name}</h2>
                 </div>
                 <div className="flex justify-between text-lg text-gray-800">
                   <span className="text-primaryColor">₹{item.price}</span>

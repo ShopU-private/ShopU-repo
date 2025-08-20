@@ -1,14 +1,11 @@
 'use client';
 
-import { Suspense } from "react";
-
 export default function Terms() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-          <section className="mx-auto max-w-7xl px-6 py-6 md:px-14">
+    <section className="mx-auto max-w-7xl px-6 py-6 md:px-14">
       <div className="rounded-lg bg-white p-8 shadow-md">
         <h1 className="mb-6 text-3xl font-bold text-gray-900">Terms and Conditions</h1>
-        <p className="mb-8 text-sm text-gray-500">Last updated on Aug 17 2025</p>
+        <p className="mb-8 text-sm text-gray-500">Last updated on Aug 20 2025</p>
 
         <p className="mb-4 text-gray-700">
           For the purpose of these Terms and Conditions, The term{' '}
@@ -76,13 +73,7 @@ export default function Terms() {
             our acquiring bank from time to time.
           </li>
         </ul>
-
-        <h2 className="mt-6 mb-2 text-xl font-semibold">Cancellation and Refund</h2>
-        <p className="mb-4 text-sm text-gray-500">Last updated on Aug 17 2025</p>
-        <p className="mb-4 text-gray-700">No cancellations &amp; Refunds are entertained</p>
       </div>
     </section>
-    </Suspense>
-
   );
 }
