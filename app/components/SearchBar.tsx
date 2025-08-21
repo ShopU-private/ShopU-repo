@@ -22,10 +22,10 @@ export default function Searchbar() {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
 
   const placeholders = [
-    'Search medicines...',
-    'Search baby care products...',
-    'Search groceries...',
-    'Search healthcare essentials...',
+    'Search "Medicines"',
+    'Search "Baby Care Products"',
+    'Search "Groceries"',
+    'Search "Healthcare Essentials"',
   ];
 
   useEffect(() => {

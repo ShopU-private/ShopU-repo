@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import ProductCard from '../components/ProductCard';
 import HealthCategoryGrid from '../components/HealthCategoryGrid';
 import { useWishlist } from '../hooks/useWishlist';
-import { useProducts } from '../hooks/useBabycare';
+import { useProducts } from '../hooks/useProduct';
 import useAddToCart from '../hooks/handleAddToCart';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
