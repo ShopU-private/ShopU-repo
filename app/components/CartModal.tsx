@@ -319,11 +319,11 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
   const router = useRouter();
   const { location } = useLocation();
 
-  const deliveryAddress = useMemo(
+ /*  const deliveryAddress = useMemo(
     () =>
       location ? `${location.address}, PIN: ${location.pincode}` : 'Please set delivery location',
     [location]
-  );
+  ); */
 
   // Transform cart items to match expected interface
   const cartItems = useMemo(() => {

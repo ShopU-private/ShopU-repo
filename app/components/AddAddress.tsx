@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, MapPin, Search, Home, Briefcase, MoreHorizontal, } from "lucide-react";
+import { X, Search, Home, Briefcase, MoreHorizontal, } from "lucide-react";
 import VectorMap from "../components/VectorMap"
 
 type Address = {
@@ -61,7 +61,6 @@ export default function AddAddressForm({
   };
 
   //  Search API
-
   const searchLocationAPI = async (query: string) => {
     if (query.length < 3) return;
 
@@ -121,7 +120,6 @@ export default function AddAddressForm({
   };
 
   // Submit Form
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
