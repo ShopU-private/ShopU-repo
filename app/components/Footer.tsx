@@ -106,18 +106,23 @@ export default function Footer() {
             <h3 className="mb-3 text-xl font-semibold">Account</h3>
             <ul className="space-y-4 py-1 font-medium">
               <li>
-                <Link href="/account/terms?otracker=footer_navlinks">Terms & conditions</Link>
+                <Link href="/pages/terms?otracker=footer_navlinks">Terms & conditions</Link>
               </li>
               <li>
-                <Link href="/account/wishlist?otracker=footer_navlinks">Wishlist</Link>
+                <Link href="/pages/shipping?otracker=footer_navlinks">Shipping & Delivery</Link>
+              </li>
+
+              <li>
+                <Link href="/pages/privacy?otracker=footer_navlinks">Privacy Policy</Link>
               </li>
               <li>
-                <Link href="/cart?otracker=footer_navlinks">Cart</Link>
+                <Link href="/pages/cancellation?otracker=footer_navlinks">
+                  Cancellation & Returns
+                </Link>
               </li>
               <li>
                 <Link href="/account/orders?otracker=footer_navlinks">Track Order</Link>
               </li>
-              <li>Shipping Details</li>
             </ul>
           </div>
         </div>
@@ -212,7 +217,7 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Health Concern */}
+            {/* Health Condition */}
             <div className="text-white">
               <h3 className="mb-3 text-xl font-semibold">Health Condition</h3>
               <ul className="space-y-4 py-1 font-medium">
@@ -232,18 +237,23 @@ export default function Footer() {
               <h3 className="mb-3 text-xl font-semibold">Account</h3>
               <ul className="space-y-4 py-1 font-medium">
                 <li>
-                  <Link href="/account/terms?otracker=footer_navlinks">Terms & conditions</Link>
+                  <Link href="/pages/terms?otracker=footer_navlinks">Terms & conditions</Link>
                 </li>
                 <li>
-                  <Link href="/account/wishlist?otracker=footer_navlinks">Wishlist</Link>
+                  <Link href="/pages/shipping?otracker=footer_navlinks">Shipping & Delivery</Link>
+                </li>
+
+                <li>
+                  <Link href="/pages/privacy?otracker=footer_navlinks">Privacy Policy</Link>
                 </li>
                 <li>
-                  <Link href="/cart?otracker=footer_navlinks">Cart</Link>
+                  <Link href="/pages/cancellation?otracker=footer_navlinks">
+                    Cancellation & Returns
+                  </Link>
                 </li>
                 <li>
                   <Link href="/account/orders?otracker=footer_navlinks">Track Order</Link>
                 </li>
-                <li>Shipping Details</li>
               </ul>
             </div>
 

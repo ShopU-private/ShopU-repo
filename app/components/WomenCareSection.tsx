@@ -3,7 +3,7 @@
 import React, { useRef } from 'react';
 import ProductCard from './ProductCard';
 import { useWishlist } from '../hooks/useWishlist';
-import { useProducts } from '../hooks/useBabycare';
+import { useProducts } from '../hooks/useProduct';
 import { useRouter } from 'next/navigation';
 import useAddToCart from '../hooks/handleAddToCart';
 import { ChevronLeft, ChevronRight } from 'lucide-react';

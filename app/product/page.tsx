@@ -7,7 +7,7 @@ import Navroute from '../components/navroute';
 import Sidebar from '../components/FilterSidebar';
 import ProductCard from '../components/ProductCard';
 import { useWishlist } from '../hooks/useWishlist';
-import { useProducts } from '../hooks/useBabycare';
+import { useProducts } from '../hooks/useProduct';
 import useAddToCart from '../hooks/handleAddToCart';
 
 // Move all logic and hooks into a child component
