@@ -55,8 +55,9 @@ export default function CheckoutPage() {
         });
         console.log('res status', res.status);
 
-        if (!res.ok) throw new Error('Failed to fetch address');
-
+        if (!res.ok) {
+          console.log('Failed to fetch address');
+        }
         const json = await res.json();
         console.log('address list:', json?.address || []);
         setAddress(json?.address || []);
@@ -82,6 +83,18 @@ export default function CheckoutPage() {
     setSubtotal(total);
   }, [cartItems]);
 
+  // Delivery fee calculation
+  const deliveryFee = (() => {
+    if (subtotal < 200) return 49;
+    if (subtotal < 300) return 28;
+    return 0;
+  })();
+
+  // Example: platform charges fixed ₹9
+  const platformFee = 9;
+
+  const grandTotal = subtotal + deliveryFee + platformFee;
+
   const handleProceedToPayment = () => {
     if (!validateAddressId(selectedAddressId)) {
       alert('Please select a valid delivery address');
@@ -89,14 +102,13 @@ export default function CheckoutPage() {
     }
 
     setAddressId(selectedAddressId);
-    const totalAmount = subtotal + (subtotal > 500 ? 0 : 40);
 
-    if (totalAmount <= 0) {
+    if (grandTotal <= 0) {
       alert('Invalid order amount');
       return;
     }
 
-    router.push(`/checkout/payment?addressId=${selectedAddressId}&amount=${totalAmount}`);
+    router.push(`/checkout/payment?addressId=${selectedAddressId}&amount=${grandTotal}`);
   };
 
   const handleAddressSave = (newAddress: Address) => {
@@ -251,12 +263,20 @@ export default function CheckoutPage() {
               <span>₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span>Shipping</span>
-              <span>{subtotal > 500 ? 'Free' : '₹40.00'}</span>
+              <span>Delivery Fee</span>
+              {deliveryFee === 0 ? (
+                <span className="font-medium text-green-600">Free</span>
+              ) : (
+                <span>₹{deliveryFee.toFixed(2)}</span>
+              )}
+            </div>
+            <div className="flex justify-between">
+              <span>Platform Charges</span>
+              <span>₹{platformFee.toFixed(2)}</span>
             </div>
             <div className="mt-2 flex justify-between border-t pt-2 font-medium">
               <span>Total</span>
-              <span>₹{(subtotal + (subtotal > 500 ? 0 : 40)).toFixed(2)}</span>
+              <span>₹{grandTotal.toFixed(2)}</span>
             </div>
           </div>
 

@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
-import { useCart } from '../hooks/useCart';
 import Image from 'next/image';
+import useAddToCart from '../hooks/handleAddToCart';
 interface Product {
   id: number;
   name: string;
@@ -35,22 +35,20 @@ const DealOfTheWeek = () => {
   const [itemsPerPage, setItemsPerPage] = useState(2);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [addingProductId, setAddingProductId] = useState<number | null>(null);
-  const { addItem } = useCart();
+  const { handleAddToCart, addingProductId } = useAddToCart();
 
   // Fetch deals
   useEffect(() => {
     const fetchDeals = async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/products?discount=true&limit=4');
-
+        const res = await fetch('/api/products/featured?discount=true&limit=4');
         if (res.ok) {
           const data = await res.json();
           const dealsProducts: Product[] =
             data.products?.map((product: ProductFromApi) => ({
-              id: Number(product.id) || Math.floor(Math.random() * 1000000),
-              name: product.name,
+              id: String(product.id),
+              name: product.name ?? 'Unnamed Product',
               price: `₹${product.price}`,
               features: [
                 product.description?.split('.')[0] || 'Quality product',
@@ -59,7 +57,6 @@ const DealOfTheWeek = () => {
               ].filter(Boolean),
               isOnSale: true,
             })) || [];
-
           setProducts(dealsProducts);
           setCurrentIndex(0);
         } else {
@@ -123,18 +120,6 @@ const DealOfTheWeek = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const handleAddToCart = async (product: Product) => {
-    setAddingProductId(product.id);
-    try {
-      await addItem(product.id.toString(), null, 1);
-      window.dispatchEvent(new CustomEvent('cartUpdated'));
-    } catch (err) {
-      console.error('Add to cart failed:', err);
-    } finally {
-      setAddingProductId(null);
-    }
-  };
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -213,16 +198,14 @@ const DealOfTheWeek = () => {
                   ))}
                 </ul>
                 <button
-                  onClick={() => handleAddToCart(product)}
+                  onClick={() => handleAddToCart(product.id.toString())}
                   disabled={addingProductId === product.id}
                   className="bg-background1 mt-4 flex cursor-pointer items-center gap-1 rounded px-4 py-1 text-white"
                 >
                   {addingProductId === product.id ? (
                     <span className="text-md">Adding...</span>
                   ) : (
-                    <>
-                      <span>ADD</span>
-                    </>
+                    <span>ADD</span>
                   )}
                 </button>
               </div>
@@ -272,16 +255,14 @@ const DealOfTheWeek = () => {
                 </div>
 
                 <button
-                  onClick={() => handleAddToCart(product)}
+                  onClick={() => handleAddToCart(product.id.toString())}
                   disabled={addingProductId === product.id}
                   className="bg-background1 mt-4 flex cursor-pointer items-center gap-1 rounded px-3 text-white"
                 >
                   {addingProductId === product.id ? (
-                    <span>Adding...</span>
+                    <span className="text-md">Adding...</span>
                   ) : (
-                    <>
-                      <span>ADD</span>
-                    </>
+                    <span>ADD</span>
                   )}
                 </button>
               </div>

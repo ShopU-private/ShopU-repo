@@ -50,6 +50,17 @@ function PaymentContent() {
     }
   }, [cartItems, searchParams]);
 
+  const deliveryFee = (() => {
+    if (amount < 200) return 49;
+    if (amount < 300) return 28;
+    return 0;
+  })();
+
+  // Example: platform charges fixed ₹9
+  const platformFee = 9;
+
+  const grandTotal = amount + deliveryFee + platformFee;
+
   // Redirect to /checkout if no address selected
   useEffect(() => {
     if (!isLoading && !isAddressLoading && !selectedAddressId) {
@@ -121,7 +132,7 @@ function PaymentContent() {
 
       logCheckoutEvent('Processing payment', {
         address: addressData,
-        totalAmount: amount,
+        totalAmount: grandTotal,
         paymentMethod: selectedMethod,
         itemCount: validItems.length,
       });
@@ -131,7 +142,7 @@ function PaymentContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           address: addressData,
-          totalAmount: amount,
+          totalAmount: grandTotal,
           paymentMethod: selectedMethod === 'cod' ? 'COD' : 'ONLINE',
           items: validItems,
         }),
@@ -161,7 +172,7 @@ function PaymentContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           orderId: createdOrderId,
-          amount: amount,
+          amount: grandTotal,
           currency: 'INR',
           paymentMethod: selectedMethod,
         }),
@@ -417,7 +428,7 @@ function PaymentContent() {
                   ) : (
                     <>
                       <CreditCard className="h-5 w-5" />
-                      Pay Now - ₹{amount.toFixed(2)}
+                      Pay Now - ₹{grandTotal.toFixed(2)}
                     </>
                   )}
                 </button>
@@ -435,13 +446,19 @@ function PaymentContent() {
                   <span>₹{amount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Shipping</span>
-                  <span className="text-teal-600">Free</span>
+                  <span className="text-gray-600">Delivery Fee</span>
+                  <span className={deliveryFee === 0 ? 'text-green-600' : 'text-gray-800'}>
+                    {deliveryFee === 0 ? 'Free' : `₹${deliveryFee}`}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Platform Charges</span>
+                  <span>₹{platformFee.toFixed(2)}</span>
                 </div>
                 <div className="mt-3 border-t border-gray-200 pt-3">
                   <div className="flex justify-between font-medium">
                     <span>Total</span>
-                    <span className="text-lg">₹{amount.toFixed(2)}</span>
+                    <span className="text-lg">₹{grandTotal.toFixed(2)}</span>
                   </div>
                   <p className="mt-1 text-xs text-gray-500">Inclusive of all taxes</p>
                 </div>
