@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+
 
 export default function OlaVectorMap() {
   const mapContainer = useRef<HTMLDivElement | null>(null);
@@ -11,7 +13,7 @@ export default function OlaVectorMap() {
     if (mapContainer.current && !mapInstance.current) {
       mapInstance.current = new maplibregl.Map({
         container: mapContainer.current,
-        style: `https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json?api_key=${process.env.NEXT_PUBLIC_OLA_MAPS_API_KEY}`,
+        style: `https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json`,
         center: [77.5946, 12.9716], // Bangalore
         zoom: 12,
         transformRequest: url => {
@@ -25,7 +27,9 @@ export default function OlaVectorMap() {
         },
       });
 
-      new maplibregl.Marker().setLngLat([77.5946, 12.9716]).addTo(mapInstance.current);
+      new maplibregl.Marker()
+        .setLngLat([77.5946, 12.9716])
+        .addTo(mapInstance.current);
     }
 
     return () => {
@@ -41,5 +45,6 @@ export default function OlaVectorMap() {
     };
   }, []);
 
-  return <div ref={mapContainer} className="h-[500px] w-full rounded-xl shadow" />;
+  return <div ref={mapContainer} className="h-[635px] w-full rounded-xl shadow" />;
+
 }
