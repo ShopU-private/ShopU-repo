@@ -84,7 +84,6 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
   };
 
   // Select API
-
   const handleSelect = async (placeId: string, description: string) => {
     setLoading(true);
 
