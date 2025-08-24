@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { X, Search, Home, Briefcase, MoreHorizontal, } from "lucide-react";
-import VectorMap from "../components/VectorMap"
-
+import { useEffect, useState } from 'react';
+import { X, Search, Home, Briefcase, MoreHorizontal } from 'lucide-react';
+import VectorMap from '../components/VectorMap';
 
 type Address = {
   id?: string;
@@ -15,6 +14,7 @@ type Address = {
   country: string;
   postalCode: string;
   phoneNumber: string;
+  addressType?: string;
 };
 
 type Props = {
@@ -123,36 +123,13 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
   };
 
   // Submit Form
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      const url =
-        formMode === 'edit' && formData.id
-          ? `/api/account/address/${formData.id}`
-          : '/api/account/address';
-
-      const method = formMode === 'edit' ? 'PATCH' : 'POST';
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          ...formData,
-          addressType: selectedAddressType,
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        onSave(data.address || data);
-        onCancel();
-      } else {
-        console.error('Failed to save:', await res.text());
-      }
-    } catch (err) {
-      console.error('Error:', err);
-    }
+    onSave({
+      ...formData,
+      addressType: selectedAddressType,
+    });
+    onCancel();
   };
 
   return (
