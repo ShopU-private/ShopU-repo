@@ -14,7 +14,6 @@ type Address = {
   country: string;
   postalCode: string;
   phoneNumber: string;
-  addressType?: string;
 };
 
 type Props = {
@@ -123,13 +122,36 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
   };
 
   // Submit Form
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      ...formData,
-      addressType: selectedAddressType,
-    });
-    onCancel();
+
+    try {
+      const url =
+        formMode === 'edit' && formData.id
+          ? `/api/account/address/${formData.id}`
+          : '/api/account/address';
+
+      const method = formMode === 'edit' ? 'PATCH' : 'POST';
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...formData,
+          addressType: selectedAddressType,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        onSave(data.address || data);
+        onCancel();
+      } else {
+        console.error('Failed to save:', await res.text());
+      }
+    } catch (err) {
+      console.error('Error:', err);
+    }
   };
 
   return (
