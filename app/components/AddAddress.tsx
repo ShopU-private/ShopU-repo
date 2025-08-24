@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { X, Search, Home, Briefcase, MoreHorizontal, } from "lucide-react";
-import VectorMap from "../components/VectorMap"
-
+import { useEffect, useState } from 'react';
+import { X, Search, Home, Briefcase, MoreHorizontal } from 'lucide-react';
+import VectorMap from '../components/VectorMap';
 
 type Address = {
   id?: string;
