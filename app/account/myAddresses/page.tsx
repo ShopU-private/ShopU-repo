@@ -88,7 +88,7 @@ export default function AddressPage() {
     } catch (error) {
       console.error('Error deleting address:', error);
     } finally {
-      setDeletingId(null); // Stop loader
+      setDeletingId(null); 
     }
   };
 
