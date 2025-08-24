@@ -16,6 +16,18 @@ type Address = {
   phoneNumber: string;
 };
 
+type add = {
+  long_name: string;
+  short_name: string;
+  types: string[];
+};
+
+type SearchResult = {
+  place_id: string;
+  description: string;
+};
+
+
 type Props = {
   onCancel: () => void;
   onSave: (address: Address) => void;
@@ -45,7 +57,7 @@ export default function AddAddressForm({
     "home" | "work" | "hotel" | "other">("home");
 
   const [searchLocation, setSearchLocation] = useState("");
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -92,7 +104,7 @@ export default function AddAddressForm({
           state = "",
           postalCode = "";
 
-        data.result.address_components.forEach((c: any) => {
+        data.result.address_components.forEach((c: add) => {
           if (c.types.includes("locality")) city = c.long_name;
           if (c.types.includes("administrative_area_level_1")) state = c.long_name;
           if (c.types.includes("postal_code")) postalCode = c.long_name;
@@ -186,18 +198,18 @@ export default function AddAddressForm({
                 </div>
 
                 {/* Suggestions */}
-                {results.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 max-h-60 overflow-y-auto rounded-xl border bg-white shadow-lg z-30">
-                    {results.map((r: any) => (
-                      <div
-                        key={r.place_id}
-                        onClick={() => handleSelect(r.place_id, r.description)}
-                        className="cursor-pointer border-b p-3 hover:bg-gray-50 last:border-none">
-                        {r.description}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                  {results.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-2 max-h-60 overflow-y-auto rounded-xl border bg-white shadow-lg z-30">
+                      {results.map((r) => (
+                        <div
+                          key={r.place_id}
+                          onClick={() => handleSelect(r.place_id, r.description)}
+                          className="cursor-pointer border-b p-3 hover:bg-gray-50 last:border-none">
+                          {r.description}
+                        </div>
+                      ))}
+                    </div>
+                  )}
               </div>
             </div>
 

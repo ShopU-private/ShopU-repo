@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { verifyToken } from '@/lib/auth';
 
+interface RouteContext {
+  params: {
+    id: string;
+  };
+}
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const token = req.cookies.get('token')?.value;
@@ -61,7 +67,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 //Dlete address
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, context: RouteContext) {
   try {
     const token = req.cookies.get("token")?.value;
     if (!token) {
@@ -73,7 +79,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = context.params; // 👈 yaha se params lo
 
     // Verify address belongs to the user
     const existingAddress = await prisma.userAddress.findUnique({
