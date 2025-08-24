@@ -789,7 +789,7 @@ export default function AdminProductsPage() {
                   value={newCategoryName}
                   onChange={e => setNewCategoryName(e.target.value)}
                   className="w-full rounded border p-2"
-                  placeholder="Enter Subcategory Name"
+                  placeholder="Enter Category Name"
                   required
                 />
               </div>

@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from "react";
 import { X, Search, Home, Briefcase, MoreHorizontal, } from "lucide-react";
 import VectorMap from "../components/VectorMap"
+
 
 type Address = {
   id?: string;
@@ -31,45 +32,52 @@ type SearchResult = {
 type Props = {
   onCancel: () => void;
   onSave: (address: Address) => void;
-  formMode: "add" | "edit";
+  formMode: 'add' | 'edit';
   initialData: Address | null;
 };
 
-export default function AddAddressForm({
-  onCancel,
-  onSave,
-  formMode,
-  initialData,
-}: Props) {
+type Prediction = {
+  description: string;
+  place_id: string;
+};
 
+type AddressComponent = {
+  long_name: string;
+  short_name: string;
+  types: string[];
+};
+
+export default function AddAddressForm({ onCancel, onSave, formMode, initialData }: Props) {
   const [formData, setFormData] = useState<Address>({
-    fullName: "",
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    country: "India",
-    postalCode: "",
-    phoneNumber: "",
+    fullName: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    country: 'India',
+    postalCode: '',
+    phoneNumber: '',
   });
 
   const [selectedAddressType, setSelectedAddressType] = useState<
-    "home" | "work" | "hotel" | "other">("home");
+    'home' | 'work' | 'hotel' | 'other'
+  >('home');
 
-  const [searchLocation, setSearchLocation] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [searchLocation, setSearchLocation] = useState('');
+  const [results, setResults] = useState<Prediction[]>([]);
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (formMode === "edit" && initialData) {
+    if (formMode === 'edit' && initialData) {
       setFormData({ ...initialData });
-      setSearchLocation(initialData.addressLine1 || "");
+      setSearchLocation(initialData.addressLine1 || '');
     }
   }, [formMode, initialData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   //  Search API
@@ -81,10 +89,8 @@ export default function AddAddressForm({
       const res = await fetch(`/api/maps/autocomplete?q=${encodeURIComponent(query)}`);
       const data = await res.json();
       setResults(data.predictions || []);
-
     } catch (err) {
-      console.error("Autocomplete failed:", err);
-
+      console.error('Autocomplete failed:', err);
     } finally {
       setLoading(false);
     }
@@ -100,17 +106,17 @@ export default function AddAddressForm({
       const data = await res.json();
 
       if (data?.result?.address_components) {
-        let city = "",
-          state = "",
-          postalCode = "";
+        let city = '',
+          state = '',
+          postalCode = '';
 
-        data.result.address_components.forEach((c: add) => {
-          if (c.types.includes("locality")) city = c.long_name;
-          if (c.types.includes("administrative_area_level_1")) state = c.long_name;
-          if (c.types.includes("postal_code")) postalCode = c.long_name;
+        (data.result.address_components as AddressComponent[]).forEach(c => {
+          if (c.types.includes('locality')) city = c.long_name;
+          if (c.types.includes('administrative_area_level_1')) state = c.long_name;
+          if (c.types.includes('postal_code')) postalCode = c.long_name;
         });
 
-        setFormData((prev) => ({
+        setFormData(prev => ({
           ...prev,
           city,
           state,
@@ -121,13 +127,10 @@ export default function AddAddressForm({
         setSearchLocation(description);
         setResults([]);
       }
-
     } catch (err) {
-      console.error("Details fetch failed:", err);
-
+      console.error('Details fetch failed:', err);
     } finally {
       setLoading(false);
-
     }
   };
 
@@ -137,15 +140,15 @@ export default function AddAddressForm({
 
     try {
       const url =
-        formMode === "edit" && formData.id
+        formMode === 'edit' && formData.id
           ? `/api/account/address/${formData.id}`
-          : "/api/account/address";
+          : '/api/account/address';
 
-      const method = formMode === "edit" ? "PATCH" : "POST";
+      const method = formMode === 'edit' ? 'PATCH' : 'POST';
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           ...formData,
           addressType: selectedAddressType,
@@ -156,29 +159,22 @@ export default function AddAddressForm({
         const data = await res.json();
         onSave(data.address || data);
         onCancel();
-
       } else {
-        console.error("Failed to save:", await res.text());
-
+        console.error('Failed to save:', await res.text());
       }
-
     } catch (err) {
-      console.error("Error:", err);
-
+      console.error('Error:', err);
     }
   };
 
   return (
-
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
       <div className="flex h-[90vh] w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl">
-
         {/* Left Map / Search Section */}
         <div className="relative hidden flex-1 bg-gray-100 md:flex">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50">
-
             {/* Search Bar */}
-            <div className="absolute top-4 left-4 right-4 z-20">
+            <div className="absolute top-4 right-4 left-4 z-20">
               <div className="relative rounded-xl bg-white p-3 shadow-lg">
                 <div className="flex items-center gap-3">
                   <Search className="h-5 w-5 text-gray-400" />
@@ -186,11 +182,12 @@ export default function AddAddressForm({
                     type="text"
                     placeholder="Search your Location"
                     value={searchLocation}
-                    onChange={(e) => {
+                    onChange={e => {
                       setSearchLocation(e.target.value);
                       searchLocationAPI(e.target.value);
                     }}
-                    className="flex-1 text-gray-700 outline-none" />
+                    className="flex-1 text-gray-700 outline-none"
+                  />
 
                   {loading && (
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-teal-600 border-t-transparent"></div>
@@ -198,40 +195,36 @@ export default function AddAddressForm({
                 </div>
 
                 {/* Suggestions */}
-                  {results.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 max-h-60 overflow-y-auto rounded-xl border bg-white shadow-lg z-30">
-                      {results.map((r) => (
-                        <div
-                          key={r.place_id}
-                          onClick={() => handleSelect(r.place_id, r.description)}
-                          className="cursor-pointer border-b p-3 hover:bg-gray-50 last:border-none">
-                          {r.description}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                {results.length > 0 && (
+                  <div className="absolute top-full right-0 left-0 z-30 mt-2 max-h-60 overflow-y-auto rounded-xl border bg-white shadow-lg">
+                    {results.map(r => (
+                      <div
+                        key={r.place_id}
+                        onClick={() => handleSelect(r.place_id, r.description)}
+                        className="cursor-pointer border-b p-3 last:border-none hover:bg-gray-50"
+                      >
+                        {r.description}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Mock Map UI */}
-            <div className="flex h-[500px] rounded-xl shadow w-full items-center justify-center">
-              <VectorMap/>
+            <div className="flex h-[500px] w-full items-center justify-center rounded-xl shadow">
+              <VectorMap />
             </div>
           </div>
         </div>
 
         {/* Right Form Section */}
-        <form
-          onSubmit={handleSubmit}
-          className="flex max-w-md flex-1 flex-col bg-white"
-        >
-
+        <form onSubmit={handleSubmit} className="flex max-w-md flex-1 flex-col bg-white">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-gray-100 p-6">
             <div>
-
               <h2 className="text-xl font-semibold text-gray-800">
-                {formMode === "edit" ? "Edit Address" : "Add Address"}
+                {formMode === 'edit' ? 'Edit Address' : 'Add Address'}
               </h2>
 
               <p className="mt-1 text-sm text-gray-500">
@@ -248,8 +241,7 @@ export default function AddAddressForm({
           </div>
 
           {/* Form Fields */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-
+          <div className="flex-1 space-y-6 overflow-y-auto p-6">
             {/* Address Type */}
             <div>
               <label className="mb-3 block text-sm font-medium text-gray-700">
@@ -257,24 +249,20 @@ export default function AddAddressForm({
               </label>
 
               <div className="flex flex-wrap gap-2">
-                {["home", "work", "other"].map((type) => (
+                {['home', 'work', 'other'].map(type => (
                   <button
                     key={type}
                     type="button"
-                    onClick={() =>
-                      setSelectedAddressType(type as "home" | "work" | "other")
-                    }
-
-                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${selectedAddressType === type
-
-                        ? "border-teal-500 bg-teal-50 text-teal-700"
-                        : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
-                      }`}
+                    onClick={() => setSelectedAddressType(type as 'home' | 'work' | 'other')}
+                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
+                      selectedAddressType === type
+                        ? 'border-teal-500 bg-teal-50 text-teal-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                    }`}
                   >
-
-                    {type === "home" && <Home className="h-4 w-4" />}
-                    {type === "work" && <Briefcase className="h-4 w-4" />}
-                    {type === "other" && <MoreHorizontal className="h-4 w-4" />}
+                    {type === 'home' && <Home className="h-4 w-4" />}
+                    {type === 'work' && <Briefcase className="h-4 w-4" />}
+                    {type === 'other' && <MoreHorizontal className="h-4 w-4" />}
                     {type.charAt(0).toUpperCase() + type.slice(1)}
                   </button>
                 ))}
@@ -339,7 +327,6 @@ export default function AddAddressForm({
               />
 
               <input
-
                 name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleChange}

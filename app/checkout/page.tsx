@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useCart } from '@/app/hooks/useCart';
-import { Loader } from 'lucide-react';
+import { Loader, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { MdDeleteOutline } from 'react-icons/md';
 import { FaRegEdit } from 'react-icons/fa';
 import { useLocation } from '../context/LocationContext';
 import { useRouter } from 'next/navigation';
@@ -56,8 +55,9 @@ export default function CheckoutPage() {
         });
         console.log('res status', res.status);
 
-        if (!res.ok) throw new Error('Failed to fetch address');
-
+        if (!res.ok) {
+          console.log('Failed to fetch address');
+        }
         const json = await res.json();
         console.log('address list:', json?.address || []);
         setAddress(json?.address || []);
@@ -83,6 +83,18 @@ export default function CheckoutPage() {
     setSubtotal(total);
   }, [cartItems]);
 
+  // Delivery fee calculation
+  const deliveryFee = (() => {
+    if (subtotal < 200) return 49;
+    if (subtotal < 300) return 28;
+    return 0;
+  })();
+
+  // Example: platform charges fixed ₹9
+  const platformFee = 9;
+
+  const grandTotal = subtotal + deliveryFee + platformFee;
+
   const handleProceedToPayment = () => {
     if (!validateAddressId(selectedAddressId)) {
       alert('Please select a valid delivery address');
@@ -90,14 +102,13 @@ export default function CheckoutPage() {
     }
 
     setAddressId(selectedAddressId);
-    const totalAmount = subtotal + (subtotal > 500 ? 0 : 40);
 
-    if (totalAmount <= 0) {
+    if (grandTotal <= 0) {
       alert('Invalid order amount');
       return;
     }
 
-    router.push(`/checkout/payment?addressId=${selectedAddressId}&amount=${totalAmount}`);
+    router.push(`/checkout/payment?addressId=${selectedAddressId}&amount=${grandTotal}`);
   };
 
   const handleAddressSave = (newAddress: Address) => {
@@ -162,7 +173,7 @@ export default function CheckoutPage() {
       <div className="mx-auto max-w-4xl">
         <h1 className="mb-6 text-2xl font-bold text-gray-800">Checkout</h1>
 
-        <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
+        <div className="mb-6 rounded-lg bg-white px-6 py-4 shadow-md">
           <h2 className="mb-4 text-lg font-semibold">Delivery Address</h2>
 
           {address.length === 0 ? (
@@ -180,61 +191,66 @@ export default function CheckoutPage() {
               </button>
             </div>
           ) : (
-            <div className="relative space-y-3">
+            <div className="relative space-y-4">
               {address.map(address => (
                 <div
                   key={address.id}
-                  className={`cursor-pointer rounded-lg border p-3 ${
+                  className={`cursor-pointer rounded-lg border p-2 ${
                     selectedAddressId === address.id
                       ? 'border-teal-600 bg-teal-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                   onClick={() => setSelectedAddressId(address.id ?? '')}
                 >
-                  <div className="flex items-start">
-                    <input
-                      type="radio"
-                      checked={selectedAddressId === address.id}
-                      onChange={() => setSelectedAddressId(address.id ?? '')}
-                      className="mt-1 h-4 w-4 text-teal-600"
-                    />
-                    <div className="ml-3">
-                      <p className="font-medium">{address.fullName}</p>
-                      <p className="text-sm text-gray-600">
-                        {address.addressLine1}
-                        {address.addressLine2 ? `,${address.addressLine2}` : ''}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {address.city} {address.state} {address.postalCode}
-                      </p>
-                      <p className="text-sm text-gray-600">{address.phoneNumber}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-2">
+                      <input
+                        type="radio"
+                        checked={selectedAddressId === address.id}
+                        onChange={() => setSelectedAddressId(address.id ?? '')}
+                        className="mt-1 h-4 w-4 text-teal-600"
+                      />
+                      <div>
+                        <p className="font-medium">{address.fullName}</p>
+                        <p className="text-sm text-gray-600">
+                          {address.addressLine1}
+                          {address.addressLine2 ? `,${address.addressLine2}` : ''}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {address.city} {address.state} {address.postalCode}
+                        </p>
+                        <p className="text-sm text-gray-600">{address.phoneNumber}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between gap-4 p-2">
                       <button
-                        className="mt-[4px] cursor-pointer pr-2.5 text-lg text-teal-700"
+                        className="cursor-pointer text-lg text-teal-700"
                         onClick={() => {
                           setFormMode('edit');
                           setSelectedAddress(address);
                           setShowAddAddressForm(true);
                         }}
                       >
-                        <FaRegEdit />
+                        <FaRegEdit className="h-5 w-5" />
                       </button>
                       <button
-                        className="mt-3 cursor-pointer text-xl text-teal-700"
+                        className="cursor-pointer py-2 text-xl text-teal-700"
                         onClick={() => handleDelAddress(address.id ?? '')}
                       >
-                        <MdDeleteOutline />
+                        <Trash2 className="h-5 w-5" />
                       </button>
                     </div>
                   </div>
                 </div>
               ))}
-
-              <button
-                onClick={() => setShowAddAddressForm(true)}
-                className="absolute right-0 -bottom-8 mt-2 text-sm text-teal-600 hover:underline"
-              >
-                + Add another address
-              </button>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setShowAddAddressForm(true)}
+                  className="text-sm text-teal-600 hover:underline"
+                >
+                  + Add another address
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -247,12 +263,20 @@ export default function CheckoutPage() {
               <span>₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span>Shipping</span>
-              <span>{subtotal > 500 ? 'Free' : '₹40.00'}</span>
+              <span>Delivery Fee</span>
+              {deliveryFee === 0 ? (
+                <span className="font-medium text-green-600">Free</span>
+              ) : (
+                <span>₹{deliveryFee.toFixed(2)}</span>
+              )}
+            </div>
+            <div className="flex justify-between">
+              <span>Platform Charges</span>
+              <span>₹{platformFee.toFixed(2)}</span>
             </div>
             <div className="mt-2 flex justify-between border-t pt-2 font-medium">
               <span>Total</span>
-              <span>₹{(subtotal + (subtotal > 500 ? 0 : 40)).toFixed(2)}</span>
+              <span>₹{grandTotal.toFixed(2)}</span>
             </div>
           </div>
 

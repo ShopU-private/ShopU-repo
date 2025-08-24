@@ -286,7 +286,7 @@ export function useCart() {
         cartCache.set(updatedItems);
         await fetchCartItems(true);
         window.dispatchEvent(new CustomEvent('cartCountUpdated'));
-        toast.success('Item removed from cart');
+
         return true;
       } catch (err) {
         console.error('Error removing item from cart:', err);

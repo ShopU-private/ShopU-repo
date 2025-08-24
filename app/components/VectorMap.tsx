@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
+
 export default function OlaVectorMap() {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<maplibregl.Map | null>(null);
@@ -45,4 +46,5 @@ export default function OlaVectorMap() {
   }, []);
 
   return <div ref={mapContainer} className="h-[635px] w-full rounded-xl shadow" />;
+
 }

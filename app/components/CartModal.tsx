@@ -348,6 +348,21 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
   // Memoized item total to avoid recalculation
   const itemTotal = useMemo(() => totals?.subtotal || 0, [totals]);
 
+  const deliveryFee = useMemo(() => {
+    if (itemTotal < 200) return 49;
+    if (itemTotal < 300) return 28;
+    return 0;
+  }, [itemTotal]);
+
+  // Example: platform charges fixed ₹10
+  const platformFee = 9;
+
+  // Final total including charges
+  const grandTotal = useMemo(
+    () => itemTotal + deliveryFee + platformFee,
+    [itemTotal, deliveryFee, platformFee]
+  );
+
   // Refresh cart data when modal is opened, using a ref to avoid unnecessary refreshes
   useEffect(() => {
     let mounted = true;
@@ -435,7 +450,6 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
           processingAction={processingAction}
           setProcessingAction={setProcessingAction}
         />
-
         {/* Bill Details */}
         <div className="border-t border-gray-200 bg-white">
           <div className="border-b border-teal-100 bg-teal-50 px-4 py-3">
@@ -447,13 +461,21 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
               <span className="text-primaryColor font-medium">₹{itemTotal.toFixed(0)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-900">Shipping:</span>
-              <span className="font-medium text-green-500">Free</span>
+              <span className="text-gray-900">Delivery Fee:</span>
+              {deliveryFee === 0 ? (
+                <span className="font-medium text-green-500">Free</span>
+              ) : (
+                <span className="text-primaryColor font-medium">₹{deliveryFee}</span>
+              )}
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-900">Platform Charges:</span>
+              <span className="text-primaryColor font-medium">₹{platformFee}</span>
             </div>
             <div className="flex justify-between border-t border-gray-100 pt-3">
               <span className="font-semibold">Total:</span>
               <span className="text-primaryColor text-lg font-semibold">
-                ₹{itemTotal.toFixed(0)}
+                ₹{grandTotal.toFixed(0)}
               </span>
             </div>
           </div>
@@ -522,7 +544,9 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
 
         {/* Content */}
         <div className="flex h-[calc(100vh-80px)] flex-col">
-          <div className="hidden flex-1 overflow-y-auto sm:block">{renderCartContent()}</div>
+          <div className="no-scrollbar hidden flex-1 overflow-y-auto sm:block">
+            {renderCartContent()}
+          </div>
           <div className="max-h-[68vh] flex-1 overflow-y-auto sm:hidden">{renderCartContent()}</div>
           {/* Footer - Checkout Button */}
           {cartItems.length > 0 && (

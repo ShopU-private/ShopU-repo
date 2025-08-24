@@ -134,6 +134,10 @@ const Header = () => {
     router.push('/');
   };
 
+  const handleSearch = () => {
+    router.push('/search');
+  };
+
   const handleClick = () => {
     router.push('/product');
   };
@@ -293,11 +297,11 @@ const Header = () => {
       <div className="border-b border-gray-100 bg-white px-4 xl:fixed xl:top-0 xl:left-0 xl:z-50 xl:w-full">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-8">
           {/* Logo */}
-          <div className="hidden px-4 sm:block">
+          <div className="hidden cursor-pointer px-4 sm:block">
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
-              className="h-16 w-36 py-2 transition-transform hover:scale-105 md:h-20"
+              className="h-16 w-36 py-2 transition-transform hover:scale-102 md:h-20"
               width={400}
               height={100}
               priority
@@ -463,7 +467,7 @@ const Header = () => {
           </div>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden max-w-xl flex-1 md:block">
+          <div onClick={handleSearch} className="hidden max-w-xl flex-1 md:block">
             <Searchbar />
           </div>
 
