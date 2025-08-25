@@ -286,7 +286,7 @@ export default function CheckoutPage() {
             </p>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex hidden justify-between sm:flex">
             <Link
               href="/"
               className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-100"
@@ -299,6 +299,25 @@ export default function CheckoutPage() {
                   ? 'cursor-not-allowed bg-gray-400'
                   : 'bg-background1'
               } cursor-pointer px-6 py-2 text-white transition-transform duration-300 hover:scale-102`}
+              onClick={handleProceedToPayment}
+              disabled={!selectedAddressId || address.length === 0}
+            >
+              Proceed to Pay
+            </button>
+          </div>
+          <div className="flex justify-between gap-4 sm:hidden">
+            <Link
+              href="/"
+              className="rounded-lg border border-gray-300 px-2 py-3 text-gray-700 hover:bg-gray-100"
+            >
+              Continue Shopping
+            </Link>
+            <button
+              className={`rounded-lg ${
+                !selectedAddressId || address.length === 0
+                  ? 'cursor-not-allowed bg-gray-400'
+                  : 'bg-background1'
+              } cursor-pointer px-6 py-3 text-white transition-transform duration-300 hover:scale-102`}
               onClick={handleProceedToPayment}
               disabled={!selectedAddressId || address.length === 0}
             >
