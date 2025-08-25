@@ -553,7 +553,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
               <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
                 <div className="text-center sm:text-left">
                   <p className="text-lg font-bold text-gray-800 sm:text-xl">
-                    ₹{itemTotal.toFixed(0)}
+                    ₹{grandTotal.toFixed(0)}
                   </p>
                   <p className="text-xs text-gray-500">Inclusive of all taxes</p>
                 </div>

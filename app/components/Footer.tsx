@@ -160,7 +160,7 @@ export default function Footer() {
 
       {/* Mobile view */}
       <div className="sm:hidden">
-        <div className="grid gap-8 border-t px-12 py-6 text-center text-sm md:grid-cols-4 lg:px-20">
+        <div className="grid gap-8 border-t px-10 py-6 text-center text-sm md:grid-cols-4 lg:px-20">
           {/* ShopU Logo */}
           <div className="flex flex-col">
             <div className="h-18 w-44">
@@ -257,7 +257,7 @@ export default function Footer() {
               </ul>
             </div>
 
-            <div className="mt-12 w-28">
+            <div className="mt-14 w-28">
               {/* Social Icons */}
               <div className="text-primaryColor grid h-28 grid-cols-2 gap-4 p-2 text-4xl">
                 <Link href="https://www.facebook.com" target="_blank">
