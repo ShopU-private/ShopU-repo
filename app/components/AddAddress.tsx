@@ -16,6 +16,18 @@ type Address = {
   phoneNumber: string;
 };
 
+type add = {
+  long_name: string;
+  short_name: string;
+  types: string[];
+};
+
+type SearchResult = {
+  place_id: string;
+  description: string;
+};
+
+
 type Props = {
   onCancel: () => void;
   onSave: (address: Address) => void;
