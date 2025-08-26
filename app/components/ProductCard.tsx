@@ -36,14 +36,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Desktop view */}
       <div className="group flex hidden h-84 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:block">
         {/* Product Image */}
-        <div className="relative h-40 w-full">
+        <div className="relative h-42 w-full">
           <div>
             <Image
-              src={'/pediasure.png'}
+              src={product.image || '/pediasure.png'}
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="mt-2 px-12 py-6 transition-transform duration-300 group-hover:scale-105"
+              className="mt-2 px-10 py-6 transition-transform duration-300 group-hover:scale-105"
             />
           </div>
 

@@ -319,7 +319,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
   const router = useRouter();
 //  const { location } = useLocation();
 
- /*  const deliveryAddress = useMemo(
+  /*  const deliveryAddress = useMemo(
     () =>
       location ? `${location.address}, PIN: ${location.pincode}` : 'Please set delivery location',
     [location]
@@ -554,7 +554,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
               <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
                 <div className="text-center sm:text-left">
                   <p className="text-lg font-bold text-gray-800 sm:text-xl">
-                    ₹{itemTotal.toFixed(0)}
+                    ₹{grandTotal.toFixed(0)}
                   </p>
                   <p className="text-xs text-gray-500">Inclusive of all taxes</p>
                 </div>

@@ -3,6 +3,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
 import { createProductSchema } from '@/lib/schema/adminSchema';
+import cloudinary from '@/lib/cloudinary';
 
 export async function POST(req: NextRequest) {
   if (!isAdmin(req)) {
@@ -20,28 +21,35 @@ export async function POST(req: NextRequest) {
     const { name, description, price, stock, imageUrl, subCategoryId } = parsed.data;
 
     if (!name || !description || !price || !stock || !imageUrl || !subCategoryId) {
-      return NextResponse.json({ success: false, error: 'Name is required' }, { status: 402 });
+      return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 402 });
     }
+
+    // Upload image to Cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(imageUrl, {
+      folder: 'products',
+    });
 
     const product = await prisma.product.create({
       data: {
-        name: name,
-        description: description,
-        price: price,
-        stock: stock,
-        imageUrl: imageUrl,
-        subCategoryId: subCategoryId,
+        name,
+        description,
+        price,
+        stock,
+        imageUrl: uploadResponse.secure_url,
+        subCategoryId,
       },
     });
 
     return NextResponse.json({ success: true, data: product }, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create category' },
+      { success: false, error: 'Failed to create product' },
       { status: 500 }
     );
   }
 }
+
 
 export async function GET() {
   const products = await prisma.product.findMany({

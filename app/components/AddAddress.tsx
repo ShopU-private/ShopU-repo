@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { X, Search, Home, Briefcase, MoreHorizontal, } from "lucide-react";
-import VectorMap from "../components/VectorMap"
-
+import { useEffect, useState } from 'react';
+import { X, Search, Home, Briefcase, MoreHorizontal } from 'lucide-react';
+import VectorMap from '../components/VectorMap';
 
 type Address = {
   id?: string;
@@ -97,7 +96,6 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
   };
 
   // Select API
-
   const handleSelect = async (placeId: string, description: string) => {
     setLoading(true);
 

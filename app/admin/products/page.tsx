@@ -696,17 +696,37 @@ export default function AdminProductsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-md font-medium">Image Url *</label>
+                  <label className="text-md font-medium">Product Image *</label>
                   <input
-                    type="text"
-                    name="imageUrl"
-                    placeholder="Image URL"
-                    value={formData.imageUrl}
-                    onChange={handleChange}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setFormData((prev) => ({ ...prev, imageUrl: reader.result as string }));
+                        };
+                        reader.readAsDataURL(file); // convert to base64
+                      }
+                    }}
                     className="w-full rounded border p-2"
-                    required
+                    required={!isEditMode} // agar edit kar rahe ho toh optional
                   />
+                  {formData.imageUrl && (
+                    <div className="mt-2">
+                      <Image
+                        src={formData.imageUrl}
+                        alt="Preview"
+                        width={100}
+                        height={100}
+                        className="rounded border object-cover"
+                      />
+                    </div>
+                  )}
                 </div>
+
+
                 <div>
                   <label className="text-md font-medium">Sub Category *</label>
                   <select

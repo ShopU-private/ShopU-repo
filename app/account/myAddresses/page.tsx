@@ -48,35 +48,8 @@ export default function AddressPage() {
     fetchAddresses();
   }, []);
 
-  const handleSave = async (addressData: Address) => {
-    try {
-      if (editingAddress?.id) {
-        // Update existing address
-        const res = await fetch(`/api/account/address/${editingAddress.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(addressData),
-        });
-        if (res.ok) {
-          fetchAddresses(); // Refresh the list
-        }
-      } else {
-        // Add new address
-        const res = await fetch('/api/account/address', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(addressData),
-        });
-        if (res.ok) {
-          fetchAddresses(); // Refresh the list
-        }
-      }
-    } catch (error) {
-      console.error('Error saving address:', error);
-    }
-
+  const handleSave = () => {
+    fetchAddresses();
     setShowForm(false);
     setEditingAddress(null);
   };
@@ -115,7 +88,7 @@ export default function AddressPage() {
     } catch (error) {
       console.error('Error deleting address:', error);
     } finally {
-      setDeletingId(null); // Stop loader
+      setDeletingId(null);
     }
   };
 
