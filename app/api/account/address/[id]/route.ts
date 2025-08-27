@@ -2,12 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { verifyToken } from '@/lib/auth';
 
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
-
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const token = req.cookies.get('token')?.value;

@@ -317,7 +317,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
   const { cartItems: rawCartItems, isLoading, refreshCart, totals } = useCart();
   const [processingAction, setProcessingAction] = useState<{ [key: string]: string }>({});
   const router = useRouter();
-//  const { location } = useLocation();
+  //  const { location } = useLocation();
 
   /*  const deliveryAddress = useMemo(
     () =>
