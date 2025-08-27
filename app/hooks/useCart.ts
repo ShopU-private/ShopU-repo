@@ -200,7 +200,6 @@ export function useCart() {
           // Optional refresh
           setTimeout(() => fetchCartItems(true), 300);
 
-          toast.success('Item added to cart');
           return data.cartItem;
         } else {
           toast.error(data.error || 'Failed to add item to cart');

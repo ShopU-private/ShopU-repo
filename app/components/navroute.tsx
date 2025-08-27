@@ -1,17 +1,66 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Search, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Loader, Search, ShoppingCart } from 'lucide-react';
+import { useCartModal } from '../context/CartModalContext';
 
 export default function Navroute() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-
+  const [cartCount, setCartCount] = useState(0);
+  const { openCartModal } = useCartModal();
+  const [isLoadingCart, setIsLoadingCart] = useState(false);
   // Extract category from query params
   const categorySlug = searchParams.get('category');
+
+  // Fetch cart count
+  const fetchCartCount = React.useCallback(async () => {
+    try {
+      setIsLoadingCart(true);
+      const response = await fetch('/api/cart/count');
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setCartCount(data.count.items);
+        }
+      } else if (response.status !== 401) {
+        // Don't show error for unauthorized (not logged in)
+        console.error('Failed to fetch cart count');
+      }
+    } catch (error) {
+      console.error('Error fetching cart count:', error);
+    } finally {
+      setIsLoadingCart(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCartCount();
+    // Listen for custom cart update event
+    const handleCart = () => fetchCartCount();
+    window.addEventListener('cartUpdated', handleCart);
+
+    return () => {
+      window.removeEventListener('cartUpdated', handleCart);
+    };
+  }, [fetchCartCount]);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      const timeout = setTimeout(() => {
+        fetchCartCount();
+      }, 200);
+
+      return () => clearTimeout(timeout);
+    };
+
+    window.addEventListener('cartCountUpdated', handleUpdate);
+    return () => window.removeEventListener('cartCountUpdated', handleUpdate);
+  }, [fetchCartCount]);
 
   // Get path segments excluding UUIDs and empty strings
   const segments = pathname
@@ -77,9 +126,21 @@ export default function Navroute() {
               <ArrowLeft className="h-7 w-10 text-white" />
             </button>
           </div>
-          <div className="flex">
+          <div className="flex items-center justify-between gap-1">
             <Search className="h-6 w-14 text-white" />
-            <ShoppingCart className="h-6 w-14 text-white" />
+            {/* Shopping Cart */}
+            <button onClick={openCartModal} className="relative mr-2 rounded-lg p-2.5">
+              <ShoppingCart className="h-6 w-6 text-white" />
+              {isLoadingCart ? (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
+                  <Loader className="h-3 w-3 animate-spin text-white" />
+                </span>
+              ) : cartCount > 0 ? (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              ) : null}
+            </button>
           </div>
         </div>
 
