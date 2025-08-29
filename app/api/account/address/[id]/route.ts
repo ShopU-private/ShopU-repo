@@ -8,7 +8,7 @@ interface RouteContext {
   };
 }
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, { params }: RouteContext) {
   try {
     const token = req.cookies.get('token')?.value;
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const user = verifyToken(token);
     if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-    const { id } = await params;
+    const { id } = params;
 
     const address = await prisma.userAddress.findUnique({
       where: { id },
