@@ -101,7 +101,14 @@ export default function CheckoutPage() {
       return;
     }
 
-    setAddressId(selectedAddressId);
+    const selectedAddr = address.find(addr => addr.id === selectedAddressId);
+    if (selectedAddr) {
+      // Save full address in context
+      setAddressId(selectedAddressId);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('selectedAddress', JSON.stringify(selectedAddr));
+      }
+    }
 
     if (grandTotal <= 0) {
       alert('Invalid order amount');
@@ -219,7 +226,7 @@ export default function CheckoutPage() {
                         <p className="text-sm text-gray-600">
                           {address.city} {address.state} {address.postalCode}
                         </p>
-                        <p className="text-sm text-gray-600">{address.phoneNumber}</p>
+                        <p className="text-sm text-gray-600">+91 {address.phoneNumber}</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between gap-4 p-2">

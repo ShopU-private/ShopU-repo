@@ -484,7 +484,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
         {/* Cancellation Policy */}
         <div className="border-t border-gray-200 bg-white">
           <div className="border-b border-gray-100 bg-gray-50 px-4 py-3">
-            <h2 className="text-base font-semibold text-gray-800">Cancellation Policy</h2>
+            <h2 className="text-base font-semibold text-gray-800">Cancellation and Refund</h2>
           </div>
           <div className="space-y-2 p-4 text-xs text-gray-600 sm:text-sm">
             <p>Orders cannot be cancelled once packed for delivery.</p>
@@ -521,7 +521,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
     <div className="animate-fadeIn fixed inset-0 z-50 flex items-start justify-end bg-black/40 backdrop-blur-sm">
       <div className="animate-slideRight relative h-screen max-h-screen w-full max-w-sm transform overflow-hidden rounded-r-2xl bg-white shadow-2xl transition-all sm:max-w-md sm:rounded-r-3xl lg:max-w-md">
         {/* Header */}
-        <div className="bg-background1 relative px-4 py-4">
+        <div className="bg-background1 relative px-4 py-3">
           <button
             onClick={onCloseAction}
             className="absolute top-3 right-3 rounded-full p-1 text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:top-4 sm:right-4"
