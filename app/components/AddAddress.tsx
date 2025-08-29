@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { X, Search, Home, Briefcase, MoreHorizontal } from 'lucide-react';
-import VectorMap from '../components/VectorMap';
+import { useEffect, useState, useRef } from 'react';
+import { X, Search, Home, Briefcase, MoreHorizontal, MapPin } from 'lucide-react';
+import VectorMap, { MapRef } from '../components/VectorMap';
 
 type Address = {
   id?: string;
@@ -14,6 +14,8 @@ type Address = {
   country: string;
   postalCode: string;
   phoneNumber: string;
+  latitude?: number;  // Added latitude
+  longitude?: number; // Added longitude
 };
 
 type Props = {
@@ -35,6 +37,8 @@ type AddressComponent = {
 };
 
 export default function AddAddressForm({ onCancel, onSave, formMode, initialData }: Props) {
+  const mapRef = useRef<MapRef>(null);
+  
   const [formData, setFormData] = useState<Address>({
     fullName: '',
     addressLine1: '',
@@ -44,6 +48,8 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     country: 'India',
     postalCode: '',
     phoneNumber: '',
+    latitude: undefined,
+    longitude: undefined,
   });
 
   const [selectedAddressType, setSelectedAddressType] = useState<
@@ -52,13 +58,21 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
 
   const [searchLocation, setSearchLocation] = useState('');
   const [results, setResults] = useState<Prediction[]>([]);
-
   const [loading, setLoading] = useState(false);
+
+  // Show selected coordinates
+  const [selectedCoords, setSelectedCoords] = useState<{lat: number, lng: number} | null>(null);
 
   useEffect(() => {
     if (formMode === 'edit' && initialData) {
       setFormData({ ...initialData });
       setSearchLocation(initialData.addressLine1 || '');
+      
+      // Update map if coordinates exist
+      if (initialData.latitude && initialData.longitude && mapRef.current) {
+        mapRef.current.updateLocation(initialData.latitude, initialData.longitude, initialData.addressLine1);
+        setSelectedCoords({ lat: initialData.latitude, lng: initialData.longitude });
+      }
     }
   }, [formMode, initialData]);
 
@@ -67,7 +81,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  //  Search API
+  // Search API
   const searchLocationAPI = async (query: string) => {
     if (query.length < 3) return;
 
@@ -83,7 +97,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     }
   };
 
-  // Select API
+  // Select API - Enhanced with coordinates
   const handleSelect = async (placeId: string, description: string) => {
     setLoading(true);
 
@@ -91,27 +105,55 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
       const res = await fetch(`/api/maps/details?place_id=${placeId}`);
       const data = await res.json();
 
-      if (data?.result?.address_components) {
-        let city = '',
-          state = '',
-          postalCode = '';
+      if (data?.result) {
+        let city = '', state = '', postalCode = '';
+        
+        // Extract address components
+        if (data.result.address_components) {
+          (data.result.address_components as AddressComponent[]).forEach(c => {
+            if (c.types.includes('locality')) city = c.long_name;
+            if (c.types.includes('administrative_area_level_1')) state = c.long_name;
+            if (c.types.includes('postal_code')) postalCode = c.long_name;
+          });
+        }
 
-        (data.result.address_components as AddressComponent[]).forEach(c => {
-          if (c.types.includes('locality')) city = c.long_name;
-          if (c.types.includes('administrative_area_level_1')) state = c.long_name;
-          if (c.types.includes('postal_code')) postalCode = c.long_name;
-        });
+        // Extract coordinates
+        const geometry = data.result.geometry;
+        let latitude: number | undefined, longitude: number | undefined;
+        
+        if (geometry?.location) {
+          latitude = geometry.location.lat;
+          longitude = geometry.location.lng;
+        }
 
+        // Update form data with coordinates
         setFormData(prev => ({
           ...prev,
           city,
           state,
           postalCode,
           addressLine1: description,
+          latitude,
+          longitude,
         }));
+
+        // Update map location
+        if (latitude && longitude && mapRef.current) {
+          mapRef.current.updateLocation(latitude, longitude, description);
+          setSelectedCoords({ lat: latitude, lng: longitude });
+        }
 
         setSearchLocation(description);
         setResults([]);
+
+        console.log('Selected Location:', { 
+          description, 
+          latitude, 
+          longitude, 
+          city, 
+          state, 
+          postalCode 
+        });
       }
     } catch (err) {
       console.error('Details fetch failed:', err);
@@ -120,9 +162,28 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     }
   };
 
-  // Submit Form
+  // Handle map location changes
+  const handleMapLocationChange = (lat: number, lng: number) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng,
+    }));
+    
+    setSelectedCoords({ lat, lng });
+    
+    console.log('Map location updated:', { lat, lng });
+  };
+
+  // Submit Form - Include coordinates
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate coordinates
+    if (!formData.latitude || !formData.longitude) {
+      alert('Please select a location on the map or search for an address');
+      return;
+    }
 
     try {
       const url =
@@ -138,6 +199,8 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
         body: JSON.stringify({
           ...formData,
           addressType: selectedAddressType,
+          latitude: formData.latitude,
+          longitude: formData.longitude,
         }),
       });
 
@@ -189,22 +252,47 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                         onClick={() => handleSelect(r.place_id, r.description)}
                         className="cursor-pointer border-b p-3 last:border-none hover:bg-gray-50"
                       >
-                        {r.description}
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-teal-600" />
+                          <span className="text-sm">{r.description}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
+
+              {/* Coordinates Display */}
+              {selectedCoords && (
+                <div className="mt-2 rounded-lg bg-white/90 p-2 shadow-sm">
+                  <div className="text-xs text-gray-600">
+                    <span className="font-medium">Coordinates:</span> 
+                    <span className="ml-1">
+                      {selectedCoords.lat.toFixed(6)}, {selectedCoords.lng.toFixed(6)}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Mock Map UI */}
+            {/* Map Component */}
             <div className="flex h-[500px] w-full items-center justify-center rounded-xl shadow">
-              <VectorMap />
+              <VectorMap 
+                ref={mapRef}
+                onLocationChange={handleMapLocationChange}
+              />
+            </div>
+            
+            {/* Map Instructions */}
+            <div className="absolute bottom-4 left-4 right-4 rounded-lg bg-white/90 p-2">
+              <div className="text-xs text-gray-600 text-center">
+                💡 Click on the map to select a precise location
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right Form Section */}
+        {/* Right Form Section - Rest remains same */}
         <form onSubmit={handleSubmit} className="flex max-w-md flex-1 flex-col bg-white">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-gray-100 p-6">
@@ -212,7 +300,6 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
               <h2 className="text-xl font-semibold text-gray-800">
                 {formMode === 'edit' ? 'Edit Address' : 'Add Address'}
               </h2>
-
               <p className="mt-1 text-sm text-gray-500">
                 Enter your details for seamless delivery experience
               </p>
@@ -233,7 +320,6 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
               <label className="mb-3 block text-sm font-medium text-gray-700">
                 Save address as
               </label>
-
               <div className="flex flex-wrap gap-2">
                 {['home', 'work', 'other'].map(type => (
                   <button
@@ -300,8 +386,20 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
               />
             </div>
 
-            {/* Personal Info */}
+            {/* Coordinates Display in Form */}
+            {formData.latitude && formData.longitude && (
+              <div className="rounded-lg bg-teal-50 p-3">
+                <div className="text-sm text-teal-800">
+                  <div className="font-medium">Selected Location:</div>
+                  <div className="text-xs mt-1">
+                    Lat: {formData.latitude.toFixed(6)}, 
+                    Lng: {formData.longitude.toFixed(6)}
+                  </div>
+                </div>
+              </div>
+            )}
 
+            {/* Personal Info */}
             <div className="border-t pt-4">
               <input
                 name="fullName"
@@ -329,9 +427,13 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
           <div className="border-t p-6">
             <button
               type="submit"
-              className="w-full rounded-xl bg-teal-600 py-4 font-medium text-white shadow-lg transition hover:bg-teal-700"
+              disabled={!formData.latitude || !formData.longitude}
+              className="w-full rounded-xl bg-teal-600 py-4 font-medium text-white shadow-lg transition hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               Continue
+              {!formData.latitude || !formData.longitude && (
+                <span className="text-xs block mt-1">Select location first</span>
+              )}
             </button>
           </div>
         </form>

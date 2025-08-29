@@ -83,6 +83,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       active: pathname.startsWith('/admin/orders'),
     },
     {
+      name: 'Coupons',
+      href: '/admin/coupon',
+      icon: <ShoppingCart className="h-5 w-5" />,
+      active: pathname.startsWith('/admin/coupon'),
+    },
+    {
       name: 'Users',
       href: '#',
       icon: <Users className="h-5 w-5" />,
