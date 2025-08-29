@@ -21,22 +21,43 @@ interface RazorpayHandlerResponse {
   razorpay_signature: string;
 }
 
+type Address = {
+  id: string;
+  fullName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  phoneNumber: string;
+};
+
 // Create a separate component that uses useSearchParams
 function PaymentContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { cartItems, clearCart, isLoading } = useCart();
-  const { location, addressId } = useLocation();
-
   const [selectedMethod, setSelectedMethod] = useState<string>('cod');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [amount, setAmount] = useState<number>(0);
-
-  const selectedAddressId = searchParams.get('addressId') || addressId;
-  const addressDetails = location;
   const isAddressLoading = false;
-  console.log('Selected Address ID:', location);
+  const { addressId } = useLocation();
+  const selectedAddressId = searchParams.get('addressId') || addressId;
+  const [addressDetails, setAddressDetails] = useState<Address | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('selectedAddress');
+    if (stored) {
+      try {
+        setAddressDetails(JSON.parse(stored) as Address);
+      } catch (err) {
+        console.error('Failed to parse stored address', err);
+      }
+    }
+  }, []);
+
   // Calculate amount
   useEffect(() => {
     if (cartItems.length > 0) {
@@ -301,8 +322,8 @@ function PaymentContent() {
 
   return (
     <div className="min-h-xl bg-gray-50">
-      <header className="border-b bg-white shadow-sm">
-        <div className="container mx-auto max-w-7xl px-4 py-4">
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto max-w-7xl px-4 py-3">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.back()}
@@ -315,7 +336,7 @@ function PaymentContent() {
         </div>
       </header>
 
-      <div className="container mx-auto max-w-7xl px-4 py-8">
+      <div className="container mx-auto max-w-7xl px-6 py-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div className="space-y-6 md:col-span-2">
             {error && (
@@ -325,17 +346,21 @@ function PaymentContent() {
             )}
 
             {/* Address */}
-            <div className="rounded-lg bg-white p-6 shadow-md">
-              <h2 className="mb-4 text-lg font-medium text-gray-800">Delivery Address</h2>
+            <div className="rounded-lg bg-white p-4 shadow-md">
+              <h2 className="mb-2 text-lg font-medium text-gray-800">Delivery Address</h2>
               {addressDetails ? (
                 <div className="flex items-start gap-3 rounded-lg border border-teal-100 bg-teal-50 p-4">
                   <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 text-teal-600" />
                   <div>
-                    <p className="font-medium">
-                      {typeof addressDetails === 'string'
-                        ? addressDetails
-                        : JSON.stringify(addressDetails)}
+                    <p className="font-medium">{addressDetails?.fullName}</p>
+                    <p className="text-sm text-gray-600">
+                      {addressDetails?.addressLine1}
+                      {addressDetails?.addressLine2 ? `, ${addressDetails.addressLine2}` : ''}
                     </p>
+                    <p className="text-sm text-gray-600">
+                      {addressDetails?.city}, {addressDetails?.state} {addressDetails?.postalCode}
+                    </p>
+                    <p className="text-sm text-gray-600">+91 {addressDetails?.phoneNumber}</p>
                   </div>
                 </div>
               ) : (

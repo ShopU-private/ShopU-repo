@@ -416,6 +416,8 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 onChange={handleChange}
                 placeholder="Phone Number"
                 className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
+                minLength={10}
+                maxLength={10}
                 required
               />
             </div>

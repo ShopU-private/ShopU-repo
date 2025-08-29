@@ -21,7 +21,10 @@ export async function POST(req: NextRequest) {
     const { name, description, price, stock, imageUrl, subCategoryId } = parsed.data;
 
     if (!name || !description || !price || !stock || !imageUrl || !subCategoryId) {
-      return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 402 });
+      return NextResponse.json(
+        { success: false, error: 'Missing required fields' },
+        { status: 402 }
+      );
     }
 
     // Upload image to Cloudinary
@@ -49,7 +52,6 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
 
 export async function GET() {
   const products = await prisma.product.findMany({

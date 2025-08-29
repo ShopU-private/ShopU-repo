@@ -700,12 +700,12 @@ export default function AdminProductsPage() {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={e => {
                       const file = e.target.files?.[0];
                       if (file) {
                         const reader = new FileReader();
                         reader.onloadend = () => {
-                          setFormData((prev) => ({ ...prev, imageUrl: reader.result as string }));
+                          setFormData(prev => ({ ...prev, imageUrl: reader.result as string }));
                         };
                         reader.readAsDataURL(file); // convert to base64
                       }
@@ -725,7 +725,6 @@ export default function AdminProductsPage() {
                     </div>
                   )}
                 </div>
-
 
                 <div>
                   <label className="text-md font-medium">Sub Category *</label>

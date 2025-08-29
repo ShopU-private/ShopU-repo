@@ -7,7 +7,7 @@ export default function ShippingAndDelivery() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Navroute />
-      <div className="mx-auto hidden max-w-7xl px-6 py-6 md:px-14 md:block">
+      <div className="mx-auto hidden max-w-7xl px-6 py-6 md:block md:px-14">
         <div className="rounded-lg bg-white p-8 shadow-md">
           <h1 className="mb-6 text-3xl font-bold text-gray-900">Shipping and Delivery</h1>
           <p className="mb-4 text-sm text-gray-500">Last updated on Aug 20 2025</p>

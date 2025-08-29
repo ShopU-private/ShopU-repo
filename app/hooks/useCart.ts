@@ -200,7 +200,6 @@ export function useCart() {
           // Optional refresh
           setTimeout(() => fetchCartItems(true), 300);
 
-          toast.success('Item added to cart');
           return data.cartItem;
         } else {
           toast.error(data.error || 'Failed to add item to cart');
@@ -248,6 +247,8 @@ export function useCart() {
 
         // Success
         cartCache.set(updatedItems);
+        await fetchCartItems(true);
+        window.dispatchEvent(new CustomEvent('cartCountUpdated'));
         toast.success('Cart updated!');
       } catch (err) {
         console.error('Error updating item quantity:', err);
@@ -255,7 +256,7 @@ export function useCart() {
         toast.error('Something went wrong while updating the cart');
       }
     },
-    [cartItems, cartCache]
+    [cartItems, fetchCartItems, cartCache]
   );
 
   // Remove item from cart with optimistic updates
