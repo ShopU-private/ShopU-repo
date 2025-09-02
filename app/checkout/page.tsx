@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useCart } from '@/app/hooks/useCart';
-import { Loader, Trash2 } from 'lucide-react';
+import { Loader, Trash2, Tag, X } from 'lucide-react';
 import Link from 'next/link';
 import { FaRegEdit } from 'react-icons/fa';
 import { useLocation } from '../context/LocationContext';
@@ -22,12 +22,14 @@ type Address = {
   phoneNumber: string;
 };
 
-// type Props= {
-//   mode: "add" | "edit";
-//   initialData: Address | null
-//   onCancel: () => void
-//   onSave: (data:Address)=>void
-// };
+type Coupon = {
+  id: string;
+  name: string;
+  code: string;
+  discount: number;
+  maxUsage: number;
+  expiryDate: string;
+};
 
 export default function CheckoutPage() {
   const { cartItems, isLoading } = useCart();
@@ -41,6 +43,12 @@ export default function CheckoutPage() {
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
+
+  // Coupon related states
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponError, setCouponError] = useState('');
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
   useEffect(() => {
     console.log('fetching address ');
@@ -83,6 +91,55 @@ export default function CheckoutPage() {
     setSubtotal(total);
   }, [cartItems]);
 
+  // Apply coupon function
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError('Please enter a coupon code');
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    setCouponError('');
+
+    try {
+      const res = await fetch(`/api/coupons/validate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          code: couponCode.trim().toUpperCase(),
+          orderAmount: subtotal 
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.valid) {
+        setAppliedCoupon(data.coupon);
+        setCouponError('');
+      } else {
+        setCouponError(data.message || 'Invalid coupon code');
+        setAppliedCoupon(null);
+      }
+    } catch (error) {
+      setCouponError('Failed to apply coupon. Please try again.');
+      setAppliedCoupon(null);
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  // Remove coupon function
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    setCouponError('');
+  };
+
+  // Calculate discount amount
+  const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discount) / 100 : 0;
+
   // Delivery fee calculation
   const deliveryFee = (() => {
     if (subtotal < 200) return 49;
@@ -90,10 +147,10 @@ export default function CheckoutPage() {
     return 0;
   })();
 
-  // Example: platform charges fixed ₹9
+  // Platform charges fixed ₹9
   const platformFee = 9;
 
-  const grandTotal = subtotal + deliveryFee + platformFee;
+  const grandTotal = subtotal + deliveryFee + platformFee - discountAmount;
 
   const handleProceedToPayment = () => {
     if (!validateAddressId(selectedAddressId)) {
@@ -107,6 +164,10 @@ export default function CheckoutPage() {
       setAddressId(selectedAddressId);
       if (typeof window !== 'undefined') {
         localStorage.setItem('selectedAddress', JSON.stringify(selectedAddr));
+        // Also save applied coupon if any
+        if (appliedCoupon) {
+          localStorage.setItem('appliedCoupon', JSON.stringify(appliedCoupon));
+        }
       }
     }
 
@@ -115,7 +176,11 @@ export default function CheckoutPage() {
       return;
     }
 
-    router.push(`/checkout/payment?addressId=${selectedAddressId}&amount=${grandTotal}`);
+    const paymentUrl = appliedCoupon 
+      ? `/checkout/payment?addressId=${selectedAddressId}&amount=${grandTotal}&couponId=${appliedCoupon.id}`
+      : `/checkout/payment?addressId=${selectedAddressId}&amount=${grandTotal}`;
+
+    router.push(paymentUrl);
   };
 
   const handleAddressSave = (newAddress: Address) => {
@@ -262,6 +327,68 @@ export default function CheckoutPage() {
           )}
         </div>
 
+        {/* Coupon Code Section */}
+        <div className="mb-6 rounded-lg bg-white px-6 py-4 shadow-md">
+          <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
+            <Tag className="h-5 w-5" />
+            Apply Coupon Code
+          </h2>
+          
+          {appliedCoupon ? (
+            <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-3">
+              <div className="flex items-center gap-2">
+                <Tag className="h-4 w-4 text-green-600" />
+                <span className="font-medium text-green-800">
+                  {appliedCoupon.code} - {appliedCoupon.discount}% OFF
+                </span>
+                <span className="text-sm text-green-600">
+                  (Save ₹{discountAmount.toFixed(2)})
+                </span>
+              </div>
+              <button
+                onClick={removeCoupon}
+                className="text-green-600 hover:text-green-800"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter coupon code"
+                  value={couponCode}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value.toUpperCase());
+                    setCouponError('');
+                  }}
+                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  disabled={isApplyingCoupon}
+                />
+                <button
+                  onClick={applyCoupon}
+                  disabled={isApplyingCoupon || !couponCode.trim()}
+                  className={`rounded-lg px-4 py-2 font-medium ${
+                    isApplyingCoupon || !couponCode.trim()
+                      ? 'cursor-not-allowed bg-gray-300 text-gray-500'
+                      : 'bg-teal-600 text-white hover:bg-teal-700'
+                  }`}
+                >
+                  {isApplyingCoupon ? (
+                    <Loader className="h-4 w-4 animate-spin" />
+                  ) : (
+                    'Apply'
+                  )}
+                </button>
+              </div>
+              {couponError && (
+                <p className="text-sm text-red-600">{couponError}</p>
+              )}
+            </div>
+          )}
+        </div>
+
         <div className="rounded-lg bg-white p-6 shadow-md">
           <h2 className="mb-4 text-lg font-semibold">Your Order Summary</h2>
           <div className="mb-6 space-y-1 text-sm">
@@ -281,6 +408,12 @@ export default function CheckoutPage() {
               <span>Platform Charges</span>
               <span>₹{platformFee.toFixed(2)}</span>
             </div>
+            {appliedCoupon && discountAmount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Discount ({appliedCoupon.code})</span>
+                <span>-₹{discountAmount.toFixed(2)}</span>
+              </div>
+            )}
             <div className="mt-2 flex justify-between border-t pt-2 font-medium">
               <span>Total</span>
               <span>₹{grandTotal.toFixed(2)}</span>
