@@ -36,7 +36,7 @@ export default function AddCouponForm({ onSuccess }: { onSuccess: () => void }) 
           className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
           placeholder="Coupon Code" 
           value={form.code}
-          onChange={e => setForm({ ...form, code: e.target.value })} 
+          onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })} 
           required 
         />
         <input 

@@ -8,17 +8,20 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Missing query' }, { status: 400 });
   }
 
-  const apiKey = process.env.NEXT_PUBLIC_OLA_MAPS_API_KEY;
-  const url = `https://api.olamaps.io/places/v1/autocomplete?input=${encodeURIComponent(
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY;
+  const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
     query
-  )}&api_key=${apiKey}`;
+  )}&key=${apiKey}`;
 
   try {
     const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Google API failed: ${res.status}`);
+    }
     const data = await res.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Ola API error:', error);
+    console.error('Google Autocomplete API error:', error);
     return NextResponse.json({ error: 'Failed to fetch autocomplete' }, { status: 500 });
   }
 }

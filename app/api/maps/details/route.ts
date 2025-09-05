@@ -8,15 +8,18 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Missing place_id' }, { status: 400 });
   }
 
-  const apiKey = process.env.NEXT_PUBLIC_OLA_MAPS_API_KEY;
-  const url = `https://api.olamaps.io/places/v1/details?place_id=${placeId}&api_key=${apiKey}`;
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY;
+  const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${apiKey}`;
 
   try {
     const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Google API failed: ${res.status}`);
+    }
     const data = await res.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Ola API error:', error);
+    console.error('Google Places API error:', error);
     return NextResponse.json({ error: 'Failed to fetch details' }, { status: 500 });
   }
 }
