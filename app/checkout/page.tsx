@@ -107,9 +107,9 @@ export default function CheckoutPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           code: couponCode.trim().toUpperCase(),
-          orderAmount: subtotal 
+          orderAmount: subtotal,
         }),
       });
 
@@ -123,6 +123,7 @@ export default function CheckoutPage() {
         setAppliedCoupon(null);
       }
     } catch (error) {
+      console.error('Error:', error);
       setCouponError('Failed to apply coupon. Please try again.');
       setAppliedCoupon(null);
     } finally {
@@ -176,7 +177,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    const paymentUrl = appliedCoupon 
+    const paymentUrl = appliedCoupon
       ? `/checkout/payment?addressId=${selectedAddressId}&amount=${grandTotal}&couponId=${appliedCoupon.id}`
       : `/checkout/payment?addressId=${selectedAddressId}&amount=${grandTotal}`;
 
@@ -329,11 +330,11 @@ export default function CheckoutPage() {
 
         {/* Coupon Code Section */}
         <div className="mb-6 rounded-lg bg-white px-6 py-4 shadow-md">
-          <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
+          <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
             <Tag className="h-5 w-5" />
             Apply Coupon Code
           </h2>
-          
+
           {appliedCoupon ? (
             <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-3">
               <div className="flex items-center gap-2">
@@ -341,14 +342,9 @@ export default function CheckoutPage() {
                 <span className="font-medium text-green-800">
                   {appliedCoupon.code} - {appliedCoupon.discount}% OFF
                 </span>
-                <span className="text-sm text-green-600">
-                  (Save ₹{discountAmount.toFixed(2)})
-                </span>
+                <span className="text-sm text-green-600">(Save ₹{discountAmount.toFixed(2)})</span>
               </div>
-              <button
-                onClick={removeCoupon}
-                className="text-green-600 hover:text-green-800"
-              >
+              <button onClick={removeCoupon} className="text-green-600 hover:text-green-800">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -359,11 +355,11 @@ export default function CheckoutPage() {
                   type="text"
                   placeholder="Enter coupon code"
                   value={couponCode}
-                  onChange={(e) => {
+                  onChange={e => {
                     setCouponCode(e.target.value.toUpperCase());
                     setCouponError('');
                   }}
-                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
                   disabled={isApplyingCoupon}
                 />
                 <button
@@ -375,16 +371,10 @@ export default function CheckoutPage() {
                       : 'bg-teal-600 text-white hover:bg-teal-700'
                   }`}
                 >
-                  {isApplyingCoupon ? (
-                    <Loader className="h-4 w-4 animate-spin" />
-                  ) : (
-                    'Apply'
-                  )}
+                  {isApplyingCoupon ? <Loader className="h-4 w-4 animate-spin" /> : 'Apply'}
                 </button>
               </div>
-              {couponError && (
-                <p className="text-sm text-red-600">{couponError}</p>
-              )}
+              {couponError && <p className="text-sm text-red-600">{couponError}</p>}
             </div>
           )}
         </div>

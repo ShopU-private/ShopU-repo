@@ -14,6 +14,22 @@ interface Product {
   stock: number;
   imageUrl?: string;
   subCategoryId?: string;
+  manufacturers?: string;
+  type?: string;
+  packaging?: string;
+  package?: string;
+  Qty?: string;
+  productForm?: string;
+  productHighlights?: string;
+  information?: string;
+  keyIngredients?: string;
+  keyBenefits?: string;
+  directionsForUse?: string;
+  safetyInformation?: string;
+  manufacturerAddress?: string;
+  countryOfOrigin?: string;
+  manufacturerDetails?: string;
+  marketerDetails?: string;
 }
 
 interface Category {
@@ -43,7 +59,24 @@ export default function AdminProductsPage() {
     stock: '',
     imageUrl: '',
     subCategoryId: '',
+    manufacturers: '',
+    type: '',
+    packaging: '',
+    package: '',
+    Qty: '',
+    productForm: '',
+    productHighlights: '',
+    information: '',
+    keyIngredients: '',
+    keyBenefits: '',
+    directionsForUse: '',
+    safetyInformation: '',
+    manufacturerAddress: '',
+    countryOfOrigin: '',
+    manufacturerDetails: '',
+    marketerDetails: '',
   });
+
   const [formError, setFormError] = useState<string | null>(null);
 
   // Edit state
@@ -189,6 +222,22 @@ export default function AdminProductsPage() {
       stock: '',
       imageUrl: '',
       subCategoryId: '',
+      manufacturers: '',
+      type: '',
+      packaging: '',
+      package: '',
+      Qty: '',
+      productForm: '',
+      productHighlights: '',
+      information: '',
+      keyIngredients: '',
+      keyBenefits: '',
+      directionsForUse: '',
+      safetyInformation: '',
+      manufacturerAddress: '',
+      countryOfOrigin: '',
+      manufacturerDetails: '',
+      marketerDetails: '',
     });
     setSelectedCategory('');
     setSelectedSubCategory('');
@@ -206,6 +255,22 @@ export default function AdminProductsPage() {
       stock: String(product.stock),
       imageUrl: product.imageUrl || '',
       subCategoryId: product.subCategoryId || '',
+      manufacturers: product.manufacturers || '',
+      type: product.type || '',
+      packaging: product.packaging || '',
+      package: product.package || '',
+      Qty: product.Qty || '',
+      productForm: product.productForm || '',
+      productHighlights: product.productHighlights || '',
+      information: product.information || '',
+      keyIngredients: product.keyIngredients || '',
+      keyBenefits: product.keyBenefits || '',
+      directionsForUse: product.directionsForUse || '',
+      safetyInformation: product.safetyInformation || '',
+      manufacturerAddress: product.manufacturerAddress || '',
+      countryOfOrigin: product.countryOfOrigin || '',
+      manufacturerDetails: product.manufacturerDetails || '',
+      marketerDetails: product.marketerDetails || '',
     });
 
     const category = categories.find(cat =>
@@ -260,6 +325,22 @@ export default function AdminProductsPage() {
             stock: '',
             imageUrl: '',
             subCategoryId: '',
+            manufacturers: '',
+            type: '',
+            packaging: '',
+            package: '',
+            Qty: '',
+            productForm: '',
+            productHighlights: '',
+            information: '',
+            keyIngredients: '',
+            keyBenefits: '',
+            directionsForUse: '',
+            safetyInformation: '',
+            manufacturerAddress: '',
+            countryOfOrigin: '',
+            manufacturerDetails: '',
+            marketerDetails: '',
           });
           setSelectedCategory('');
           setIsAddDialogOpen(true);
@@ -640,6 +721,7 @@ export default function AdminProductsPage() {
             )}
             <form onSubmit={handleSubmit} className="w-full space-y-4 rounded px-8 py-4">
               <div className="grid grid-cols-2 items-center gap-4">
+                {/* Name */}
                 <div>
                   <label className="text-md font-medium">Product Name *</label>
                   <input
@@ -652,6 +734,8 @@ export default function AdminProductsPage() {
                     required
                   />
                 </div>
+
+                {/* Price */}
                 <div>
                   <label className="text-md font-medium">Price *</label>
                   <input
@@ -664,10 +748,11 @@ export default function AdminProductsPage() {
                     required
                   />
                 </div>
-                <div>
+
+                {/* Description */}
+                <div className="col-span-2">
                   <label className="text-md font-medium">Description *</label>
-                  <input
-                    type="text"
+                  <textarea
                     name="description"
                     placeholder="Description"
                     value={formData.description}
@@ -676,6 +761,209 @@ export default function AdminProductsPage() {
                     required
                   />
                 </div>
+
+                {/* Manufacturers */}
+                <div>
+                  <label className="text-md font-medium">Manufacturers</label>
+                  <input
+                    type="text"
+                    name="manufacturers"
+                    placeholder="Manufacturers"
+                    value={formData.manufacturers}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Type */}
+                <div>
+                  <label className="text-md font-medium">Type</label>
+                  <input
+                    type="text"
+                    name="type"
+                    placeholder="Type"
+                    value={formData.type}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Packaging */}
+                <div>
+                  <label className="text-md font-medium">Packaging</label>
+                  <input
+                    type="text"
+                    name="packaging"
+                    placeholder="Packaging"
+                    value={formData.packaging}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Package */}
+                <div>
+                  <label className="text-md font-medium">Package</label>
+                  <input
+                    type="text"
+                    name="package"
+                    placeholder="Package"
+                    value={formData.package}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Qty */}
+                <div>
+                  <label className="text-md font-medium">Quantity</label>
+                  <input
+                    type="text"
+                    name="Qty"
+                    placeholder="Package Qty"
+                    value={formData.Qty}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Product Form */}
+                <div>
+                  <label className="text-md font-medium">Product Form</label>
+                  <input
+                    type="text"
+                    name="productForm"
+                    placeholder="e.g. Tablet, Syrup"
+                    value={formData.productForm}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Product Highlights */}
+                <div className="col-span-2">
+                  <label className="text-md font-medium">Product Highlights</label>
+                  <textarea
+                    name="productHighlights"
+                    placeholder="Highlights"
+                    value={formData.productHighlights}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Information */}
+                <div className="col-span-2">
+                  <label className="text-md font-medium">Information</label>
+                  <textarea
+                    name="information"
+                    placeholder="Product Information"
+                    value={formData.information}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Key Ingredients */}
+                <div className="col-span-2">
+                  <label className="text-md font-medium">Key Ingredients</label>
+                  <textarea
+                    name="keyIngredients"
+                    placeholder="Key Ingredients"
+                    value={formData.keyIngredients}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Key Benefits */}
+                <div className="col-span-2">
+                  <label className="text-md font-medium">Key Benefits</label>
+                  <textarea
+                    name="keyBenefits"
+                    placeholder="Key Benefits"
+                    value={formData.keyBenefits}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Directions For Use */}
+                <div className="col-span-2">
+                  <label className="text-md font-medium">Directions for Use</label>
+                  <textarea
+                    name="directionsForUse"
+                    placeholder="Directions"
+                    value={formData.directionsForUse}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Safety Information */}
+                <div className="col-span-2">
+                  <label className="text-md font-medium">Safety Information</label>
+                  <textarea
+                    name="safetyInformation"
+                    placeholder="Safety Information"
+                    value={formData.safetyInformation}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Manufacturer Address */}
+                <div className="col-span-2">
+                  <label className="text-md font-medium">Manufacturer Address</label>
+                  <textarea
+                    name="manufacturerAddress"
+                    placeholder="Address"
+                    value={formData.manufacturerAddress}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Country Of Origin */}
+                <div>
+                  <label className="text-md font-medium">Country of Origin</label>
+                  <input
+                    type="text"
+                    name="countryOfOrigin"
+                    placeholder="Country"
+                    value={formData.countryOfOrigin}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Manufacturer Details */}
+                <div>
+                  <label className="text-md font-medium">Manufacturer Details</label>
+                  <input
+                    type="text"
+                    name="manufacturerDetails"
+                    placeholder="Manufacturer Details"
+                    value={formData.manufacturerDetails}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Marketer Details */}
+                <div>
+                  <label className="text-md font-medium">Marketer Details</label>
+                  <input
+                    type="text"
+                    name="marketerDetails"
+                    placeholder="Marketer Details"
+                    value={formData.marketerDetails}
+                    onChange={handleChange}
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+
+                {/* Category */}
                 <div>
                   <label className="text-md font-medium">Category *</label>
                   <select
@@ -695,37 +983,8 @@ export default function AdminProductsPage() {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="text-md font-medium">Product Image *</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={e => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setFormData(prev => ({ ...prev, imageUrl: reader.result as string }));
-                        };
-                        reader.readAsDataURL(file); // convert to base64
-                      }
-                    }}
-                    className="w-full rounded border p-2"
-                    required={!isEditMode} // agar edit kar rahe ho toh optional
-                  />
-                  {formData.imageUrl && (
-                    <div className="mt-2">
-                      <Image
-                        src={formData.imageUrl}
-                        alt="Preview"
-                        width={100}
-                        height={100}
-                        className="rounded border object-cover"
-                      />
-                    </div>
-                  )}
-                </div>
 
+                {/* Sub Category */}
                 <div>
                   <label className="text-md font-medium">Sub Category *</label>
                   <select
@@ -746,6 +1005,8 @@ export default function AdminProductsPage() {
                         ))}
                   </select>
                 </div>
+
+                {/* Stock */}
                 <div>
                   <label className="text-md font-medium">Stock *</label>
                   <input
@@ -758,7 +1019,41 @@ export default function AdminProductsPage() {
                     required
                   />
                 </div>
-                <div className="mt-7 flex justify-center gap-4">
+
+                {/* Image Upload */}
+                <div>
+                  <label className="text-md font-medium">Product Image *</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setFormData(prev => ({ ...prev, imageUrl: reader.result as string }));
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="w-full rounded border p-2"
+                    required={!isEditMode}
+                  />
+                  {formData.imageUrl && (
+                    <div className="mt-2">
+                      <Image
+                        src={formData.imageUrl}
+                        alt="Preview"
+                        width={100}
+                        height={100}
+                        className="rounded border object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="col-span-2 mt-7 flex justify-center gap-4">
                   <button
                     type="button"
                     onClick={() => setIsAddDialogOpen(false)}

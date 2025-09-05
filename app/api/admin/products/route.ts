@@ -18,14 +18,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
     }
 
-    const { name, description, price, stock, imageUrl, subCategoryId } = parsed.data;
-
-    if (!name || !description || !price || !stock || !imageUrl || !subCategoryId) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
-        { status: 402 }
-      );
-    }
+    const {
+      name,
+      description,
+      price,
+      stock,
+      imageUrl,
+      subCategoryId,
+      manufacturers,
+      type,
+      packaging,
+      package: pkg,
+      Qty,
+      productForm,
+      productHighlights,
+      information,
+      keyIngredients,
+      keyBenefits,
+      directionsForUse,
+      safetyInformation,
+      manufacturerAddress,
+      countryOfOrigin,
+      manufacturerDetails,
+      marketerDetails,
+    } = parsed.data;
 
     // Upload image to Cloudinary
     const uploadResponse = await cloudinary.uploader.upload(imageUrl, {
@@ -40,6 +56,22 @@ export async function POST(req: NextRequest) {
         stock,
         imageUrl: uploadResponse.secure_url,
         subCategoryId,
+        manufacturers,
+        type,
+        packaging,
+        package: pkg,
+        Qty,
+        productForm,
+        productHighlights,
+        information,
+        keyIngredients,
+        keyBenefits,
+        directionsForUse,
+        safetyInformation,
+        manufacturerAddress,
+        countryOfOrigin,
+        manufacturerDetails,
+        marketerDetails,
       },
     });
 

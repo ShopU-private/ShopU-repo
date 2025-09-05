@@ -23,6 +23,23 @@ export const createProductSchema = z.object({
   stock: z.coerce.number().int().nonnegative(),
   imageUrl: z.string().min(1),
   subCategoryId: z.string().uuid(),
+
+  manufacturers: z.string().optional(),
+  type: z.string().optional(),
+  packaging: z.string().optional(),
+  package: z.string().optional(),
+  Qty: z.string().optional(),
+  productForm: z.string().optional(),
+  productHighlights: z.string().optional(),
+  information: z.string().optional(),
+  keyIngredients: z.string().optional(),
+  keyBenefits: z.string().optional(),
+  directionsForUse: z.string().optional(),
+  safetyInformation: z.string().optional(),
+  manufacturerAddress: z.string().optional(),
+  countryOfOrigin: z.string().optional(),
+  manufacturerDetails: z.string().optional(),
+  marketerDetails: z.string().optional(),
 });
 
 export const updateProductSchema = z.object({
@@ -32,6 +49,23 @@ export const updateProductSchema = z.object({
   stock: z.number().int().nonnegative().optional(),
   imageUrl: z.string().min(1),
   subCategoryId: z.string().uuid().optional(),
+
+  manufacturers: z.string().optional(),
+  type: z.string().optional(),
+  packaging: z.string().optional(),
+  package: z.string().optional(),
+  Qty: z.string().optional(),
+  productForm: z.string().optional(),
+  productHighlights: z.string().optional(),
+  information: z.string().optional(),
+  keyIngredients: z.string().optional(),
+  keyBenefits: z.string().optional(),
+  directionsForUse: z.string().optional(),
+  safetyInformation: z.string().optional(),
+  manufacturerAddress: z.string().optional(),
+  countryOfOrigin: z.string().optional(),
+  manufacturerDetails: z.string().optional(),
+  marketerDetails: z.string().optional(),
 });
 
 export const createVariantTypeSchema = z.object({

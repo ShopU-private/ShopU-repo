@@ -14,7 +14,7 @@ type Address = {
   country: string;
   postalCode: string;
   phoneNumber: string;
-  latitude?: number;  // Added latitude
+  latitude?: number; // Added latitude
   longitude?: number; // Added longitude
 };
 
@@ -38,7 +38,7 @@ type AddressComponent = {
 
 export default function AddAddressForm({ onCancel, onSave, formMode, initialData }: Props) {
   const mapRef = useRef<MapRef>(null);
-  
+
   const [formData, setFormData] = useState<Address>({
     fullName: '',
     addressLine1: '',
@@ -61,16 +61,20 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
   const [loading, setLoading] = useState(false);
 
   // Show selected coordinates
-  const [selectedCoords, setSelectedCoords] = useState<{lat: number, lng: number} | null>(null);
+  const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     if (formMode === 'edit' && initialData) {
       setFormData({ ...initialData });
       setSearchLocation(initialData.addressLine1 || '');
-      
+
       // Update map if coordinates exist
       if (initialData.latitude && initialData.longitude && mapRef.current) {
-        mapRef.current.updateLocation(initialData.latitude, initialData.longitude, initialData.addressLine1);
+        mapRef.current.updateLocation(
+          initialData.latitude,
+          initialData.longitude,
+          initialData.addressLine1
+        );
         setSelectedCoords({ lat: initialData.latitude, lng: initialData.longitude });
       }
     }
@@ -106,8 +110,10 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
       const data = await res.json();
 
       if (data?.result) {
-        let city = '', state = '', postalCode = '';
-        
+        let city = '',
+          state = '',
+          postalCode = '';
+
         // Extract address components
         if (data.result.address_components) {
           (data.result.address_components as AddressComponent[]).forEach(c => {
@@ -120,7 +126,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
         // Extract coordinates
         const geometry = data.result.geometry;
         let latitude: number | undefined, longitude: number | undefined;
-        
+
         if (geometry?.location) {
           latitude = geometry.location.lat;
           longitude = geometry.location.lng;
@@ -146,13 +152,13 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
         setSearchLocation(description);
         setResults([]);
 
-        console.log('Selected Location:', { 
-          description, 
-          latitude, 
-          longitude, 
-          city, 
-          state, 
-          postalCode 
+        console.log('Selected Location:', {
+          description,
+          latitude,
+          longitude,
+          city,
+          state,
+          postalCode,
         });
       }
     } catch (err) {
@@ -169,9 +175,9 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
       latitude: lat,
       longitude: lng,
     }));
-    
+
     setSelectedCoords({ lat, lng });
-    
+
     console.log('Map location updated:', { lat, lng });
   };
 
@@ -266,7 +272,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
               {selectedCoords && (
                 <div className="mt-2 rounded-lg bg-white/90 p-2 shadow-sm">
                   <div className="text-xs text-gray-600">
-                    <span className="font-medium">Coordinates:</span> 
+                    <span className="font-medium">Coordinates:</span>
                     <span className="ml-1">
                       {selectedCoords.lat.toFixed(6)}, {selectedCoords.lng.toFixed(6)}
                     </span>
@@ -277,15 +283,12 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
 
             {/* Map Component */}
             <div className="flex h-[500px] w-full items-center justify-center rounded-xl shadow">
-              <VectorMap 
-                ref={mapRef}
-                onLocationChange={handleMapLocationChange}
-              />
+              <VectorMap ref={mapRef} onLocationChange={handleMapLocationChange} />
             </div>
-            
+
             {/* Map Instructions */}
-            <div className="absolute bottom-4 left-4 right-4 rounded-lg bg-white/90 p-2">
-              <div className="text-xs text-gray-600 text-center">
+            <div className="absolute right-4 bottom-4 left-4 rounded-lg bg-white/90 p-2">
+              <div className="text-center text-xs text-gray-600">
                 💡 Click on the map to select a precise location
               </div>
             </div>
@@ -391,9 +394,8 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
               <div className="rounded-lg bg-teal-50 p-3">
                 <div className="text-sm text-teal-800">
                   <div className="font-medium">Selected Location:</div>
-                  <div className="text-xs mt-1">
-                    Lat: {formData.latitude.toFixed(6)}, 
-                    Lng: {formData.longitude.toFixed(6)}
+                  <div className="mt-1 text-xs">
+                    Lat: {formData.latitude.toFixed(6)}, Lng: {formData.longitude.toFixed(6)}
                   </div>
                 </div>
               </div>
@@ -428,12 +430,13 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
             <button
               type="submit"
               disabled={!formData.latitude || !formData.longitude}
-              className="w-full rounded-xl bg-teal-600 py-4 font-medium text-white shadow-lg transition hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="w-full rounded-xl bg-teal-600 py-4 font-medium text-white shadow-lg transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               Continue
-              {!formData.latitude || !formData.longitude && (
-                <span className="text-xs block mt-1">Select location first</span>
-              )}
+              {!formData.latitude ||
+                (!formData.longitude && (
+                  <span className="mt-1 block text-xs">Select location first</span>
+                ))}
             </button>
           </div>
         </form>

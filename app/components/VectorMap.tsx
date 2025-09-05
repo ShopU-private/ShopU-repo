@@ -35,7 +35,7 @@ const VectorMap = forwardRef<MapRef, VectorMapProps>(({ onLocationChange }, ref)
           icon: {
             path: google.maps.SymbolPath.CIRCLE,
             scale: 10,
-            fillColor: "#0d9488",
+            fillColor: '#0d9488',
             fillOpacity: 1,
             strokeWeight: 1,
           },
@@ -46,7 +46,7 @@ const VectorMap = forwardRef<MapRef, VectorMapProps>(({ onLocationChange }, ref)
           const infowindow = new google.maps.InfoWindow({
             content: `<div class="p-2 text-sm">${address}</div>`,
           });
-          markerRef.current.addListener("click", () => {
+          markerRef.current.addListener('click', () => {
             infowindow.open(mapInstance.current!, markerRef.current!);
           });
         }
@@ -65,7 +65,7 @@ const VectorMap = forwardRef<MapRef, VectorMapProps>(({ onLocationChange }, ref)
         }
       }
       return { lat: 12.9716, lng: 77.5946 };
-    }
+    },
   }));
 
   useEffect(() => {
@@ -83,14 +83,14 @@ const VectorMap = forwardRef<MapRef, VectorMapProps>(({ onLocationChange }, ref)
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 10,
-          fillColor: "#0d9488",
+          fillColor: '#0d9488',
           fillOpacity: 1,
           strokeWeight: 1,
         },
       });
 
       // Map click event to update location
-      mapInstance.current.addListener("click", (e: google.maps.MapMouseEvent) => {
+      mapInstance.current.addListener('click', (e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
           const lat = e.latLng.lat();
           const lng = e.latLng.lng();

@@ -52,7 +52,6 @@ export default function RootLayout({
           async
           defer
         ></script>
-
       </body>
     </html>
   );

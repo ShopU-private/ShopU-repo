@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/client";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/client';
 
 export async function POST(req: Request) {
   try {
@@ -10,15 +10,18 @@ export async function POST(req: Request) {
     });
 
     if (!coupon) {
-      return NextResponse.json({ valid: false, message: "Coupon not found" }, { status: 404 });
+      return NextResponse.json({ valid: false, message: 'Coupon not found' }, { status: 404 });
     }
 
     if (new Date(coupon.expiryDate) < new Date()) {
-      return NextResponse.json({ valid: false, message: "Coupon expired" }, { status: 400 });
+      return NextResponse.json({ valid: false, message: 'Coupon expired' }, { status: 400 });
     }
 
     if (coupon.maxUsage <= 0) {
-      return NextResponse.json({ valid: false, message: "Coupon usage limit reached" }, { status: 400 });
+      return NextResponse.json(
+        { valid: false, message: 'Coupon usage limit reached' },
+        { status: 400 }
+      );
     }
 
     const discountAmount = (orderAmount * coupon.discount) / 100;
@@ -31,7 +34,7 @@ export async function POST(req: Request) {
       finalAmount,
     });
   } catch (err) {
-    console.error("Error validating coupon:", err);
-    return NextResponse.json({ valid: false, message: "Server error" }, { status: 500 });
+    console.error('Error validating coupon:', err);
+    return NextResponse.json({ valid: false, message: 'Server error' }, { status: 500 });
   }
 }
