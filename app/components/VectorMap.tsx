@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
 
 export interface MapRef {
   updateLocation: (lat: number, lng: number, address?: string) => void;
@@ -15,35 +13,42 @@ interface VectorMapProps {
 
 const VectorMap = forwardRef<MapRef, VectorMapProps>(({ onLocationChange }, ref) => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const mapInstance = useRef<maplibregl.Map | null>(null);
-  const markerRef = useRef<maplibregl.Marker | null>(null);
+  const mapInstance = useRef<google.maps.Map | null>(null);
+  const markerRef = useRef<google.maps.Marker | null>(null);
 
   useImperativeHandle(ref, () => ({
     updateLocation: (lat: number, lng: number, address?: string) => {
       if (mapInstance.current) {
         // Update map center
-        mapInstance.current.flyTo({
-          center: [lng, lat],
-          zoom: 15,
-          duration: 1000
-        });
+        mapInstance.current.setCenter({ lat, lng });
+        mapInstance.current.setZoom(15);
 
         // Remove existing marker
         if (markerRef.current) {
-          markerRef.current.remove();
+          markerRef.current.setMap(null);
         }
 
         // Add new marker
-        markerRef.current = new maplibregl.Marker({ color: '#0d9488' })
-          .setLngLat([lng, lat])
-          .addTo(mapInstance.current);
+        markerRef.current = new google.maps.Marker({
+          position: { lat, lng },
+          map: mapInstance.current,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: "#0d9488",
+            fillOpacity: 1,
+            strokeWeight: 1,
+          },
+        });
 
-        // Add popup with address if provided
+        // Add info window with address if provided
         if (address) {
-          const popup = new maplibregl.Popup({ offset: 25 })
-            .setHTML(`<div class="p-2 text-sm">${address}</div>`);
-          
-          markerRef.current.setPopup(popup);
+          const infowindow = new google.maps.InfoWindow({
+            content: `<div class="p-2 text-sm">${address}</div>`,
+          });
+          markerRef.current.addListener("click", () => {
+            infowindow.open(mapInstance.current!, markerRef.current!);
+          });
         }
 
         // Callback with coordinates
@@ -55,7 +60,9 @@ const VectorMap = forwardRef<MapRef, VectorMapProps>(({ onLocationChange }, ref)
     getCenter: () => {
       if (mapInstance.current) {
         const center = mapInstance.current.getCenter();
-        return { lat: center.lat, lng: center.lng };
+        if (center) {
+          return { lat: center.lat(), lng: center.lng() };
+        }
       }
       return { lat: 12.9716, lng: 77.5946 };
     }
@@ -63,56 +70,51 @@ const VectorMap = forwardRef<MapRef, VectorMapProps>(({ onLocationChange }, ref)
 
   useEffect(() => {
     if (mapContainer.current && !mapInstance.current) {
-      mapInstance.current = new maplibregl.Map({
-        container: mapContainer.current,
-        style: `https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json`,
-        center: [77.5946, 12.9716], // Bangalore
+      // Initialize Google Map
+      mapInstance.current = new google.maps.Map(mapContainer.current, {
+        center: { lat: 12.9716, lng: 77.5946 }, // Bangalore
         zoom: 12,
-        transformRequest: url => {
-          if (url.includes('api.olamaps.io')) {
-            const separator = url.includes('?') ? '&' : '?';
-            return {
-              url: `${url}${separator}api_key=${process.env.NEXT_PUBLIC_OLA_MAPS_API_KEY}`,
-            };
-          }
-          return { url };
-        },
       });
 
       // Initial marker
-      markerRef.current = new maplibregl.Marker({ color: '#0d9488' })
-        .setLngLat([77.5946, 12.9716])
-        .addTo(mapInstance.current);
+      markerRef.current = new google.maps.Marker({
+        position: { lat: 12.9716, lng: 77.5946 },
+        map: mapInstance.current,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 10,
+          fillColor: "#0d9488",
+          fillOpacity: 1,
+          strokeWeight: 1,
+        },
+      });
 
       // Map click event to update location
-      mapInstance.current.on('click', (e) => {
-        const { lat, lng } = e.lngLat;
-        
-        // Update marker position
-        if (markerRef.current) {
-          markerRef.current.setLngLat([lng, lat]);
-        }
-        
-        // Callback with coordinates
-        if (onLocationChange) {
-          onLocationChange(lat, lng);
+      mapInstance.current.addListener("click", (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+          const lat = e.latLng.lat();
+          const lng = e.latLng.lng();
+
+          // Update marker position
+          if (markerRef.current) {
+            markerRef.current.setPosition({ lat, lng });
+          }
+
+          // Callback with coordinates
+          if (onLocationChange) {
+            onLocationChange(lat, lng);
+          }
         }
       });
     }
 
     return () => {
       if (mapInstance.current) {
-        try {
-          if (markerRef.current) {
-            markerRef.current.remove();
-          }
-          mapInstance.current.remove();
-        } catch (e) {
-          console.warn('Map already removed:', e);
-        } finally {
-          mapInstance.current = null;
-          markerRef.current = null;
+        if (markerRef.current) {
+          markerRef.current.setMap(null);
         }
+        mapInstance.current = null;
+        markerRef.current = null;
       }
     };
   }, [onLocationChange]);
