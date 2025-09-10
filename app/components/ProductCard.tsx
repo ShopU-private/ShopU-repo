@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface Product {
   id: string;
@@ -31,13 +32,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onAddToCart,
   isAdding,
 }) => {
+  const router = useRouter();
+
+  const handleclick = () => {
+    router.push(`/product/${product.id}`);
+  };
   return (
     <>
       {/* Desktop view */}
       <div className="group flex hidden h-84 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:block">
         {/* Product Image */}
         <div className="relative h-42 w-full">
-          <div>
+          <div onClick={handleclick}>
             <Image
               src={product.image || '/pediasure.png'}
               alt={product.name}

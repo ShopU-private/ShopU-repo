@@ -1,32 +1,23 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
+import { isAdmin } from '@/lib/auth';
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  try {
-    const { id } = params;
-    const coupon = await prisma.coupon.findUnique({ where: { id: Number(id) } });
-    if (!coupon) return NextResponse.json({ error: 'Coupon not found' }, { status: 404 });
-    if (coupon.usedCount >= coupon.maxUsage)
-      return NextResponse.json({ error: 'Usage limit exceeded' }, { status: 400 });
-
-    // Increment usage count
-    const updated = await prisma.coupon.update({
-      where: { id: Number(id) },
-      data: { usedCount: { increment: 1 } },
-    });
-
-    return NextResponse.json(updated);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to update coupon usage' }, { status: 500 });
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  if (!isAdmin(request)) {
+    return NextResponse.json(
+      { success: false, error: true, message: 'Unauthorized' },
+      { status: 401 }
+    );
   }
-}
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = params;
+    const { id } = await params;
+
     await prisma.coupon.delete({
-      where: { id: Number(id) },
+      where: { id },
     });
 
     return NextResponse.json({ message: 'Coupon deleted successfully' });

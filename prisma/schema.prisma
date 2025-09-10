@@ -128,7 +128,7 @@ model CombinationValue {
 }
 
 model Coupon {
-  id             Int        @id  @default(autoincrement())
+  id             String    @id @default(uuid())
   name           String
   code           String     @unique
   discount       Int
