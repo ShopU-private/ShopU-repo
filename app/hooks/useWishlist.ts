@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -39,7 +41,6 @@ export function useWishlist() {
 
   const toggleFavorite = async (product: Product) => {
     if (favorites.has(product.id)) {
-      // Optimistic update: remove from UI first
       setFavorites(prev => {
         const updated = new Set(prev);
         updated.delete(product.id);
@@ -53,7 +54,6 @@ export function useWishlist() {
         const data = await res.json();
 
         if (!res.ok) {
-          // rollback if failed
           setFavorites(prev => new Set(prev).add(product.id));
           toast.error(data.message || 'Could not remove from wishlist');
         } else {

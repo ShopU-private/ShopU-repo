@@ -72,13 +72,13 @@ const VectorMap = forwardRef<MapRef, VectorMapProps>(({ onLocationChange }, ref)
     if (mapContainer.current && !mapInstance.current) {
       // Initialize Google Map
       mapInstance.current = new google.maps.Map(mapContainer.current, {
-        center: { lat: 12.9716, lng: 77.5946 }, // Bangalore
+        center: { lat: 25.5941, lng: 85.1376 }, // Bangalore
         zoom: 12,
       });
 
       // Initial marker
       markerRef.current = new google.maps.Marker({
-        position: { lat: 12.9716, lng: 77.5946 },
+        position: { lat: 25.5941, lng: 85.1376 },
         map: mapInstance.current,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,

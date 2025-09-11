@@ -1,3 +1,5 @@
+'use client';
+
 //card for testing
 
 import React, { useState } from 'react';
