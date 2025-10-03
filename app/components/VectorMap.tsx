@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useRef, forwardRef, useImperativeHandle, useState } from 'react';
 
 export interface MapRef {
   updateLocation: (lat: number, lng: number, address?: string) => void;
@@ -9,118 +9,197 @@ export interface MapRef {
 
 interface VectorMapProps {
   onLocationChange?: (lat: number, lng: number) => void;
+  defaultCenter?: { lat: number; lng: number };
+  defaultZoom?: number;
 }
 
-const VectorMap = forwardRef<MapRef, VectorMapProps>(({ onLocationChange }, ref) => {
-  const mapContainer = useRef<HTMLDivElement | null>(null);
-  const mapInstance = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
+const VectorMap = forwardRef<MapRef, VectorMapProps>(
+  ({ onLocationChange, defaultCenter = { lat: 12.9716, lng: 77.5946 }, defaultZoom = 12 }, ref) => {
+    const mapContainer = useRef<HTMLDivElement | null>(null);
+    const mapInstance = useRef<google.maps.Map | null>(null);
+    const markerRef = useRef<google.maps.Marker | null>(null);
+    const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
+    const [isMapReady, setIsMapReady] = useState(false);
+    const initAttempts = useRef(0);
 
-  useImperativeHandle(ref, () => ({
-    updateLocation: (lat: number, lng: number, address?: string) => {
-      if (mapInstance.current) {
-        // Update map center
-        mapInstance.current.setCenter({ lat, lng });
-        mapInstance.current.setZoom(15);
+    // Helper function to initialize the map
+    const initializeMap = () => {
+      if (!mapContainer.current) return false;
 
-        // Remove existing marker
-        if (markerRef.current) {
-          markerRef.current.setMap(null);
-        }
+      // Check if Google Maps API is loaded
+      if (typeof window === 'undefined' || !window.google || !window.google.maps) {
+        return false;
+      }
 
-        // Add new marker
+      try {
+        // Create map instance
+        mapInstance.current = new google.maps.Map(mapContainer.current, {
+          center: defaultCenter,
+          zoom: defaultZoom,
+          mapTypeControl: true,
+          streetViewControl: false,
+          fullscreenControl: true,
+        });
+
+        // Create initial marker
         markerRef.current = new google.maps.Marker({
-          position: { lat, lng },
+          position: defaultCenter,
           map: mapInstance.current,
+          draggable: true,
           icon: {
             path: google.maps.SymbolPath.CIRCLE,
             scale: 10,
             fillColor: '#0d9488',
             fillOpacity: 1,
-            strokeWeight: 1,
+            strokeWeight: 2,
+            strokeColor: '#ffffff',
           },
         });
 
-        // Add info window with address if provided
+        // Add click listener to map
+        mapInstance.current.addListener('click', (e: google.maps.MapMouseEvent) => {
+          if (e.latLng && markerRef.current) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+
+            // Update marker position
+            markerRef.current.setPosition({ lat, lng });
+
+            // Close any open info window
+            if (infoWindowRef.current) {
+              infoWindowRef.current.close();
+            }
+
+            // Callback with coordinates
+            if (onLocationChange) {
+              onLocationChange(lat, lng);
+            }
+          }
+        });
+
+        // Add drag listener to marker
+        markerRef.current.addListener('dragend', (e: google.maps.MapMouseEvent) => {
+          if (e.latLng) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+
+            // Callback with coordinates
+            if (onLocationChange) {
+              onLocationChange(lat, lng);
+            }
+          }
+        });
+
+        setIsMapReady(true);
+        return true;
+      } catch (error) {
+        console.error('Error initializing map:', error);
+        return false;
+      }
+    };
+
+    // Expose methods via ref
+    useImperativeHandle(ref, () => ({
+      updateLocation: (lat: number, lng: number, address?: string) => {
+        if (!mapInstance.current || !markerRef.current) return;
+
+        // Update map center and zoom
+        mapInstance.current.setCenter({ lat, lng });
+        mapInstance.current.setZoom(15);
+
+        // Update marker position
+        markerRef.current.setPosition({ lat, lng });
+
+        // Handle info window
         if (address) {
-          const infowindow = new google.maps.InfoWindow({
-            content: `<div class="p-2 text-sm">${address}</div>`,
-          });
-          markerRef.current.addListener('click', () => {
-            infowindow.open(mapInstance.current!, markerRef.current!);
-          });
+          if (!infoWindowRef.current) {
+            infoWindowRef.current = new google.maps.InfoWindow();
+          }
+
+          infoWindowRef.current.setContent(`
+            <div style="padding: 8px; max-width: 200px;">
+              <p style="margin: 0; font-size: 14px; color: #374151;">${address}</p>
+            </div>
+          `);
+
+          infoWindowRef.current.open(mapInstance.current, markerRef.current);
+        } else if (infoWindowRef.current) {
+          infoWindowRef.current.close();
         }
 
-        // Callback with coordinates
+        // Trigger callback
         if (onLocationChange) {
           onLocationChange(lat, lng);
         }
-      }
-    },
-    getCenter: () => {
-      if (mapInstance.current) {
-        const center = mapInstance.current.getCenter();
-        if (center) {
-          return { lat: center.lat(), lng: center.lng() };
-        }
-      }
-      return { lat: 12.9716, lng: 77.5946 };
-    },
-  }));
-
-  useEffect(() => {
-    if (mapContainer.current && !mapInstance.current) {
-      // Initialize Google Map
-      mapInstance.current = new google.maps.Map(mapContainer.current, {
-        center: { lat: 12.9716, lng: 77.5946 }, // Bangalore
-        zoom: 12,
-      });
-
-      // Initial marker
-      markerRef.current = new google.maps.Marker({
-        position: { lat: 12.9716, lng: 77.5946 },
-        map: mapInstance.current,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 10,
-          fillColor: '#0d9488',
-          fillOpacity: 1,
-          strokeWeight: 1,
-        },
-      });
-
-      // Map click event to update location
-      mapInstance.current.addListener('click', (e: google.maps.MapMouseEvent) => {
-        if (e.latLng) {
-          const lat = e.latLng.lat();
-          const lng = e.latLng.lng();
-
-          // Update marker position
-          if (markerRef.current) {
-            markerRef.current.setPosition({ lat, lng });
-          }
-
-          // Callback with coordinates
-          if (onLocationChange) {
-            onLocationChange(lat, lng);
+      },
+      getCenter: () => {
+        if (mapInstance.current) {
+          const center = mapInstance.current.getCenter();
+          if (center) {
+            return { lat: center.lat(), lng: center.lng() };
           }
         }
-      });
-    }
+        return defaultCenter;
+      },
+    }));
 
-    return () => {
-      if (mapInstance.current) {
+    // Initialize map when component mounts
+    useEffect(() => {
+      let interval: NodeJS.Timeout;
+
+      const tryInitialize = () => {
+        if (initializeMap()) {
+          if (interval) clearInterval(interval);
+          return;
+        }
+
+        // If initialization fails, retry up to 20 times (10 seconds)
+        initAttempts.current++;
+        if (initAttempts.current >= 20) {
+          console.error('Failed to initialize Google Maps after multiple attempts');
+          if (interval) clearInterval(interval);
+        }
+      };
+
+      // Try to initialize immediately
+      if (!initializeMap()) {
+        // If immediate initialization fails, set up retry interval
+        interval = setInterval(tryInitialize, 500);
+      }
+
+      // Cleanup
+      return () => {
+        if (interval) clearInterval(interval);
+        if (infoWindowRef.current) {
+          infoWindowRef.current.close();
+          infoWindowRef.current = null;
+        }
         if (markerRef.current) {
           markerRef.current.setMap(null);
+          markerRef.current = null;
         }
-        mapInstance.current = null;
-        markerRef.current = null;
-      }
-    };
-  }, [onLocationChange]);
+        if (mapInstance.current) {
+          mapInstance.current = null;
+        }
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Empty dependency array - only run once on mount
 
-  return <div ref={mapContainer} className="h-[635px] w-full rounded-xl shadow" />;
-});
+    return (
+      <div className="relative h-full w-full">
+        <div ref={mapContainer} className="h-full w-full rounded-xl" />
+        {!isMapReady && (
+          <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-gray-100">
+            <div className="text-center">
+              <div className="mb-2 h-8 w-8 animate-spin rounded-full border-4 border-teal-600 border-t-transparent mx-auto"></div>
+              <p className="text-sm text-gray-600">Loading map...</p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
 
 VectorMap.displayName = 'VectorMap';
 

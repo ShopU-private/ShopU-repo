@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { X, Search, Home, Briefcase, MoreHorizontal, MapPin } from 'lucide-react';
+import { X, Search, Home, Briefcase, MoreHorizontal, MapPin, Crosshair } from 'lucide-react';
 import VectorMap, { MapRef } from '../components/VectorMap';
 
 type Address = {
@@ -59,6 +59,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
   const [searchLocation, setSearchLocation] = useState('');
   const [results, setResults] = useState<Prediction[]>([]);
   const [loading, setLoading] = useState(false);
+  const [gettingLocation, setGettingLocation] = useState(false);
 
   // Show selected coordinates
   const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -181,6 +182,194 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     console.log('Map location updated:', { lat, lng });
   };
 
+  // Get current location from device with high accuracy
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setGettingLocation(true);
+    setResults([]); // Clear search results
+
+    // Use watchPosition for more accurate real-time location
+    let watchId: number;
+    let locationObtained = false;
+
+    const processLocation = async (position: GeolocationPosition) => {
+      if (locationObtained) return; // Prevent multiple processing
+      locationObtained = true;
+
+      try {
+        const { latitude, longitude, accuracy } = position.coords;
+
+        console.log('Live location obtained:', {
+          latitude,
+          longitude,
+          accuracy: `${accuracy.toFixed(2)}m`,
+          timestamp: new Date(position.timestamp).toLocaleString()
+        });
+
+        // Update map and marker immediately
+        if (mapRef.current) {
+          mapRef.current.updateLocation(latitude, longitude, '📍 Your Current Location');
+        }
+
+        // Update form coordinates
+        setFormData(prev => ({
+          ...prev,
+          latitude,
+          longitude,
+        }));
+
+        setSelectedCoords({ lat: latitude, lng: longitude });
+
+        // Reverse geocode to get detailed address
+        try {
+          const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}`;
+          const response = await fetch(geocodeUrl);
+          const data = await response.json();
+
+          if (data.status === 'OK' && data.results && data.results[0]) {
+            const result = data.results[0];
+            const addressComponents = result.address_components;
+
+            let city = '';
+            let state = '';
+            let postalCode = '';
+            let country = 'India';
+            let streetAddress = '';
+
+            // Extract address components with fallbacks
+            addressComponents.forEach((component: AddressComponent) => {
+              if (component.types.includes('locality') || component.types.includes('administrative_area_level_2')) {
+                city = city || component.long_name;
+              }
+              if (component.types.includes('administrative_area_level_1')) {
+                state = component.long_name;
+              }
+              if (component.types.includes('postal_code')) {
+                postalCode = component.long_name;
+              }
+              if (component.types.includes('country')) {
+                country = component.long_name;
+              }
+              if (component.types.includes('sublocality_level_1') || component.types.includes('sublocality')) {
+                streetAddress = component.long_name;
+              }
+            });
+
+            // Use the most specific address available
+            const formattedAddress = result.formatted_address;
+            const addressLine1 = streetAddress || formattedAddress.split(',')[0] || formattedAddress;
+
+            setFormData(prev => ({
+              ...prev,
+              addressLine1: addressLine1,
+              city: city,
+              state: state,
+              postalCode: postalCode,
+              country: country,
+            }));
+
+            setSearchLocation(formattedAddress);
+
+            console.log('Address populated:', {
+              addressLine1,
+              city,
+              state,
+              postalCode,
+              country,
+              accuracy: `${accuracy.toFixed(2)}m`
+            });
+          } else {
+            console.warn('Geocoding returned no results:', data.status);
+            // Still update with coordinates even if geocoding fails
+            setSearchLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+          }
+        } catch (geocodeErr) {
+          console.error('Geocoding failed:', geocodeErr);
+          // Fallback: show coordinates
+          setSearchLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+          alert('Location detected but address lookup failed. You can still use this location.');
+        }
+
+        // Stop watching after successful location
+        if (watchId) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+
+      } catch (err) {
+        console.error('Error processing location:', err);
+        alert('Failed to process your location. Please try again.');
+      } finally {
+        setGettingLocation(false);
+      }
+    };
+
+    const handleError = (error: GeolocationPositionError) => {
+      console.error('Geolocation error:', error);
+      setGettingLocation(false);
+
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          alert('❌ Location permission denied.\n\nPlease allow location access in your browser settings to use this feature.');
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert('❌ Location information is unavailable.\n\nPlease check your device location settings and try again.');
+          break;
+        case error.TIMEOUT:
+          alert('⏱️ Location request timed out.\n\nPlease try again. Make sure you have a clear view of the sky if using GPS.');
+          break;
+        default:
+          alert('❌ An unknown error occurred while getting your location.\n\nPlease try again or enter your address manually.');
+          break;
+      }
+    };
+
+    // Options for high accuracy
+    const options: PositionOptions = {
+      enableHighAccuracy: true,  // Use GPS for best accuracy
+      timeout: 15000,            // 15 seconds timeout
+      maximumAge: 0              // Don't use cached position
+    };
+
+    // Try to get current position first (faster)
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        processLocation(position);
+      },
+      (initialError) => {
+        // If getCurrentPosition fails, try watchPosition for continuous updates
+        console.log('getCurrentPosition failed, trying watchPosition...', initialError.message);
+        watchId = navigator.geolocation.watchPosition(
+          processLocation,
+          handleError,
+          options
+        );
+
+        // Auto-clear watch after 20 seconds if no success
+        setTimeout(() => {
+          if (watchId && !locationObtained) {
+            navigator.geolocation.clearWatch(watchId);
+            handleError({
+              code: 3,
+              message: 'Timeout',
+              PERMISSION_DENIED: 1,
+              POSITION_UNAVAILABLE: 2,
+              TIMEOUT: 3
+            } as GeolocationPositionError);
+          }
+        }, 20000);
+      },
+      options
+    );
+  };
+
   // Submit Form - Include coordinates
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -268,6 +457,26 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 )}
               </div>
 
+              {/* Use Current Location Button */}
+              <button
+                type="button"
+                onClick={getCurrentLocation}
+                disabled={gettingLocation}
+                className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-green-500 px-4 py-3 text-white shadow-lg transition hover:from-teal-700 hover:to-green-600 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {gettingLocation ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                    <span className="text-sm font-medium">Getting your location...</span>
+                  </>
+                ) : (
+                  <>
+                    <Crosshair className="h-4 w-4" />
+                    <span className="text-sm font-medium">Use Current Location</span>
+                  </>
+                )}
+              </button>
+
               {/* Coordinates Display */}
               {selectedCoords && (
                 <div className="mt-2 rounded-lg bg-white/90 p-2 shadow-sm">
@@ -329,11 +538,10 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                     key={type}
                     type="button"
                     onClick={() => setSelectedAddressType(type as 'home' | 'work' | 'other')}
-                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
-                      selectedAddressType === type
-                        ? 'border-teal-500 bg-teal-50 text-teal-700'
-                        : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                    }`}
+                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${selectedAddressType === type
+                      ? 'border-teal-500 bg-teal-50 text-teal-700'
+                      : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                      }`}
                   >
                     {type === 'home' && <Home className="h-4 w-4" />}
                     {type === 'work' && <Briefcase className="h-4 w-4" />}
