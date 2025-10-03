@@ -1,5 +1,6 @@
-import MedicineCard from '../components/MedicineCard';
-import { prisma } from '@/lib/client';
+'use client';
+import React, { useState, useRef, useEffect } from 'react';
+import MedicineCard, { searchEventEmitter } from '../components/MedicineCard';
 
 // Import Medicine type or define it here
 interface Medicine {
@@ -10,67 +11,45 @@ interface Medicine {
   imageUrl: string;
 }
 
-async function getMedicines(query: string): Promise<Medicine[]> {
-  if (!query) return [];
+// Define the type for medicine search results
+type MedicineResult = Array<Medicine>;
 
-  const medicines = await prisma.medicine.findMany({
-    where: {
-      name: {
-        contains: query,
-        mode: 'insensitive'
+export default function Searchbar() {
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [searchCache, setSearchCache] = useState<{ [key: string]: MedicineResult }>({});
+  const [searchResults, setSearchResults] = useState<Medicine[]>([]);
+
+  // Clear cache when component unmounts or if it gets too large
+  useEffect(() => {
+    const timeout = searchTimeoutRef.current; // copy to variable
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
       }
-    },
-    take: 40
-  })
+    };
+  }, []);
 
-  return medicines.map(med => ({
-    id: med.id,
-    name: med.name,
-    description: med.description ?? '',
-    price: typeof med.price === 'object' && 'toNumber' in med.price ? med.price.toNumber() : Number(med.price),
-    imageUrl: med.imageUrl ?? '',
-  }))
-}
+  // Limit cache size to prevent memory issues
+  useEffect(() => {
+    const cacheKeys = Object.keys(searchCache);
+    if (cacheKeys.length > 50) {
+      // Limit cache to last 50 searches
+      const newCache = { ...searchCache };
+      delete newCache[cacheKeys[0]];
+      setSearchCache(newCache);
+    }
+  }, [searchCache]);
 
-export default async function Searchbar({ searchParams }: { searchParams: Record<string, string> }) {
-  // const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  // const [searchCache, setSearchCache] = useState<{ [key: string]: MedicineResult }>({});
-  // const [searchResults, setSearchResults] = useState<Medicine[]>([]);
+  // Subscribe to search results
+  useEffect(() => {
+    const unsubscribe = searchEventEmitter.subscribe((results: Medicine[]) => {
+      setSearchResults(results);
+    });
 
-  // // Clear cache when component unmounts or if it gets too large
-  // useEffect(() => {
-  //   const timeout = searchTimeoutRef.current; // copy to variable
-  //   return () => {
-  //     if (timeout) {
-  //       clearTimeout(timeout);
-  //     }
-  //   };
-  // }, []);
-
-  // // Limit cache size to prevent memory issues
-  // useEffect(() => {
-  //   const cacheKeys = Object.keys(searchCache);
-  //   if (cacheKeys.length > 50) {
-  //     // Limit cache to last 50 searches
-  //     const newCache = { ...searchCache };
-  //     delete newCache[cacheKeys[0]];
-  //     setSearchCache(newCache);
-  //   }
-  // }, [searchCache]);
-
-  // // Subscribe to search results
-  // useEffect(() => {
-  //   const unsubscribe = searchEventEmitter.subscribe((results: Medicine[]) => {
-  //     setSearchResults(results);
-  //   });
-
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, []);
-
-  const query = searchParams?.q || '';
-  const searchResults = await getMedicines(query);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <div className="relative">
