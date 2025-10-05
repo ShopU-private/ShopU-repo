@@ -1,12 +1,6 @@
-'use client';
-import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
-import toast from 'react-hot-toast';
 import Navroute from '@/app/components/navroute';
-import { Loader } from 'lucide-react';
 import SimilarProductsSection from '@/app/components/SimilarProduct';
-import useAddToCart from '@/app/hooks/handleAddToCart';
 
 export interface Product {
   id: string;
@@ -21,12 +15,11 @@ export interface Product {
   subtitle?: string;
   stock: number;
   description?: string;
-
-  // optional richer fields for detail page
   productImages?: { id: string; url: string }[];
   productHighlights?: string;
   directionsForUse?: string;
   safetyInformation?: string;
+  subCategory?: { id: string; name: string };
 }
 
 interface PackOption {
@@ -36,48 +29,44 @@ interface PackOption {
   stock: string;
 }
 
-export default function ProductDetailPage() {
-  const params = useParams();
-  const productId = params?.ProductById as string;
+interface Props {
+  params: { ProductById: string };
+}
 
-  const [product, setProduct] = useState<Product | null>(null);
-  const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { handleAddToCart, addingProductId } = useAddToCart();
+async function getProduct(productId: string): Promise<Product | null> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${productId}`, {
+    next: {
+      revalidate: 6000
+    }
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.product || null;
+}
 
-  useEffect(() => {
-    if (!productId) return;
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/products/${productId}`);
-        const data = await res.json();
-        if (!res.ok) toast.error(data.error || 'Failed to fetch product');
-        setProduct(data.product);
-
-        if (data.product?.subCategory?.id) {
-          const simRes = await fetch(
-            `/api/products?subCategoryId=${data.product.subCategory.id}&limit=10`
-          );
-          const simData = await simRes.json();
-          if (simRes.ok) {
-            setSimilarProducts(simData.products.filter((p: Product) => p.id !== productId));
-          }
-        }
-      } catch (err) {
-        console.error('Product fetch error:', err);
-        setError(err instanceof Error ? err.message : 'Something went wrong');
-      } finally {
-        setLoading(false);
+async function getSimilarProducts(subCategoryId: string, productId: string): Promise<Product[]> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/products?subCategoryId=${subCategoryId}&limit=10`, {
+      next: {
+        revalidate: 6000
       }
-    };
-    fetchProduct();
-  }, [productId]);
+    });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data.products || []).filter((p: Product) => p.id !== productId);
+}
 
-  const [selectedSize, setSelectedSize] = useState<string>('Large');
+export default async function ProductDetailPage({ params }: Props) {
+  const productId = params.ProductById;
+  const productPromise = getProduct(productId);
+
+  const product = await productPromise;
+  let similarProducts: Product[] = [];
+  if (product?.subCategory?.id) {
+    similarProducts = await getSimilarProducts(product.subCategory.id, productId);
+  }
+
   const sizes: string[] = ['Large', 'Small', 'Medium', 'New Born', 'XL', 'XXL'];
-  const [selectedPackIndex, setSelectedPackIndex] = useState<number>(0);
   const packOptions: PackOption[] = [
     { quantity: 96, price: 1270, perUnit: '₹13.32 Per Unit', stock: 'In Stock' },
     { quantity: 56, price: 970, perUnit: '₹11.32 Per Unit', stock: 'In Stock' },
@@ -85,30 +74,20 @@ export default function ProductDetailPage() {
     { quantity: 20, price: 270, perUnit: '₹5.32 Per Unit', stock: 'In Stock' },
   ];
 
-  const [quantity, setQuantity] = useState(1);
-  const handleDecrement = () => quantity > 1 && setQuantity(quantity - 1);
-  const handleIncrement = () => setQuantity(quantity + 1);
+  const selectedSize = sizes[0];
+  const selectedPackIndex = 0;
+  const quantity = 1;
 
   return (
     <>
       <Navroute />
       <div className="min-h-xl px-4 py-8">
-        {loading ? (
-          <div className="flex min-h-[70vh] items-center justify-center">
-            <div className="text-center">
-              <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
-              <p className="mt-4 text-gray-600">Loading product...</p>
-            </div>
-          </div>
-        ) : error ? (
-          <p className="p-4 text-red-500">{error}</p>
-        ) : !product ? (
+        {!product ? (
           <p className="p-4 text-center">Product not found</p>
         ) : (
           <>
-            <div className="">
+            <div>
               <div className="mx-auto grid w-[90%] max-w-7xl gap-6 rounded px-10 py-6 md:grid-cols-2">
-                {/* Left: Image Gallery */}
                 <div className="flex gap-6">
                   <div className="flex flex-1 items-center justify-center rounded-lg bg-white p-12">
                     <Image
@@ -130,7 +109,6 @@ export default function ProductDetailPage() {
                       {sizes.map(size => (
                         <button
                           key={size}
-                          onClick={() => setSelectedSize(size)}
                           className={`cursor-pointer rounded px-5 py-2 text-sm transition ${
                             selectedSize === size
                               ? 'bg-[#317C80] text-white'
@@ -149,7 +127,6 @@ export default function ProductDetailPage() {
                       {packOptions.map((pack, index) => (
                         <div
                           key={index}
-                          onClick={() => setSelectedPackIndex(index)}
                           className={`cursor-pointer rounded transition ${
                             selectedPackIndex === index
                               ? 'bg-[#317C80] text-white'
@@ -170,13 +147,13 @@ export default function ProductDetailPage() {
 
                   <div className="items-center gap-4">
                     <div className="my-4 flex w-28 items-center rounded border px-2">
-                      <button onClick={handleDecrement} className="px-2 text-2xl">
+                      <button className="px-2 text-2xl" disabled>
                         −
                       </button>
                       <span className="w-12 px-3 text-center">
                         {quantity.toString().padStart(2, '0')}
                       </span>
-                      <button onClick={handleIncrement} className="px-2 text-2xl">
+                      <button className="px-2 text-2xl" disabled>
                         +
                       </button>
                     </div>
@@ -190,24 +167,17 @@ export default function ProductDetailPage() {
                   </div>
 
                   <button
-                    onClick={() => handleAddToCart(productId)}
-                    disabled={addingProductId === productId}
                     className="flex w-52 items-center justify-center gap-2 rounded bg-[#317C80] py-3 font-medium text-white transition-transform duration-300 hover:scale-102"
+                    disabled
                   >
-                    {addingProductId === productId ? (
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    ) : (
-                      <>
-                        <Image
-                          src="/Vector.png"
-                          alt="Cart"
-                          width={100}
-                          height={100}
-                          className="h-5 w-5"
-                        />
-                        Add to Cart
-                      </>
-                    )}
+                    <Image
+                      src="/Vector.png"
+                      alt="Cart"
+                      width={100}
+                      height={100}
+                      className="h-5 w-5"
+                    />
+                    Add to Cart
                   </button>
                 </div>
               </div>
@@ -232,8 +202,6 @@ export default function ProductDetailPage() {
                   </section>
                 )}
               </div>
-
-              {/* ===== Similar Products Section ===== */}
               {similarProducts.length > 0 && <SimilarProductsSection products={similarProducts} />}
             </div>
           </>
