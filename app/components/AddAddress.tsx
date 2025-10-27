@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { X, Search, Home, Briefcase, MoreHorizontal, MapPin, Crosshair } from 'lucide-react';
 import VectorMap, { MapRef } from '../components/VectorMap';
+import { NEXT_PUBLIC_GOOGLE_MAP_API_KEY } from '@/config';
 
 type Address = {
   id?: string;
@@ -226,7 +227,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
 
         // Reverse geocode to get detailed address
         try {
-          const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}`;
+          const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${NEXT_PUBLIC_GOOGLE_MAP_API_KEY}`;
           const response = await fetch(geocodeUrl);
           const data = await response.json();
 

@@ -35,6 +35,7 @@ export default function AddressPage() {
       });
       if (res.ok) {
         const data = await res.json();
+        console.log(data)
         setAddresses(data.address || []);
       }
     } catch (error) {

@@ -1,92 +1,220 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
-import { verifyToken } from '@/lib/auth';
+import { AuthenticatedRequest, withAuth } from '@/middlewares';
+import { redis } from '@/caching';
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+const CACHE_TTL = 3600;
+const getCacheKey = (userId: string, addressId: string) => `user:${userId}:address:${addressId}`;
+
+export const GET = withAuth(async (req: AuthenticatedRequest, { params }: { params: Promise<{ id: string }> }) => {
   try {
-    const token = req.cookies.get('token')?.value;
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const user = verifyToken(token);
-    if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-
     const { id } = await params;
 
-    const address = await prisma.userAddress.findUnique({
-      where: { id },
-    });
-
-    if (!address || address.userId !== user.id) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    if (!id || typeof id !== 'string') {
+      return NextResponse.json(
+        { success: false, message: 'Invalid address ID' },
+        { status: 400 }
+      )
     }
 
-    return NextResponse.json({ address });
+    const cacheKey = getCacheKey(req.user.id, id);
+
+    // try to get from cache first
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      let parsed: unknown = null;
+      try {
+        parsed = JSON.parse(cached);
+      } catch (e) {
+        // If parse fails, fall through to DB fetch
+        console.warn('Failed to parse cached address, refetching from DB', e);
+      }
+
+      if (parsed) {
+        return NextResponse.json(
+          { success: true, message: 'Address details (cached)', data: parsed, cached: true },
+          { status: 200 }
+        )
+      }
+    }
+
+    // Cache miss: fetch from DB, write to redis, then return to user
+    const address = await prisma.userAddress.findFirst({
+      where: {
+        id,
+        userId: req.user.id
+      },
+      select: {
+        id: true,
+        userId: true,
+        addressLine1: true,
+        addressLine2: true,
+        city: true,
+        state: true,
+        postalCode: true,
+        country: true,
+        isDefault: true,
+        fullName: true,
+        phoneNumber: true,
+        latitude: true,
+        longitude: true,
+        pincode: true,
+      }
+    })
+
+    if (!address) {
+      return NextResponse.json(
+        { success: false, message: 'Address not found' },
+        { status: 403 }
+      )
+    }
+
+    // Write to redis before returning
+    try {
+      await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(address));
+    } catch (e) {
+      console.warn('Failed to set address cache', e);
+    }
+
+    return NextResponse.json(
+      { success: true, message: 'Address details(from db)', data: address, cached: false },
+      { status: 200 }
+    )
   } catch (error) {
     console.error('API ERROR at GET /api/account/address/[id]:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: `Internal server error: ${String(error)}` },
+      { status: 500 }
+    )
   }
-}
+})
 
-//Update address
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const PATCH = withAuth(async (req: AuthenticatedRequest, { params }: { params: Promise<{ id: string }> }) => {
   try {
-    const token = req.cookies.get('token')?.value;
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const user = verifyToken(token);
-    if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-
     const { id } = await params;
     const body = await req.json();
 
-    // Verify the address belongs to the user before updating
-    const existingAddress = await prisma.userAddress.findUnique({
+    const existingAddress = await prisma.userAddress.findFirst({
       where: { id },
-    });
+    })
 
-    if (!existingAddress || existingAddress.userId !== user.id) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    if (!existingAddress || existingAddress.userId !== req.user.id) {
+      return NextResponse.json(
+        { success: false, message: 'Address not found' },
+        { status: 404 }
+      )
     }
+
+    if (body.latitude !== undefined || body.longitude !== undefined) {
+      const lat = parseFloat(body.latitude);
+      const lng = parseFloat(body.longitude);
+
+      if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        return NextResponse.json(
+          { success: false, message: 'Invalid coordinate' },
+          { status: 400 }
+        )
+      }
+
+      body.latitude = lat;
+      body.longitude = lng;
+    }
+
+    const allowedFields = [
+      'addressLine1',
+      'addressLine2',
+      'city',
+      'state',
+      'postalCode',
+      'country',
+      'isDefault',
+      'fullName',
+      'phoneNumber',
+      'latitude',
+      'longitude',
+      'pincode'
+    ]
+
+    const updateData = Object.keys(body)
+      .filter(key => allowedFields.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = body[key];
+        return obj;
+      }, {} as Record<string, unknown>)
 
     const updatedAddress = await prisma.userAddress.update({
       where: { id },
-      data: body,
-    });
+      data: updateData
+    })
 
-    return NextResponse.json({ address: updatedAddress });
+    if (!updatedAddress) {
+      return NextResponse.json(
+        { success: false, message: 'Failed to update Address' },
+        { status: 400 }
+      )
+    }
+
+    // invalidate cache after update
+    const cacheKey = getCacheKey(req.user.id, id);
+    await redis.del(cacheKey);
+
+    return NextResponse.json(
+      { success: false, message: 'Address updated successfully', data: updatedAddress },
+      { status: 200 }
+    )
   } catch (error) {
-    console.error('API ERROR at PATCH /api/account/address/[id]:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: `Internal server error: ${String(error)}` },
+      { status: 500 }
+    )
   }
-}
+})
 
-//Delete address
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const DELETE = withAuth(async (req: AuthenticatedRequest, { params }: { params: Promise<{ id: string }> }) => {
   try {
-    const token = req.cookies.get('token')?.value;
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const user = verifyToken(token);
-    if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-
     const { id } = await params;
 
-    // Verify the address belongs to the user before deleting
-    const existingAddress = await prisma.userAddress.findUnique({
-      where: { id },
+    const existingAddress = await prisma.userAddress.findFirst({
+      where: { id }
+    })
+
+    if (!existingAddress || existingAddress.userId !== req.user.id) {
+      return NextResponse.json(
+        { success: false, message: 'Address not found' },
+        { status: 404 }
+      )
+    }
+
+    // Check if address is used in any orders
+    const addressInUse = await prisma.order.findFirst({
+      where: {
+        addressId: id
+      }
     });
 
-    if (!existingAddress || existingAddress.userId !== user.id) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    if (addressInUse) {
+      return NextResponse.json(
+        { success: false, message: 'Cannot delete address. It is associated with existing orders.' },
+        { status: 400 }
+      )
     }
 
     await prisma.userAddress.delete({
-      where: { id },
-    });
+      where: { id }
+    })
 
-    return NextResponse.json({ message: 'Address deleted' });
+    const cacheKey = getCacheKey(req.user.id, id);
+    await redis.del(cacheKey);
+
+    return NextResponse.json(
+      { success: true, message: 'Address deleted successfully' },
+      { status: 200 }
+    )
   } catch (error) {
-    console.error('API ERROR at DELETE /api/account/address/[id]:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('delete address error', error)
+    return NextResponse.json(
+      { success: false, message: `Internal server error:${String(error)}` },
+      { status: 500 }
+    )
   }
-}
+})

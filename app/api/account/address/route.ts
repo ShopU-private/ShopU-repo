@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { verifyToken } from '@/lib/auth';
+import { redis } from '@/caching';
+
+const CACHE_TTL = 3600;
+const getUserAddressesKey = (userId: string) => `user:${userId}:addresses`;
 
 export async function GET(req: NextRequest) {
   try {
@@ -20,11 +24,46 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    const address = await prisma.userAddress.findMany({
+    const cacheKey = getUserAddressesKey(userId);
+
+    // Try to get from cache first
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      let parsed: unknown = null;
+      try {
+        parsed = JSON.parse(cached);
+        console.log(`✅ Cache HIT for user ${userId} addresses`);
+      } catch (e) {
+        console.warn('Failed to parse cached addresses, refetching from DB', e);
+      }
+
+      if (parsed) {
+        return NextResponse.json(
+          { success: true, address: parsed, cached: true, message: '⚡ Addresses from cache' },
+          { status: 200 }
+        );
+      }
+    }
+
+    // Cache miss: fetch from DB
+    console.log(`Cache MISS for user ${userId} addresses - fetching from DB`);
+
+    const addresses = await prisma.userAddress.findMany({
       where: { userId },
     });
 
-    return NextResponse.json({ address });
+    // Write to Redis before returning
+    try {
+      await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(addresses));
+      console.log(`Cached ${addresses.length} addresses for user ${userId}`);
+    } catch (e) {
+      console.warn('Failed to cache addresses', e);
+    }
+
+    return NextResponse.json(
+      { success: true, address: addresses, cached: false, message: 'Addresses from database' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('API ERROR at GET /api/account/address:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -56,6 +95,11 @@ export async function POST(req: NextRequest) {
         isDefault: false,
       },
     });
+
+    // Invalidate cache after creating new address
+    const cacheKey = getUserAddressesKey(user.id);
+    await redis.del(cacheKey);
+    console.log(`Invalidated address cache for user ${user.id}`);
 
     return NextResponse.json({ address: newAddress });
   } catch (error) {

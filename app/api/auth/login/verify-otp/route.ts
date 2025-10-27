@@ -3,11 +3,11 @@ import twilio from 'twilio';
 import { prisma } from '@/lib/client';
 import { generateToken } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
+import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SERVICE_ID } from '@/config';
 
-// Validate environment variables
-const hasRequiredEnvVars = process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_SERVICE_ID;
+const hasRequiredEnvVars = TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN && TWILIO_SERVICE_ID;
 
-const client = hasRequiredEnvVars ? twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!) : null;
+const client = hasRequiredEnvVars ? twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN) : null;
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     const verification = await client.verify.v2
-      .services(process.env.TWILIO_SERVICE_ID!)
+      .services(TWILIO_SERVICE_ID!)
       .verificationChecks.create({
         to: `+91${cleanedPhone}`,
         code: otp,
