@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create product' },
+      { success: false, error: String(error) },
       { status: 500 }
     );
   }
