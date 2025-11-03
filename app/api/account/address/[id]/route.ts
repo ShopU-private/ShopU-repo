@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
-import { verifyToken } from '@/lib/auth';
 import { requireAuth } from '@/middlewares/requireAuth';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -84,7 +83,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const auth = requireAuth(req);
     if (!auth.authenticated) {
       return NextResponse.json(
-        { success: false, message }
+        { success: false, onmessage }
       )
     }
 
