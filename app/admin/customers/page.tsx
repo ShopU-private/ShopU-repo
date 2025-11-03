@@ -298,7 +298,7 @@ export default function AdminCustomersPage() {
   return (
     <div className="min-h-screen p-6">
       {error && (
-        <div className="mb-4 rounded border border-1 border-red-400 bg-red-100 p-4 text-red-700">
+        <div className="mb-4 rounded border-1 border-red-400 bg-red-100 p-4 text-red-700">
           {error}
           <button onClick={() => setError(null)} className="ml-2 text-red-800 hover:text-red-900">
             ×

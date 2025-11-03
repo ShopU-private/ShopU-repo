@@ -1,14 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { verifyToken } from '@/lib/auth';
+import { requireAuth } from '@/middlewares/requireAuth';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const token = req.cookies.get('token')?.value;
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const auth = requireAuth(req);
+    if (!auth.authenticated) {
+      return auth.response
+    }
 
-    const user = verifyToken(token);
-    if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    const user = auth.user;
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
 
     const { id } = await params;
 
@@ -20,7 +28,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ address });
+    return NextResponse.json(
+      { success: true, message: 'Fetched user details' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('API ERROR at GET /api/account/address/[id]:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -30,11 +41,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 //Update address
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const token = req.cookies.get('token')?.value;
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const auth = requireAuth(req)
+    if (!auth.authenticated) {
+      return auth.response
+    }
 
-    const user = verifyToken(token);
-    if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    const user = auth.user
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
 
     const { id } = await params;
     const body = await req.json();
@@ -63,11 +81,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 //Delete address
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const token = req.cookies.get('token')?.value;
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const user = verifyToken(token);
-    if (!user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    const auth = requireAuth(req);
+    if (!auth.authenticated) {
+      return NextResponse.json(
+        { success: false, message }
+      )
+    }
 
     const { id } = await params;
 
