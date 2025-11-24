@@ -82,9 +82,15 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   try {
     const auth = requireAuth(req);
     if (!auth.authenticated) {
+      return auth.response;
+    }
+
+    const user = auth.user;
+    if (!user) {
       return NextResponse.json(
-        { success: false, onmessage }
-      )
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
     const { id } = await params;
