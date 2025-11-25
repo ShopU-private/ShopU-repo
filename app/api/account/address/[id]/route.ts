@@ -56,7 +56,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    // Extract only allowed fields
+    // Extract only allowed fields (updated code)
     const {
       addressLine1,
       addressLine2,

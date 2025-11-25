@@ -209,6 +209,7 @@ export function useCart() {
         return null;
       }
     },
+    
     [cartItems, cartCache]
   );
 
