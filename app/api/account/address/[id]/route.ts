@@ -56,9 +56,39 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
+     // Extract only allowed fields
+    const {
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      postalCode,
+      country,
+      isDefault,
+      fullName,
+      phoneNumber,
+      latitude,
+      longitude,
+      pincode,
+      addressType,
+    } = body;
+
     const updatedAddress = await prisma.userAddress.update({
       where: { id },
-      data: body,
+      data: {
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        postalCode,
+        country,
+        isDefault,
+        fullName,
+        phoneNumber,
+        latitude,
+        longitude,
+        pincode,
+      },
     });
 
     return NextResponse.json({ address: updatedAddress });
