@@ -191,7 +191,7 @@ const VectorMap = forwardRef<MapRef, VectorMapProps>(
         {!isMapReady && (
           <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-gray-100">
             <div className="text-center">
-              <div className="mb-2 h-8 w-8 animate-spin rounded-full border-4 border-teal-600 border-t-transparent mx-auto"></div>
+              <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-4 border-teal-600 border-t-transparent"></div>
               <p className="text-sm text-gray-600">Loading map...</p>
             </div>
           </div>

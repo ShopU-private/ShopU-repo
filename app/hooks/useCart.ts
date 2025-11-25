@@ -136,7 +136,11 @@ async function fetchCartItemsShared(forceRefresh = false) {
   }
 }
 
-async function addItemShared(productId: string | null, medicineId: string | null, quantity: number) {
+async function addItemShared(
+  productId: string | null,
+  medicineId: string | null,
+  quantity: number
+) {
   try {
     const response = await fetch('/api/cart', {
       method: 'POST',
@@ -161,7 +165,9 @@ async function addItemShared(productId: string | null, medicineId: string | null
     if (data.success && data.cartItem) {
       // Update shared state optimistically
       const existingIndex = shared.cartItems.findIndex(
-        item => (productId && item.productId === productId) || (medicineId && item.medicineId === medicineId)
+        item =>
+          (productId && item.productId === productId) ||
+          (medicineId && item.medicineId === medicineId)
       );
 
       if (existingIndex >= 0) {
@@ -194,7 +200,9 @@ async function addItemShared(productId: string | null, medicineId: string | null
 async function updateQuantityShared(itemId: string, quantity: number) {
   try {
     const originalItems = [...shared.cartItems];
-    shared.cartItems = shared.cartItems.map(item => (item.id === itemId ? { ...item, quantity } : item));
+    shared.cartItems = shared.cartItems.map(item =>
+      item.id === itemId ? { ...item, quantity } : item
+    );
     notifyShared();
 
     const response = await fetch(`/api/cart/${itemId}`, {
@@ -307,9 +315,12 @@ export function useCart() {
     };
   }, []);
 
-  const addItem = useCallback((productId: string | null, medicineId: string | null, quantity: number) => {
-    return addItemShared(productId, medicineId, quantity);
-  }, []);
+  const addItem = useCallback(
+    (productId: string | null, medicineId: string | null, quantity: number) => {
+      return addItemShared(productId, medicineId, quantity);
+    },
+    []
+  );
 
   const updateQuantity = useCallback((itemId: string, quantity: number) => {
     return updateQuantityShared(itemId, quantity);
@@ -324,7 +335,15 @@ export function useCart() {
   }, []);
 
   const addToCart = useCallback(
-    ({ productId, medicineId, quantity = 1 }: { productId?: string; medicineId?: string; quantity?: number }) => {
+    ({
+      productId,
+      medicineId,
+      quantity = 1,
+    }: {
+      productId?: string;
+      medicineId?: string;
+      quantity?: number;
+    }) => {
       return addItem(productId || null, medicineId || null, quantity);
     },
     [addItem]

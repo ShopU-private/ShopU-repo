@@ -6,15 +6,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const auth = requireAuth(req);
     if (!auth.authenticated) {
-      return auth.response
+      return auth.response;
     }
 
     const user = auth.user;
     if (!user) {
-      return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
@@ -27,10 +24,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    return NextResponse.json(
-      { success: true, message: 'Fetched user details' },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, message: 'Fetched user details' }, { status: 200 });
   } catch (error) {
     console.error('API ERROR at GET /api/account/address/[id]:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -40,17 +34,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 //Update address
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = requireAuth(req)
+    const auth = requireAuth(req);
     if (!auth.authenticated) {
-      return auth.response
+      return auth.response;
     }
 
-    const user = auth.user
+    const user = auth.user;
     if (!user) {
-      return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
@@ -87,10 +78,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     const user = auth.user;
     if (!user) {
-      return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;

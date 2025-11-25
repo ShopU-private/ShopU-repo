@@ -75,7 +75,7 @@ const ShopUCarousel = () => {
           </div>
 
           {/* Right Side Card */}
-          <div className="relative flex w-64 flex-col items-center space-y-3 rounded-xl bg-gray-100 px-6 py-4 text-center shadow">
+          <div className="relative flex hidden w-64 flex-col items-center space-y-3 rounded-xl bg-gray-100 px-6 py-4 text-center shadow lg:flex">
             {/* Top Badge */}
             <div className="text-secondaryColor absolute top-3 left-4 text-xl font-semibold">
               <p>Special Deal</p>

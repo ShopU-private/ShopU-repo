@@ -7,10 +7,7 @@ export function requireAuth(req: NextRequest) {
   if (!token) {
     return {
       authenticated: false,
-      response: NextResponse.json(
-        { success: false, error: 'Please login first' },
-        { status: 401 }
-      ),
+      response: NextResponse.json({ success: false, error: 'Please login first' }, { status: 401 }),
     };
   }
 

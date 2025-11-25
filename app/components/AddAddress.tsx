@@ -207,7 +207,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
           latitude,
           longitude,
           accuracy: `${accuracy.toFixed(2)}m`,
-          timestamp: new Date(position.timestamp).toLocaleString()
+          timestamp: new Date(position.timestamp).toLocaleString(),
         });
 
         // Update map and marker immediately
@@ -242,7 +242,10 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
 
             // Extract address components with fallbacks
             addressComponents.forEach((component: AddressComponent) => {
-              if (component.types.includes('locality') || component.types.includes('administrative_area_level_2')) {
+              if (
+                component.types.includes('locality') ||
+                component.types.includes('administrative_area_level_2')
+              ) {
                 city = city || component.long_name;
               }
               if (component.types.includes('administrative_area_level_1')) {
@@ -254,14 +257,18 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
               if (component.types.includes('country')) {
                 country = component.long_name;
               }
-              if (component.types.includes('sublocality_level_1') || component.types.includes('sublocality')) {
+              if (
+                component.types.includes('sublocality_level_1') ||
+                component.types.includes('sublocality')
+              ) {
                 streetAddress = component.long_name;
               }
             });
 
             // Use the most specific address available
             const formattedAddress = result.formatted_address;
-            const addressLine1 = streetAddress || formattedAddress.split(',')[0] || formattedAddress;
+            const addressLine1 =
+              streetAddress || formattedAddress.split(',')[0] || formattedAddress;
 
             setFormData(prev => ({
               ...prev,
@@ -280,7 +287,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
               state,
               postalCode,
               country,
-              accuracy: `${accuracy.toFixed(2)}m`
+              accuracy: `${accuracy.toFixed(2)}m`,
             });
           } else {
             console.warn('Geocoding returned no results:', data.status);
@@ -298,7 +305,6 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
         if (watchId) {
           navigator.geolocation.clearWatch(watchId);
         }
-
       } catch (err) {
         console.error('Error processing location:', err);
         alert('Failed to process your location. Please try again.');
@@ -317,40 +323,44 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
 
       switch (error.code) {
         case error.PERMISSION_DENIED:
-          alert('❌ Location permission denied.\n\nPlease allow location access in your browser settings to use this feature.');
+          alert(
+            '❌ Location permission denied.\n\nPlease allow location access in your browser settings to use this feature.'
+          );
           break;
         case error.POSITION_UNAVAILABLE:
-          alert('❌ Location information is unavailable.\n\nPlease check your device location settings and try again.');
+          alert(
+            '❌ Location information is unavailable.\n\nPlease check your device location settings and try again.'
+          );
           break;
         case error.TIMEOUT:
-          alert('⏱️ Location request timed out.\n\nPlease try again. Make sure you have a clear view of the sky if using GPS.');
+          alert(
+            '⏱️ Location request timed out.\n\nPlease try again. Make sure you have a clear view of the sky if using GPS.'
+          );
           break;
         default:
-          alert('❌ An unknown error occurred while getting your location.\n\nPlease try again or enter your address manually.');
+          alert(
+            '❌ An unknown error occurred while getting your location.\n\nPlease try again or enter your address manually.'
+          );
           break;
       }
     };
 
     // Options for high accuracy
     const options: PositionOptions = {
-      enableHighAccuracy: true,  // Use GPS for best accuracy
-      timeout: 15000,            // 15 seconds timeout
-      maximumAge: 0              // Don't use cached position
+      enableHighAccuracy: true, // Use GPS for best accuracy
+      timeout: 15000, // 15 seconds timeout
+      maximumAge: 0, // Don't use cached position
     };
 
     // Try to get current position first (faster)
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      position => {
         processLocation(position);
       },
-      (initialError) => {
+      initialError => {
         // If getCurrentPosition fails, try watchPosition for continuous updates
         console.log('getCurrentPosition failed, trying watchPosition...', initialError.message);
-        watchId = navigator.geolocation.watchPosition(
-          processLocation,
-          handleError,
-          options
-        );
+        watchId = navigator.geolocation.watchPosition(processLocation, handleError, options);
 
         // Auto-clear watch after 20 seconds if no success
         setTimeout(() => {
@@ -361,7 +371,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
               message: 'Timeout',
               PERMISSION_DENIED: 1,
               POSITION_UNAVAILABLE: 2,
-              TIMEOUT: 3
+              TIMEOUT: 3,
             } as GeolocationPositionError);
           }
         }, 20000);
@@ -538,10 +548,11 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                     key={type}
                     type="button"
                     onClick={() => setSelectedAddressType(type as 'home' | 'work' | 'other')}
-                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${selectedAddressType === type
-                      ? 'border-teal-500 bg-teal-50 text-teal-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                      }`}
+                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
+                      selectedAddressType === type
+                        ? 'border-teal-500 bg-teal-50 text-teal-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                    }`}
                   >
                     {type === 'home' && <Home className="h-4 w-4" />}
                     {type === 'work' && <Briefcase className="h-4 w-4" />}
