@@ -209,7 +209,7 @@ export function useCart() {
         return null;
       }
     },
-    [cartItems, fetchCartItems, cartCache]
+    [cartItems, cartCache]
   );
 
   // Update item quantity with optimistic updates
