@@ -26,7 +26,7 @@ export default function Navroute() {
     }
     try {
       setIsLoadingCart(true);
-      lastFetchRef.current = now
+      lastFetchRef.current = now;
       const response = await fetch('/api/cart/count');
 
       if (response.ok) {
@@ -48,25 +48,25 @@ export default function Navroute() {
   useEffect(() => {
     const handleCart = () => {
       if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current)
+        clearTimeout(fetchTimeoutRef.current);
       }
 
       fetchTimeoutRef.current = setTimeout(() => {
-        fetchCartCount()
-      }, 300)
-    }
+        fetchCartCount();
+      }, 300);
+    };
 
     window.addEventListener('cartUpdated', handleCart);
     window.addEventListener('cartCountUpdated', handleCart);
 
     return () => {
       if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current)
+        clearTimeout(fetchTimeoutRef.current);
       }
       window.removeEventListener('cartUpdated', handleCart);
       window.removeEventListener('cartCountUpdated', handleCart);
-    }
-  }, [fetchCartCount])
+    };
+  }, [fetchCartCount]);
 
   useEffect(() => {
     const handleUpdate = () => {

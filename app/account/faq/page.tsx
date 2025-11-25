@@ -76,8 +76,9 @@ export default function ContactPage() {
                   >
                     {faq.question}
                     <ChevronDown
-                      className={`h-5 w-5 transition-transform duration-200 ${index === activeIndex ? 'rotate-180' : ''
-                        }`}
+                      className={`h-5 w-5 transition-transform duration-200 ${
+                        index === activeIndex ? 'rotate-180' : ''
+                      }`}
                     />
                   </button>
                   {index === activeIndex && (
@@ -151,8 +152,9 @@ export default function ContactPage() {
                   >
                     {faq.question}
                     <ChevronDown
-                      className={`h-5 w-5 transition-transform duration-200 ${index === activeIndex ? 'rotate-180' : ''
-                        }`}
+                      className={`h-5 w-5 transition-transform duration-200 ${
+                        index === activeIndex ? 'rotate-180' : ''
+                      }`}
                     />
                   </button>
                   {index === activeIndex && (

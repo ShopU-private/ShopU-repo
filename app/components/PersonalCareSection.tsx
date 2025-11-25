@@ -128,7 +128,10 @@ const PersonalCareSection = () => {
             <hr className="bg-background1 mt-1 w-30 rounded border-2" />{' '}
           </h2>
 
-          <button className="bg-background text-md text-primaryColor cursor-pointer rounded px-3 py-1 font-semibold">
+          <button
+            onClick={handleCardClick}
+            className="bg-background text-md text-primaryColor cursor-pointer rounded px-3 py-1 font-semibold"
+          >
             View All <span className="text-lg">{'>'}</span>
           </button>
         </div>

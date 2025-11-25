@@ -112,7 +112,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="group flex h-80 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:hidden">
         {/* Product Image */}
         <div className="relative h-40 w-full">
-          <div>
+          <div onClick={handleclick}>
             <Image
               src={'/pediasure.png'} // dynamic image fallback
               alt={product.name}

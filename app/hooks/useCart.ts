@@ -308,15 +308,14 @@ export function useCart() {
       if (cache && cartCache.isValid(cache.timestamp)) {
         shared.cartItems = cache.items;
         notifyShared();
-      }
-      else if (shared.listeners.size === 1) {
-        fetchCartItemsShared()
+      } else if (shared.listeners.size === 1) {
+        fetchCartItemsShared();
       }
     }
 
     return () => {
       shared.listeners.delete(listener);
-    }
+    };
   }, [isInitialized]);
 
   const addItem = useCallback(

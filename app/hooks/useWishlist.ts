@@ -14,20 +14,16 @@ export function useWishlist() {
   const [favorites, setFavorites] = useState<Set<number | string>>(new Set());
 
   useEffect(() => {
-    const cached = localStorage.getItem('wishlist');
-    if (cached) {
-      setFavorites(new Set(JSON.parse(cached)));
-    }
-
     const fetchWishlist = async () => {
       try {
         const res = await fetch('/api/account/wishlist');
         const data = await res.json();
 
         if (res.ok && Array.isArray(data)) {
-          const favSet = new Set(data.map((item: WishlistItem) => item.productId));
+          const favSet = new Set((data as WishlistItem[]).map(item => item.productId));
           setFavorites(favSet);
-          localStorage.setItem('wishlist', JSON.stringify([...favSet]));
+        } else if (res.status === 401) {
+          console.warn('User is not logged in ');
         }
       } catch (error) {
         console.error('Wishlist fetch error:', error);
@@ -56,8 +52,6 @@ export function useWishlist() {
           // rollback if failed
           setFavorites(prev => new Set(prev).add(product.id));
           toast.error(data.message || 'Could not remove from wishlist');
-        } else {
-          toast.success(data.message || 'Removed from wishlist');
         }
       } catch (err) {
         console.error('Somthing wents wrong:', err);
@@ -83,7 +77,6 @@ export function useWishlist() {
       const data = await res.json();
       if (res.ok) {
         setFavorites(prev => new Set(prev).add(product.id));
-        toast.success(data.message || 'Added to wishlist');
       } else {
         toast.error(data.message || 'Already in wishlist');
       }

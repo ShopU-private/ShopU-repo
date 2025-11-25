@@ -57,12 +57,12 @@ const Header = () => {
 
   const fetchCartCount = React.useCallback(async () => {
     const now = Date.now();
-    if (now - lastFetchRef.current < 1000) {
+    if (now - lastFetchRef.current < 3000) {
       return;
     }
     try {
       setIsLoadingCart(true);
-      lastFetchRef.current = now
+      lastFetchRef.current = now;
       const response = await fetch('/api/cart/count');
 
       if (response.ok) {
@@ -111,26 +111,26 @@ const Header = () => {
   useEffect(() => {
     const handleUpdate = () => {
       if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current)
+        clearTimeout(fetchTimeoutRef.current);
       }
 
       fetchTimeoutRef.current = setTimeout(() => {
-        fetchCartCount()
-      }, 300)
-    }
+        fetchCartCount();
+      }, 300);
+    };
 
     window.addEventListener('cartCountUpdated', handleUpdate);
     window.addEventListener('cartUpdated', handleUpdate);
 
     return () => {
       if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current)
+        clearTimeout(fetchTimeoutRef.current);
       }
 
-      window.removeEventListener('cartCountUpdated', handleUpdate)
-      window.removeEventListener('cartUpdated', handleUpdate)
-    }
-  }, [fetchCartCount])
+      window.removeEventListener('cartCountUpdated', handleUpdate);
+      window.removeEventListener('cartUpdated', handleUpdate);
+    };
+  }, [fetchCartCount]);
 
   // Listen for cart updates
   useEffect(() => {
@@ -561,7 +561,6 @@ const Header = () => {
 
                             if (res.ok && data.success) {
                               console.log('Logged out successfully');
-                              localStorage.removeItem('wishlist');
                               setIsLoggedIn(false);
                               setIsLoginModalOpen(false);
                               window.location.href = '/';
@@ -739,7 +738,6 @@ const Header = () => {
 
                             if (res.ok && data.success) {
                               console.log('Logged out successfully');
-                              localStorage.removeItem('wishlist');
                               setIsLoggedIn(false);
                               setIsLoginModalOpen(false);
                               window.location.href = '/';
