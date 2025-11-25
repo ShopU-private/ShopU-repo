@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import toast from 'react-hot-toast';
-import Navroute from '@/app/components/navroute';
+import Navroute from '@/app/components/Navroute';
 import { Loader } from 'lucide-react';
 import SimilarProductsSection from '@/app/components/SimilarProduct';
 import useAddToCart from '@/app/hooks/handleAddToCart';
@@ -131,11 +131,10 @@ export default function ProductDetailPage() {
                         <button
                           key={size}
                           onClick={() => setSelectedSize(size)}
-                          className={`cursor-pointer rounded px-5 py-2 text-sm transition ${
-                            selectedSize === size
+                          className={`cursor-pointer rounded px-5 py-2 text-sm transition ${selectedSize === size
                               ? 'bg-[#317C80] text-white'
                               : 'bg-[#D9D9D9] text-black'
-                          }`}
+                            }`}
                         >
                           {size}
                         </button>
@@ -150,11 +149,10 @@ export default function ProductDetailPage() {
                         <div
                           key={index}
                           onClick={() => setSelectedPackIndex(index)}
-                          className={`cursor-pointer rounded transition ${
-                            selectedPackIndex === index
+                          className={`cursor-pointer rounded transition ${selectedPackIndex === index
                               ? 'bg-[#317C80] text-white'
                               : 'bg-[#D9D9D9] text-black'
-                          }`}
+                            }`}
                         >
                           <p className="p-2 text-sm">{pack.quantity}</p>
                           <hr />

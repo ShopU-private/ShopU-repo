@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { Loader } from 'lucide-react';
-import Navroute from '@/app/components/navroute';
+import Navroute from '@/app/components/Navroute';
 
 interface Product {
   name: string;

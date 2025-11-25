@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Loader, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import Navroute from '../../components/navroute';
+import Navroute from '../../components/Navroute';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useAddToCart from '@/app/hooks/handleAddToCart';

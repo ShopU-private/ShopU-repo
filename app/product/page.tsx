@@ -3,7 +3,7 @@
 import React, { Suspense, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, Loader, SlidersVertical } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import Navroute from '../components/navroute';
+import Navroute from '../components/Navroute';
 import Sidebar from '../components/FilterSidebar';
 import ProductCard from '../components/ProductCard';
 import { useWishlist } from '../hooks/useWishlist';
@@ -148,11 +148,10 @@ function ProductPageContent() {
                     <button
                       disabled={currentPage === 1}
                       onClick={() => handlePageChange(currentPage - 1)}
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                        currentPage === 1
+                      className={`flex h-8 w-8 items-center justify-center rounded-full ${currentPage === 1
                           ? 'cursor-not-allowed bg-gray-200 text-gray-400'
                           : 'bg-background1 text-white'
-                      }`}
+                        }`}
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </button>
@@ -164,11 +163,10 @@ function ProductPageContent() {
                     <button
                       disabled={currentPage === totalPages}
                       onClick={() => handlePageChange(currentPage + 1)}
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                        currentPage === totalPages
+                      className={`flex h-8 w-8 items-center justify-center rounded-full ${currentPage === totalPages
                           ? 'cursor-not-allowed bg-gray-200 text-gray-400'
                           : 'bg-background1 text-white'
-                      }`}
+                        }`}
                     >
                       <ChevronRight className="h-4 w-4" />
                     </button>
@@ -259,11 +257,10 @@ function ProductPageContent() {
                     <button
                       disabled={currentPage === 1}
                       onClick={() => handlePageChange(currentPage - 1)}
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                        currentPage === 1
+                      className={`flex h-8 w-8 items-center justify-center rounded-full ${currentPage === 1
                           ? 'cursor-not-allowed bg-gray-200 text-gray-400'
                           : 'bg-background1 text-white'
-                      }`}
+                        }`}
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </button>
@@ -275,11 +272,10 @@ function ProductPageContent() {
                     <button
                       disabled={currentPage === totalPages}
                       onClick={() => handlePageChange(currentPage + 1)}
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                        currentPage === totalPages
+                      className={`flex h-8 w-8 items-center justify-center rounded-full ${currentPage === totalPages
                           ? 'cursor-not-allowed bg-gray-200 text-gray-400'
                           : 'bg-background1 text-white'
-                      }`}
+                        }`}
                     >
                       <ChevronRight className="h-4 w-4" />
                     </button>

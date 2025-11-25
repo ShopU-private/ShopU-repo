@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import AddAddress from '@/app/components/AddAddress';
 import { UserAddress } from '@prisma/client';
-import Navroute from '@/app/components/navroute';
+import Navroute from '@/app/components/Navroute';
 import { Edit, Home, Loader, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

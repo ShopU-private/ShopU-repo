@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Loader, Search, ShoppingCart } from 'lucide-react';
@@ -15,11 +15,18 @@ export default function Navroute() {
   const [isLoadingCart, setIsLoadingCart] = useState(false);
   // Extract category from query params
   const categorySlug = searchParams.get('category');
+  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastFetchRef = useRef<number>(0);
 
   // Fetch cart count
   const fetchCartCount = React.useCallback(async () => {
+    const now = Date.now();
+    if (now - lastFetchRef.current < 1000) {
+      return;
+    }
     try {
       setIsLoadingCart(true);
+      lastFetchRef.current = now
       const response = await fetch('/api/cart/count');
 
       if (response.ok) {
@@ -39,15 +46,27 @@ export default function Navroute() {
   }, []);
 
   useEffect(() => {
-    fetchCartCount();
-    // Listen for custom cart update event
-    const handleCart = () => fetchCartCount();
+    const handleCart = () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current)
+      }
+
+      fetchTimeoutRef.current = setTimeout(() => {
+        fetchCartCount()
+      }, 300)
+    }
+
     window.addEventListener('cartUpdated', handleCart);
+    window.addEventListener('cartCountUpdated', handleCart);
 
     return () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current)
+      }
       window.removeEventListener('cartUpdated', handleCart);
-    };
-  }, [fetchCartCount]);
+      window.removeEventListener('cartCountUpdated', handleCart);
+    }
+  }, [fetchCartCount])
 
   useEffect(() => {
     const handleUpdate = () => {

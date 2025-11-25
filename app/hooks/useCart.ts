@@ -286,6 +286,7 @@ export function useCart() {
   const [cartItems, setCartItems] = useState<CartItem[]>(shared.cartItems);
   const [isLoading, setIsLoading] = useState<boolean>(shared.isLoading);
   const [error, setError] = useState<string | null>(shared.error);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const listener: Listener = () => {
@@ -299,21 +300,24 @@ export function useCart() {
 
     shared.listeners.add(listener);
 
-    // first subscriber triggers fetch
-    if (shared.listeners.size === 1) {
-      // dont await
-      fetchCartItemsShared();
-    }
+    if (!isInitialized && !shared.isLoading && shared.cartItems.length === 0) {
+      setIsInitialized(true);
 
-    // also listen for custom events from other parts of the app
-    const handleCartUpdate = () => fetchCartItemsShared(true);
-    window.addEventListener('cartUpdated', handleCartUpdate);
+      const cache = cartCache.get();
+
+      if (cache && cartCache.isValid(cache.timestamp)) {
+        shared.cartItems = cache.items;
+        notifyShared();
+      }
+      else if (shared.listeners.size === 1) {
+        fetchCartItemsShared()
+      }
+    }
 
     return () => {
       shared.listeners.delete(listener);
-      window.removeEventListener('cartUpdated', handleCartUpdate);
-    };
-  }, []);
+    }
+  }, [isInitialized]);
 
   const addItem = useCallback(
     (productId: string | null, medicineId: string | null, quantity: number) => {

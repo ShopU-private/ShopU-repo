@@ -2,7 +2,7 @@
 
 import type { FormEvent } from 'react';
 import { Suspense, useState } from 'react';
-import Navroute from '../../components/navroute';
+import Navroute from '../../components/Navroute';
 import { ChevronDown } from 'lucide-react';
 
 const faqs = [
@@ -76,9 +76,8 @@ export default function ContactPage() {
                   >
                     {faq.question}
                     <ChevronDown
-                      className={`h-5 w-5 transition-transform duration-200 ${
-                        index === activeIndex ? 'rotate-180' : ''
-                      }`}
+                      className={`h-5 w-5 transition-transform duration-200 ${index === activeIndex ? 'rotate-180' : ''
+                        }`}
                     />
                   </button>
                   {index === activeIndex && (
@@ -152,9 +151,8 @@ export default function ContactPage() {
                   >
                     {faq.question}
                     <ChevronDown
-                      className={`h-5 w-5 transition-transform duration-200 ${
-                        index === activeIndex ? 'rotate-180' : ''
-                      }`}
+                      className={`h-5 w-5 transition-transform duration-200 ${index === activeIndex ? 'rotate-180' : ''
+                        }`}
                     />
                   </button>
                   {index === activeIndex && (

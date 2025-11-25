@@ -52,9 +52,17 @@ const Header = () => {
   const [isMobileAccountMenuOpen, setIsMobileAccountMenuOpen] = useState(false);
 
   const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
+  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastFetchRef = useRef<number>(0);
+
   const fetchCartCount = React.useCallback(async () => {
+    const now = Date.now();
+    if (now - lastFetchRef.current < 1000) {
+      return;
+    }
     try {
       setIsLoadingCart(true);
+      lastFetchRef.current = now
       const response = await fetch('/api/cart/count');
 
       if (response.ok) {
@@ -102,16 +110,27 @@ const Header = () => {
 
   useEffect(() => {
     const handleUpdate = () => {
-      const timeout = setTimeout(() => {
-        fetchCartCount();
-      }, 200); // slight debounce
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current)
+      }
 
-      return () => clearTimeout(timeout);
-    };
+      fetchTimeoutRef.current = setTimeout(() => {
+        fetchCartCount()
+      }, 300)
+    }
 
     window.addEventListener('cartCountUpdated', handleUpdate);
-    return () => window.removeEventListener('cartCountUpdated', handleUpdate);
-  }, [fetchCartCount]);
+    window.addEventListener('cartUpdated', handleUpdate);
+
+    return () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current)
+      }
+
+      window.removeEventListener('cartCountUpdated', handleUpdate)
+      window.removeEventListener('cartUpdated', handleUpdate)
+    }
+  }, [fetchCartCount])
 
   // Listen for cart updates
   useEffect(() => {

@@ -1,6 +1,6 @@
 'use client';
 
-import Navroute from '@/app/components/navroute';
+import Navroute from '@/app/components/Navroute';
 import { Suspense } from 'react';
 
 export default function CancellationAndRefund() {

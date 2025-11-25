@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import Navroute from '@/app/components/navroute';
+import Navroute from '@/app/components/Navroute';
 import { CheckCircle, PackageCheck, Truck, MapPin, Loader, Phone, User } from 'lucide-react';
 import Image from 'next/image';
 
@@ -175,20 +175,18 @@ export default function OrderDetails() {
                 return (
                   <div key={index} className="z-10 flex w-1/4 flex-col items-center text-center">
                     <span
-                      className={`mb-2 text-sm font-semibold ${
-                        isPending
+                      className={`mb-2 text-sm font-semibold ${isPending
                           ? 'text-green-600'
                           : isCompleted
                             ? 'text-green-600'
                             : 'text-primaryColor'
-                      }`}
+                        }`}
                     >
                       {isPending ? 'Pending' : step.label}
                     </span>
                     <div
-                      className={`rounded-full p-2 ${
-                        isPending ? 'bg-green-600' : isCompleted ? 'bg-green-600' : 'bg-background1'
-                      }`}
+                      className={`rounded-full p-2 ${isPending ? 'bg-green-600' : isCompleted ? 'bg-green-600' : 'bg-background1'
+                        }`}
                     >
                       {step.icon}
                     </div>
@@ -289,29 +287,26 @@ export default function OrderDetails() {
                 <div key={index} className="relative flex items-start pb-18">
                   {!isLast && (
                     <div
-                      className={`absolute top-8 left-[22px] h-full w-1 ${
-                        isNextCompleted ? 'bg-green-600' : 'bg-background1'
-                      }`}
+                      className={`absolute top-8 left-[22px] h-full w-1 ${isNextCompleted ? 'bg-green-600' : 'bg-background1'
+                        }`}
                     />
                   )}
 
                   <div
-                    className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full ${
-                      isPending ? 'bg-green-600' : isCompleted ? 'bg-green-600' : 'bg-background1'
-                    }`}
+                    className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full ${isPending ? 'bg-green-600' : isCompleted ? 'bg-green-600' : 'bg-background1'
+                      }`}
                   >
                     {step.icon}
                   </div>
 
                   <div className="ml-4">
                     <p
-                      className={`text-md font-semibold ${
-                        isPending
+                      className={`text-md font-semibold ${isPending
                           ? 'text-green-600'
                           : isCompleted
                             ? 'text-green-600'
                             : 'text-primaryColor'
-                      }`}
+                        }`}
                     >
                       {isPending ? 'Pending' : step.label}
                     </p>
