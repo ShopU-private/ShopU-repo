@@ -9,6 +9,7 @@ import { useLocation } from '../context/LocationContext';
 import { useRouter } from 'next/navigation';
 import { logCheckoutEvent, validateAddressId } from '@/lib/checkout-utils';
 import AddAddressForm from '../components/AddAddress';
+import Navroute from '../components/Navroute';
 
 type Address = {
   id?: string;
@@ -242,238 +243,241 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-[60vh] px-4 py-8">
-      <div className="mx-auto max-w-4xl">
-        <h1 className="mb-6 text-2xl font-bold text-gray-800">Checkout</h1>
+    <>
+      <Navroute />
+      <div className="min-h-[60vh] p-4">
+        <div className="mx-auto max-w-4xl">
+          <h1 className="my-3 text-2xl font-bold text-gray-800">Checkout</h1>
 
-        <div className="mb-6 rounded-lg bg-white px-6 py-4 shadow-md">
-          <h2 className="mb-4 text-lg font-semibold">Delivery Address</h2>
+          <div className="mb-4 rounded-lg bg-white px-6 py-4 shadow-md">
+            <h2 className="mb-4 text-lg font-semibold">Delivery Address</h2>
 
-          {address.length === 0 ? (
-            <div className="py-4 text-center">
-              <p className="mb-3 text-gray-600">No saved addresses found.</p>
-              <button
-                onClick={() => {
-                  setFormMode('add');
-                  setShowAddAddressForm(true);
-                  setSelectedAddress(null);
-                }}
-                className="text-teal-600 hover:underline"
-              >
-                + Add a new address
-              </button>
-            </div>
-          ) : (
-            <div className="relative space-y-4">
-              {address.map(address => (
-                <div
-                  key={address.id}
-                  className={`cursor-pointer rounded-lg border p-2 ${
-                    selectedAddressId === address.id
-                      ? 'border-teal-600 bg-teal-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setSelectedAddressId(address.id ?? '')}
+            {address.length === 0 ? (
+              <div className="py-4 text-center">
+                <p className="mb-3 text-gray-600">No saved addresses found.</p>
+                <button
+                  onClick={() => {
+                    setFormMode('add');
+                    setShowAddAddressForm(true);
+                    setSelectedAddress(null);
+                  }}
+                  className="text-teal-600 hover:underline"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex gap-2">
-                      <input
-                        type="radio"
-                        checked={selectedAddressId === address.id}
-                        onChange={() => setSelectedAddressId(address.id ?? '')}
-                        className="mt-1 h-4 w-4 text-teal-600"
-                      />
-                      <div>
-                        <p className="font-medium">{address.fullName}</p>
-                        <p className="text-sm text-gray-600">
-                          {address.addressLine1}
-                          {address.addressLine2 ? `,${address.addressLine2}` : ''}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {address.city} {address.state} {address.postalCode}
-                        </p>
-                        <p className="text-sm text-gray-600">+91 {address.phoneNumber}</p>
+                  + Add a new address
+                </button>
+              </div>
+            ) : (
+              <div className="relative space-y-4">
+                {address.map(address => (
+                  <div
+                    key={address.id}
+                    className={`cursor-pointer rounded-lg border px-2 py-3 ${
+                      selectedAddressId === address.id
+                        ? 'border-teal-600 bg-teal-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => setSelectedAddressId(address.id ?? '')}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-2">
+                        <input
+                          type="radio"
+                          checked={selectedAddressId === address.id}
+                          onChange={() => setSelectedAddressId(address.id ?? '')}
+                          className="mt-1 h-4 w-4 text-teal-600"
+                        />
+                        <div>
+                          <p className="font-medium">{address.fullName}</p>
+                          <p className="text-sm text-gray-600">
+                            {address.addressLine1}
+                            {address.addressLine2 ? `, ${address.addressLine2}` : ''},{' '}
+                            {address.city}, {address.state} {address.postalCode}
+                          </p>
+                          <p className="text-sm text-gray-600">+91 {address.phoneNumber}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between gap-4 p-2">
+                        <button
+                          className="cursor-pointer text-lg text-teal-700"
+                          onClick={() => {
+                            setFormMode('edit');
+                            setSelectedAddress(address);
+                            setShowAddAddressForm(true);
+                          }}
+                        >
+                          <FaRegEdit className="h-5 w-5" />
+                        </button>
+                        <button
+                          className="cursor-pointer py-2 text-xl text-teal-700"
+                          onClick={() => handleDelAddress(address.id ?? '')}
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between gap-4 p-2">
-                      <button
-                        className="cursor-pointer text-lg text-teal-700"
-                        onClick={() => {
-                          setFormMode('edit');
-                          setSelectedAddress(address);
-                          setShowAddAddressForm(true);
-                        }}
-                      >
-                        <FaRegEdit className="h-5 w-5" />
-                      </button>
-                      <button
-                        className="cursor-pointer py-2 text-xl text-teal-700"
-                        onClick={() => handleDelAddress(address.id ?? '')}
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </div>
                   </div>
+                ))}
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setShowAddAddressForm(true)}
+                    className="text-sm text-teal-600 hover:underline"
+                  >
+                    + Add another address
+                  </button>
                 </div>
-              ))}
-              <div className="flex justify-end">
-                <button
-                  onClick={() => setShowAddAddressForm(true)}
-                  className="text-sm text-teal-600 hover:underline"
-                >
-                  + Add another address
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Coupon Code Section */}
-        <div className="mb-6 rounded-lg bg-white px-6 py-4 shadow-md">
-          <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
-            <Tag className="h-5 w-5" />
-            Apply Coupon Code
-          </h2>
-
-          {appliedCoupon ? (
-            <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-3">
-              <div className="flex items-center gap-2">
-                <Tag className="h-4 w-4 text-green-600" />
-                <span className="font-medium text-green-800">
-                  {appliedCoupon.code} - {appliedCoupon.discount}% OFF
-                </span>
-                <span className="text-sm text-green-600">(Save ₹{discountAmount.toFixed(2)})</span>
-              </div>
-              <button onClick={removeCoupon} className="text-green-600 hover:text-green-800">
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Enter coupon code"
-                  value={couponCode}
-                  onChange={e => {
-                    setCouponCode(e.target.value.toUpperCase());
-                    setCouponError('');
-                  }}
-                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-                  disabled={isApplyingCoupon}
-                />
-                <button
-                  onClick={applyCoupon}
-                  disabled={isApplyingCoupon || !couponCode.trim()}
-                  className={`rounded-lg px-4 py-2 font-medium ${
-                    isApplyingCoupon || !couponCode.trim()
-                      ? 'cursor-not-allowed bg-gray-300 text-gray-500'
-                      : 'bg-teal-600 text-white hover:bg-teal-700'
-                  }`}
-                >
-                  {isApplyingCoupon ? <Loader className="h-4 w-4 animate-spin" /> : 'Apply'}
-                </button>
-              </div>
-              {couponError && <p className="text-sm text-red-600">{couponError}</p>}
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-lg bg-white p-6 shadow-md">
-          <h2 className="mb-4 text-lg font-semibold">Your Order Summary</h2>
-          <div className="mb-6 space-y-1 text-sm">
-            <div className="flex justify-between">
-              <span>Items ({cartItems.reduce((sum, item) => sum + item.quantity, 0)})</span>
-              <span>₹{subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Delivery Fee</span>
-              {deliveryFee === 0 ? (
-                <span className="font-medium text-green-600">Free</span>
-              ) : (
-                <span>₹{deliveryFee.toFixed(2)}</span>
-              )}
-            </div>
-            <div className="flex justify-between">
-              <span>Platform Charges</span>
-              <span>₹{platformFee.toFixed(2)}</span>
-            </div>
-            {appliedCoupon && discountAmount > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span>Discount ({appliedCoupon.code})</span>
-                <span>-₹{discountAmount.toFixed(2)}</span>
               </div>
             )}
-            <div className="mt-2 flex justify-between border-t pt-2 font-medium">
-              <span>Total</span>
-              <span>₹{grandTotal.toFixed(2)}</span>
+          </div>
+
+          {/* Coupon Code Section */}
+          <div className="mb-4 rounded-lg bg-white px-6 py-4 shadow-md">
+            <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
+              <Tag className="h-5 w-5" />
+              Apply Coupon Code
+            </h2>
+
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-3">
+                <div className="flex items-center gap-2">
+                  <Tag className="h-4 w-4 text-green-600" />
+                  <span className="font-medium text-green-800">
+                    {appliedCoupon.code} - {appliedCoupon.discount}% OFF
+                  </span>
+                  <span className="text-sm text-green-600">
+                    (Save ₹{discountAmount.toFixed(2)})
+                  </span>
+                </div>
+                <button onClick={removeCoupon} className="text-green-600 hover:text-green-800">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Enter coupon code"
+                    value={couponCode}
+                    onChange={e => {
+                      setCouponCode(e.target.value.toUpperCase());
+                      setCouponError('');
+                    }}
+                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    disabled={isApplyingCoupon}
+                  />
+                  <button
+                    onClick={applyCoupon}
+                    disabled={isApplyingCoupon || !couponCode.trim()}
+                    className={`rounded-lg px-4 py-2 font-medium ${
+                      isApplyingCoupon || !couponCode.trim()
+                        ? 'cursor-not-allowed bg-gray-300 text-gray-500'
+                        : 'bg-teal-600 text-white hover:bg-teal-700'
+                    }`}
+                  >
+                    {isApplyingCoupon ? <Loader className="h-4 w-4 animate-spin" /> : 'Apply'}
+                  </button>
+                </div>
+                {couponError && <p className="text-sm text-red-600">{couponError}</p>}
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow-md">
+            <h2 className="mb-4 text-lg font-semibold">Your Order Summary</h2>
+            <div className="mb-6 space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Items ({cartItems.reduce((sum, item) => sum + item.quantity, 0)})</span>
+                <span>₹{subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Delivery Fee</span>
+                {deliveryFee === 0 ? (
+                  <span className="font-medium text-green-600">Free</span>
+                ) : (
+                  <span>₹{deliveryFee.toFixed(2)}</span>
+                )}
+              </div>
+              <div className="flex justify-between">
+                <span>Platform Charges</span>
+                <span>₹{platformFee.toFixed(2)}</span>
+              </div>
+              {appliedCoupon && discountAmount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Discount ({appliedCoupon.code})</span>
+                  <span>-₹{discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="mt-2 flex justify-between border-t pt-2 font-medium">
+                <span>Total</span>
+                <span>₹{grandTotal.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+              <p className="text-yellow-800">
+                Please review your order details before proceeding to payment.
+              </p>
+            </div>
+
+            <div className="flex hidden justify-between sm:flex">
+              <Link
+                href="/"
+                className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-100"
+              >
+                Continue Shopping
+              </Link>
+              <button
+                className={`rounded-lg ${
+                  !selectedAddressId || address.length === 0
+                    ? 'cursor-not-allowed bg-gray-400'
+                    : 'bg-background1'
+                } cursor-pointer px-6 py-2 text-white transition-transform duration-300 hover:scale-102`}
+                onClick={handleProceedToPayment}
+                disabled={!selectedAddressId || address.length === 0}
+              >
+                Proceed to Pay
+              </button>
+            </div>
+            <div className="flex justify-between gap-4 sm:hidden">
+              <Link
+                href="/"
+                className="rounded-lg border border-gray-300 px-2 py-3 text-gray-700 hover:bg-gray-100"
+              >
+                Continue Shopping
+              </Link>
+              <button
+                className={`rounded-lg ${
+                  !selectedAddressId || address.length === 0
+                    ? 'cursor-not-allowed bg-gray-400'
+                    : 'bg-background1'
+                } cursor-pointer px-6 py-3 text-white transition-transform duration-300 hover:scale-102`}
+                onClick={handleProceedToPayment}
+                disabled={!selectedAddressId || address.length === 0}
+              >
+                Proceed to Pay
+              </button>
             </div>
           </div>
-
-          <div className="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-            <p className="text-yellow-800">
-              Please review your order details before proceeding to payment.
-            </p>
-          </div>
-
-          <div className="flex hidden justify-between sm:flex">
-            <Link
-              href="/"
-              className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-100"
-            >
-              Continue Shopping
-            </Link>
-            <button
-              className={`rounded-lg ${
-                !selectedAddressId || address.length === 0
-                  ? 'cursor-not-allowed bg-gray-400'
-                  : 'bg-background1'
-              } cursor-pointer px-6 py-2 text-white transition-transform duration-300 hover:scale-102`}
-              onClick={handleProceedToPayment}
-              disabled={!selectedAddressId || address.length === 0}
-            >
-              Proceed to Pay
-            </button>
-          </div>
-          <div className="flex justify-between gap-4 sm:hidden">
-            <Link
-              href="/"
-              className="rounded-lg border border-gray-300 px-2 py-3 text-gray-700 hover:bg-gray-100"
-            >
-              Continue Shopping
-            </Link>
-            <button
-              className={`rounded-lg ${
-                !selectedAddressId || address.length === 0
-                  ? 'cursor-not-allowed bg-gray-400'
-                  : 'bg-background1'
-              } cursor-pointer px-6 py-3 text-white transition-transform duration-300 hover:scale-102`}
-              onClick={handleProceedToPayment}
-              disabled={!selectedAddressId || address.length === 0}
-            >
-              Proceed to Pay
-            </button>
-          </div>
         </div>
-      </div>
 
-      {showAddAddressForm && (
-        <AddAddressForm
-          formMode={formMode}
-          initialData={selectedAddress}
-          onCancel={() => {
-            setShowAddAddressForm(false);
-            setSelectedAddress(null);
-            setFormMode('add');
-          }}
-          onSave={data => {
-            handleAddressSave(data);
-            setShowAddAddressForm(false);
-            setSelectedAddress(null);
-            setFormMode('add');
-          }}
-        />
-      )}
-    </div>
+        {showAddAddressForm && (
+          <AddAddressForm
+            formMode={formMode}
+            initialData={selectedAddress}
+            onCancel={() => {
+              setShowAddAddressForm(false);
+              setSelectedAddress(null);
+              setFormMode('add');
+            }}
+            onSave={data => {
+              handleAddressSave(data);
+              setShowAddAddressForm(false);
+              setSelectedAddress(null);
+              setFormMode('add');
+            }}
+          />
+        )}
+      </div>
+    </>
   );
 }

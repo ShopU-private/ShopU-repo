@@ -138,9 +138,9 @@ export default function AddressPage() {
                     <Home className="text-primaryColor" />
                     <div>
                       <span>
-                        {addr.fullName}, {addr.addressLine1},
+                        {addr.fullName}, {addr.addressLine1}
                         {addr.addressLine2 ? `, ${addr.addressLine2}` : ''} {addr.city},{' '}
-                        {addr.state}
+                        {addr.state},{' '}
                       </span>
                       <span>
                         {addr.country} {addr.postalCode}

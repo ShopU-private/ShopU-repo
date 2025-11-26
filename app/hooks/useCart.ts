@@ -79,7 +79,7 @@ export function useCart() {
         }
 
         const now = Date.now();
-        if (!forceRefresh && now - lastFetch < 2000) {
+        if (!forceRefresh && now - lastFetch < 3000) {
           return;
         }
 
@@ -209,7 +209,7 @@ export function useCart() {
         return null;
       }
     },
-    [cartItems, fetchCartItems, cartCache]
+    [cartItems, cartCache]
   );
 
   // Update item quantity with optimistic updates

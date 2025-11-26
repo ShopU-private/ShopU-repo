@@ -61,6 +61,7 @@ const HealthCategoryGrid: React.FC<Props> = ({ healthCategories }) => {
             {healthCategories.map(category => (
               <div
                 key={category.id}
+                onClick={handleclick}
                 className="group min-w-[95px] flex-shrink-0 cursor-pointer items-center rounded-lg"
               >
                 <div className="mb-1 flex justify-center transition-transform duration-300 group-hover:scale-102">
