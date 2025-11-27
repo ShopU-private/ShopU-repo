@@ -54,6 +54,7 @@ const Header = () => {
   const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastFetchRef = useRef<number>(0);
+  const hasCalled = useRef(false);
 
   const fetchCartCount = React.useCallback(async () => {
     const now = Date.now();
@@ -83,6 +84,9 @@ const Header = () => {
 
   // Check login status and fetch cart count
   const checkLoginStatus = useCallback(async () => {
+    if (hasCalled.current) return;
+    hasCalled.current = true;
+
     try {
       const res = await fetch('/api/account/me');
       const data = await res.json();
