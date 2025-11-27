@@ -1,5 +1,11 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+
+interface WishlistItem {
+  productId: number | string;
+}
 
 interface Product {
   id: number | string;
@@ -7,87 +13,121 @@ interface Product {
   image: string;
   category: string;
 }
-interface WishlistItem {
-  productId: number | string;
+
+// Shared global store (singleton)
+const shared = {
+  favorites: new Set<number | string>(),
+  lastData: null as null | Set<number | string>,
+  isFetching: false,
+  listeners: new Set<() => void>(),
+};
+
+function notify() {
+  shared.listeners.forEach(fn => fn());
 }
-export function useWishlist() {
-  const [favorites, setFavorites] = useState<Set<number | string>>(new Set());
 
-  useEffect(() => {
-    const fetchWishlist = async () => {
-      try {
-        const res = await fetch('/api/account/wishlist');
-        const data = await res.json();
+// Fetch only when data changed
+async function fetchWishlistShared() {
+  if (shared.isFetching) return;
+  shared.isFetching = true;
 
-        if (res.ok && Array.isArray(data)) {
-          const favSet = new Set((data as WishlistItem[]).map(item => item.productId));
-          setFavorites(favSet);
-        } else if (res.status === 401) {
-          console.warn('User is not logged in ');
-        }
-      } catch (error) {
-        console.error('Wishlist fetch error:', error);
-      }
-    };
+  try {
+    const res = await fetch('/api/account/wishlist');
+    const data = await res.json();
 
-    fetchWishlist();
-  }, []);
+    if (!res.ok || !Array.isArray(data)) return;
 
-  const toggleFavorite = async (product: Product) => {
-    if (favorites.has(product.id)) {
-      // Optimistic update: remove from UI first
-      setFavorites(prev => {
-        const updated = new Set(prev);
-        updated.delete(product.id);
-        return updated;
-      });
+    const newSet = new Set(data.map((item: WishlistItem) => item.productId));
 
-      try {
-        const res = await fetch(`/api/account/wishlist?productId=${product.id}`, {
-          method: 'DELETE',
-        });
-        const data = await res.json();
+    // Compare old vs new
+    const isSame =
+      shared.lastData &&
+      shared.lastData.size === newSet.size &&
+      [...newSet].every(v => shared.favorites.has(v));
 
-        if (!res.ok) {
-          // rollback if failed
-          setFavorites(prev => new Set(prev).add(product.id));
-          toast.error(data.message || 'Could not remove from wishlist');
-        }
-      } catch (err) {
-        console.error('Somthing wents wrong:', err);
-        setFavorites(prev => new Set(prev).add(product.id));
-        toast.error('Network error — item not removed');
-      }
-
+    if (isSame) {
       return;
     }
 
-    // ADD TO WISHLIST
+    shared.lastData = newSet;
+    shared.favorites = newSet;
+    notify();
+  } catch (e) {
+    console.error('Wishlist fetch error:', e);
+  } finally {
+    shared.isFetching = false;
+  }
+}
+
+async function toggleFavoriteShared(product: Product) {
+  const id = product.id;
+
+  if (shared.favorites.has(id)) {
+    const backup = new Set(shared.favorites);
+    shared.favorites.delete(id);
+    notify();
+
+    // DELETE
     try {
-      const res = await fetch('/api/account/wishlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: product.name,
-          image_url: product.image,
-          productId: product.id,
-        }),
+      const res = await fetch(`/api/account/wishlist?productId=${id}`, {
+        method: 'DELETE',
       });
 
-      const data = await res.json();
-      if (res.ok) {
-        setFavorites(prev => new Set(prev).add(product.id));
-      } else {
-        toast.error(data.message || 'Already in wishlist');
+      if (!res.ok) {
+        shared.favorites = backup;
+        notify();
       }
-    } catch (error) {
-      toast.error('Something went wrong. Please try again.');
-      console.error('Something went wrong. Please try again.', error);
+    } catch {
+      shared.favorites = backup;
+      notify();
     }
-  };
+
+    return fetchWishlistShared(); // refetch only if changed data
+  }
+
+  // ADD
+  try {
+    const res = await fetch('/api/account/wishlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: product.name,
+        image_url: product.image,
+        productId: product.id,
+      }),
+    });
+
+    if (res.ok) {
+      shared.favorites.add(id);
+      notify();
+      return fetchWishlistShared(); // refresh only if changed data
+    }
+  } catch {
+    toast.error('Error');
+  }
+}
+
+// useWishlist Hook
+export function useWishlist() {
+  const [favorites, setFavorites] = useState(shared.favorites);
+
+  useEffect(() => {
+    const listener = () => setFavorites(new Set(shared.favorites));
+    shared.listeners.add(listener);
+
+    // First component loads wishlist
+    if (shared.listeners.size === 1) {
+      fetchWishlistShared();
+    }
+
+    return () => {
+      shared.listeners.delete(listener);
+    };
+  }, []);
 
   return {
     favorites,
-    toggleFavorite,
+    toggleFavorite: toggleFavoriteShared,
+    refresh: fetchWishlistShared,
   };
 }

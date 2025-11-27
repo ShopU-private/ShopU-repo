@@ -66,7 +66,6 @@ export default function WishlistPage() {
 
       if (res.ok) {
         setWishlist(prev => prev.filter(item => item.productId !== productId));
-        toast.success(data.message || 'Deleted item from wishlist');
       } else {
         toast.error(data.message || 'Delete failed');
       }
@@ -86,7 +85,7 @@ export default function WishlistPage() {
           <div className="flex min-h-[70vh] items-center justify-center">
             <div className="text-center">
               <Loader className="mx-auto h-8 w-8 animate-spin text-teal-600" />
-              <p className="mt-4 text-gray-600">Loading your orders...</p>
+              <p className="mt-4 text-gray-600">Loading your wishlist...</p>
             </div>
           </div>
         ) : wishlist.length === 0 ? (
@@ -121,7 +120,9 @@ export default function WishlistPage() {
                           height={50}
                           className="rounded"
                         />
-                        <span className="text-left text-gray-800">{item.name}</span>
+                        <span className="text-left text-gray-800">
+                          {item.name.length > 20 ? item.name.slice(0, 20) + '…' : item.name}
+                        </span>
                       </td>
                       <td className="text-primaryColor text-md p-4 font-medium">
                         ₹{String(item.price).slice(0, 5)}

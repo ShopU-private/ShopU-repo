@@ -44,7 +44,7 @@ const CartItemRow = memo(
     const imageUrl = item.product?.imageUrl;
 
     return (
-      <div key={item.id} className="flex h-28 items-center gap-3 border-b border-gray-100 p-4">
+      <div key={item.id} className="flex h-24 items-center gap-3 border-b border-gray-100 p-4">
         {/* Product Image */}
         <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
           {imageUrl ? (

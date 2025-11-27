@@ -111,7 +111,7 @@ export default function ProductDetailPage() {
               <div className="mx-auto grid w-[90%] max-w-7xl gap-6 rounded px-10 py-6 md:grid-cols-2">
                 {/* Left: Image Gallery */}
                 <div className="flex gap-6">
-                  <div className="flex flex-1 items-center justify-center rounded-lg bg-white p-12">
+                  <div className="flex flex-1 items-center justify-center rounded-lg bg-white p-12 shadow-sm">
                     <Image
                       src={product.imageUrl || '/placeholder.png'}
                       alt={product.name}
