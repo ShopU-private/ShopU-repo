@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useCart } from '@/app/hooks/useCart';
 import { useLocation } from '@/app/context/LocationContext';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Loader, ChevronLeft, MapPin, CreditCard } from 'lucide-react';
+import { Loader, MapPin, CreditCard } from 'lucide-react';
 import {
   VisaIcon,
   MastercardIcon,
@@ -14,6 +14,7 @@ import {
 } from '@/app/components/ui/PaymentIcons';
 import { mapPaymentStatusToOrderStatus } from '@/lib/payment-utils';
 import { prepareOrderItems, validateCartItems, logCheckoutEvent } from '@/lib/checkout-utils';
+import Navroute from '@/app/components/Navroute';
 
 interface RazorpayHandlerResponse {
   razorpay_payment_id: string;
@@ -255,9 +256,7 @@ function PaymentContent() {
       }
     } catch (error) {
       console.error('Payment error:', error);
-      setError(
-        error instanceof Error ? error.message : 'Payment processing failed. Please try again.'
-      );
+      setError('Payment failed. Please try again.');
       setIsProcessing(false);
     }
   };
@@ -322,7 +321,7 @@ function PaymentContent() {
 
   return (
     <div className="min-h-xl bg-gray-50">
-      <header className="bg-white shadow-sm">
+      {/* <header className="bg-white shadow-sm">
         <div className="container mx-auto max-w-7xl px-4 py-3">
           <div className="flex items-center gap-4">
             <button
@@ -334,30 +333,22 @@ function PaymentContent() {
             <h1 className="text-xl font-bold text-gray-800">Checkout</h1>
           </div>
         </div>
-      </header>
-
-      <div className="container mx-auto max-w-7xl px-6 py-8">
+      </header> */}
+      <Navroute />
+      <div className="container mx-auto max-w-6xl p-4">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div className="space-y-6 md:col-span-2">
-            {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-                {error}
-              </div>
-            )}
-
             {/* Address */}
             <div className="rounded-lg bg-white p-4 shadow-md">
               <h2 className="mb-2 text-lg font-medium text-gray-800">Delivery Address</h2>
               {addressDetails ? (
                 <div className="flex items-start gap-3 rounded-lg border border-teal-100 bg-teal-50 p-4">
-                  <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 text-teal-600" />
+                  <MapPin className="text-primaryColor mt-0.5 h-5 w-5 flex-shrink-0" />
                   <div>
                     <p className="font-medium">{addressDetails?.fullName}</p>
                     <p className="text-sm text-gray-600">
                       {addressDetails?.addressLine1}
-                      {addressDetails?.addressLine2 ? `, ${addressDetails.addressLine2}` : ''}
-                    </p>
-                    <p className="text-sm text-gray-600">
+                      {addressDetails?.addressLine2 ? `, ${addressDetails.addressLine2}` : ''},{' '}
                       {addressDetails?.city}, {addressDetails?.state} {addressDetails?.postalCode}
                     </p>
                     <p className="text-sm text-gray-600">+91 {addressDetails?.phoneNumber}</p>
@@ -459,6 +450,11 @@ function PaymentContent() {
                 </button>
               </form>
             </div>
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+                {error}
+              </div>
+            )}
           </div>
 
           {/* Summary */}

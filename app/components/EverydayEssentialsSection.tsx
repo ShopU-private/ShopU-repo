@@ -93,7 +93,7 @@ const EverydayEssentialsSection = () => {
                       stock: medicine.stock || 30,
                       rating: medicine.rating || 4.5,
                       reviews: medicine.reviews || 100,
-                      image: medicine.imageUrl || '/medicine-placeholder.jpg',
+                      image: medicine.imageUrl || '/pediasure.png',
                       category: medicine.type || 'Medicine',
                       subtitle: medicine.manufacturerName,
                     }}
@@ -166,7 +166,7 @@ const EverydayEssentialsSection = () => {
                     stock: medicine.stock || 30,
                     rating: medicine.rating || 4.5,
                     reviews: medicine.reviews || 100,
-                    image: medicine.imageUrl || '/medicine-placeholder.jpg',
+                    image: medicine.imageUrl || '/pediasure.png',
                     category: medicine.type || 'Medicine',
                     subtitle: medicine.manufacturerName,
                   }}

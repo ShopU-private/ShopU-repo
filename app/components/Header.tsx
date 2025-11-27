@@ -16,7 +16,6 @@ import Image from 'next/image';
 import Logo from '../../public/Shop U Logo-03.jpg';
 import LoginModal from './LoginModal';
 import Searchbar from './SearchBar';
-
 import { useLocation } from '../context/LocationContext';
 import { useCartModal } from '../context/CartModalContext';
 import Link from 'next/link';

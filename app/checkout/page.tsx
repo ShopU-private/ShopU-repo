@@ -44,7 +44,7 @@ export default function CheckoutPage() {
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
-
+  const [removingProductId, setRemovingProductId] = useState<string | null>(null);
   // Coupon related states
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
@@ -227,6 +227,7 @@ export default function CheckoutPage() {
 
   const handleDelAddress = async (id: string) => {
     try {
+      setRemovingProductId(id);
       const res = await fetch(`/api/account/address/${id}`, {
         method: 'DELETE',
         credentials: 'include',
@@ -239,6 +240,8 @@ export default function CheckoutPage() {
       }
     } catch (error) {
       console.error('Error deleting address:', error);
+    } finally {
+      setRemovingProductId(null);
     }
   };
 
@@ -247,7 +250,7 @@ export default function CheckoutPage() {
       <Navroute />
       <div className="min-h-[60vh] p-4">
         <div className="mx-auto max-w-4xl">
-          <h1 className="my-3 text-2xl font-bold text-gray-800">Checkout</h1>
+          <h1 className="mb-3 text-2xl font-bold text-gray-800">Checkout</h1>
 
           <div className="mb-4 rounded-lg bg-white px-6 py-4 shadow-md">
             <h2 className="mb-4 text-lg font-semibold">Delivery Address</h2>
@@ -273,7 +276,7 @@ export default function CheckoutPage() {
                     key={address.id}
                     className={`cursor-pointer rounded-lg border px-2 py-3 ${
                       selectedAddressId === address.id
-                        ? 'border-teal-600 bg-teal-50'
+                        ? 'border-[#7ECACE] bg-teal-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                     onClick={() => setSelectedAddressId(address.id ?? '')}
@@ -296,9 +299,9 @@ export default function CheckoutPage() {
                           <p className="text-sm text-gray-600">+91 {address.phoneNumber}</p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between gap-4 p-2">
+                      <div className="text-primaryColor flex items-center justify-between gap-4 p-2">
                         <button
-                          className="cursor-pointer text-lg text-teal-700"
+                          className="cursor-pointer text-lg"
                           onClick={() => {
                             setFormMode('edit');
                             setSelectedAddress(address);
@@ -308,10 +311,15 @@ export default function CheckoutPage() {
                           <FaRegEdit className="h-5 w-5" />
                         </button>
                         <button
-                          className="cursor-pointer py-2 text-xl text-teal-700"
+                          className="cursor-pointer py-2 text-xl"
                           onClick={() => handleDelAddress(address.id ?? '')}
+                          disabled={removingProductId === address.id}
                         >
-                          <Trash2 className="h-5 w-5" />
+                          {removingProductId === address.id ? (
+                            <Loader className="h-5 w-5 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-5 w-5" />
+                          )}
                         </button>
                       </div>
                     </div>
@@ -362,7 +370,7 @@ export default function CheckoutPage() {
                       setCouponCode(e.target.value.toUpperCase());
                       setCouponError('');
                     }}
-                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-[#7ECACE] focus:ring-1 focus:ring-[#7ECACE] focus:outline-none"
                     disabled={isApplyingCoupon}
                   />
                   <button
@@ -371,7 +379,7 @@ export default function CheckoutPage() {
                     className={`rounded-lg px-4 py-2 font-medium ${
                       isApplyingCoupon || !couponCode.trim()
                         ? 'cursor-not-allowed bg-gray-300 text-gray-500'
-                        : 'bg-teal-600 text-white hover:bg-teal-700'
+                        : 'bg-primaryColor text-white'
                     }`}
                   >
                     {isApplyingCoupon ? <Loader className="h-4 w-4 animate-spin" /> : 'Apply'}
