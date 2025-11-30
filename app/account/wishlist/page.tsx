@@ -43,7 +43,7 @@ export default function WishlistPage() {
         }
 
         const data = await res.json();
-        setWishlist(data);
+        setWishlist(data.slice(0, 10));
       } catch (err) {
         console.error('Failed to fetch wishlist:', err);
         toast.error('Network or server error');

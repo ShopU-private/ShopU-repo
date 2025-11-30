@@ -28,7 +28,7 @@ const HealthCategoryGrid: React.FC<Props> = ({ healthCategories }) => {
           <hr className="bg-background1 mt-1 h-1 rounded border-0" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 pt-8 pb-10 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-7">
+        <div className="grid grid-cols-2 gap-4 pt-8 pb-10 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 lg:grid-cols-7">
           {healthCategories.map(category => (
             <div
               key={category.id}

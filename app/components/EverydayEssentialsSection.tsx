@@ -79,7 +79,7 @@ const EverydayEssentialsSection = () => {
           ) : (
             <div
               ref={scrollRef}
-              className="no-scrollbar flex gap-5 overflow-x-auto scroll-smooth py-4"
+              className="no-scrollbar flex gap-3 overflow-x-auto scroll-smooth py-4 md:gap-5"
             >
               {medicines.map(medicine => (
                 <div key={medicine.id} className="max-w-[210px] min-w-[210px]">

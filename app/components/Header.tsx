@@ -323,7 +323,7 @@ const Header = () => {
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
-              className="h-16 w-36 py-2 transition-transform hover:scale-102 md:h-20"
+              className="h-20 w-36 py-2 transition-transform hover:scale-102 md:h-16 md:h-20"
               width={400}
               height={100}
               priority

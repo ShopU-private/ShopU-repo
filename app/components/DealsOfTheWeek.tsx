@@ -162,7 +162,7 @@ const DealOfTheWeek = () => {
     <>
       {/* Desktop view */}
       <div
-        className={`grid hidden gap-4 sm:grid ${itemsPerPage === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}
+        className={`grid hidden gap-4 sm:grid ${itemsPerPage === 1 ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}`}
       >
         {visibleProducts.map(product => (
           <div key={product.id} className="rounded-lg">
@@ -276,7 +276,7 @@ const DealOfTheWeek = () => {
   return (
     <>
       {/* Desktop view */}
-      <section className="mx-auto hidden max-w-6xl px-4 py-8 sm:block">
+      <section className="mx-auto hidden max-w-6xl px-14 py-8 sm:block md:px-4">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h2 className="text-primaryColor text-2xl font-semibold">

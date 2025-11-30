@@ -29,7 +29,7 @@ const BrandSection = () => {
             {brandData.map(category => (
               <div
                 key={category.id}
-                className="group bg-background flex items-center justify-center rounded-lg p-6"
+                className="group bg-background flex items-center justify-center rounded-lg px-6 py-14"
               >
                 <Image
                   src={category.image}

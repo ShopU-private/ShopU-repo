@@ -7,7 +7,7 @@ const PromoBanner = () => {
   return (
     <>
       {/* Desktop card view */}
-      <div className="mx-auto grid hidden w-[90%] max-w-7xl grid-cols-3 gap-6 px-4 py-10 sm:grid">
+      <div className="mx-auto grid hidden w-[90%] max-w-7xl grid-cols-2 gap-6 px-4 py-10 sm:grid md:grid-cols-3">
         {/* Card 1 - Hair Supplement */}
         <div className="flex h-56 items-center justify-between rounded-xl bg-[#FFEAE6] p-4 transition-transform duration-400 hover:scale-102 md:p-6">
           <div className="flex flex-col p-4 pt-6 text-[#993A26]">
@@ -30,7 +30,7 @@ const PromoBanner = () => {
         </div>
 
         {/* Card 3 - Image Only */}
-        <div className="bg-background relative h-56 overflow-hidden rounded-xl transition-transform duration-400 hover:scale-102">
+        <div className="bg-background relative hidden h-56 overflow-hidden rounded-xl transition-transform duration-400 hover:scale-102 md:grid">
           <Image src="/image.png" alt="Banner" fill className="object-cover" />
         </div>
       </div>

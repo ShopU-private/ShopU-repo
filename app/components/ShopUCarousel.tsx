@@ -37,7 +37,7 @@ const ShopUCarousel = () => {
   return (
     <>
       {/* Desktop Card View */}
-      <div className="mx-auto hidden w-[90%] max-w-7xl space-y-4 p-2 sm:block sm:p-4">
+      <div className="mx-auto hidden w-[95%] max-w-7xl space-y-4 sm:block sm:p-4 md:w-[90%] md:p-2">
         {/* Main Carousel */}
         <div className="flex flex-col gap-5 py-2 lg:flex-row">
           {/* Carousel Banner */}
@@ -53,7 +53,7 @@ const ShopUCarousel = () => {
                     alt={slide.title}
                     width={720}
                     height={400}
-                    className="max-h-110 w-full object-cover"
+                    className="max-h-88 w-full object-cover md:max-h-110"
                     priority
                   />
                 </div>
@@ -135,19 +135,18 @@ const ShopUCarousel = () => {
         </div>
 
         {/* WhatsApp Banner */}
-        <div className="bg-background1 flex h-46 w-full flex-col items-center justify-between rounded-lg px-14 py-4 text-white sm:flex-row">
+        <div className="bg-background1 flex h-40 w-full flex-col items-center justify-between rounded-lg px-4 py-4 text-white sm:flex-row md:h-46 md:px-14">
           {/* Left: Logo & Text */}
-          <div className="flex w-full flex-col items-center gap-10 sm:w-auto sm:flex-row">
+          <div className="flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row md:gap-10">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              {/* <img src="/ShopULogo.png" alt="Shopu Logo" className="h-20 w-40" /> */}
               <Image src="/ShopULogo.png" alt="Shopu Logo" width={160} height={80} priority />
             </div>
 
             {/* Text */}
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium sm:text-lg">Now available on</p>
-              <h1 className="py-2 text-4xl font-semibold">WHATSAPP</h1>
+              <p className="text-sm font-medium md:text-lg">Now available on</p>
+              <h1 className="py-2 text-xl font-semibold md:text-4xl">WHATSAPP</h1>
               <p className="mt-1 text-sm sm:text-base">Click to order.</p>
             </div>
           </div>
@@ -157,7 +156,7 @@ const ShopUCarousel = () => {
             href="https://wa.me/917070472634?text=Hello%2C%20I%20want%20to%20place%20an%20order."
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primaryColor flex items-center gap-2 rounded-md border border-white bg-white px-8 py-3 text-xl font-medium font-semibold shadow hover:shadow-lg"
+            className="text-primaryColor flex items-center gap-2 rounded-md border border-white bg-white px-4 py-2 text-xl font-medium font-semibold shadow hover:shadow-lg md:px-8 md:py-3"
           >
             <FaWhatsapp className="text-2xl" />
             WhatsApp
