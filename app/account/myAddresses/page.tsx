@@ -95,21 +95,25 @@ export default function AddressPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Navroute />
-      <div className="min-h-screen px-20 py-6">
-        <div className="mx-auto max-w-7xl">
+      <div className="min-h-screen px-4 py-6">
+        <div className="mx-auto max-w-6xl">
           {/* Header */}
-          <h2 className="text-primaryColor mb-6 text-lg font-semibold sm:text-xl">
+          <h2 className="text-primaryColor mb-4 text-lg font-semibold sm:mb-6 sm:text-xl">
             My <span className="text-secondaryColor">Addresses</span>
-            <hr className="bg-background1 mt-1 w-34 rounded border-2" />{' '}
+            <hr className="bg-background1 mt-1 w-32 rounded border-2" />{' '}
           </h2>
 
           {/* Add New Address */}
           <button
             onClick={() => {
+              if (addresses.length >= 3) {
+                return;
+              }
               setEditingAddress(null);
               setShowForm(true);
             }}
-            className="flex items-center gap-2 text-sm font-medium text-green-600"
+            className="flex items-center gap-2 text-sm font-medium text-green-700 hover:underline disabled:opacity-50"
+            disabled={addresses.length >= 3}
           >
             <Plus className="h-4 w-4" />
             Add new address
@@ -132,11 +136,13 @@ export default function AddressPage() {
               {addresses.map(addr => (
                 <div
                   key={addr.id}
-                  className="flex items-center justify-between rounded bg-white px-6 py-4 shadow-sm"
+                  className="flex items-center justify-between gap-6 rounded-md bg-white px-6 py-4 shadow-sm shadow-gray-300"
                 >
-                  <div className="text-md flex items-center gap-5 text-gray-800">
-                    <Home className="text-primaryColor" />
+                  <div className="flex items-center gap-5 text-gray-800">
                     <div>
+                      <Home className="text-primaryColor" />
+                    </div>
+                    <div className="text-md">
                       <span>
                         {addr.fullName}, {addr.addressLine1}
                         {addr.addressLine2 ? `, ${addr.addressLine2}` : ''} {addr.city},{' '}
@@ -146,10 +152,10 @@ export default function AddressPage() {
                         {addr.country} {addr.postalCode}
                       </span>
                       <br />
-                      <span>Phone: {addr.phoneNumber}</span>
+                      <span className="hidden sm:block">Phone: {addr.phoneNumber}</span>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
                     <button
                       onClick={() => handleEdit(addr)}
                       className="cursor-pointer text-sm text-blue-600"

@@ -109,9 +109,12 @@ export default function WishlistPage() {
                     <th className="px-6 py-4"></th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="bg-white">
                   {wishlist.map(item => (
-                    <tr key={item.id} className="text-md rounded-lg bg-white text-center shadow-sm">
+                    <tr
+                      key={item.id}
+                      className="text-md rounded-md text-center shadow-sm shadow-gray-300"
+                    >
                       <td className="flex items-center gap-10 px-6 py-4">
                         <Image
                           src={item.image_url}
@@ -144,7 +147,7 @@ export default function WishlistPage() {
                         <button
                           onClick={() => handleAddToCart(item.productId)}
                           disabled={addingProductId === item.productId}
-                          className="hover:bg-opacity-90 bg-background1 rounded px-4 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
+                          className="hover:bg-opacity-90 bg-background1 cursor-pointer rounded px-4 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {addingProductId === item.productId ? 'Adding..' : 'ADD'}
                         </button>
@@ -152,7 +155,7 @@ export default function WishlistPage() {
                       <td className="p-4">
                         <button
                           onClick={() => handleRemove(item.productId)}
-                          className="text-gray-500 hover:text-red-500 disabled:opacity-60"
+                          className="cursor-pointer text-gray-500 hover:text-red-500 disabled:opacity-60"
                           disabled={removingProductId === item.productId}
                         >
                           {removingProductId === item.productId ? (

@@ -117,12 +117,12 @@ export default function OrdersPage() {
                     <th className="px-6 py-4">Status</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="bg-white">
                   {orders.flatMap(order =>
                     (order.orderItems ?? []).map((item, index) => (
                       <tr
                         key={`${order.id}-${index}`}
-                        className="text-md bg-white text-center shadow-sm"
+                        className="text-md rounded-md text-center shadow-sm shadow-gray-300"
                       >
                         <td className="p-4 text-gray-700">#ORD{order.id.slice(-10)}</td>
                         <td className="flex items-center justify-center gap-3 p-4">

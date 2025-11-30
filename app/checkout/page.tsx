@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { logCheckoutEvent, validateAddressId } from '@/lib/checkout-utils';
 import AddAddressForm from '../components/AddAddress';
 import Navroute from '../components/Navroute';
+import toast from 'react-hot-toast';
 
 type Address = {
   id?: string;
@@ -327,8 +328,15 @@ export default function CheckoutPage() {
                 ))}
                 <div className="flex justify-end">
                   <button
-                    onClick={() => setShowAddAddressForm(true)}
-                    className="text-sm text-teal-600 hover:underline"
+                    onClick={() => {
+                      if (address.length >= 3) {
+                        toast.error('You can only save up to 3 addresses.');
+                        return;
+                      }
+                      setShowAddAddressForm(true);
+                    }}
+                    disabled={address.length >= 3}
+                    className="text-sm text-teal-600 hover:underline disabled:opacity-50"
                   >
                     + Add another address
                   </button>

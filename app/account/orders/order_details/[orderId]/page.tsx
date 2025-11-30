@@ -202,7 +202,7 @@ export default function OrderDetails() {
             {order.orderItems.map(item => (
               <div
                 key={item.id}
-                className="text-md my-12 flex items-center justify-between rounded bg-white px-16 py-3 font-medium shadow"
+                className="text-md my-12 flex items-center justify-between rounded bg-white px-16 py-3 font-medium shadow-sm"
               >
                 <h3>#ORD{order.id.slice(-10)}</h3>
                 <div className="flex items-center space-x-4">
