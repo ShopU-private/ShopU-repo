@@ -154,7 +154,7 @@ const BabyCareSection = () => {
             <div className="py-8 text-center text-gray-500">No baby care products available.</div>
           ) : (
             products.map(product => (
-              <div key={product.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
+              <div key={product.id} className="w-[185px] flex-shrink-0">
                 <ProductCard
                   product={{
                     id: product.id,

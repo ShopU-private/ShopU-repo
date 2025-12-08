@@ -42,7 +42,7 @@ export function useMedicines(options: UseMedicinesOptions = {}) {
         const response = await fetch(`/api/get-medicine?${queryParams.toString()}`);
 
         if (!response.ok) {
-          throw new Error('Failed to fetch medicines');
+          console.log('Failed to fetch medicines');
         }
 
         const data = await response.json();

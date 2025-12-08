@@ -6,10 +6,10 @@ const useAddToCart = () => {
   const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
   const { addItem } = useCart();
 
-  const handleAddToCart = async (productId: string) => {
+  const handleAddToCart = async (productId: string, quantity: number = 1) => {
     setAddingProductId(productId);
     try {
-      await addItem(productId, null, 1);
+      await addItem(productId, null, quantity);
       window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (error) {
       console.error('Add to cart failed:', error);

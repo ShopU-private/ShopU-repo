@@ -100,7 +100,10 @@ async function toggleFavoriteShared(product: Product) {
     if (res.ok) {
       shared.favorites.add(id);
       notify();
-      return fetchWishlistShared(); // refresh only if changed data
+      return fetchWishlistShared();
+    } else {
+      const data = await res.json();
+      toast.error(data.message || 'Failed to add to wishlist');
     }
   } catch {
     toast.error('Error');

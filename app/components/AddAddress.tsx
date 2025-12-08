@@ -423,7 +423,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="flex h-[90vh] w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+      <div className="flex h-[90vh] w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-2xl">
         {/* Left Map / Search Section */}
         <div className="relative hidden flex-1 bg-gray-100 md:flex">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50">
@@ -466,38 +466,6 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                   </div>
                 )}
               </div>
-
-              {/* Use Current Location Button */}
-              <button
-                type="button"
-                onClick={getCurrentLocation}
-                disabled={gettingLocation}
-                className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-green-500 px-4 py-3 text-white shadow-lg transition hover:from-teal-700 hover:to-green-600 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {gettingLocation ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    <span className="text-sm font-medium">Getting your location...</span>
-                  </>
-                ) : (
-                  <>
-                    <Crosshair className="h-4 w-4" />
-                    <span className="text-sm font-medium">Use Current Location</span>
-                  </>
-                )}
-              </button>
-
-              {/* Coordinates Display */}
-              {selectedCoords && (
-                <div className="mt-2 rounded-lg bg-white/90 p-2 shadow-sm">
-                  <div className="text-xs text-gray-600">
-                    <span className="font-medium">Coordinates:</span>
-                    <span className="ml-1">
-                      {selectedCoords.lat.toFixed(6)}, {selectedCoords.lng.toFixed(6)}
-                    </span>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Map Component */}
@@ -506,8 +474,41 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
             </div>
 
             {/* Map Instructions */}
-            <div className="absolute right-4 bottom-4 left-4 rounded-lg bg-white/90 p-2">
-              <div className="text-center text-xs text-gray-600">
+            <div className="absolute right-4 bottom-2 left-4">
+              <div className="mb-4 flex items-end justify-between gap-10">
+                {/* Use Current Location Button */}
+                <button
+                  type="button"
+                  onClick={getCurrentLocation}
+                  disabled={gettingLocation}
+                  className="mt-2 flex w-50 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-green-500 p-2 text-white shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {gettingLocation ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      <span className="text-sm font-medium">Getting your location...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Crosshair className="h-4 w-4" />
+                      <span className="text-sm font-medium">Go to current location</span>
+                    </>
+                  )}
+                </button>
+
+                {/* Coordinates Display */}
+                {selectedCoords && (
+                  <div className="mt-2 rounded-lg bg-white/90 p-2 shadow-sm">
+                    <div className="text-xs text-gray-600">
+                      <span className="font-medium">Coordinates:</span>
+                      <span className="ml-1">
+                        {selectedCoords.lat.toFixed(6)}, {selectedCoords.lng.toFixed(6)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="rounded-lg bg-white/90 p-2 text-center text-xs text-gray-600">
                 💡 Click on the map to select a precise location
               </div>
             </div>
@@ -517,40 +518,37 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
         {/* Right Form Section - Rest remains same */}
         <form onSubmit={handleSubmit} className="flex max-w-md flex-1 flex-col bg-white">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-gray-100 p-6">
+          <div className="bg-primaryColor flex items-center justify-between border-b border-gray-300 px-6 py-3">
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-xl font-semibold text-white">
                 {formMode === 'edit' ? 'Edit Address' : 'Add Address'}
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
-                Enter your details for seamless delivery experience
-              </p>
             </div>
             <button
               type="button"
               onClick={onCancel}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200"
+              className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-white/10"
             >
-              <X className="h-4 w-4 text-gray-600" />
+              <X className="h-6 w-6 text-white" />
             </button>
           </div>
 
           {/* Form Fields */}
-          <div className="flex-1 space-y-6 overflow-y-auto p-6">
+          <div className="flex-1 space-y-6 overflow-y-auto px-8 py-2">
             {/* Address Type */}
             <div>
-              <label className="mb-3 block text-sm font-medium text-gray-700">
+              <label className="mb-3 block text-sm font-medium text-gray-800">
                 Save address as
               </label>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-4">
                 {['home', 'work', 'other'].map(type => (
                   <button
                     key={type}
                     type="button"
                     onClick={() => setSelectedAddressType(type as 'home' | 'work' | 'other')}
-                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
+                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-all ${
                       selectedAddressType === type
-                        ? 'border-teal-500 bg-teal-50 text-teal-700'
+                        ? 'border-primaryColor text-primaryColor bg-teal-50'
                         : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
                     }`}
                   >
@@ -564,13 +562,13 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
             </div>
 
             {/* Address Inputs */}
-            <div className="space-y-4">
+            <div className="mb-4 space-y-4">
               <input
                 name="addressLine1"
                 value={formData.addressLine1}
                 onChange={handleChange}
                 placeholder="Flat / House no / Building name"
-                className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
                 required
               />
 
@@ -579,7 +577,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 value={formData.addressLine2}
                 onChange={handleChange}
                 placeholder="Floor (optional)"
-                className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
               />
 
               <input
@@ -587,7 +585,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 value={formData.city}
                 onChange={handleChange}
                 placeholder="City"
-                className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
                 required
               />
 
@@ -596,7 +594,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 value={formData.state}
                 onChange={handleChange}
                 placeholder="State"
-                className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
               />
 
               <input
@@ -604,13 +602,13 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 value={formData.postalCode}
                 onChange={handleChange}
                 placeholder="Postal Code"
-                className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>
 
             {/* Coordinates Display in Form */}
             {formData.latitude && formData.longitude && (
-              <div className="rounded-lg bg-teal-50 p-3">
+              <div className="mb-4 rounded-lg bg-teal-50 px-3 py-2">
                 <div className="text-sm text-teal-800">
                   <div className="font-medium">Selected Location:</div>
                   <div className="mt-1 text-xs">
@@ -619,15 +617,18 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 </div>
               </div>
             )}
+            <p className="text-primaryColor my-4 text-sm">
+              Enter your details for seamless delivery experience
+            </p>
 
             {/* Personal Info */}
-            <div className="border-t pt-4">
+            <div className="">
               <input
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
                 placeholder="Name"
-                className="mb-4 w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
+                className="mb-4 w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
                 required
               />
 
@@ -636,7 +637,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 placeholder="Phone Number"
-                className="w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
                 minLength={10}
                 maxLength={10}
                 required
@@ -645,11 +646,11 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
           </div>
 
           {/* Footer */}
-          <div className="border-t p-6">
+          <div className="border-t border-gray-300 px-6 py-4">
             <button
               type="submit"
               disabled={!formData.latitude || !formData.longitude}
-              className="w-full rounded-xl bg-teal-600 py-4 font-medium text-white shadow-lg transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+              className="bg-primaryColor w-full rounded-xl py-4 font-medium text-white shadow-lg transition disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               Continue
               {!formData.latitude ||

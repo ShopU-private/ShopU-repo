@@ -219,10 +219,9 @@ function ProductPageContent() {
                   </div>
                 </div>
 
-                {/* Product Grid */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3 sm:hidden">
                   {paginatedProducts.map(product => (
-                    <div key={product.id} className="max-w-[185px] min-w-[185px]">
+                    <div key={product.id} className="w-full">
                       <ProductCard
                         product={{
                           id: product.id,

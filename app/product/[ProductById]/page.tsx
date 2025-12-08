@@ -4,9 +4,10 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import Navroute from '@/app/components/Navroute';
-import { Loader } from 'lucide-react';
+import { Heart, Loader } from 'lucide-react';
 import SimilarProductsSection from '@/app/components/SimilarProduct';
 import useAddToCart from '@/app/hooks/handleAddToCart';
+import { useWishlist } from '@/app/hooks/useWishlist';
 
 export interface Product {
   id: string;
@@ -45,6 +46,9 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { handleAddToCart, addingProductId } = useAddToCart();
+  const { favorites, toggleFavorite } = useWishlist();
+  const [showFullDesc, setShowFullDesc] = useState(false);
+  const MAX_DESC_LENGTH = 400;
 
   useEffect(() => {
     if (!productId) return;
@@ -54,8 +58,12 @@ export default function ProductDetailPage() {
         const res = await fetch(`/api/products/${productId}`);
         const data = await res.json();
         if (!res.ok) toast.error(data.error || 'Failed to fetch product');
-        setProduct(data.product);
-
+        setProduct({
+          ...data.product,
+          originalPrice:
+            data.product.originalPrice ?? parseFloat(data.product.price?.toString() || '0') * 1.15,
+          discount: data.product.discount ?? 15,
+        });
         if (data.product?.subCategory?.id) {
           const simRes = await fetch(
             `/api/products?subCategoryId=${data.product.subCategory.id}&limit=10`
@@ -123,7 +131,24 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <h2 className="text-xl font-semibold">{product.name}</h2>
+                  <div className="flex justify-between gap-20">
+                    <h2 className="text-xl font-semibold">{product.name}</h2>
+                    <button
+                      onClick={() =>
+                        toggleFavorite({
+                          id: product.id,
+                          name: product.name,
+                          image: product.imageUrl || '/product-placeholder.jpg',
+                          category: product.category || 'Product',
+                        })
+                      }
+                      className="mr-10 mb-5"
+                    >
+                      <Heart
+                        className={`h-7 w-7 ${favorites.has(product.id) ? 'text-primaryColor fill-current' : 'text-primaryColor'}`}
+                      />
+                    </button>
+                  </div>
 
                   <div>
                     <p className="my-2 text-sm font-medium">Select Sizes</p>
@@ -171,29 +196,39 @@ export default function ProductDetailPage() {
 
                   <div className="items-center gap-4">
                     <div className="my-4 flex w-28 items-center rounded border px-2">
-                      <button onClick={handleDecrement} className="px-2 text-2xl">
+                      <button
+                        onClick={handleDecrement}
+                        className="hover:text-primaryColor px-2 text-2xl"
+                      >
                         −
                       </button>
                       <span className="w-12 px-3 text-center">
                         {quantity.toString().padStart(2, '0')}
                       </span>
-                      <button onClick={handleIncrement} className="px-2 text-2xl">
+                      <button
+                        onClick={handleIncrement}
+                        className="hover:text-primaryColor px-2 text-2xl"
+                      >
                         +
                       </button>
                     </div>
                     <div className="flex">
-                      <p className="mr-2 text-xl font-semibold text-[#317C80]">₹{product.price}</p>
+                      <p className="text-primaryColor mr-2 text-xl font-semibold">
+                        ₹{product.price}
+                      </p>
                       <p className="mt-2 text-sm text-gray-500">
-                        <span className="line-through">MRP: ₹1270</span>{' '}
-                        <span className="text-green-600">10% OFF</span>
+                        <span className="line-through">
+                          MRP: <s>₹{String(product.originalPrice).slice(0, 5)}</s>{' '}
+                        </span>{' '}
+                        <span className="text-green-600">{product.discount}% OFF</span>
                       </p>
                     </div>
                   </div>
 
                   <button
-                    onClick={() => handleAddToCart(productId)}
+                    onClick={() => handleAddToCart(productId, quantity)}
                     disabled={addingProductId === productId}
-                    className="flex w-52 items-center justify-center gap-2 rounded bg-[#317C80] py-3 font-medium text-white transition-transform duration-300 hover:scale-102"
+                    className="bg-primaryColor flex w-52 items-center justify-center gap-2 rounded py-3 font-medium text-white transition-transform duration-300 hover:scale-102"
                   >
                     {addingProductId === productId ? (
                       <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
@@ -217,9 +252,23 @@ export default function ProductDetailPage() {
                 {product.description && (
                   <section className="mb-6">
                     <h2 className="mb-2 text-xl font-semibold">Description</h2>
-                    <p className="pl-4">{product.description}</p>
+                    <p className="pl-4 text-gray-700">
+                      {showFullDesc
+                        ? product.description
+                        : product.description.slice(0, MAX_DESC_LENGTH) + '...'}
+
+                      {product.description.length > MAX_DESC_LENGTH && (
+                        <button
+                          onClick={() => setShowFullDesc(!showFullDesc)}
+                          className="text-primaryColor ml-2 cursor-pointer font-medium hover:underline"
+                        >
+                          {showFullDesc ? 'Show Less' : 'Show More'}
+                        </button>
+                      )}
+                    </p>
                   </section>
                 )}
+
                 {product.directionsForUse && (
                   <section className="mb-6">
                     <h2 className="mb-2 text-xl font-semibold">Directions for Use</h2>
@@ -316,8 +365,10 @@ export default function ProductDetailPage() {
                     <div className="flex">
                       <p className="mr-2 text-xl font-semibold text-[#317C80]">₹{product.price}</p>
                       <p className="mt-2 text-sm text-gray-500">
-                        <span className="line-through">MRP: ₹1270</span>{' '}
-                        <span className="text-green-600">10% OFF</span>
+                        <span className="line-through">
+                          MRP: <s>₹{String(product.originalPrice).slice(0, 5)}</s>{' '}
+                        </span>{' '}
+                        <span className="text-green-600">{product.discount}% OFF</span>
                       </p>
                     </div>
                   </div>
@@ -349,7 +400,20 @@ export default function ProductDetailPage() {
                 {product.description && (
                   <section className="mb-6">
                     <h2 className="mb-2 text-xl font-semibold">Description</h2>
-                    <p className="pl-4">{product.description}</p>
+                    <p className="pl-4 text-gray-700">
+                      {showFullDesc
+                        ? product.description
+                        : product.description.slice(0, MAX_DESC_LENGTH) + '...'}
+
+                      {product.description.length > MAX_DESC_LENGTH && (
+                        <button
+                          onClick={() => setShowFullDesc(!showFullDesc)}
+                          className="text-primaryColor ml-2 cursor-pointer font-medium hover:underline"
+                        >
+                          {showFullDesc ? 'Show Less' : 'Show More'}
+                        </button>
+                      )}
+                    </p>
                   </section>
                 )}
                 {product.directionsForUse && (

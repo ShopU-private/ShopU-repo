@@ -51,7 +51,7 @@ const DealOfTheWeek = () => {
               name: product.name ?? 'Unnamed Product',
               price: `₹${product.price}`,
               features: [
-                product.description?.split('.')[0] || 'Quality product',
+                product.description?.substring(0, 40) || 'Quality product',
                 product.subCategory?.name || 'Essential item',
                 `${product.discount ?? 20}% discount`,
               ].filter(Boolean),
@@ -184,7 +184,9 @@ const DealOfTheWeek = () => {
                 )}
               </div>
               <div className="flex-1 border-2 border-gray-200 p-4">
-                <h3 className="text-lg font-medium">{product.name}</h3>
+                <h3 className="text-lg font-medium">
+                  {product.name.length > 40 ? product.name.slice(0, 40) + '…' : product.name}
+                </h3>
                 <p className="text-primaryColor text-xl font-bold">{product.price}</p>
                 <ul className="mt-2 space-y-1">
                   {product.features.filter(Boolean).map((f, i) => (
@@ -220,14 +222,14 @@ const DealOfTheWeek = () => {
       >
         {visibleProducts.map(product => (
           <div key={product.id} className="rounded-lg">
-            <div className="flex h-62 gap-2 sm:flex-row">
+            <div className="flex gap-2 sm:flex-row">
               <div className="relative">
-                <div className="flex h-full w-45 items-center justify-center bg-white">
+                <div className="flex h-full w-auto items-center justify-center bg-white">
                   <Image
                     src="/Sirum.png"
                     alt="Sirum logo"
-                    width={400}
-                    height={300}
+                    width={180}
+                    height={150}
                     className="py-4"
                   />
                 </div>
@@ -239,13 +241,15 @@ const DealOfTheWeek = () => {
               </div>
               <div className="flex-1 border-2 border-gray-200 p-2">
                 <div className="mx-auto flex flex-col">
-                  <h3 className="text-md font-medium">{product.name}</h3>
+                  <h3 className="text-md font-medium">
+                    {product.name.length > 40 ? product.name.slice(0, 40) + '…' : product.name}
+                  </h3>
                   <p className="text-primaryColor text-lg font-bold">{product.price}</p>
                   <ul className="mt-2 space-y-1">
                     {product.features.filter(Boolean).map((f, i) => (
                       <li
                         key={`${product.id}-${i}`}
-                        className="flex items-center gap-2 text-sm text-gray-600"
+                        className="flex items-center gap-2 text-xs text-gray-600"
                       >
                         <Check className="text-secondaryColor h-3 w-3" />
                         {f}
