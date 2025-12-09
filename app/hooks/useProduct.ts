@@ -52,9 +52,8 @@ export function useProducts(options: UseProductsOptions = {}) {
         if (options.page) queryParams.append('page', options.page.toString());
 
         const res = await fetch(`/api/products/featured?${queryParams.toString()}`);
-        if (!res.ok) {
-          console.log('Failed to fetch products');
-        }
+
+        if (!res.ok) throw new Error('Failed to fetch products');
         const data = await res.json();
 
         const transformed =
