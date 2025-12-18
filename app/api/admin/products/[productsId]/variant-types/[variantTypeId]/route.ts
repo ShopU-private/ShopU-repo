@@ -5,7 +5,7 @@ import { isAdmin } from '@/lib/auth';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ productId: string; variantTypeId: string }> }
+  { params }: { params: Promise<{ productsId: string; variantTypeId: string }> }
 ) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -35,7 +35,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ productId: string; variantTypeId: string }> }
+  { params }: { params: Promise<{ productsId: string; variantTypeId: string }> }
 ) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
