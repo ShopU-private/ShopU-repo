@@ -14,6 +14,7 @@ interface Product {
   reviews?: number;
   discount?: number;
   originalPrice?: number;
+  packaging?: string;
 }
 
 interface RawProduct {
@@ -27,6 +28,7 @@ interface RawProduct {
     name: string;
   };
   originalPrice?: number;
+  packaging?: string;
   discount?: number;
 }
 
@@ -53,7 +55,9 @@ export function useProducts(options: UseProductsOptions = {}) {
 
         const res = await fetch(`/api/products/featured?${queryParams.toString()}`);
 
-        if (!res.ok) throw new Error('Failed to fetch products');
+        if (!res.ok) {
+          console.log('Failed to fetch products');
+        }
         const data = await res.json();
 
         const transformed =
@@ -69,6 +73,7 @@ export function useProducts(options: UseProductsOptions = {}) {
               originalPrice:
                 product.originalPrice ?? parseFloat(product.price?.toString() || '0') * 1.15,
               discount: product.discount ?? 15,
+              packaging: product.packaging || 'Standard Packaging',
               rating: 4.2,
               reviews: 12,
             })

@@ -1,114 +1,127 @@
-import { prisma } from '@/lib/client';
 import { NextRequest, NextResponse } from 'next/server';
-
-import { Product } from '@prisma/client';
+import { prisma } from '@/lib/client';
+import { Medicine, Prisma, } from '@prisma/client';
 
 // In-memory cache with expiration
-const searchCache = new Map<string, { data: Product[]; timestamp: number }>();
-const CACHE_TTL = 30 * 60 * 1000; // 30 minutes cache TTL
+const searchCache = new Map<string, { data: any[]; timestamp: number }>();
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour cache TTL
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const query = searchParams.get('query')?.toLowerCase() || '';
-  const limit = Number(searchParams.get('limit') || '20');
-  const page = Number(searchParams.get('page') || '1');
-  const offset = (page - 1) * limit;
-
-  if (!query) {
-    return NextResponse.json({ products: [] });
-  }
-
-  // Create a cache key from the query parameters
-  const cacheKey = `${query.trim()}_${limit}_${page}`;
-
-  // Check if we have a cached result
-  if (searchCache.has(cacheKey)) {
-    const cachedResult = searchCache.get(cacheKey);
-    if (cachedResult && Date.now() - cachedResult.timestamp < CACHE_TTL) {
-      return NextResponse.json({
-        products: cachedResult.data,
-        cached: true,
-        page,
-        limit,
-      });
+const cleanupCache = () => {
+  const now = Date.now();
+  for (const [key, value] of searchCache.entries()) {
+    if (now - value.timestamp > CACHE_TTL) {
+      searchCache.delete(key);
     }
   }
+};
+setInterval(cleanupCache, 5 * 60 * 1000);
 
-  // Split the query into keywords for more efficient searching
-  const keywords = query.split(' ').filter(Boolean);
-
+export async function GET(req: NextRequest) {
   try {
-    // Optimize the query structure
-    const products = await prisma.product.findMany({
+    const { searchParams } = new URL(req.url);
+
+    const name = searchParams.get('name');
+    const category = searchParams.get('category');
+    const limit = Number(searchParams.get('limit') || '30');
+
+    if (!name || name.trim().length < 2) {
+      return NextResponse.json({ success: true, data: [] });
+    }
+
+    const trimmed = name.trim().toLowerCase();
+
+    const cacheKey = `merged_${trimmed}_${limit}`;
+
+    // check cache first
+    if (searchCache.has(cacheKey)) {
+      const cached = searchCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return NextResponse.json({
+          success: true,
+          data: cached.data,
+          cached: true,
+        });
+      }
+    }
+
+    /** --- MEDICINES SEARCH -- */
+    const medicines = await prisma.medicine.findMany({
       where: {
-        OR: [
-          // Exact match (higher priority)
-          { name: { equals: query, mode: 'insensitive' } },
-          // Contains all keywords
-          {
-            AND: keywords.map(word => ({
-              OR: [
-                { name: { contains: word, mode: 'insensitive' } },
-                {
-                  subCategory: {
-                    name: { contains: word, mode: 'insensitive' },
-                  },
-                },
-                {
-                  subCategory: {
-                    category: {
-                      name: { contains: word, mode: 'insensitive' },
-                    },
-                  },
-                },
-              ],
-            })),
-          },
-        ],
-      },
-      include: {
-        subCategory: {
-          include: { category: true },
-        },
-        combinations: {
-          include: {
-            values: {
-              include: {
-                variantValue: {
-                  include: {
-                    variantType: true,
-                  },
-                },
-              },
-            },
-          },
+        name: {
+          contains: trimmed,
+          mode: 'insensitive',
         },
       },
       take: limit,
-      skip: offset,
-      orderBy: {
-        // Order by most relevant results first
-        name: 'asc',
-      },
+      orderBy: { name: 'asc' },
     });
 
-    // Store in cache
+    /** --- PRODUCTS SEARCH -- */
+    const products = await prisma.product.findMany({
+      where: {
+        AND: [
+          {
+            OR: [
+              {
+                name: {
+                  contains: trimmed,
+                  mode: "insensitive",
+                },
+              },
+              {
+                subCategory: {
+                  name: {
+                    contains: trimmed,
+                    mode: "insensitive",
+                  },
+                },
+              },
+              {
+                subCategory: {
+                  category: {
+                    name: {
+                      contains: trimmed,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+
+        ],
+      },
+
+      include: {
+        subCategory: {
+          include: {
+            category: true,
+          },
+        },
+      },
+
+      take: limit,
+      orderBy: { name: "asc" },
+    });
+
+    // merge + tag type
+    const results = [
+      ...medicines.map(m => ({ ...m, type: 'medicine' })),
+      ...products.map(p => ({ ...p, type: 'product' })),
+    ].slice(0, limit); // enforce limit after merge
+
+    // store cache
     searchCache.set(cacheKey, {
-      data: products,
+      data: results,
       timestamp: Date.now(),
     });
 
     return NextResponse.json({
-      products,
-      page,
-      limit,
-      total: products.length,
+      success: true,
+      data: results,
     });
-  } catch (error) {
-    console.error('[SEARCH PRODUCTS]', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to search products' },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error('[MERGED_SEARCH_ERROR]', err);
+    return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
   }
 }

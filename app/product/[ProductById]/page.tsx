@@ -4,12 +4,13 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import Navroute from '@/app/components/Navroute';
-import { Heart, Loader } from 'lucide-react';
+import { Heart, Loader, Share2 } from 'lucide-react';
 import SimilarProductsSection from '@/app/components/SimilarProduct';
 import useAddToCart from '@/app/hooks/handleAddToCart';
 import { useWishlist } from '@/app/hooks/useWishlist';
 
 export interface Product {
+  packaging: string | undefined;
   id: string;
   name: string;
   price: number;
@@ -131,23 +132,28 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex justify-between gap-20">
+                  <div className="flex items-center justify-between gap-20">
                     <h2 className="text-xl font-semibold">{product.name}</h2>
-                    <button
-                      onClick={() =>
-                        toggleFavorite({
-                          id: product.id,
-                          name: product.name,
-                          image: product.imageUrl || '/product-placeholder.jpg',
-                          category: product.category || 'Product',
-                        })
-                      }
-                      className="mr-10 mb-5"
-                    >
-                      <Heart
-                        className={`h-7 w-7 ${favorites.has(product.id) ? 'text-primaryColor fill-current' : 'text-primaryColor'}`}
-                      />
-                    </button>
+                    <div className="mt-2 mr-4 flex items-center justify-between gap-8">
+                      <button
+                        onClick={() =>
+                          toggleFavorite({
+                            id: product.id,
+                            name: product.name,
+                            image: product.imageUrl || '/product-placeholder.jpg',
+                            category: product.category || 'Product',
+                          })
+                        }
+                      >
+                        <Heart
+                          className={`h-7 w-7 ${favorites.has(product.id) ? 'text-primaryColor fill-current' : 'text-primaryColor'}`}
+                        />
+                      </button>
+
+                      <button>
+                        <Share2 className="text-primaryColor h-7 w-7" />
+                      </button>
+                    </div>
                   </div>
 
                   <div>

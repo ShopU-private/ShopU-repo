@@ -15,6 +15,7 @@ interface Product {
   category: string;
   subtitle?: string;
   stock: number;
+  packaging?: string;
 }
 
 interface ProductCardProps {
@@ -71,7 +72,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="line-clamp-2 min-h-[3rem] text-sm font-medium text-gray-900 transition-colors group-hover:text-teal-600">
             {product.name.length > 40 ? `${product.name.slice(0, 40)}...` : product.name}
           </h3>
-          <p className="mb-1 text-xs text-gray-500">tube of 100 ml Gel</p>
+          <p className="mb-1 text-xs text-gray-500">{product.packaging}</p>
 
           {product.originalPrice && (
             <div>

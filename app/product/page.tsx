@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, Loader, SlidersVertical } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import Navroute from '../components/Navroute';
@@ -120,6 +120,7 @@ function ProductPageContent() {
                           originalPrice: product.originalPrice,
                           discount: product.discount || 20,
                           stock: product.stock,
+                          packaging: product.packaging,
                           rating: product.rating || 4.5,
                           reviews: product.reviews || 100,
                           image: product.imageUrl || '/product-placeholder.jpg',
@@ -230,6 +231,7 @@ function ProductPageContent() {
                           originalPrice: product.originalPrice,
                           discount: product.discount || 20,
                           stock: product.stock,
+                          packaging: product.packaging,
                           rating: product.rating || 4.5,
                           reviews: product.reviews || 100,
                           image: product.imageUrl || '/product-placeholder.jpg',

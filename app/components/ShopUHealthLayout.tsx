@@ -94,7 +94,7 @@ const ShopUHealthComponent: React.FC = () => {
                 className="no-scrollbar flex gap-5 overflow-x-auto scroll-smooth py-4"
               >
                 {products
-                  .filter(product => (product.discount ?? 0) >= 30)
+                  .filter(product => (product.discount ?? 0) >= 40)
                   .map(product => (
                     <div key={product.id} className="max-w-[210px] min-w-[210px]">
                       <ProductCard
@@ -105,6 +105,7 @@ const ShopUHealthComponent: React.FC = () => {
                           originalPrice: product.originalPrice,
                           discount: product.discount,
                           stock: product.stock,
+                          packaging: product.packaging,
                           rating: product.rating || 4.5,
                           reviews: product.reviews || 100,
                           image: product.imageUrl || '/product-placeholder.jpg',
@@ -170,36 +171,39 @@ const ShopUHealthComponent: React.FC = () => {
             ) : products.length === 0 ? (
               <div className="py-8 text-center text-gray-500">No medicines available.</div>
             ) : (
-              products.map(product => (
-                <div key={product.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
-                  <ProductCard
-                    product={{
-                      id: product.id,
-                      name: product.name,
-                      price: product.price,
-                      originalPrice: product.originalPrice,
-                      discount: product.discount,
-                      stock: product.stock,
-                      rating: product.rating || 4.5,
-                      reviews: product.reviews || 100,
-                      image: product.imageUrl || '/product-placeholder.jpg',
-                      category: product.category || 'Product',
-                      subtitle: product.description,
-                    }}
-                    isFavorite={favorites.has(product.id)}
-                    onToggleFavorite={() =>
-                      toggleFavorite({
+              products
+                .filter(product => (product.discount ?? 0) >= 40)
+                .map(product => (
+                  <div key={product.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
+                    <ProductCard
+                      product={{
                         id: product.id,
                         name: product.name,
+                        price: product.price,
+                        originalPrice: product.originalPrice,
+                        discount: product.discount,
+                        stock: product.stock,
+                        packaging: product.packaging,
+                        rating: product.rating || 4.5,
+                        reviews: product.reviews || 100,
                         image: product.imageUrl || '/product-placeholder.jpg',
                         category: product.category || 'Product',
-                      })
-                    }
-                    onAddToCart={() => handleAddToCart(product.id)}
-                    isAdding={addingProductId === product.id}
-                  />
-                </div>
-              ))
+                        subtitle: product.description,
+                      }}
+                      isFavorite={favorites.has(product.id)}
+                      onToggleFavorite={() =>
+                        toggleFavorite({
+                          id: product.id,
+                          name: product.name,
+                          image: product.imageUrl || '/product-placeholder.jpg',
+                          category: product.category || 'Product',
+                        })
+                      }
+                      onAddToCart={() => handleAddToCart(product.id)}
+                      isAdding={addingProductId === product.id}
+                    />
+                  </div>
+                ))
             )}
           </div>
         </div>

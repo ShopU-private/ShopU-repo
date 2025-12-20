@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 import Image from 'next/image';
+import RightSideCard from './RightSideCard';
 
 const ShopUCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -75,63 +76,7 @@ const ShopUCarousel = () => {
           </div>
 
           {/* Right Side Card */}
-          <div className="relative flex hidden w-64 flex-col items-center space-y-3 rounded-xl bg-gray-100 px-6 py-4 text-center shadow lg:flex">
-            {/* Top Badge */}
-            <div className="text-secondaryColor absolute top-3 left-4 text-xl font-semibold">
-              <p>Special Deal</p>
-            </div>
-            <div className="bg-background2 absolute top-0 right-0 rounded-tr-xl rounded-bl-2xl px-3 py-1 text-sm font-bold text-white">
-              <p>
-                46% <br />
-                OFF
-              </p>
-            </div>
-
-            {/* Product Image */}
-            <Image
-              src="/pediasure.png"
-              alt="Pediasure"
-              width={144}
-              height={144}
-              className="mt-8 object-contain"
-            />
-            {/* Product Name */}
-            <p className="text-left text-sm font-medium text-gray-800">
-              Pediasure Chocolate Flavour Nutrition..
-            </p>
-
-            {/* Price + Add */}
-            <div className="flex w-full items-center justify-between border-t border-gray-200 px-2 pt-1">
-              <div className="flex items-baseline gap-1">
-                <span className="text-primaryColor text-lg font-bold">₹51</span>
-                <span className="text-sm text-gray-400 line-through">₹96</span>
-              </div>
-              <button className="bg-background1 rounded px-5 py-1 text-sm font-medium text-white">
-                ADD
-              </button>
-            </div>
-
-            {/* Countdown */}
-            <div className="w-full px-2 text-left">
-              <p className="pt-2 text-xs font-medium text-gray-700">Hurry Up! Offer ends in:</p>
-              <div className="mt-1 flex justify-center gap-2 rounded bg-gray-100 p-2 text-sm font-semibold text-gray-800">
-                <div className="text-center">
-                  <div>00</div>
-                  <div className="text-xs font-normal">Hours</div>
-                </div>
-                <span>:</span>
-                <div className="text-center">
-                  <div>00</div>
-                  <div className="text-xs font-normal">Mins</div>
-                </div>
-                <span>:</span>
-                <div className="text-center">
-                  <div>00</div>
-                  <div className="text-xs font-normal">Secs</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <RightSideCard />
         </div>
 
         {/* WhatsApp Banner */}
