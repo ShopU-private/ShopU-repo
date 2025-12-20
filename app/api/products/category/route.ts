@@ -1,7 +1,11 @@
+export const revalidate = 3600;
+
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 
 export async function GET() {
+    console.log('DB HIT: Fetching featured products...');
+
   try {
     const categories = await prisma.category.findMany({
       include: {

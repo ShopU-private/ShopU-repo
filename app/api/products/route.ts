@@ -1,7 +1,12 @@
+export const revalidate = 300;
+
 import { NextRequest, NextResponse } from 'next/server';
 import { Prisma, prisma } from '@/lib/client';
+//import { revalidate } from './featured/route';
 
 export async function GET(req: NextRequest) {
+    console.log('DB HIT: Fetching featured products...');
+
   try {
     const { searchParams } = new URL(req.url);
     const categoryId = searchParams.get('categoryId');

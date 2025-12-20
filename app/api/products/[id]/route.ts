@@ -1,7 +1,11 @@
+export const revalidate = 600;
+
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    console.log('DB HIT: Fetching featured products...');
+
   try {
     const { id: productId } = await params;
 
