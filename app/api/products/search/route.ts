@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
-import { Medicine, Prisma } from '@prisma/client';
 
 // In-memory cache with expiration
-const searchCache = new Map<string, { data: any[]; timestamp: number }>();
+const searchCache = new Map<string, { data: unknown[]; timestamp: number }>();
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour cache TTL
 
 const cleanupCache = () => {
@@ -21,7 +20,6 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
 
     const name = searchParams.get('name');
-    const category = searchParams.get('category');
     const limit = Number(searchParams.get('limit') || '30');
 
     if (!name || name.trim().length < 2) {

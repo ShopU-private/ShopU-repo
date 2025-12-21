@@ -25,11 +25,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     // Find the cart item and check if it belongs to the user
-    const cartItem = await prisma.cartItem.findFirst({
+    const cartItem = await prisma.cartItem.findMany({
       where: {
         id: cartItemId,
         userId,
       },
+      include: {
+        medicine: true,
+        product: true
+      }
     });
 
     if (!cartItem) {
@@ -40,7 +44,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const updatedCartItem = await prisma.cartItem.update({
       where: { id: cartItemId },
       data: { quantity },
-      include: { product: true },
+      include: { product: true, medicine: true },
     });
 
     return NextResponse.json({ success: true, cartItem: updatedCartItem });
