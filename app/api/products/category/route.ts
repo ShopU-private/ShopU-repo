@@ -1,3 +1,5 @@
+export const revalidate = 3600;
+
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 
