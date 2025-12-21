@@ -123,7 +123,7 @@ function ProductPageContent() {
                           packaging: product.packaging,
                           rating: product.rating || 4.5,
                           reviews: product.reviews || 100,
-                          image: product.imageUrl || '/product-placeholder.jpg',
+                          imageUrl: product.imageUrl || '/product-placeholder.jpg',
                           category: product.category || 'Product',
                           subtitle: product.description,
                         }}
@@ -234,7 +234,7 @@ function ProductPageContent() {
                           packaging: product.packaging,
                           rating: product.rating || 4.5,
                           reviews: product.reviews || 100,
-                          image: product.imageUrl || '/product-placeholder.jpg',
+                          imageUrl: product.imageUrl || '/product-placeholder.jpg',
                           category: product.category || 'Product',
                           subtitle: product.description,
                         }}

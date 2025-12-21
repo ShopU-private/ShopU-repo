@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -8,28 +9,7 @@ import { Heart, Loader, Share2 } from 'lucide-react';
 import SimilarProductsSection from '@/app/components/SimilarProduct';
 import useAddToCart from '@/app/hooks/handleAddToCart';
 import { useWishlist } from '@/app/hooks/useWishlist';
-
-export interface Product {
-  packaging: string | undefined;
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  discount?: number;
-  rating?: number;
-  reviews?: number;
-  imageUrl: string;
-  category: string;
-  subtitle?: string;
-  stock: number;
-  description?: string;
-
-  // optional richer fields for detail page
-  productImages?: { id: string; url: string }[];
-  productHighlights?: string;
-  directionsForUse?: string;
-  safetyInformation?: string;
-}
+import { Product } from '@/app/types/ProductTypes';
 
 interface PackOption {
   quantity: number;

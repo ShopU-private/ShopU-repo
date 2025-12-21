@@ -340,7 +340,7 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
           }
           return rawPrice;
         })(),
-        imageUrl: item.product?.imageUrl || '/placeholder-image.jpg',
+        imageUrl: item.product?.imageUrl || '/Paracetamol.jpg',
       },
     }));
   }, [rawCartItems]);

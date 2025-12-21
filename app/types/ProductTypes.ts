@@ -9,3 +9,25 @@ export type ProductType = {
   brand: string;
   skinType: string;
 };
+
+export interface Product {
+  packaging: string | undefined;
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  discount?: number;
+  rating?: number;
+  reviews?: number;
+  imageUrl: string;
+  category: string;
+  subtitle?: string;
+  stock: number;
+  description?: string;
+
+  // optional richer fields for detail page
+  productImages?: { id: string; url: string }[];
+  productHighlights?: string;
+  directionsForUse?: string;
+  safetyInformation?: string;
+}

@@ -2,21 +2,7 @@ import React from 'react';
 import { Heart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  discount?: number;
-  rating: number;
-  reviews: number;
-  image: string;
-  category: string;
-  subtitle?: string;
-  stock: number;
-  packaging?: string;
-}
+import { Product } from '../types/ProductTypes';
 
 interface ProductCardProps {
   product: Product;
@@ -46,7 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="relative h-42 w-full">
           <div onClick={handleclick}>
             <Image
-              src={product.image || '/pediasure.png'}
+              src={product.imageUrl || '/pediasure.png'}
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -115,7 +101,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="relative h-40 w-full">
           <div onClick={handleclick}>
             <Image
-              src={'/pediasure.png'} // dynamic image fallback
+              src={product.imageUrl || '/Paracetamol.jpg'} // dynamic image fallback
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

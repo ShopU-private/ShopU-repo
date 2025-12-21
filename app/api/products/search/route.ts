@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
-import { Medicine, Prisma, } from '@prisma/client';
+import { Medicine, Prisma } from '@prisma/client';
 
 // In-memory cache with expiration
 const searchCache = new Map<string, { data: any[]; timestamp: number }>();
@@ -65,14 +65,14 @@ export async function GET(req: NextRequest) {
               {
                 name: {
                   contains: trimmed,
-                  mode: "insensitive",
+                  mode: 'insensitive',
                 },
               },
               {
                 subCategory: {
                   name: {
                     contains: trimmed,
-                    mode: "insensitive",
+                    mode: 'insensitive',
                   },
                 },
               },
@@ -81,14 +81,13 @@ export async function GET(req: NextRequest) {
                   category: {
                     name: {
                       contains: trimmed,
-                      mode: "insensitive",
+                      mode: 'insensitive',
                     },
                   },
                 },
               },
             ],
           },
-
         ],
       },
 
@@ -101,7 +100,7 @@ export async function GET(req: NextRequest) {
       },
 
       take: limit,
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
     });
 
     // merge + tag type

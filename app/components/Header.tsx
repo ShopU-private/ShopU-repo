@@ -72,7 +72,7 @@ const Header = () => {
         }
       } else if (response.status !== 401) {
         // Don't show error for unauthorized (not logged in)
-        console.error('Failed to fetch cart count');
+        console.log('Failed to fetch cart count');
       }
     } catch (error) {
       console.error('Error fetching cart count:', error);
@@ -620,7 +620,7 @@ const Header = () => {
 
         {/* Mobile Search */}
         <div className="mt-4 mb-2 md:hidden">
-          <div className="relative">
+          <div className="relative" onClick={handleSearch}>
             <input
               type="text"
               placeholder="Search essentials, groceries and more..."

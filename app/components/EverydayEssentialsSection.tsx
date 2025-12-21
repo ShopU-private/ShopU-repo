@@ -93,9 +93,10 @@ const EverydayEssentialsSection = () => {
                       stock: medicine.stock || 30,
                       rating: medicine.rating || 4.5,
                       reviews: medicine.reviews || 100,
-                      image: medicine.imageUrl || '/pediasure.png',
+                      imageUrl: medicine.imageUrl || '/Paracetamol.jpg',
                       category: medicine.type || 'Medicine',
                       subtitle: medicine.manufacturerName,
+                      packaging: medicine.packSizeLabel || 'Standard',
                     }}
                     isFavorite={favorites.has(medicine.id)}
                     onToggleFavorite={() =>
@@ -166,9 +167,10 @@ const EverydayEssentialsSection = () => {
                     stock: medicine.stock || 30,
                     rating: medicine.rating || 4.5,
                     reviews: medicine.reviews || 100,
-                    image: medicine.imageUrl || '/pediasure.png',
+                    imageUrl: medicine.imageUrl || '/Paracetamol.jpg',
                     category: medicine.type || 'Medicine',
                     subtitle: medicine.manufacturerName,
+                    packaging: medicine.packSizeLabel || 'Standard',
                   }}
                   isFavorite={favorites.has(medicine.id)}
                   onToggleFavorite={() =>

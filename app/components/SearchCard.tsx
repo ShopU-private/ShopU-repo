@@ -9,7 +9,7 @@ interface CardProps {
 const SearchCard: React.FC<CardProps> = ({ item }) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
-
+  const price = Number(item.price || 0);
   const addToCart = async () => {
     try {
       setIsAddingToCart(true);
@@ -54,10 +54,10 @@ const SearchCard: React.FC<CardProps> = ({ item }) => {
           alt={item.name.length > 5 ? item.name.slice(0, 5) + '…' : item.name}
           width={200}
           height={200}
-          className="w-12 h-12 object-contain"
+          className="h-12 w-12 object-contain"
         />
         <div>
-          <h3 className="text-md font-semibold text-gray-800">
+          <h3 className="sm:text-md text-sm font-semibold text-gray-800">
             {item.name.length > 15 ? item.name.slice(0, 15) + '…' : item.name}
           </h3>
           <p className="mb-1 text-xs text-gray-500">{item.packaging || 'Standard Packaging'}</p>
@@ -65,7 +65,9 @@ const SearchCard: React.FC<CardProps> = ({ item }) => {
       </div>
 
       <div className="flex items-center justify-between border-t border-[#D9D9D9] pt-2">
-        {item.price && <span className="text-primaryColor text-xl font-bold">₹{item.price}</span>}
+        {item.price && (
+          <span className="text-primaryColor text-xl font-bold">₹{price.toFixed(0)}</span>
+        )}
 
         <button
           onClick={addToCart}

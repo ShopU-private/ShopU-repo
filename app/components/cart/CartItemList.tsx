@@ -51,8 +51,8 @@ const CartItemRow = memo(
             <Image
               src={imageUrl}
               alt={name}
-              width={48}
-              height={48}
+              width={100}
+              height={100}
               className="h-full w-full object-contain"
               loading="lazy"
             />

@@ -46,7 +46,7 @@ export default function Searchbar() {
           setIsSearching(true);
           try {
             const res = await fetch(
-              `/api/products/search?name=${encodeURIComponent(key)}&limit=30`
+              `/api/products/search?name=${encodeURIComponent(key)}&limit=20`
             );
 
             const data = await res.json();
@@ -81,32 +81,64 @@ export default function Searchbar() {
   };
 
   return (
-    <div className="relative mx-4 hidden max-w-lg flex-1 md:flex">
-      <div className="relative w-full">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={e => handleSearch(e.target.value)}
-          placeholder={placeholders[placeholderIndex]}
-          className="w-full rounded-lg bg-gray-100 px-4 py-2 pl-10 focus:outline-none"
-        />
+    <>
+      {/*Desktop view*/}
+      <div className="relative mx-4 hidden max-w-lg flex-1 md:flex">
+        <div className="relative w-full">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => handleSearch(e.target.value)}
+            placeholder={placeholders[placeholderIndex]}
+            className="w-full rounded-lg bg-gray-100 px-4 py-2 pl-10 focus:outline-none"
+          />
 
-        {/* searching spinner */}
-        {isSearching && (
-          <div className="absolute top-1/2 right-3 -translate-y-1/2 transform">
-            <div className="border-primaryColor h-5 w-5 animate-spin rounded-full border-b-2"></div>
-          </div>
-        )}
+          {/* searching spinner */}
+          {isSearching && (
+            <div className="absolute top-1/2 right-3 -translate-y-1/2 transform">
+              <div className="border-primaryColor h-5 w-5 animate-spin rounded-full border-b-2"></div>
+            </div>
+          )}
 
-        {searchQuery && (
-          <button
-            onClick={clearSearch}
-            className="absolute top-1/2 right-4 -translate-y-1/2 transform text-gray-600 hover:text-gray-600"
-          >
-            ✕
-          </button>
-        )}
+          {searchQuery && (
+            <button
+              onClick={clearSearch}
+              className="absolute top-1/2 right-4 -translate-y-1/2 transform text-gray-600 hover:text-gray-600"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+
+      {/*Mobile view*/}
+      <div className="relative max-w-lg flex-1 px-4 py-0.5 md:hidden">
+        <div className="relative w-full">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => handleSearch(e.target.value)}
+            placeholder={placeholders[placeholderIndex]}
+            className="w-full rounded-full bg-gray-100 px-6 py-3 focus:outline-none"
+          />
+
+          {/* searching spinner */}
+          {isSearching && (
+            <div className="absolute top-1/2 right-4 -translate-y-1/2 transform">
+              <div className="border-primaryColor h-5 w-5 animate-spin rounded-full border-b-2"></div>
+            </div>
+          )}
+
+          {searchQuery && (
+            <button
+              onClick={clearSearch}
+              className="absolute top-1/2 right-5 -translate-y-1/2 transform text-gray-600 hover:text-gray-600"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+    </>
   );
 }

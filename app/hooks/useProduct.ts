@@ -1,22 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { revalidate } from '../api/products/featured/route';
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  imageUrl: string;
-  category?: string;
-  rating?: number;
-  reviews?: number;
-  discount?: number;
-  originalPrice?: number;
-  packaging?: string;
-}
+import { Product } from '../types/ProductTypes';
 
 interface RawProduct {
   id: string;
@@ -54,9 +39,7 @@ export function useProducts(options: UseProductsOptions = {}) {
         if (options.limit) queryParams.append('limit', options.limit.toString());
         if (options.page) queryParams.append('page', options.page.toString());
 
-        const res = await fetch(`/api/products/featured?${queryParams.toString()}`,{
-            next: {revalidate: 300}
-        });
+        const res = await fetch(`/api/products/featured?${queryParams.toString()}`);
 
         if (!res.ok) {
           console.log('Failed to fetch products');

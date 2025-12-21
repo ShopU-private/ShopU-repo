@@ -109,6 +109,9 @@ export default function Navroute() {
     });
   }
 
+  const handleSearch = () => {
+    router.push('/search');
+  };
   return (
     <nav className="bg-white text-sm text-gray-500">
       {/* Desktop View */}
@@ -146,7 +149,7 @@ export default function Navroute() {
             </button>
           </div>
           <div className="flex items-center justify-between gap-1">
-            <Search className="h-6 w-14 text-white" />
+            <Search className="h-6 w-14 text-white" onClick={handleSearch} />
             {/* Shopping Cart */}
             <button onClick={openCartModal} className="relative mr-2 rounded-lg p-2.5">
               <ShoppingCart className="h-6 w-6 text-white" />

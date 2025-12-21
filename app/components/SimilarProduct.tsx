@@ -5,7 +5,7 @@ import ProductCard from './ProductCard';
 import { useWishlist } from '../hooks/useWishlist';
 import useAddToCart from '../hooks/handleAddToCart';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Product } from '../product/[ProductById]/page';
+import { Product } from '../types/ProductTypes';
 
 interface SimilarProductsSectionProps {
   products: Product[];
@@ -65,7 +65,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
                       packaging: product.packaging,
                       rating: product.rating || 4.5,
                       reviews: product.reviews || 100,
-                      image: product.imageUrl || '/product-placeholder.jpg',
+                      imageUrl: product.imageUrl || '/product-placeholder.jpg',
                       category: product.category || 'Product',
                       subtitle: product.description,
                     }}
@@ -122,7 +122,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
                       packaging: product.packaging,
                       rating: product.rating || 4.5,
                       reviews: product.reviews || 100,
-                      image: product.imageUrl || '/product-placeholder.jpg',
+                      imageUrl: product.imageUrl || '/product-placeholder.jpg',
                       category: product.category || 'Product',
                       subtitle: product.description,
                     }}
