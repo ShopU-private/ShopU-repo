@@ -182,6 +182,44 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     console.log('Map location updated:', { lat, lng });
   };
 
+  // Reverse geocode to get address from coordinates
+  const reverseGeocode = async (latitude: number, longitude: number) => {
+    try {
+      const res = await fetch(
+        `/api/maps/reverse?lat=${latitude}&lng=${longitude}`
+      );
+      const data = await res.json();
+
+      if (data?.result) {
+        let city = '',
+          state = '',
+          postalCode = '';
+
+        if (data.result.address_components) {
+          (data.result.address_components as AddressComponent[]).forEach(c => {
+            if (c.types.includes('locality')) city = c.long_name;
+            if (c.types.includes('administrative_area_level_1')) state = c.long_name;
+            if (c.types.includes('postal_code')) postalCode = c.long_name;
+          });
+        }
+
+        setFormData(prev => ({
+          ...prev,
+          addressLine1: data.result.formatted_address || prev.addressLine1,
+          city: city || prev.city,
+          state: state || prev.state,
+          postalCode: postalCode || prev.postalCode,
+        }));
+
+        setSearchLocation(data.result.formatted_address || '');
+      }
+    } catch (err) {
+      console.error('Reverse geocode failed:', err);
+    }
+  };
+
+
+
   // Get current location from device with high accuracy
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -196,122 +234,42 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     let watchId: number;
     let locationObtained = false;
 
-    const processLocation = async (position: GeolocationPosition) => {
-      if (locationObtained) return; // Prevent multiple processing
-      locationObtained = true;
+    let bestAccuracy = Infinity;
+    let stableCount = 0;
 
-      try {
-        const { latitude, longitude, accuracy } = position.coords;
+const processLocation = async (position: GeolocationPosition) => {
+  const { latitude, longitude, accuracy } = position.coords;
 
-        console.log('Live location obtained:', {
-          latitude,
-          longitude,
-          accuracy: `${accuracy.toFixed(2)}m`,
-          timestamp: new Date(position.timestamp).toLocaleString(),
-        });
+  console.log('GPS update:', accuracy + 'm');
 
-        // Update map and marker immediately
-        if (mapRef.current) {
-          mapRef.current.updateLocation(latitude, longitude, '📍 Your Current Location');
-        }
+  // Update only if accuracy improves
+  if (accuracy < bestAccuracy) {
+    bestAccuracy = accuracy;
+    stableCount++;
 
-        // Update form coordinates
-        setFormData(prev => ({
-          ...prev,
-          latitude,
-          longitude,
-        }));
+    // Map + state update
+    mapRef.current?.updateLocation(latitude, longitude, '📍 Your Current Location');
 
-        setSelectedCoords({ lat: latitude, lng: longitude });
+    setFormData(prev => ({
+      ...prev,
+      latitude,
+      longitude,
+    }));
 
-        // Reverse geocode to get detailed address
-        try {
-          const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}`;
-          const response = await fetch(geocodeUrl);
-          const data = await response.json();
+    setSelectedCoords({ lat: latitude, lng: longitude });
+  }
 
-          if (data.status === 'OK' && data.results && data.results[0]) {
-            const result = data.results[0];
-            const addressComponents = result.address_components;
+  // Check if accuracy is good enough or stable enough
+  if (accuracy <= 20 || stableCount >= 3) {
+    console.log('✅ Exact location locked:', accuracy + 'm');
 
-            let city = '';
-            let state = '';
-            let postalCode = '';
-            let country = 'India';
-            let streetAddress = '';
+    navigator.geolocation.clearWatch(watchId);
+    setGettingLocation(false);
 
-            // Extract address components with fallbacks
-            addressComponents.forEach((component: AddressComponent) => {
-              if (
-                component.types.includes('locality') ||
-                component.types.includes('administrative_area_level_2')
-              ) {
-                city = city || component.long_name;
-              }
-              if (component.types.includes('administrative_area_level_1')) {
-                state = component.long_name;
-              }
-              if (component.types.includes('postal_code')) {
-                postalCode = component.long_name;
-              }
-              if (component.types.includes('country')) {
-                country = component.long_name;
-              }
-              if (
-                component.types.includes('sublocality_level_1') ||
-                component.types.includes('sublocality')
-              ) {
-                streetAddress = component.long_name;
-              }
-            });
-
-            // Use the most specific address available
-            const formattedAddress = result.formatted_address;
-            const addressLine1 =
-              streetAddress || formattedAddress.split(',')[0] || formattedAddress;
-
-            setFormData(prev => ({
-              ...prev,
-              addressLine1: addressLine1,
-              city: city,
-              state: state,
-              postalCode: postalCode,
-              country: country,
-            }));
-
-            setSearchLocation(formattedAddress);
-
-            console.log('Address populated:', {
-              addressLine1,
-              city,
-              state,
-              postalCode,
-              country,
-              accuracy: `${accuracy.toFixed(2)}m`,
-            });
-          } else {
-            console.warn('Geocoding returned no results:', data.status);
-            // Still update with coordinates even if geocoding fails
-            setSearchLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
-          }
-        } catch (geocodeErr) {
-          console.error('Geocoding failed:', geocodeErr);
-          // Fallback: show coordinates
-          setSearchLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
-          alert('Location detected but address lookup failed. You can still use this location.');
-        }
-
-        // Stop watching after successful location
-        if (watchId) {
-          navigator.geolocation.clearWatch(watchId);
-        }
-      } catch (err) {
-        console.error('Error processing location:', err);
-        alert('Failed to process your location. Please try again.');
-      } finally {
-        setGettingLocation(false);
-      }
-    };
+    // Reverse geocode to get address
+    reverseGeocode(latitude, longitude);
+  }
+};
 
     const handleError = (error: GeolocationPositionError) => {
       console.error('Geolocation error:', error);
@@ -324,22 +282,22 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
       switch (error.code) {
         case error.PERMISSION_DENIED:
           alert(
-            '❌ Location permission denied.\n\nPlease allow location access in your browser settings to use this feature.'
+            'Location permission denied.\n\nPlease allow location access in your browser settings to use this feature.'
           );
           break;
         case error.POSITION_UNAVAILABLE:
           alert(
-            '❌ Location information is unavailable.\n\nPlease check your device location settings and try again.'
+            'Location information is unavailable.\n\nPlease check your device location settings and try again.'
           );
           break;
         case error.TIMEOUT:
           alert(
-            '⏱️ Location request timed out.\n\nPlease try again. Make sure you have a clear view of the sky if using GPS.'
+            'Location request timed out.\n\nPlease try again. Make sure you have a clear view of the sky if using GPS.'
           );
           break;
         default:
           alert(
-            '❌ An unknown error occurred while getting your location.\n\nPlease try again or enter your address manually.'
+            'An unknown error occurred while getting your location.\n\nPlease try again or enter your address manually.'
           );
           break;
       }
@@ -379,6 +337,8 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
       options
     );
   };
+
+
 
   // Submit Form - Include coordinates
   const handleSubmit = async (e: React.FormEvent) => {
