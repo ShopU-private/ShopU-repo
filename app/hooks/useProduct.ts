@@ -39,7 +39,12 @@ export function useProducts(options: UseProductsOptions = {}) {
         if (options.limit) queryParams.append('limit', options.limit.toString());
         if (options.page) queryParams.append('page', options.page.toString());
 
-        const res = await fetch(`/api/products/featured?${queryParams.toString()}`);
+        const res = await fetch(`/api/products/featured?${queryParams.toString()}`, {
+          next: {
+            tags: ['products', 'categories'], // category dependent
+            revalidate: 300,
+          },
+        });
 
         if (!res.ok) {
           console.log('Failed to fetch products');

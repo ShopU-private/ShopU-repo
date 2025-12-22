@@ -100,7 +100,13 @@ export default function AdminProductsPage() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/products');
+      const response = await fetch('/api/products', {
+        next: {
+          tags: ['products'],
+          revalidate: 300,
+        },
+      });
+
       if (!response.ok) throw new Error('Failed to fetch products');
 
       const data = await response.json();

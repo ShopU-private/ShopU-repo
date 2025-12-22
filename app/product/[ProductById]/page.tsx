@@ -47,7 +47,12 @@ export default function ProductDetailPage() {
         });
         if (data.product?.subCategory?.id) {
           const simRes = await fetch(
-            `/api/products?subCategoryId=${data.product.subCategory.id}&limit=10`
+            `/api/products?subCategoryId=${data.product.subCategory.id}&limit=10`, {
+            next: {
+              tags: ['products', 'categories'], // category dependent
+              revalidate: 300,
+            },
+          }
           );
           const simData = await simRes.json();
           if (simRes.ok) {
@@ -143,11 +148,10 @@ export default function ProductDetailPage() {
                         <button
                           key={size}
                           onClick={() => setSelectedSize(size)}
-                          className={`cursor-pointer rounded px-5 py-2 text-sm transition ${
-                            selectedSize === size
+                          className={`cursor-pointer rounded px-5 py-2 text-sm transition ${selectedSize === size
                               ? 'bg-[#317C80] text-white'
                               : 'bg-[#D9D9D9] text-black'
-                          }`}
+                            }`}
                         >
                           {size}
                         </button>
@@ -162,11 +166,10 @@ export default function ProductDetailPage() {
                         <div
                           key={index}
                           onClick={() => setSelectedPackIndex(index)}
-                          className={`cursor-pointer rounded transition ${
-                            selectedPackIndex === index
+                          className={`cursor-pointer rounded transition ${selectedPackIndex === index
                               ? 'bg-[#317C80] text-white'
                               : 'bg-[#D9D9D9] text-black'
-                          }`}
+                            }`}
                         >
                           <p className="p-2 text-sm">{pack.quantity}</p>
                           <hr />
@@ -299,11 +302,10 @@ export default function ProductDetailPage() {
                         <button
                           key={size}
                           onClick={() => setSelectedSize(size)}
-                          className={`cursor-pointer rounded px-5 py-2 text-sm transition ${
-                            selectedSize === size
+                          className={`cursor-pointer rounded px-5 py-2 text-sm transition ${selectedSize === size
                               ? 'bg-[#317C80] text-white'
                               : 'bg-[#D9D9D9] text-black'
-                          }`}
+                            }`}
                         >
                           {size}
                         </button>
@@ -318,11 +320,10 @@ export default function ProductDetailPage() {
                         <div
                           key={index}
                           onClick={() => setSelectedPackIndex(index)}
-                          className={`cursor-pointer rounded transition ${
-                            selectedPackIndex === index
+                          className={`cursor-pointer rounded transition ${selectedPackIndex === index
                               ? 'bg-[#317C80] text-white'
                               : 'bg-[#D9D9D9] text-black'
-                          }`}
+                            }`}
                         >
                           <p className="p-2 text-sm">{pack.quantity}</p>
                           <hr />

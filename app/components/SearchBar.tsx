@@ -46,7 +46,12 @@ export default function Searchbar() {
           setIsSearching(true);
           try {
             const res = await fetch(
-              `/api/products/search?name=${encodeURIComponent(key)}&limit=20`
+              `/api/products/search?name=${encodeURIComponent(key)}&limit=20`, {
+              next: {
+                tags: ['products', 'categories'], // category dependent
+                revalidate: 300,
+              },
+            }
             );
 
             const data = await res.json();
