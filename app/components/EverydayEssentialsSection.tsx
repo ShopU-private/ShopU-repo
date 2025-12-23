@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import ProductCard from './ProductCard';
+import ProductCardWrapper from './ProductCardWrapper';
 import { useWishlist } from '../hooks/useWishlist';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useAddToCart from '../hooks/handleAddToCart';
@@ -81,32 +81,13 @@ const EverydayEssentialsSection = () => {
             >
               {products.map(product => (
                 <div key={product.id} className="max-w-[210px] min-w-[210px]">
-                  <ProductCard
-                    product={{
-                      id: product.id,
-                      name: product.name,
-                      price: product.price,
-                      originalPrice: product.originalPrice,
-                      discount: product.discount || 20,
-                      stock: product.stock,
-                      packaging: product.packaging,
-                      rating: product.rating || 4.5,
-                      reviews: product.reviews || 100,
-                      imageUrl: product.imageUrl || '/product-placeholder.jpg',
-                      category: product.category || 'Product',
-                      subtitle: product.description,
-                    }}
-                    isFavorite={favorites.has(product.id)}
-                    onToggleFavorite={() =>
-                      toggleFavorite({
-                        id: product.id,
-                        name: product.name,
-                        image: product.imageUrl || '/product-placeholder.jpg',
-                        category: product.category || 'Product',
-                      })
-                    }
-                    onAddToCart={() => handleAddToCart(product.id)}
-                    isAdding={addingProductId === product.id}
+                  <ProductCardWrapper
+                    key={product.id}
+                    product={product}
+                    favorites={favorites}
+                    toggleFavorite={toggleFavorite}
+                    handleAddToCart={handleAddToCart}
+                    addingProductId={addingProductId}
                   />
                 </div>
               ))}
@@ -160,32 +141,13 @@ const EverydayEssentialsSection = () => {
           ) : (
             products.map(product => (
               <div key={product.id} className="w-[185px] flex-shrink-0">
-                <ProductCard
-                  product={{
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    originalPrice: product.originalPrice,
-                    discount: 20,
-                    stock: product.stock,
-                    packaging: product.packaging,
-                    rating: product.rating || 4.5,
-                    reviews: product.reviews || 100,
-                    imageUrl: product.imageUrl || '/product-placeholder.jpg',
-                    category: product.category || 'Product',
-                    subtitle: product.description,
-                  }}
-                  isFavorite={favorites.has(product.id)}
-                  onToggleFavorite={() =>
-                    toggleFavorite({
-                      id: product.id,
-                      name: product.name,
-                      image: product.imageUrl || '/product-placeholder.jpg',
-                      category: product.category || 'Product',
-                    })
-                  }
-                  onAddToCart={() => handleAddToCart(product.id)}
-                  isAdding={addingProductId === product.id}
+                <ProductCardWrapper
+                  key={product.id}
+                  product={product}
+                  favorites={favorites}
+                  toggleFavorite={toggleFavorite}
+                  handleAddToCart={handleAddToCart}
+                  addingProductId={addingProductId}
                 />
               </div>
             ))
