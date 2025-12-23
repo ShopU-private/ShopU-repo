@@ -17,7 +17,9 @@ export const metadata: Metadata = {
   title: 'ShopU',
   description: 'Your one-stop shop for all your needs',
   icons: {
-    icon: '/Shop U Logo-02.jpg',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
   },
 };
 

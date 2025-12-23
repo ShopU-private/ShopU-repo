@@ -98,10 +98,10 @@ const ShopUCarousel = () => {
 
           {/* Middle: WhatsApp Button */}
           <a
-            href="https://wa.me/917070472634?text=Hello%2C%20I%20want%20to%20place%20an%20order."
+            href="https://wa.me/+918235989891?text=Hello%2C%20I%20want%20to%20place%20an%20order."
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primaryColor flex items-center gap-2 rounded-md border border-white bg-white px-4 py-2 text-xl font-medium font-semibold shadow hover:shadow-lg md:px-8 md:py-3"
+            className="text-primaryColor flex items-center gap-2 rounded-md border border-white bg-white px-4 py-2 text-xl font-semibold shadow hover:shadow-lg md:px-8 md:py-3"
           >
             <FaWhatsapp className="text-2xl" />
             WhatsApp
