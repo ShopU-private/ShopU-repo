@@ -54,6 +54,8 @@ const Header = () => {
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastFetchRef = useRef<number>(0);
   const hasCalled = useRef(false);
+  const [postOffices, setPostOffices] = useState<any[]>([]);
+  const [showSelectAddresses, setShowSelectAddresses] = useState(false);
 
   const fetchCartCount = React.useCallback(async () => {
     const now = Date.now();
@@ -250,7 +252,6 @@ const Header = () => {
     setLocationError(null);
 
     try {
-      // Using India Post API for pincode lookup
       const response = await fetch(`https://api.postalpincode.in/pincode/${inputPincode}`);
 
       if (!response.ok) {
@@ -260,15 +261,8 @@ const Header = () => {
       const data = await response.json();
 
       if (data[0]?.Status === 'Success' && data[0]?.PostOffice?.length > 0) {
-        const postOffice = data[0].PostOffice[0];
-        const address = `${postOffice.Name}, ${postOffice.District}, ${postOffice.State}`;
-
-        setLocation({
-          address,
-          pincode: inputPincode,
-        });
-        setShowPincodeInput(false);
-        setPincode('');
+        setPostOffices(data[0].PostOffice);
+        setShowSelectAddresses(true);
       } else {
         setLocationError('Invalid pincode or location not found');
       }
@@ -370,7 +364,6 @@ const Header = () => {
                 ref={locationRef}
                 className="absolute top-full left-0 z-50 mt-2 w-80 rounded-xl border border-gray-200 bg-white p-4 shadow-xl"
               >
-                <h3 className="mb-3 font-semibold text-gray-800">Select Delivery Location</h3>
                 <div className="space-y-3">
                   {isLoadingLocation ? (
                     <div className="flex items-center justify-center py-6">
@@ -388,10 +381,11 @@ const Header = () => {
                       </button>
                     </div>
                   ) : location ? (
+                    // ✅ Show selected address
                     <div className="cursor-pointer rounded-lg border border-gray-100 p-3 transition-colors hover:bg-teal-50">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-2">
-                          <MapPin className="text-PrimaaryColor mt-0.5 h-4 w-4" />
+                          <MapPin className="text-primaryColor mt-0.5 h-4 w-4" />
                           <div>
                             <p className="font-medium text-gray-800">
                               {typeof location.address === 'string'
@@ -416,10 +410,12 @@ const Header = () => {
                     </div>
                   ) : null}
 
-                  {!location && (
+                  {/* ✅ Only show options if no location selected */}
+                  {!location && !showPincodeInput && (
                     <>
+                      <h3 className="mb-3 font-semibold text-gray-800">Select Delivery Location</h3>
                       <div
-                        className="cursor-pointer rounded-lg border border-gray-100 p-3 transition-colors hover:bg-teal-50"
+                        className="cursor-pointer rounded-lg border border-gray-100 p-3 hover:bg-teal-50"
                         onClick={getUserLocation}
                       >
                         <p className="font-medium text-gray-800">📍 Use current location</p>
@@ -427,8 +423,8 @@ const Header = () => {
                       </div>
 
                       <div
-                        className="cursor-pointer rounded-lg border border-gray-100 p-3 transition-colors hover:bg-teal-50"
-                        onClick={() => setShowPincodeInput(!showPincodeInput)}
+                        className="cursor-pointer rounded-lg border border-gray-100 p-3 hover:bg-teal-50"
+                        onClick={() => setShowPincodeInput(true)}
                       >
                         <p className="font-medium text-gray-800">📝 Enter Pincode</p>
                         <p className="text-sm text-gray-600">Type your area pincode</p>
@@ -436,28 +432,50 @@ const Header = () => {
                     </>
                   )}
 
+                  {/* Pincode form */}
                   {showPincodeInput && (
                     <div className="rounded-lg border border-teal-200 bg-teal-50 p-4">
                       <form onSubmit={handlePincodeSubmit} className="space-y-3">
-                        <div>
-                          <label className="mb-1 block text-sm font-medium text-gray-700">
-                            Enter Pincode
-                          </label>
-                          <input
-                            type="text"
-                            value={pincode}
-                            onChange={handlePincodeInputChange}
-                            placeholder="e.g., 500001"
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-                            maxLength={6}
-                            required
-                          />
-                        </div>
-                        <div className="flex gap-2">
+                        <label className="text-sm font-medium text-gray-700">Enter Pincode</label>
+                        <input
+                          value={pincode}
+                          maxLength={6}
+                          required
+                          onChange={handlePincodeInputChange}
+                          className="w-full rounded-lg border border-teal-500 px-3 py-2 text-sm outline-none"
+                          placeholder="e.g., 500001"
+                        />
+
+                        {showSelectAddresses && postOffices.length > 0 && (
+                          <select
+                            className="w-full rounded-lg border border-teal-500 px-3 py-2 text-sm outline-none"
+                            onChange={e => {
+                              const index = Number(e.target.value);
+                              const selected = postOffices[index];
+                              if (!selected) return;
+
+                              const addr = `${selected.Name}, ${selected.District}, ${selected.State} - ${pincode}`;
+                              setLocation({ address: addr, pincode });
+
+                              setShowPincodeInput(false);
+                              setShowSelectAddresses(false);
+                              setPincode('');
+                            }}
+                          >
+                            <option>Select post office</option>
+                            {postOffices.map((po, i) => (
+                              <option key={i} value={i}>
+                                {po.Name}, {po.District}, {po.State}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+
+                        <div className="mt-2 flex gap-2 text-sm">
                           <button
                             type="submit"
                             disabled={isLoadingPincode || pincode.length !== 6}
-                            className="bg-background1 hover:bg-background1 flex-1 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors disabled:bg-gray-300"
+                            className="bg-background1 flex-1 rounded-lg px-4 py-2 text-white"
                           >
                             {isLoadingPincode ? (
                               <span className="flex items-center justify-center gap-2">
@@ -468,14 +486,15 @@ const Header = () => {
                               'Find Location'
                             )}
                           </button>
+
                           <button
                             type="button"
                             onClick={() => {
                               setShowPincodeInput(false);
-                              setPincode('');
                               setLocationError(null);
+                              setPincode('');
                             }}
-                            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                            className="flex-1 rounded-lg border px-4 py-2 text-gray-700"
                           >
                             Cancel
                           </button>
@@ -676,7 +695,7 @@ const Header = () => {
             <div className="space-y-1 p-4">
               {/* User Section */}
               {isLoggedIn ? (
-                <div className="mb-4 rounded-lg bg-gray-50" ref={mobileAccountMenuRef}>
+                <div className="mb-2 rounded-lg bg-gray-50" ref={mobileAccountMenuRef}>
                   {/* My Account Header */}
                   <button
                     className="flex w-full items-center justify-between border-b border-gray-100 px-6 py-2 text-left"
@@ -770,65 +789,106 @@ const Header = () => {
               )}
 
               {/* Location */}
-              <div className="rounded-lg border border-gray-200 p-3">
-                <button
-                  className="flex w-full items-center gap-2 text-left"
-                  onClick={getUserLocation}
-                >
-                  <MapPin className="text-primaryColor h-4 w-4" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-gray-800">Delivery Location</p>
-                    <p className="truncate text-xs text-gray-600">
-                      {isLoadingLocation
-                        ? 'Getting location...'
-                        : location
-                          ? typeof location.address === 'string'
-                            ? location.address
-                            : `${location.address.fullName}, ${location.address.addressLine1}${location.address.addressLine2 ? ', ' + location.address.addressLine2 : ''}, ${location.address.city}, ${location.address.state}, ${location.address.postalCode}`
-                          : 'Select your location'}
-                    </p>
+              <div className="mb-2 rounded-lg border border-gray-200 p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex w-full items-center gap-2 text-left">
+                    <MapPin className="text-primaryColor h-4 w-4" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-gray-800">Delivery Location</p>
+                      <p className="truncate text-xs text-gray-600">
+                        {isLoadingLocation
+                          ? 'Getting location...'
+                          : location
+                            ? typeof location.address === 'string'
+                              ? location.address
+                              : `${location.address.fullName}, ${location.address.addressLine1}${location.address.addressLine2 ? ', ' + location.address.addressLine2 : ''}, ${location.address.city}, ${location.address.state}, ${location.address.postalCode}`
+                            : 'Select your location'}
+                      </p>
+                    </div>
                   </div>
-                </button>
 
-                {!location && (
+                  <button
+                    onClick={() => {
+                      setShowPincodeInput(true);
+                      setLocationError(null);
+                      setShowPincodeInput(!showPincodeInput);
+                    }}
+                    className="text-primaryColor text-sm hover:underline"
+                  >
+                    Change
+                  </button>
+                </div>
+
+                {showPincodeInput && (
                   <div className="mt-3 border-t pt-3">
-                    <button
-                      onClick={() => setShowPincodeInput(!showPincodeInput)}
-                      className="text-primaryColor w-full rounded-lg bg-teal-50 px-3 py-2 text-sm font-medium hover:bg-teal-100"
-                    >
-                      📝 Enter Pincode Instead
-                    </button>
-
                     {showPincodeInput && (
-                      <form onSubmit={handlePincodeSubmit} className="mt-3 space-y-2">
-                        <input
-                          type="text"
-                          value={pincode}
-                          onChange={handlePincodeInputChange}
-                          placeholder="Enter 6-digit pincode"
-                          className="focus:border-primaryColor focus:ring-primaryColor w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:outline-none"
-                          maxLength={6}
-                        />
-                        <div className="flex gap-2">
-                          <button
-                            type="submit"
-                            disabled={isLoadingPincode || pincode.length !== 6}
-                            className="flex-1 rounded-lg bg-teal-600 px-3 py-2 text-sm font-medium text-white disabled:bg-gray-300"
-                          >
-                            {isLoadingPincode ? 'Finding...' : 'Find'}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowPincodeInput(false);
-                              setPincode('');
-                            }}
-                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </form>
+                      <div className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-2">
+                        <form onSubmit={handlePincodeSubmit} className="space-y-3">
+                          <label className="text-sm font-medium text-gray-700">Enter Pincode</label>
+                          <input
+                            value={pincode}
+                            maxLength={6}
+                            required
+                            onChange={handlePincodeInputChange}
+                            className="mt-1 w-full rounded-lg border border-teal-500 px-3 py-2 text-sm outline-none"
+                            placeholder="e.g., 500001"
+                          />
+
+                          {showSelectAddresses && postOffices.length > 0 && (
+                            <select
+                              className="w-full rounded-lg border border-teal-500 px-3 py-2 text-sm outline-none"
+                              onChange={e => {
+                                const index = Number(e.target.value);
+                                const selected = postOffices[index];
+                                if (!selected) return;
+
+                                const addr = `${selected.Name}, ${selected.District}, ${selected.State} - ${pincode}`;
+                                setLocation({ address: addr, pincode });
+
+                                setShowPincodeInput(false);
+                                setShowSelectAddresses(false);
+                                setPincode('');
+                              }}
+                            >
+                              <option>Select post office</option>
+                              {postOffices.map((po, i) => (
+                                <option key={i} value={i}>
+                                  {po.Name}, {po.District}, {po.State}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+
+                          <div className="flex gap-2 text-sm">
+                            <button
+                              type="submit"
+                              disabled={isLoadingPincode || pincode.length !== 6}
+                              className="bg-background1 flex-1 rounded-lg px-4 py-2 text-white"
+                            >
+                              {isLoadingPincode ? (
+                                <span className="flex items-center justify-center gap-2">
+                                  <Loader className="h-4 w-4 animate-spin" />
+                                  Searching...
+                                </span>
+                              ) : (
+                                'Find Location'
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowPincodeInput(false);
+                                setLocationError(null);
+                                setPincode('');
+                              }}
+                              className="flex-1 rounded-lg border px-4 py-2 text-gray-700"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      </div>
                     )}
 
                     {locationError && <p className="mt-2 text-sm text-red-600">{locationError}</p>}

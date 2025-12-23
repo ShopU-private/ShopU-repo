@@ -284,10 +284,11 @@ const Sidebar = ({ onCategorySelect, onPriceFilter, isOpen = true, onClose }: Si
                           className="px-2 py-1"
                         >
                           <span
-                            className={`rounded-full border border-teal-400 px-3 py-1 text-lg ${selectedSubs.includes(sub.name)
+                            className={`rounded-full border border-teal-400 px-3 py-1 text-lg ${
+                              selectedSubs.includes(sub.name)
                                 ? 'bg-primaryColor border-none text-white'
                                 : 'text-gray-600'
-                              }`}
+                            }`}
                           >
                             {sub.name}
                           </span>

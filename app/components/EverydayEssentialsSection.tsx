@@ -1,17 +1,18 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import ProductCard from './ProductCard';
-import { useMedicines } from '../hooks/useProducts';
-import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import useAddToCart from '../hooks/handleAddToCart';
+import { useRouter } from 'next/navigation';
+import { useProducts } from '../hooks/useProduct';
 
 const EverydayEssentialsSection = () => {
-  const [addingProductId, setAddingProductId] = useState<number | string | null>(null);
   const { favorites, toggleFavorite } = useWishlist();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { addItem } = useCart();
+  const { handleAddToCart, addingProductId } = useAddToCart();
+  const router = useRouter();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -22,21 +23,12 @@ const EverydayEssentialsSection = () => {
     }
   };
 
-  const { medicines, loading, error } = useMedicines({
-    type: 'allopathy',
+  const { products, loading, error } = useProducts({
     limit: 10,
   });
 
-  const handleAddToCart = async (medicineId: string) => {
-    setAddingProductId(medicineId);
-    try {
-      await addItem(null, medicineId, 1);
-      window.dispatchEvent(new CustomEvent('cartUpdated'));
-    } catch (error) {
-      console.error('Add to cart failed:', error);
-    } finally {
-      setAddingProductId(null);
-    }
+  const handleCardClick = () => {
+    router.push('/product');
   };
 
   return (
@@ -48,7 +40,10 @@ const EverydayEssentialsSection = () => {
             Everyday <span className="text-secondaryColor">Essentials</span>
             <hr className="bg-background1 mt-1 h-1 w-48 rounded border-0" />
           </h2>
-          <button className="bg-background1 flex cursor-pointer rounded py-2 pr-2 pl-3 text-sm font-medium text-white">
+          <button
+            className="bg-background1 flex cursor-pointer rounded py-2 pr-2 pl-3 text-sm font-medium text-white"
+            onClick={handleCardClick}
+          >
             View All <ChevronRight size={20} />
           </button>
         </div>
@@ -60,6 +55,7 @@ const EverydayEssentialsSection = () => {
           >
             <ChevronLeft size={20} className="mr-1" />
           </button>
+
           {loading ? (
             <div className="no-scrollbar flex gap-4 overflow-x-auto px-1">
               {[...Array(5)].map((_, index) => (
@@ -72,49 +68,51 @@ const EverydayEssentialsSection = () => {
             </div>
           ) : error ? (
             <div className="text-secondaryColor py-8 text-center">
-              Failed to load Everyday Essential. Please try again.
+              Failed to load everyday essentials products. Please try again.
             </div>
-          ) : medicines.length === 0 ? (
-            <div className="py-8 text-center text-gray-500">No Everyday Essential available.</div>
+          ) : products.length === 0 ? (
+            <div className="py-8 text-center text-gray-500">
+              No everyday essentials products available.
+            </div>
           ) : (
             <div
               ref={scrollRef}
-              className="no-scrollbar flex gap-3 overflow-x-auto scroll-smooth py-4 md:gap-5"
+              className="no-scrollbar flex gap-5 overflow-x-auto scroll-smooth py-4"
             >
-              {medicines.map(medicine => (
-                <div key={medicine.id} className="max-w-[210px] min-w-[210px]">
+              {products.map(product => (
+                <div key={product.id} className="max-w-[210px] min-w-[210px]">
                   <ProductCard
                     product={{
-                      id: medicine.id,
-                      name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                      price: medicine.price,
-                      originalPrice: medicine.originalPrice || medicine.price * 1.2,
-                      discount: medicine.discount || 20,
-                      stock: medicine.stock || 30,
-                      rating: medicine.rating || 4.5,
-                      reviews: medicine.reviews || 100,
-                      imageUrl: medicine.imageUrl || '/Paracetamol.jpg',
-                      category: medicine.type || 'Medicine',
-                      subtitle: medicine.manufacturerName,
-                      packaging: medicine.packSizeLabel || 'Standard',
+                      id: product.id,
+                      name: product.name,
+                      price: product.price,
+                      originalPrice: product.originalPrice,
+                      discount: product.discount || 20,
+                      stock: product.stock,
+                      packaging: product.packaging,
+                      rating: product.rating || 4.5,
+                      reviews: product.reviews || 100,
+                      imageUrl: product.imageUrl || '/product-placeholder.jpg',
+                      category: product.category || 'Product',
+                      subtitle: product.description,
                     }}
-                    isFavorite={favorites.has(medicine.id)}
+                    isFavorite={favorites.has(product.id)}
                     onToggleFavorite={() =>
                       toggleFavorite({
-                        id: medicine.id,
-                        name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                        image: medicine.imageUrl || '/medicine-placeholder.jpg',
-                        category: medicine.type || 'Medicine',
+                        id: product.id,
+                        name: product.name,
+                        image: product.imageUrl || '/product-placeholder.jpg',
+                        category: product.category || 'Product',
                       })
                     }
-                    onAddToCart={() => handleAddToCart(medicine.id)}
-                    isAdding={addingProductId === medicine.id}
+                    onAddToCart={() => handleAddToCart(product.id)}
+                    isAdding={addingProductId === product.id}
                   />
                 </div>
               ))}
             </div>
           )}
-          {/* Right Scroll Button */}
+
           <button
             onClick={() => scroll('right')}
             className="bg-background1 absolute top-1/2 right-[-10px] z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
@@ -133,7 +131,10 @@ const EverydayEssentialsSection = () => {
             <hr className="bg-background1 mt-1 w-40 rounded border-2" />{' '}
           </h2>
 
-          <button className="bg-background text-md text-primaryColor cursor-pointer rounded px-3 py-1 font-semibold">
+          <button
+            className="bg-background text-md text-primaryColor cursor-pointer rounded px-3 py-1 font-semibold"
+            onClick={handleCardClick}
+          >
             View All <span className="text-lg">{'>'}</span>
           </button>
         </div>
@@ -150,39 +151,41 @@ const EverydayEssentialsSection = () => {
             ))
           ) : error ? (
             <div className="text-secondaryColor py-8 text-center">
-              Failed to load medicines. Please try again.
+              Failed to load everyday essentials products. Please try again.
             </div>
-          ) : medicines.length === 0 ? (
-            <div className="py-8 text-center text-gray-500">No medicines available.</div>
+          ) : products.length === 0 ? (
+            <div className="py-8 text-center text-gray-500">
+              No everyday essentials products available.
+            </div>
           ) : (
-            medicines.map(medicine => (
-              <div key={medicine.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
+            products.map(product => (
+              <div key={product.id} className="w-[185px] flex-shrink-0">
                 <ProductCard
                   product={{
-                    id: medicine.id,
-                    name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                    price: medicine.price,
-                    originalPrice: medicine.originalPrice || medicine.price * 1.2,
-                    discount: medicine.discount || 20,
-                    stock: medicine.stock || 30,
-                    rating: medicine.rating || 4.5,
-                    reviews: medicine.reviews || 100,
-                    imageUrl: medicine.imageUrl || '/Paracetamol.jpg',
-                    category: medicine.type || 'Medicine',
-                    subtitle: medicine.manufacturerName,
-                    packaging: medicine.packSizeLabel || 'Standard',
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    originalPrice: product.originalPrice,
+                    discount: 20,
+                    stock: product.stock,
+                    packaging: product.packaging,
+                    rating: product.rating || 4.5,
+                    reviews: product.reviews || 100,
+                    imageUrl: product.imageUrl || '/product-placeholder.jpg',
+                    category: product.category || 'Product',
+                    subtitle: product.description,
                   }}
-                  isFavorite={favorites.has(medicine.id)}
+                  isFavorite={favorites.has(product.id)}
                   onToggleFavorite={() =>
                     toggleFavorite({
-                      id: medicine.id,
-                      name: `${medicine.name} ${medicine.packSizeLabel ? `(${medicine.packSizeLabel})` : ''}`,
-                      image: medicine.imageUrl || '/medicine-placeholder.jpg',
-                      category: medicine.type || 'Medicine',
+                      id: product.id,
+                      name: product.name,
+                      image: product.imageUrl || '/product-placeholder.jpg',
+                      category: product.category || 'Product',
                     })
                   }
-                  onAddToCart={() => handleAddToCart(medicine.id)}
-                  isAdding={addingProductId === medicine.id}
+                  onAddToCart={() => handleAddToCart(product.id)}
+                  isAdding={addingProductId === product.id}
                 />
               </div>
             ))

@@ -11,7 +11,7 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(categories,{
+    return NextResponse.json(categories, {
       headers: {
         'Cache-Tag': 'categories',
       },

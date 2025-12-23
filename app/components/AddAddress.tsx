@@ -185,9 +185,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
   // Reverse geocode to get address from coordinates
   const reverseGeocode = async (latitude: number, longitude: number) => {
     try {
-      const res = await fetch(
-        `/api/maps/reverse?lat=${latitude}&lng=${longitude}`
-      );
+      const res = await fetch(`/api/maps/reverse?lat=${latitude}&lng=${longitude}`);
       const data = await res.json();
 
       if (data?.result) {
@@ -218,8 +216,6 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     }
   };
 
-
-
   // Get current location from device with high accuracy
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -237,39 +233,39 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     let bestAccuracy = Infinity;
     let stableCount = 0;
 
-const processLocation = async (position: GeolocationPosition) => {
-  const { latitude, longitude, accuracy } = position.coords;
+    const processLocation = async (position: GeolocationPosition) => {
+      const { latitude, longitude, accuracy } = position.coords;
 
-  console.log('GPS update:', accuracy + 'm');
+      console.log('GPS update:', accuracy + 'm');
 
-  // Update only if accuracy improves
-  if (accuracy < bestAccuracy) {
-    bestAccuracy = accuracy;
-    stableCount++;
+      // Update only if accuracy improves
+      if (accuracy < bestAccuracy) {
+        bestAccuracy = accuracy;
+        stableCount++;
 
-    // Map + state update
-    mapRef.current?.updateLocation(latitude, longitude, '📍 Your Current Location');
+        // Map + state update
+        mapRef.current?.updateLocation(latitude, longitude, '📍 Your Current Location');
 
-    setFormData(prev => ({
-      ...prev,
-      latitude,
-      longitude,
-    }));
+        setFormData(prev => ({
+          ...prev,
+          latitude,
+          longitude,
+        }));
 
-    setSelectedCoords({ lat: latitude, lng: longitude });
-  }
+        setSelectedCoords({ lat: latitude, lng: longitude });
+      }
 
-  // Check if accuracy is good enough or stable enough
-  if (accuracy <= 20 || stableCount >= 3) {
-    console.log('✅ Exact location locked:', accuracy + 'm');
+      // Check if accuracy is good enough or stable enough
+      if (accuracy <= 20 || stableCount >= 3) {
+        console.log('✅ Exact location locked:', accuracy + 'm');
 
-    navigator.geolocation.clearWatch(watchId);
-    setGettingLocation(false);
+        navigator.geolocation.clearWatch(watchId);
+        setGettingLocation(false);
 
-    // Reverse geocode to get address
-    reverseGeocode(latitude, longitude);
-  }
-};
+        // Reverse geocode to get address
+        reverseGeocode(latitude, longitude);
+      }
+    };
 
     const handleError = (error: GeolocationPositionError) => {
       console.error('Geolocation error:', error);
@@ -337,8 +333,6 @@ const processLocation = async (position: GeolocationPosition) => {
       options
     );
   };
-
-
 
   // Submit Form - Include coordinates
   const handleSubmit = async (e: React.FormEvent) => {

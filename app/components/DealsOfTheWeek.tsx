@@ -42,7 +42,7 @@ const DealOfTheWeek = () => {
     const fetchDeals = async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/products/featured?discount=true&limit=4', {
+        const res = await fetch('/api/products/featured?deals&limit=4', {
           next: {
             tags: ['products', 'categories'], // category dependent
             revalidate: 300,
@@ -309,18 +309,20 @@ const DealOfTheWeek = () => {
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className={`flex h-10 w-10 items-center justify-center rounded-full ${currentIndex === 0 ? 'bg-gray-200 text-gray-400' : 'bg-background1 text-white'
-                }`}
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                currentIndex === 0 ? 'bg-gray-200 text-gray-400' : 'bg-background1 text-white'
+              }`}
             >
               <ChevronLeft />
             </button>
             <button
               onClick={handleNext}
               disabled={currentIndex + itemsPerPage >= products.length}
-              className={`flex h-10 w-10 items-center justify-center rounded-full ${currentIndex + itemsPerPage >= products.length
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                currentIndex + itemsPerPage >= products.length
                   ? 'bg-gray-200 text-gray-400'
                   : 'bg-background1 text-white'
-                }`}
+              }`}
             >
               <ChevronRight />
             </button>
@@ -353,18 +355,20 @@ const DealOfTheWeek = () => {
           <button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            className={`flex h-9 w-9 items-center justify-center rounded-full ${currentIndex === 0 ? 'bg-gray-200 text-gray-400' : 'bg-background1 text-white'
-              }`}
+            className={`flex h-9 w-9 items-center justify-center rounded-full ${
+              currentIndex === 0 ? 'bg-gray-200 text-gray-400' : 'bg-background1 text-white'
+            }`}
           >
             <ChevronLeft />
           </button>
           <button
             onClick={handleNext}
             disabled={currentIndex + itemsPerPage >= products.length}
-            className={`flex h-9 w-9 items-center justify-center rounded-full ${currentIndex + itemsPerPage >= products.length
+            className={`flex h-9 w-9 items-center justify-center rounded-full ${
+              currentIndex + itemsPerPage >= products.length
                 ? 'bg-gray-200 text-gray-400'
                 : 'bg-background1 text-white'
-              }`}
+            }`}
           >
             <ChevronRight />
           </button>

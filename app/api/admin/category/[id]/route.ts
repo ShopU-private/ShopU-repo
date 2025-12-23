@@ -49,7 +49,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       data: { name },
     });
 
-      revalidateTag('categories', 'default');
+    revalidateTag('categories', 'default');
 
     return NextResponse.json(updated);
   } catch (err) {
