@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { X, Phone, Lock } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import Logo from '../../public/Shop U Logo-03.jpg';
 
@@ -19,8 +18,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
-
-  const router = useRouter();
 
   useEffect(() => {
     if (resendTimer > 0) {
@@ -83,7 +80,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       if (data.success) {
         toast.success('Login successful!');
         onClose();
-        router.push('/');
+        window.location.href = '/';
       } else {
         toast.error(data.message || 'Invalid OTP');
       }
@@ -208,11 +205,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500">
             By continuing, you agree to our{' '}
-            <a href="#" className="text-primaryColor font-medium hover:text-teal-700">
-              Terms of Service
+            <a href="/pages/terms" className="text-primaryColor font-medium hover:text-teal-700">
+              Terms & Conditions
             </a>{' '}
             and{' '}
-            <a href="#" className="text-primaryColor font-medium hover:text-teal-700">
+            <a href="/pages/privacy" className="text-primaryColor font-medium hover:text-teal-700">
               Privacy Policy
             </a>
           </p>

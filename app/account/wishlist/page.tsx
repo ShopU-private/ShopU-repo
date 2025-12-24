@@ -35,6 +35,7 @@ export default function WishlistPage() {
         if (!res.ok) {
           if (res.status === 401) {
             router.push('/');
+            toast.error('Please login first.');
           } else {
             const errorData = await res.json();
             toast.error(errorData.message || 'Failed to fetch wishlist');

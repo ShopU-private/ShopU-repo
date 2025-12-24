@@ -36,6 +36,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              loading="lazy"
               className="mt-2 px-10 py-6 transition-transform duration-300 group-hover:scale-105"
             />
           </div>
@@ -105,6 +106,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              loading="lazy"
               className="mt-2 px-8 py-4 transition-transform duration-300 group-hover:scale-105"
             />
           </div>

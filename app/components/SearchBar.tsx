@@ -1,6 +1,7 @@
 import { searchEventEmitter } from './SearchCard';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { SearchItem } from '../types/SearchItem';
+import { usePathname } from 'next/navigation';
 
 type SearchResult = Array<SearchItem>;
 
@@ -10,6 +11,7 @@ export default function Searchbar() {
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [searchCache, setSearchCache] = useState<{ [key: string]: SearchResult }>({});
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const pathname = usePathname();
 
   const placeholders = [
     'Search Medicines',
@@ -85,6 +87,11 @@ export default function Searchbar() {
     setSearchQuery('');
     searchEventEmitter.emit([]);
   };
+
+  useEffect(() => {
+    setSearchQuery('');
+    searchEventEmitter.emit([]);
+  }, [pathname]);
 
   return (
     <>

@@ -14,7 +14,10 @@ interface VectorMapProps {
 }
 
 const VectorMap = forwardRef<MapRef, VectorMapProps>(
-  ({ onLocationChange, defaultCenter = { lat: 12.9716, lng: 77.5946 }, defaultZoom = 12 }, ref) => {
+  (
+    { onLocationChange, defaultCenter = { lat: 25.6112236, lng: 85.1306922 }, defaultZoom = 12 },
+    ref
+  ) => {
     const mapContainer = useRef<HTMLDivElement | null>(null);
     const mapInstance = useRef<google.maps.Map | null>(null);
     const markerRef = useRef<google.maps.Marker | null>(null);

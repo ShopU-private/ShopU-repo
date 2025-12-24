@@ -313,7 +313,7 @@ const Header = () => {
       <div className="border-b border-gray-100 bg-white px-4 xl:fixed xl:top-0 xl:left-0 xl:z-50 xl:w-full">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-8">
           {/* Logo */}
-          <div className="hidden cursor-pointer px-4 sm:block">
+          <div className="hidden cursor-pointer px-4 md:block">
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
@@ -324,7 +324,14 @@ const Header = () => {
               onClick={handleClickHome}
             />
           </div>
-          <div className="px-4 sm:hidden">
+          <div className="flex items-center gap-2 md:hidden">
+            {/* Mobile Menu Button */}
+            <button
+              className="rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 md:hidden"
+              onClick={toggleMenu}
+            >
+              {isMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+            </button>
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
@@ -381,7 +388,7 @@ const Header = () => {
                       </button>
                     </div>
                   ) : location ? (
-                    // ✅ Show selected address
+                    // Show selected address
                     <div className="cursor-pointer rounded-lg border border-gray-100 p-3 transition-colors hover:bg-teal-50">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-2">
@@ -410,7 +417,7 @@ const Header = () => {
                     </div>
                   ) : null}
 
-                  {/* ✅ Only show options if no location selected */}
+                  {/* Only show options if no location selected */}
                   {!location && !showPincodeInput && (
                     <>
                       <h3 className="mb-3 font-semibold text-gray-800">Select Delivery Location</h3>
@@ -512,129 +519,118 @@ const Header = () => {
             <Searchbar />
           </div>
 
-          {/* Right Actions */}
-          <div className="flex items-center gap-5">
-            {/* User Account */}
-            {isLoggedIn ? (
-              <div className="relative" ref={userMenuRef}>
-                <button
-                  onClick={toggleUserMenu}
-                  className="text-primaryColor hover:text-primaryColor hidden items-center gap-2 rounded-lg border-2 border-solid px-1 py-2 transition-colors hover:bg-gray-50 md:flex"
-                >
-                  <User className="h-5 w-5" />
-                  <span className="text-md font-medium">Account</span>
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
-                  />
-                </button>
-
-                {isUserMenuOpen && (
-                  <div className="absolute top-full right-0 z-50 mt-2 w-48 rounded-xl border border-gray-200 bg-white py-2 shadow-xl">
-                    <div className="border-b border-gray-100 px-6 py-2">
-                      <p className="font-medium text-gray-700">My Account</p>
-                      <p className="text-sm text-gray-600">{phoneNumber}</p>
-                    </div>
-                    <div className="space-y-1 py-2">
-                      {isAdmin && (
-                        <Link
-                          href="/admin"
-                          className="flex items-center gap-3 px-6 py-1 text-[0.85rem] font-medium text-red-600 hover:bg-gray-50"
-                        >
-                          <Shield className="h-4 w-4" />
-                          Admin Panel
-                        </Link>
-                      )}
-                      <Link
-                        href="/account/orders"
-                        className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
-                      >
-                        My Orders
-                      </Link>
-                      <Link
-                        href="/account/myAddresses"
-                        className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
-                      >
-                        Saved Addresses
-                      </Link>
-                      <Link
-                        href="/account/wishlist"
-                        className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
-                      >
-                        Wishlist
-                      </Link>
-                      <Link
-                        href="/account/faq"
-                        className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
-                      >
-                        FAQ
-                      </Link>
-                      <a
-                        href="#"
-                        className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
-                        onClick={async e => {
-                          e.preventDefault();
-
-                          try {
-                            const res = await fetch('/api/account/logout', {
-                              method: 'POST',
-                            });
-
-                            const data = await res.json();
-
-                            if (res.ok && data.success) {
-                              console.log('Logged out successfully');
-                              setIsLoggedIn(false);
-                              setIsLoginModalOpen(false);
-                              window.location.href = '/';
-                            } else {
-                              console.error('Logout failed:', data.message);
-                            }
-                          } catch (err) {
-                            console.error('Error during logout:', err);
-                          }
-                        }}
-                      >
-                        Log Out
-                      </a>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
+          {/* User Account */}
+          {isLoggedIn ? (
+            <div className="relative" ref={userMenuRef}>
               <button
-                onClick={() => setIsLoginModalOpen(true)}
-                className="bg-background1 hover:bg-background1 hidden items-center gap-2 rounded-lg px-4 py-2 text-white transition-colors md:flex"
+                onClick={toggleUserMenu}
+                className="text-primaryColor hover:text-primaryColor hidden items-center gap-2 rounded-lg border-2 border-solid px-1 py-2 transition-colors hover:bg-gray-50 md:flex"
               >
                 <User className="h-5 w-5" />
-                <span className="text-sm font-medium">Login</span>
+                <span className="text-md font-medium">Account</span>
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                />
               </button>
-            )}
 
-            {/* Shopping Cart */}
-            <button
-              onClick={openCartModal}
-              className="hover:text-primaryColor relative mr-4 rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50"
-            >
-              <ShoppingCart className="text-primaryColor h-6 w-6" />
-              {isLoadingCart ? (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
-                  <Loader className="h-3 w-3 animate-spin text-teal-600" />
-                </span>
-              ) : cartCount > 0 ? (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
-                  {cartCount > 99 ? '99+' : cartCount}
-                </span>
-              ) : null}
-            </button>
+              {isUserMenuOpen && (
+                <div className="absolute top-full right-0 z-50 mt-2 w-48 rounded-xl border border-gray-200 bg-white py-2 shadow-xl">
+                  <div className="border-b border-gray-100 px-6 py-2">
+                    <p className="font-medium text-gray-700">My Account</p>
+                    <p className="text-sm text-gray-600">{phoneNumber}</p>
+                  </div>
+                  <div className="space-y-1 py-2">
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-3 px-6 py-1 text-[0.85rem] font-medium text-red-600 hover:bg-gray-50"
+                      >
+                        <Shield className="h-4 w-4" />
+                        Admin Panel
+                      </Link>
+                    )}
+                    <Link
+                      href="/account/orders"
+                      className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
+                    >
+                      My Orders
+                    </Link>
+                    <Link
+                      href="/account/myAddresses"
+                      className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
+                    >
+                      Saved Addresses
+                    </Link>
+                    <Link
+                      href="/account/wishlist"
+                      className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
+                    >
+                      Wishlist
+                    </Link>
+                    <Link
+                      href="/account/faq"
+                      className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
+                    >
+                      FAQ
+                    </Link>
+                    <a
+                      href="#"
+                      className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
+                      onClick={async e => {
+                        e.preventDefault();
 
-            {/* Mobile Menu Button */}
+                        try {
+                          const res = await fetch('/api/account/logout', {
+                            method: 'POST',
+                          });
+
+                          const data = await res.json();
+
+                          if (res.ok && data.success) {
+                            console.log('Logged out successfully');
+                            setIsLoggedIn(false);
+                            setIsLoginModalOpen(false);
+                            window.location.href = '/';
+                          } else {
+                            console.error('Logout failed:', data.message);
+                          }
+                        } catch (err) {
+                          console.error('Error during logout:', err);
+                        }
+                      }}
+                    >
+                      Log Out
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
             <button
-              className="rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 md:hidden"
-              onClick={toggleMenu}
+              onClick={() => setIsLoginModalOpen(true)}
+              className="bg-background1 hover:bg-background1 hidden items-center gap-2 rounded-lg px-4 py-2 text-white transition-colors md:flex"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              <User className="h-5 w-5" />
+              <span className="text-sm font-medium">Login</span>
             </button>
-          </div>
+          )}
+
+          {/* Shopping Cart */}
+          <button
+            onClick={openCartModal}
+            className="hover:text-primaryColor relative mr-2 rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 md:mr-4"
+          >
+            <ShoppingCart className="text-primaryColor h-7 w-7" />
+            {isLoadingCart ? (
+              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
+                <Loader className="h-3 w-3 animate-spin text-teal-600" />
+              </span>
+            ) : cartCount > 0 ? (
+              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                {cartCount > 99 ? '99+' : cartCount}
+              </span>
+            ) : null}
+          </button>
         </div>
 
         {/* Mobile Search */}

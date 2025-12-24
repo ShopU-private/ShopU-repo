@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SearchItem } from '../types/SearchItem';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 
 interface CardProps {
   item: SearchItem;
@@ -32,11 +33,11 @@ const SearchCard: React.FC<CardProps> = ({ item }) => {
         window.dispatchEvent(new CustomEvent('cartUpdated'));
         setTimeout(() => setIsAdded(false), 2000);
       } else {
-        alert(data.error || 'Failed to add item to cart');
+        toast(data.error || 'Failed to add item to cart');
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Failed to add item');
+      toast('Failed to add item');
     } finally {
       setIsAddingToCart(false);
     }
@@ -55,6 +56,7 @@ const SearchCard: React.FC<CardProps> = ({ item }) => {
           width={200}
           height={200}
           className="h-12 w-12 object-contain"
+          loading="lazy"
         />
         <div>
           <h3 className="sm:text-md text-sm font-semibold text-gray-800">

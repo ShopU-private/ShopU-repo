@@ -44,6 +44,7 @@ export default function OrdersPage() {
           const err = await res.json();
           if (res.status === 401) {
             router.push('/');
+            toast.error('Please login first.');
           } else {
             toast.error(err.message || 'Something went wrong');
           }

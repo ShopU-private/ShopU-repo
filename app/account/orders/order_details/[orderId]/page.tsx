@@ -1,10 +1,11 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Navroute from '@/app/components/Navroute';
 import { CheckCircle, PackageCheck, Truck, MapPin, Loader, Phone, User } from 'lucide-react';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 
 interface Product {
   id: string;
@@ -52,7 +53,7 @@ const statusMap: Record<string, string> = {
 export default function OrderDetails() {
   const params = useParams();
   const orderId = params?.orderId as string;
-
+  const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -63,6 +64,11 @@ export default function OrderDetails() {
         const res = await fetch(`/api/orders/${orderId}`, {
           credentials: 'include',
         });
+        if (res.status === 401) {
+          router.push('/');
+          toast.error('Please login first.');
+          return;
+        }
         const data = await res.json();
         if (data?.order) {
           setOrder(data.order);

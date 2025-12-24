@@ -106,22 +106,22 @@ export default function Footer() {
             <h3 className="mb-3 text-xl font-semibold">Account</h3>
             <ul className="space-y-4 py-1 font-medium">
               <li>
-                <Link href="/pages/terms?otracker=footer_navlinks">Terms & conditions</Link>
+                <Link href="/pages/terms?tracker=footer_navlinks">Terms & conditions</Link>
               </li>
               <li>
-                <Link href="/pages/shipping?otracker=footer_navlinks">Shipping & Delivery</Link>
+                <Link href="/pages/shipping?tracker=footer_navlinks">Shipping & Delivery</Link>
               </li>
 
               <li>
-                <Link href="/pages/privacy?otracker=footer_navlinks">Privacy Policy</Link>
+                <Link href="/pages/privacy?tracker=footer_navlinks">Privacy Policy</Link>
               </li>
               <li>
-                <Link href="/pages/cancellation?otracker=footer_navlinks">
+                <Link href="/pages/cancellation?tracker=footer_navlinks">
                   Cancellation & Returns
                 </Link>
               </li>
               <li>
-                <Link href="/account/orders?otracker=footer_navlinks">Track Order</Link>
+                <Link href="/account/orders?tracker=footer_navlinks">Track Order</Link>
               </li>
             </ul>
           </div>
@@ -237,22 +237,22 @@ export default function Footer() {
               <h3 className="mb-3 text-xl font-semibold">Account</h3>
               <ul className="space-y-4 py-1 font-medium">
                 <li>
-                  <Link href="/pages/terms?otracker=footer_navlinks">Terms & conditions</Link>
+                  <Link href="/pages/terms?tracker=footer_navlinks">Terms & conditions</Link>
                 </li>
                 <li>
-                  <Link href="/pages/shipping?otracker=footer_navlinks">Shipping & Delivery</Link>
+                  <Link href="/pages/shipping?tracker=footer_navlinks">Shipping & Delivery</Link>
                 </li>
 
                 <li>
-                  <Link href="/pages/privacy?otracker=footer_navlinks">Privacy Policy</Link>
+                  <Link href="/pages/privacy?tracker=footer_navlinks">Privacy Policy</Link>
                 </li>
                 <li>
-                  <Link href="/pages/cancellation?otracker=footer_navlinks">
+                  <Link href="/pages/cancellation?tracker=footer_navlinks">
                     Cancellation & Returns
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/orders?otracker=footer_navlinks">Track Order</Link>
+                  <Link href="/account/orders?tracker=footer_navlinks">Track Order</Link>
                 </li>
               </ul>
             </div>

@@ -6,6 +6,7 @@ import { UserAddress } from '@prisma/client';
 import Navroute from '@/app/components/Navroute';
 import { Edit, Home, Loader, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 // Define the Address type to match what AddAddress component expects
 type Address = {
@@ -25,7 +26,7 @@ export default function AddressPage() {
   const [addresses, setAddresses] = useState<UserAddress[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-
+  const router = useRouter();
   const fetchAddresses = async () => {
     try {
       setLoading(true);
@@ -33,6 +34,13 @@ export default function AddressPage() {
         method: 'GET',
         credentials: 'include',
       });
+
+      if (res.status === 401) {
+        router.push('/');
+        toast.error('Please login first.');
+        return;
+      }
+
       if (res.ok) {
         const data = await res.json();
         setAddresses(data.address || []);

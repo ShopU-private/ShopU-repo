@@ -8,11 +8,13 @@ interface Product {
   id: number;
   name: string;
   price: string;
+  imageUrl: string;
   features: string[];
   isOnSale: boolean;
 }
 
 interface ProductFromApi {
+  imageUrl: string;
   id: string | number;
   name: string;
   price: number;
@@ -55,6 +57,7 @@ const DealOfTheWeek = () => {
               id: String(product.id),
               name: product.name ?? 'Unnamed Product',
               price: `₹${product.price}`,
+              imageUrl: product.imageUrl ?? '/Sirum.png',
               features: [
                 product.description?.substring(0, 40) || 'Quality product',
                 product.subCategory?.name || 'Essential item',
@@ -73,6 +76,7 @@ const DealOfTheWeek = () => {
           {
             id: 1,
             name: 'Moov Pain Relief Ointment',
+            imageUrl: '/Sirum.png',
             price: '₹165',
             features: ['Relieves pain', 'Soothes muscles', 'Quick relief'],
             isOnSale: true,
@@ -80,6 +84,7 @@ const DealOfTheWeek = () => {
           {
             id: 2,
             name: 'Vitamin C 500mg Sugarless',
+            imageUrl: '/Sirum.png',
             price: '₹199',
             features: ['Boost immunity', 'No sugar', 'Tasty chewables'],
             isOnSale: false,
@@ -175,7 +180,7 @@ const DealOfTheWeek = () => {
               <div className="relative">
                 <div className="flex h-70 w-65 items-center justify-center bg-white">
                   <Image
-                    src="/Sirum.png"
+                    src={product.imageUrl}
                     alt="Sirum logo"
                     width={400}
                     height={300}
@@ -231,7 +236,7 @@ const DealOfTheWeek = () => {
               <div className="relative">
                 <div className="flex h-full w-auto items-center justify-center bg-white">
                   <Image
-                    src="/Sirum.png"
+                    src={product.imageUrl}
                     alt="Sirum logo"
                     width={180}
                     height={150}
