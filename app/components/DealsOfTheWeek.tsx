@@ -44,12 +44,7 @@ const DealOfTheWeek = () => {
     const fetchDeals = async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/products/featured?deals&limit=4', {
-          next: {
-            tags: ['products', 'categories'], // category dependent
-            revalidate: 300,
-          },
-        });
+        const res = await fetch('/api/products/featured?discount=true&limit=4');
         if (res.ok) {
           const data = await res.json();
           const dealsProducts: Product[] =

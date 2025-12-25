@@ -3,7 +3,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdmin } from '@/lib/auth';
 import { prisma } from '@/lib/client';
-import { revalidateTag } from 'next/cache';
 
 export async function DELETE(
   request: NextRequest,
@@ -22,7 +21,6 @@ export async function DELETE(
 
     await prisma.category.delete({ where: { id } });
 
-    revalidateTag('categories', 'default');
 
     return NextResponse.json({ success: true, message: 'Category deleted' }, { status: 200 });
   } catch (error) {
@@ -48,8 +46,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       where: { id },
       data: { name },
     });
-
-    revalidateTag('categories', 'default');
 
     return NextResponse.json(updated);
   } catch (err) {

@@ -47,13 +47,7 @@ export default function ProductDetailPage() {
         });
         if (data.product?.subCategory?.id) {
           const simRes = await fetch(
-            `/api/products?subCategoryId=${data.product.subCategory.id}&limit=10`,
-            {
-              next: {
-                tags: ['products', 'categories'], // category dependent
-                revalidate: 300,
-              },
-            }
+            `/api/products?subCategoryId=${data.product.subCategory.id}&limit=10`
           );
           const simData = await simRes.json();
           if (simRes.ok) {
