@@ -33,7 +33,7 @@ const SearchCard: React.FC<CardProps> = ({ item }) => {
         window.dispatchEvent(new CustomEvent('cartUpdated'));
         setTimeout(() => setIsAdded(false), 2000);
       } else {
-        toast(data.error || 'Failed to add item to cart');
+        toast.error(data.error || 'Failed to add item to cart');
       }
     } catch (error) {
       console.error('Error adding to cart:', error);

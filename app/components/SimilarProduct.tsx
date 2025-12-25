@@ -110,7 +110,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
               className="no-scrollbar flex gap-2 overflow-x-auto scroll-smooth py-2"
             >
               {products.map(product => (
-                <div key={product.id} className="max-w-[185px] min-w-[185px] flex-shrink-0">
+                <div key={product.id} className="max-w-[160px] min-w-[160px] flex-shrink-0">
                   <ProductCard
                     product={{
                       id: product.id,

@@ -97,12 +97,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Mobile view */}
-      <div className="group flex h-80 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:hidden">
+      <div className="group flex h-72 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:hidden">
         {/* Product Image */}
         <div className="relative h-40 w-full">
           <div onClick={handleclick}>
             <Image
-              src={product.imageUrl || '/Paracetamol.jpg'} // dynamic image fallback
+              src={product.imageUrl || '/Paracetamol.jpg'}
               alt={product.name}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -122,7 +122,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Product Info */}
-        <div className="flex flex-grow flex-col px-3 py-1">
+        <div className="flex flex-grow flex-col px-2">
           <p className="text-xs font-medium text-red-500">
             End In <span className="font-semibold text-[#317C80]">05:02:12</span>
           </p>

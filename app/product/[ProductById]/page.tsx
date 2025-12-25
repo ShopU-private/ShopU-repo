@@ -87,7 +87,7 @@ export default function ProductDetailPage() {
   return (
     <>
       <Navroute />
-      <div className="min-h-xl px-4 py-8">
+      <div className="min-h-xl px-4 py-4 md:py-8">
         {loading ? (
           <div className="flex min-h-[70vh] items-center justify-center">
             <div className="text-center">

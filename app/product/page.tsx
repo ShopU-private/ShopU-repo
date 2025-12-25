@@ -197,7 +197,7 @@ function ProductPageContent() {
                     <div className="flex gap-1">
                       <button
                         onClick={() => setIsFilterOpen(true)} // Open sidebar
-                        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2"
+                        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2"
                       >
                         <SlidersVertical size={20} className="text-primaryColor" />
                         Filter
@@ -209,8 +209,8 @@ function ProductPageContent() {
                         onClose={() => setIsFilterOpen(false)}
                       />
 
-                      <button className="flex items-center gap-1 rounded-full border border-gray-300 bg-white px-3 py-2">
-                        Sort By <ChevronDown size={24} className="text-primaryColor" />
+                      <button className="flex items-center gap-1 rounded-full border border-gray-300 bg-white p-2">
+                        Sort By <ChevronDown size={22} className="text-primaryColor" />
                       </button>
                     </div>
                     <div className="text-xs">
@@ -220,7 +220,7 @@ function ProductPageContent() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 sm:hidden">
+                <div className="grid grid-cols-2 gap-2 sm:hidden">
                   {paginatedProducts.map(product => (
                     <div key={product.id} className="w-full">
                       <ProductCard

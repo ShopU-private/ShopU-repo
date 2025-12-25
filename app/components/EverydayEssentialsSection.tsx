@@ -124,7 +124,7 @@ const EverydayEssentialsSection = () => {
         <div className="no-scrollbar flex gap-2 overflow-x-auto scroll-smooth py-1">
           {loading ? (
             [...Array(2)].map((_, index) => (
-              <div key={index} className="min-w-[190px] animate-pulse">
+              <div key={index} className="min-w-[170px] animate-pulse">
                 <div className="mb-2 h-52 rounded-lg bg-gray-200"></div>
                 <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
                 <div className="h-4 w-1/2 rounded bg-gray-200"></div>
@@ -140,7 +140,7 @@ const EverydayEssentialsSection = () => {
             </div>
           ) : (
             products.map(product => (
-              <div key={product.id} className="w-[185px] flex-shrink-0">
+              <div key={product.id} className="max-w-[160px] min-w-[160px] flex-shrink-0">
                 <ProductCardWrapper
                   key={product.id}
                   product={product}

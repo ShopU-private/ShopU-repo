@@ -149,7 +149,7 @@ const ShopUCarousel = () => {
           </div>
         </div>
 
-        <div className="bg-background1 flex w-full flex-col items-center justify-between px-2 py-4 text-white">
+        <div className="bg-background1 flex w-full flex-col items-center justify-between px-2 py-3 text-white">
           {/* Left: Logo & Text */}
           <div className="flex w-full items-center gap-2 sm:w-auto sm:flex-row">
             {/* Text */}
@@ -161,7 +161,7 @@ const ShopUCarousel = () => {
               </p>
 
               <a
-                href="https://wa.me/917070472634?text=Hello%2C%20I%20want%20to%20place%20an%20order."
+                href="https://wa.me/+918235989891?text=Hello%2C%20I%20want%20to%20place%20an%20order."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primaryColor text-md flex w-34 items-center gap-1 rounded-full border border-white bg-white px-4 py-2 font-medium font-semibold shadow hover:shadow-lg"

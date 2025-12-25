@@ -343,7 +343,7 @@ const DealOfTheWeek = () => {
             Deal of <span className="text-secondaryColor">The Week</span>
             <hr className="mt-1 w-36 border-2" />
           </h2>
-          <div className="flex justify-center gap-2">
+          <div className="flex justify-center gap-1">
             {['days', 'hours', 'minutes', 'seconds'].map(unit => (
               <div
                 key={unit}

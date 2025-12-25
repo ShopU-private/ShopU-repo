@@ -55,7 +55,7 @@ const BrandSection = () => {
             </h2>
           </div>
           {/* Horizontal Scrollable Brand List */}
-          <div className="no-scrollbar mt-4 flex gap-3 overflow-x-auto scroll-smooth p-1 whitespace-nowrap">
+          <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto scroll-smooth p-1 whitespace-nowrap">
             {brandData.map(category => (
               <div
                 key={category.id}
