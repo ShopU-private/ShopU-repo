@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { isAdmin } from '@/lib/auth';
 import { createCategorySchema } from '@/lib/schema/adminSchema';
-import { revalidateTag } from 'next/cache';
 
 export async function GET(request: NextRequest) {
   if (!isAdmin(request)) {
@@ -69,7 +68,6 @@ export async function POST(request: NextRequest) {
 
     const newCategory = await prisma.category.create({ data: { name } });
 
-    revalidateTag('categories', 'default');
 
     return NextResponse.json({ success: true, error: false, data: newCategory }, { status: 200 });
   } catch {

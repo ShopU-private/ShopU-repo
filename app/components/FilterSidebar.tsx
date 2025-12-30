@@ -34,12 +34,7 @@ const Sidebar = ({ onCategorySelect, onPriceFilter, isOpen = true, onClose }: Si
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch('/api/products/category', {
-          next: {
-            tags: ['products', 'categories'], // category dependent
-            revalidate: 300,
-          },
-        });
+        const res = await fetch('/api/products/category');
         const data: Category[] = await res.json();
 
         if (categorySlug) {
