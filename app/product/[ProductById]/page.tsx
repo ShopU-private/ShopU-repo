@@ -13,8 +13,6 @@ import { Product } from '@/app/types/ProductTypes';
 
 interface PackOption {
   quantity: number;
-  price: number;
-  perUnit: string;
   stock: string;
 }
 
@@ -74,10 +72,10 @@ export default function ProductDetailPage() {
   const sizes: string[] = ['Large', 'Small', 'Medium', 'New Born', 'XL', 'XXL'];
   const [selectedPackIndex, setSelectedPackIndex] = useState<number>(0);
   const packOptions: PackOption[] = [
-    { quantity: 96, price: 1270, perUnit: '₹13.32 Per Unit', stock: 'In Stock' },
-    { quantity: 56, price: 970, perUnit: '₹11.32 Per Unit', stock: 'In Stock' },
-    { quantity: 34, price: 770, perUnit: '₹9.32 Per Unit', stock: 'In Stock' },
-    { quantity: 20, price: 270, perUnit: '₹5.32 Per Unit', stock: 'In Stock' },
+    { quantity: 1, stock: 'In Stock' },
+    { quantity: 4, stock: 'In Stock' },
+    { quantity: 8, stock: 'In Stock' },
+    { quantity: 16, stock: 'In Stock' },
   ];
 
   const [quantity, setQuantity] = useState(1);
@@ -177,8 +175,10 @@ export default function ProductDetailPage() {
                           <p className="p-2 text-sm">{pack.quantity}</p>
                           <hr />
                           <div className="p-2">
-                            <p className="text-md mb-2 font-semibold">₹{pack.price}</p>
-                            <p className="mb-2 text-xs">({pack.perUnit})</p>
+                            <p className="text-md mb-2 font-semibold">
+                              ₹{(Number(pack.quantity) * Number(product.price)).toFixed(0)}
+                            </p>
+                            <p className="mb-2 text-xs">₹({product.price}) Per Unit</p>
                             <p className="text-xs">{pack.stock}</p>
                           </div>
                         </div>
@@ -218,7 +218,13 @@ export default function ProductDetailPage() {
                   </div>
 
                   <button
-                    onClick={() => handleAddToCart(productId, quantity)}
+                    onClick={() => {
+                      if (Number(product.stock) === 0) {
+                        toast.error('Product is out of stock');
+                        return;
+                      }
+                      handleAddToCart(productId, quantity);
+                    }}
                     disabled={addingProductId === productId}
                     className="bg-primaryColor flex w-52 items-center justify-center gap-2 rounded py-3 font-medium text-white transition-transform duration-300 hover:scale-102"
                   >
@@ -284,6 +290,22 @@ export default function ProductDetailPage() {
               <div className="mx-auto grid w-full gap-6 rounded">
                 {/* Left: Image Gallery */}
                 <div className="flex gap-6">
+                  <button
+                    onClick={() =>
+                      toggleFavorite({
+                        id: product.id,
+                        name: product.name,
+                        image: product.imageUrl || '/product-placeholder.jpg',
+                        category: product.category || 'Product',
+                      })
+                    }
+                    className="absolute right-8 mt-4"
+                  >
+                    <Heart
+                      className={`h-7 w-7 ${favorites.has(product.id) ? 'text-primaryColor fill-current' : 'text-primaryColor'}`}
+                    />
+                  </button>
+
                   <div className="flex flex-1 items-center justify-center rounded-lg bg-white p-12">
                     <Image
                       src={product.imageUrl || '/placeholder.png'}
@@ -319,7 +341,7 @@ export default function ProductDetailPage() {
 
                   <div className="w-full pb-2">
                     <p className="mt-4 mb-2 text-sm font-medium">Select Pack Sizes :</p>
-                    <div className="flex grid-cols-2 gap-2 overflow-x-auto sm:grid sm:grid-cols-4 sm:space-x-0">
+                    <div className="overflow-x-0 flex grid-cols-4 gap-2">
                       {packOptions.map((pack, index) => (
                         <div
                           key={index}
@@ -333,8 +355,10 @@ export default function ProductDetailPage() {
                           <p className="p-2 text-sm">{pack.quantity}</p>
                           <hr />
                           <div className="p-2">
-                            <p className="text-md mb-2 font-semibold">₹{pack.price}</p>
-                            <p className="mb-2 text-xs">({pack.perUnit})</p>
+                            <p className="text-md font-semibold">
+                              ₹{(Number(pack.quantity) * Number(product.price)).toFixed(0)}
+                            </p>
+                            <p className="my-2 text-xs">₹({product.price}) Per unit</p>
                             <p className="text-xs">{pack.stock}</p>
                           </div>
                         </div>
@@ -366,7 +390,13 @@ export default function ProductDetailPage() {
                   </div>
 
                   <button
-                    onClick={() => handleAddToCart(productId)}
+                    onClick={() => {
+                      if (Number(product.stock) === 0) {
+                        toast.error('Product is out of stock');
+                        return;
+                      }
+                      handleAddToCart(productId, quantity);
+                    }}
                     disabled={addingProductId === productId}
                     className="flex w-52 items-center justify-center gap-2 rounded bg-[#317C80] py-3 font-medium text-white transition-transform duration-300 hover:scale-102"
                   >
@@ -392,7 +422,7 @@ export default function ProductDetailPage() {
                 {product.description && (
                   <section className="mb-6">
                     <h2 className="mb-2 text-xl font-semibold">Description</h2>
-                    <p className="pl-4 text-gray-700">
+                    <p className="text-gray-700">
                       {showFullDesc
                         ? product.description
                         : product.description.slice(0, MAX_DESC_LENGTH) + '...'}
@@ -411,13 +441,13 @@ export default function ProductDetailPage() {
                 {product.directionsForUse && (
                   <section className="mb-6">
                     <h2 className="mb-2 text-xl font-semibold">Directions for Use</h2>
-                    <p className="pl-4 whitespace-pre-line">{product.directionsForUse}</p>
+                    <p className="whitespace-pre-line">{product.directionsForUse}</p>
                   </section>
                 )}
                 {product.safetyInformation && (
                   <section>
                     <h2 className="mb-2 text-xl font-semibold">Safety Information</h2>
-                    <p className="pl-4 whitespace-pre-line">{product.safetyInformation}</p>
+                    <p className="whitespace-pre-line">{product.safetyInformation}</p>
                   </section>
                 )}
               </div>

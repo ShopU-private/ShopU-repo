@@ -3,6 +3,7 @@ import { Heart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Product } from '../types/ProductTypes';
+import toast from 'react-hot-toast';
 
 interface ProductCardProps {
   product: Product;
@@ -40,6 +41,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
               className="mt-2 px-10 py-6 transition-transform duration-300 group-hover:scale-105"
             />
           </div>
+
+          {Number(product.stock) <= 5 && (
+            <div className="absolute top-1 left-2 rounded-lg p-1 text-[13px] font-bold">
+              <span
+                className={
+                  Number(product.stock) === 0 ? 'text-secondaryColor' : 'text-secondaryColor'
+                }
+              >
+                {Number(product.stock) === 0 ? 'Out of stock' : 'Only few left'}
+              </span>
+            </div>
+          )}
 
           <button
             onClick={() => onToggleFavorite(product)}
@@ -80,9 +93,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </div>
 
             <button
-              onClick={() => onAddToCart(product)}
+              onClick={() => {
+                if (Number(product.stock) === 0) {
+                  toast.error('Product is out of stock');
+                  return;
+                }
+                onAddToCart(product);
+              }}
               disabled={isAdding}
-              className="bg-background1 hover:bg-background1 hidden cursor-pointer items-center space-x-1 rounded px-3 py-1 text-white transition group-hover:flex"
+              className="bg-background1 hover:bg-background1 cursor-pointer items-center space-x-1 rounded px-3 py-1 text-white transition group-hover:flex lg:hidden"
             >
               {isAdding ? (
                 <span className="text-sm">Adding..</span>
@@ -107,9 +126,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               loading="lazy"
-              className="mt-2 px-8 py-4 transition-transform duration-300 group-hover:scale-105"
+              className="mt-2 px-8 py-4"
             />
           </div>
+
+          {Number(product.stock) <= 5 && (
+            <div className="absolute top-0 left-1 rounded-lg p-1 text-xs font-bold">
+              <span
+                className={
+                  Number(product.stock) === 0 ? 'text-secondaryColor' : 'text-secondaryColor'
+                }
+              >
+                {Number(product.stock) === 0 ? 'Out of stock' : 'Only few left'}
+              </span>
+            </div>
+          )}
 
           <button
             onClick={() => onToggleFavorite(product)}
@@ -126,10 +157,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <p className="text-xs font-medium text-red-500">
             End In <span className="font-semibold text-[#317C80]">05:02:12</span>
           </p>
-          <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-900 transition-colors group-hover:text-teal-600 sm:min-h-[3rem]">
+          <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-900 sm:min-h-[3rem]">
             {product.name.length > 40 ? `${product.name.slice(0, 40)}...` : product.name}
           </h3>
-          <p className="mb-1 text-xs text-gray-500">tube of 100 ml Gel</p>
+          <p className="mb-1 text-xs text-gray-500">{product.packaging}</p>
 
           {product.originalPrice && (
             <div>
@@ -144,7 +175,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {/* Price & Add Button */}
           <div className="mt-auto flex items-center justify-between">
             <div className="flex flex-col">
-              <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="flex items-center space-x-2">
                 <span className="text-primaryColor py-2 text-xl font-bold sm:text-xl">
                   ₹{product.price}
                 </span>
@@ -152,9 +183,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </div>
 
             <button
-              onClick={() => onAddToCart(product)}
+              onClick={() => {
+                if (Number(product.stock) === 0) {
+                  toast.error('Product is out of stock');
+                  return;
+                }
+                onAddToCart(product);
+              }}
               disabled={isAdding}
-              className="bg-background1 hover:bg-background1 cursor-pointer items-center space-x-1 rounded px-2 py-0.5 text-white transition"
+              className="bg-background1 items-center space-x-1 rounded px-2 py-0.5 text-white"
             >
               {isAdding ? (
                 <span className="text-sm">Adding..</span>

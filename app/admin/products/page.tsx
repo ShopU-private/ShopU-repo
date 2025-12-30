@@ -91,8 +91,8 @@ export default function AdminProductsPage() {
   const [tableSearchQuery, setTableSearchQuery] = useState<string>('');
   const [entriesPerPage, setEntriesPerPage] = useState<number>(10);
 
-  const types = ['allopathy', 'ayurveda', 'homeopathy'];
-  const manufacturers = Array.from(new Set(products.map(p => p.description))).sort();
+  const types = ['Product', 'Medicine'];
+  const manufacturers = Array.from(new Set(products.map(p => p.manufacturers))).sort();
   const stockStatuses = ['All', 'In Stock', 'Low Stock', 'Out of Stock'];
 
   const fetchProducts = async () => {
@@ -138,7 +138,7 @@ export default function AdminProductsPage() {
     let result = [...products];
 
     if (selectedManufacturer) {
-      result = result.filter(product => product.description === selectedManufacturer);
+      result = result.filter(product => product.manufacturers === selectedManufacturer);
     }
 
     if (selectedStockStatus && selectedStockStatus !== 'All') {
@@ -645,7 +645,7 @@ export default function AdminProductsPage() {
                   filteredProducts.slice(0, entriesPerPage).map(product => (
                     <tr key={product.id} className="hover:bg-gray-50">
                       <td className="p-4 whitespace-nowrap">
-                        <div className="h-10 w-10 overflow-hidden rounded-md bg-gray-200">
+                        <div className="h-10 w-10 overflow-hidden rounded-md bg-white">
                           {product?.imageUrl ? (
                             <div className="relative h-10 w-10">
                               <Image
@@ -663,10 +663,18 @@ export default function AdminProductsPage() {
                         </div>
                       </td>
                       <td className="p-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {product.name.length > 40
+                            ? `${product.name.slice(0, 40)}...`
+                            : product.name}
+                        </div>
                       </td>
                       <td className="p-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{product.description}</div>
+                        <div className="text-sm text-gray-900">
+                          {product.description.length > 40
+                            ? `${product.description.slice(0, 40)}...`
+                            : product.description}
+                        </div>
                       </td>
                       <td className="p-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
