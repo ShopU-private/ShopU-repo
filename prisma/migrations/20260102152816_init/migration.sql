@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -12,7 +15,7 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
-CREATE TABLE "UserAddress" (
+CREATE TABLE "user_addresses" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "address_line1" TEXT NOT NULL,
@@ -24,8 +27,11 @@ CREATE TABLE "UserAddress" (
     "is_default" BOOLEAN NOT NULL,
     "full_name" TEXT NOT NULL,
     "phone_number" TEXT NOT NULL,
+    "latitude" DOUBLE PRECISION,
+    "longitude" DOUBLE PRECISION,
+    "pincode" TEXT,
 
-    CONSTRAINT "UserAddress_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "user_addresses_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -56,6 +62,22 @@ CREATE TABLE "Product" (
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "subCategoryId" TEXT NOT NULL,
+    "manufacturers" TEXT,
+    "type" TEXT,
+    "packaging" TEXT,
+    "package" TEXT,
+    "package_qty" TEXT,
+    "product_form" TEXT,
+    "product_highlights" TEXT,
+    "information" TEXT,
+    "key_ingredients" TEXT,
+    "key_benefits" TEXT,
+    "directions_for_use" TEXT,
+    "safety_information" TEXT,
+    "manufacturer_address" TEXT,
+    "country_of_origin" TEXT,
+    "manufacturer_details" TEXT,
+    "marketer_details" TEXT,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -99,14 +121,42 @@ CREATE TABLE "CombinationValue" (
 );
 
 -- CreateTable
+CREATE TABLE "Coupon" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "discount" INTEGER NOT NULL,
+    "maxUsage" INTEGER NOT NULL,
+    "expiryDate" TIMESTAMP(3) NOT NULL,
+    "usedCount" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Coupon_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "CartItem" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "productId" TEXT NOT NULL,
+    "productId" TEXT,
+    "medicineId" TEXT,
     "quantity" INTEGER NOT NULL,
     "added_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "CartItem_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Wishlist" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "image_url" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "userId" TEXT,
+
+    CONSTRAINT "Wishlist_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -115,6 +165,7 @@ CREATE TABLE "Order" (
     "userId" TEXT NOT NULL,
     "addressId" TEXT NOT NULL,
     "status" TEXT NOT NULL,
+    "paymentMethod" TEXT NOT NULL,
     "total_amount" DECIMAL(65,30) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -125,9 +176,13 @@ CREATE TABLE "Order" (
 CREATE TABLE "OrderItem" (
     "id" TEXT NOT NULL,
     "orderId" TEXT NOT NULL,
-    "productId" TEXT NOT NULL,
+    "productId" TEXT,
+    "medicineId" TEXT,
+    "combinationId" TEXT,
     "quantity" INTEGER NOT NULL,
     "price" DECIMAL(65,30) NOT NULL,
+    "status" "OrderStatus" NOT NULL DEFAULT 'PENDING',
+    "reason" TEXT,
 
     CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("id")
 );
@@ -150,6 +205,17 @@ CREATE TABLE "Payment" (
 );
 
 -- CreateTable
+CREATE TABLE "ProductImage" (
+    "id" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "key" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ProductImage_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Medicine" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -160,8 +226,39 @@ CREATE TABLE "Medicine" (
     "packSizeLabel" TEXT NOT NULL,
     "composition1" TEXT,
     "composition2" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "quantity" INTEGER NOT NULL DEFAULT 0,
+    "salt_composition" TEXT,
+    "introduction" TEXT,
+    "benefits" TEXT,
+    "description" TEXT,
+    "how_to_use" TEXT,
+    "safety_advise" TEXT,
+    "if_miss" TEXT,
+    "packaging_detail" TEXT,
+    "package" TEXT,
+    "product_form" TEXT,
+    "prescription_required" TEXT,
+    "fact_box" TEXT,
+    "primary_use" TEXT,
+    "storage" TEXT,
+    "use_of" TEXT,
+    "common_side_effect" TEXT,
+    "alcoholInteraction" TEXT,
+    "pregnancyInteraction" TEXT,
+    "lactationInteraction" TEXT,
+    "drivingInteraction" TEXT,
+    "kidneyInteraction" TEXT,
+    "liverInteraction" TEXT,
+    "manufacturer_address" TEXT,
+    "country_of_origin" TEXT,
+    "q_a" TEXT,
+    "how_it_works" TEXT,
+    "interaction" TEXT,
+    "manufacturer_details" TEXT,
+    "marketer_details" TEXT,
+    "expiration" TEXT,
+    "reference" TEXT,
+    "image_url" TEXT,
 
     CONSTRAINT "Medicine_pkey" PRIMARY KEY ("id")
 );
@@ -174,6 +271,9 @@ CREATE UNIQUE INDEX "User_phoneNumber_key" ON "User"("phoneNumber");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Coupon_code_key" ON "Coupon"("code");
 
 -- CreateIndex
 CREATE INDEX "Payment_orderId_idx" ON "Payment"("orderId");
@@ -194,7 +294,7 @@ CREATE INDEX "Medicine_manufacturerName_idx" ON "Medicine"("manufacturerName");
 CREATE INDEX "Medicine_type_idx" ON "Medicine"("type");
 
 -- AddForeignKey
-ALTER TABLE "UserAddress" ADD CONSTRAINT "UserAddress_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "user_addresses" ADD CONSTRAINT "user_addresses_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "SubCategory" ADD CONSTRAINT "SubCategory_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -221,10 +321,19 @@ ALTER TABLE "CombinationValue" ADD CONSTRAINT "CombinationValue_variantValueId_f
 ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_medicineId_fkey" FOREIGN KEY ("medicineId") REFERENCES "Medicine"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Order" ADD CONSTRAINT "Order_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "UserAddress"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Wishlist" ADD CONSTRAINT "Wishlist_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Wishlist" ADD CONSTRAINT "Wishlist_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Order" ADD CONSTRAINT "Order_addressId_fkey" FOREIGN KEY ("addressId") REFERENCES "user_addresses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -233,10 +342,19 @@ ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") RE
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_medicineId_fkey" FOREIGN KEY ("medicineId") REFERENCES "Medicine"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_combinationId_fkey" FOREIGN KEY ("combinationId") REFERENCES "ProductVariantCombination"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Payment" ADD CONSTRAINT "Payment_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Payment" ADD CONSTRAINT "Payment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProductImage" ADD CONSTRAINT "ProductImage_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
