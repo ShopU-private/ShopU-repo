@@ -83,12 +83,8 @@ export const sessionManager = {
         data: updatedData,
       };
 
-      const key = `${SESSION_PREFIX}:${session}`;
-      const ttl = await cache.ttl(key);
-
-      const newTtl = ttl > 0 ? ttl : DEFAULT_TTL;
-
-      return await cache.set(key, updatedSession, newTtl);
+      const key = `${SESSION_PREFIX}:${sessionId}`;
+      return await cache.set(key, updatedSession, DEFAULT_TTL);
     } catch (error) {
       console.error(`Session UPDATE error for ${sessionId}: `, error);
       return false;
@@ -136,7 +132,7 @@ export const sessionManager = {
   async getTTL(sessionId: string): Promise<number> {
     try {
       const key = `${SESSION_PREFIX}:${sessionId}`;
-      return await cache.ttl(key);
+      return await redis.ttl(key);
     } catch (error) {
       console.error(`Session TTL error for ${sessionId}: `, error);
       return -2;

@@ -5,7 +5,7 @@ import { cache } from '@/redis/helper';
 
 interface ProductResponse {
   success: boolean;
-  products: any[];
+  products: unknown[];
   total: number;
   currentPage: number;
   totalPages: number;
