@@ -1,76 +1,50 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Product } from '../types/ProductTypes';
+import { useEffect, useState } from 'react';
 
-interface RawProduct {
+interface Product {
   id: string;
   name: string;
-  description: string;
-  price: string | number;
-  stock?: number;
-  imageUrl?: string;
-  subCategory?: {
-    name: string;
-  };
+  price: number;
   originalPrice?: number;
-  packaging?: string;
   discount?: number;
+  stock: number;
+  packaging?: string;
+  rating?: number;
+  reviews?: number;
+  imageUrl?: string;
+  category?: string;
+  description?: string;
 }
 
-interface UseProductsOptions {
+interface UseProductsProps {
   category?: string;
   limit?: number;
-  page?: number;
 }
 
-export function useProducts(options: UseProductsOptions = {}) {
+export function useProducts({ category, limit = 100 }: UseProductsProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [currentPage, setCurrentPage] = useState<number>(options.page || 1);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const queryParams = new URLSearchParams();
-        if (options.category) queryParams.append('category', options.category);
-        if (options.limit) queryParams.append('limit', options.limit.toString());
-        if (options.page) queryParams.append('page', options.page.toString());
+        setLoading(true);
+        
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (category) params.append('category', category);
+        if (limit) params.append('limit', limit.toString());
 
-        const res = await fetch(`/api/products/featured?${queryParams.toString()}`);
-
-        if (!res.ok) {
-          console.log('Failed to fetch products');
-        }
-        const data = await res.json();
-
-        const transformed =
-          data.products?.map(
-            (product: RawProduct): Product => ({
-              id: product.id,
-              name: product.name,
-              description: product.description,
-              price: parseFloat(product.price?.toString() || '0'),
-              stock: product.stock ?? 0,
-              imageUrl: product.imageUrl || '/product-placeholder.jpg',
-              category: product.subCategory?.name || 'Product',
-              originalPrice:
-                product.originalPrice ?? parseFloat(product.price?.toString() || '0') * 1.15,
-              discount: product.discount ?? 15,
-              packaging: product.packaging || 'Standard Packaging',
-              rating: 4.2,
-              reviews: 12,
-            })
-          ) || [];
-
-        setProducts(transformed);
-        setTotalPages(data.totalPages || 1);
-        setCurrentPage(data.currentPage || 1);
-      } catch (err) {
-        console.error('Product fetch error:', err);
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        // Hit the API endpoint which uses Redis cache
+        const response = await fetch(`/api/products/featured?${params.toString()}`);
+        
+        if (!response.ok) throw new Error('Failed to fetch products');
+        
+        const data = await response.json();
+        setProducts(data.data || []);
+      } catch (error) {
+        console.error('Error fetching products:', error);
         setProducts([]);
       } finally {
         setLoading(false);
@@ -78,7 +52,7 @@ export function useProducts(options: UseProductsOptions = {}) {
     };
 
     fetchProducts();
-  }, [options.category, options.limit, options.page]);
+  }, [category, limit]);
 
-  return { products, loading, error, totalPages, currentPage };
+  return { products, loading };
 }
