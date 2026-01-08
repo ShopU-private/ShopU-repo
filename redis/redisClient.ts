@@ -1,8 +1,8 @@
 import { Redis } from 'ioredis';
 
 const globalForRedis = globalThis as unknown as {
-  redis?: Redis
-}
+  redis?: Redis;
+};
 
 const REDIS_URL = process.env.REDIS_URL;
 
@@ -32,35 +32,35 @@ export const connectToRedis = async (): Promise<Redis> => {
           return true;
         }
         return false;
-      }
+      },
     });
 
     client.on('connect', () => {
-      console.log('Redis connecting')
-    })
+      console.log('Redis connecting');
+    });
 
     client.on('ready', () => {
-      console.log('Redis connected and ready')
-    })
+      console.log('Redis connected and ready');
+    });
 
-    client.on('error', (err) => {
-      console.log('Redis error', err)
-    })
+    client.on('error', err => {
+      console.log('Redis error', err);
+    });
 
     client.on('reconnecting', () => {
-      console.log('Redis reconnecting')
-    })
+      console.log('Redis reconnecting');
+    });
 
     if (typeof process !== 'undefined') {
       process.on('SIGINT', async () => {
         await client.quit();
-        process.exit(0)
-      })
+        process.exit(0);
+      });
 
       process.on('SIGTERM', async () => {
         await client.quit();
         process.exit(0);
-      })
+      });
     }
 
     redisClient = client;
@@ -73,13 +73,13 @@ export const connectToRedis = async (): Promise<Redis> => {
   } catch (error) {
     throw new Error(String(error));
   }
-}
+};
 
 export const getRedisClient = (): Redis => {
   if (!redisClient) {
-    throw new Error('Redis client not initialized, call connectRedis() first')
+    throw new Error('Redis client not initialized, call connectRedis() first');
   }
   return redisClient;
-}
+};
 
 export { Redis };

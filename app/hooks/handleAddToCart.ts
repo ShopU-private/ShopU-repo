@@ -10,7 +10,6 @@ const useAddToCart = () => {
     setAddingProductId(productId);
     try {
       await addItem(productId, null, quantity);
-      window.dispatchEvent(new CustomEvent('cartUpdated'));
     } catch (error) {
       console.error('Add to cart failed:', error);
     } finally {

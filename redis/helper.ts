@@ -1,4 +1,4 @@
-import { connectToRedis, getRedisClient } from "./redisClient";
+import { connectToRedis, getRedisClient } from './redisClient';
 
 async function getClient() {
   await connectToRedis();
@@ -17,7 +17,6 @@ export const cache = {
       } catch {
         return value as T;
       }
-
     } catch (error) {
       console.log(`Redis GET error for key ${key}:`, error);
       return null;
@@ -27,7 +26,7 @@ export const cache = {
   async set(key: string, value: unknown, ttl?: number): Promise<boolean> {
     try {
       const redis = await getClient();
-      const stringValue = typeof value === "string" ? value : JSON.stringify(value);
+      const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
 
       if (ttl) {
         await redis.setex(key, ttl, stringValue);
@@ -36,7 +35,6 @@ export const cache = {
       }
 
       return true;
-
     } catch (error) {
       console.error(`Redis SET error for key ${key}:`, error);
       return false;
@@ -73,7 +71,7 @@ export const cache = {
       console.error(`Redis EXISTS error for key ${key}:`, error);
       return false;
     }
-  }
+  },
 };
 
 // ================= PUB / SUB =====================
@@ -100,10 +98,10 @@ export const pubsub = {
       });
     });
 
-    subscriber.on("message", (channel, message) => callback(channel, message));
+    subscriber.on('message', (channel, message) => callback(channel, message));
 
-    subscriber.on("error", err => {
-      console.error("Redis subscriber error:", err);
+    subscriber.on('error', err => {
+      console.error('Redis subscriber error:', err);
     });
-  }
+  },
 };

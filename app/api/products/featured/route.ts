@@ -25,20 +25,19 @@ export async function GET(req: NextRequest) {
     const cacheKey = `featured_products_${category || 'all'}_page_${page}_limit_${limit}`;
 
     // Check cache first
-    console.log("checking cache", cacheKey);
-    
+    console.log('checking cache', cacheKey);
+
     const cached = await cache.get<ProductResponse>(cacheKey);
 
     if (cached) {
-      console.log("cache hit");
-      
+      console.log('cache hit');
+
       return NextResponse.json({
         ...cached,
         fromCache: true,
       });
-    }else{
-      console.log("cache miss");
-      
+    } else {
+      console.log('cache miss');
     }
 
     const whereClause = {
@@ -72,13 +71,10 @@ export async function GET(req: NextRequest) {
       }),
     ]);
 
-    const productsWithDiscount = products.map((product) => {
-      
-      const discount = ((Number(product.id) % 30) + 10); 
-      const originalPrice = Math.ceil(
-        Number(product.price) * (100 / (100 - discount))
-      );
-      
+    const productsWithDiscount = products.map(product => {
+      const discount = (Number(product.id) % 30) + 10;
+      const originalPrice = Math.ceil(Number(product.price) * (100 / (100 - discount)));
+
       return {
         ...product,
         discount,
@@ -97,11 +93,10 @@ export async function GET(req: NextRequest) {
     };
 
     // Store in cache for 5 minutes
-    console.log("Saving data into cache...");
+    console.log('Saving data into cache...');
     cache.set(cacheKey, responseData, 60 * 5).catch(console.error);
 
     return NextResponse.json(responseData);
-    
   } catch (err) {
     console.error('[GET /api/products]', err);
     return NextResponse.json(

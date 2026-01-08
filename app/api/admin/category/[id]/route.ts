@@ -21,7 +21,6 @@ export async function DELETE(
 
     await prisma.category.delete({ where: { id } });
 
-
     return NextResponse.json({ success: true, message: 'Category deleted' }, { status: 200 });
   } catch (error) {
     console.error('Something went wrong:', error);

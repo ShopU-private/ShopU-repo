@@ -68,7 +68,6 @@ export async function POST(request: NextRequest) {
 
     const newCategory = await prisma.category.create({ data: { name } });
 
-
     return NextResponse.json({ success: true, error: false, data: newCategory }, { status: 200 });
   } catch {
     return NextResponse.json(

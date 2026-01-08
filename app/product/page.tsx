@@ -22,7 +22,11 @@ interface Product {
   description?: string;
 }
 
-async function getProductsFromRedis(category?: string, minPrice?: number, maxPrice?: number): Promise<Product[]> {
+async function getProductsFromRedis(
+  category?: string,
+  minPrice?: number,
+  maxPrice?: number
+): Promise<Product[]> {
   try {
     await connectToRedis();
 
@@ -73,11 +77,9 @@ async function getProductsFromRedis(category?: string, minPrice?: number, maxPri
     });
 
     // Map and add discount calculation
-    const productsWithDiscount: Product[] = products.map((product) => {
+    const productsWithDiscount: Product[] = products.map(product => {
       const discount = (Number(product.id) % 30) + 10;
-      const originalPrice = Math.ceil(
-        Number(product.price) * (100 / (100 - discount))
-      );
+      const originalPrice = Math.ceil(Number(product.price) * (100 / (100 - discount)));
 
       return {
         id: String(product.id),
