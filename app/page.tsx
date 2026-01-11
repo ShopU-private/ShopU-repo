@@ -12,6 +12,7 @@ import PersonalCareSection from './components/PersonalCareSection';
 import EverydayEssentialsSection from './components/EverydayEssentialsSection';
 import FeatureSection from './components/FeatureSection';
 import PromoBanner from './components/Promobanner';
+import SmallScreenBanner from '@/components/SmallScreenBanner';
 
 export default function Home() {
   return (
@@ -28,6 +29,7 @@ export default function Home() {
       <EverydayEssentialsSection />
       <FeatureSection />
       <ChatBot />
+      <SmallScreenBanner />
     </>
   );
 }
