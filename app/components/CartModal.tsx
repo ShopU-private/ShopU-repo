@@ -487,8 +487,11 @@ export default function CartModal({ isOpen, onCloseAction }: CartModalProps) {
             <h2 className="text-base font-semibold text-gray-800">Cancellation and Refund</h2>
           </div>
           <div className="space-y-2 p-4 text-xs text-gray-600 sm:text-sm">
-            <p>Orders cannot be cancelled once packed for delivery.</p>
-            <p>In case of unexpected delays, a refund will be provided, if applicable.</p>
+            <p>
+              Orders cannot be cancelled once packed for delivery.
+              <br />
+              In case of unexpected delays, a refund will be provided if applicable.
+            </p>
           </div>
         </div>
 

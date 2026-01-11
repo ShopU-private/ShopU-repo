@@ -59,7 +59,7 @@ const Header = () => {
 
   const fetchCartCount = React.useCallback(async () => {
     const now = Date.now();
-    if (now - lastFetchRef.current < 3000) {
+    if (now - lastFetchRef.current < 2000) {
       return;
     }
     try {
@@ -317,7 +317,7 @@ const Header = () => {
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
-              className="h-20 w-36 py-2 transition-transform hover:scale-102 md:h-16 md:h-20"
+              className="h-20 w-36 py-2 md:h-16 md:h-20"
               width={400}
               height={100}
               priority
@@ -588,6 +588,7 @@ const Header = () => {
 
                           if (res.ok && data.success) {
                             console.log('Logged out successfully');
+                            localStorage.removeItem('shop_u_cart_cache');
                             setIsLoggedIn(false);
                             setIsLoginModalOpen(false);
                             window.location.href = '/';
@@ -756,6 +757,7 @@ const Header = () => {
 
                             if (res.ok && data.success) {
                               console.log('Logged out successfully');
+                              localStorage.removeItem('shop_u_cart_cache');
                               setIsLoggedIn(false);
                               setIsLoginModalOpen(false);
                               window.location.href = '/';

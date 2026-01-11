@@ -78,6 +78,10 @@ export default function WishlistPage() {
     }
   };
 
+  const handleclick = (productId: string) => {
+    router.push(`/product/${productId}`);
+  };
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Navroute />
@@ -123,6 +127,7 @@ export default function WishlistPage() {
                           width={50}
                           height={50}
                           className="rounded"
+                          onClick={() => handleclick(item.productId)}
                         />
                         <span className="text-left text-gray-800">
                           {item.name.length > 20 ? item.name.slice(0, 20) + '…' : item.name}
@@ -137,16 +142,32 @@ export default function WishlistPage() {
                           day: 'numeric',
                         })}
                       </td>
-                      <td className="p-4 text-green-600">
+                      <td className="p-4">
                         <span
-                          className={Number(item.stock) > 5 ? 'text-green-600' : 'text-red-600'}
+                          className={
+                            Number(item.stock) === 0
+                              ? 'text-secondaryColor'
+                              : Number(item.stock) > 5
+                                ? 'text-green-600'
+                                : 'text-secondaryColor'
+                          }
                         >
-                          {Number(item.stock) > 5 ? 'In Stock' : 'Only few left'}
+                          {Number(item.stock) === 0
+                            ? 'Out of Stock'
+                            : Number(item.stock) > 5
+                              ? 'In Stock'
+                              : 'Only few left'}
                         </span>
                       </td>
                       <td className="p-4">
                         <button
-                          onClick={() => handleAddToCart(item.productId)}
+                          onClick={() => {
+                            if (Number(item.stock) === 0) {
+                              toast.error('Product is out of stock');
+                              return;
+                            }
+                            handleAddToCart(item.productId);
+                          }}
                           disabled={addingProductId === item.productId}
                           className="hover:bg-opacity-90 bg-background1 cursor-pointer rounded px-4 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
                         >
@@ -188,11 +209,26 @@ export default function WishlistPage() {
                         day: 'numeric',
                       })}
                     </span>
-                    <span className={Number(item.stock) > 5 ? 'text-green-600' : 'text-red-600'}>
-                      {Number(item.stock) > 5 ? 'In Stock' : 'Only few left'}
+                    <span
+                      className={
+                        Number(item.stock) === 0
+                          ? 'text-secondaryColor'
+                          : Number(item.stock) > 5
+                            ? 'text-green-600'
+                            : 'text-secondaryColor'
+                      }
+                    >
+                      {Number(item.stock) === 0
+                        ? 'Out of Stock'
+                        : Number(item.stock) > 5
+                          ? 'In Stock'
+                          : 'Only few left'}
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 py-4 font-medium">
+                  <div
+                    onClick={() => handleclick(item.productId)}
+                    className="flex items-center gap-4 py-4 font-medium"
+                  >
                     <Image
                       src={item.image_url}
                       alt={item.name.length > 10 ? item.name.slice(0, 10) + '…' : item.name}
@@ -209,7 +245,13 @@ export default function WishlistPage() {
                   <hr className="text-gray-300" />
                   <div className="mt-4 flex items-center justify-between">
                     <button
-                      onClick={() => handleAddToCart(item.productId)}
+                      onClick={() => {
+                        if (Number(item.stock) === 0) {
+                          toast.error('Product is out of stock');
+                          return;
+                        }
+                        handleAddToCart(item.productId);
+                      }}
                       disabled={addingProductId === item.productId}
                       className="hover:bg-opacity-90 bg-background1 rounded px-4 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
                     >

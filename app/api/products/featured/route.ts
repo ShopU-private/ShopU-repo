@@ -99,9 +99,7 @@ export async function GET(req: NextRequest) {
     // Product transformation
     const productsWithDiscount = products.map(product => {
       const discount = (Number(product.id) % 30) + 10;
-      const originalPrice = Math.ceil(
-        Number(product.price) * (100 / (100 - discount))
-      );
+      const originalPrice = Math.ceil(Number(product.price) * (100 / (100 - discount)));
 
       return {
         ...product,
@@ -123,8 +121,7 @@ export async function GET(req: NextRequest) {
 
     // Save to cache
     console.log('Saving data into cache...');
-    cache.set(cacheKey, responseData, 60 * 5)
-    .catch(console.error);
+    cache.set(cacheKey, responseData, 60 * 5).catch(console.error);
 
     return NextResponse.json(responseData);
   } catch (err) {
