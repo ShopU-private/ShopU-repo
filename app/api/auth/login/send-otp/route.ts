@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import twilio from 'twilio';
-
-const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,23 +11,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const twilioResponse = await client.verify.v2
-      .services(process.env.TWILIO_SERVICE_ID!)
-      .verifications.create({
-        to: `+91${phoneNumber}`,
-        channel: 'sms',
-      });
-
-    if (twilioResponse && ['pending', 'send'].includes(twilioResponse.status)) {
-      return NextResponse.json(
-        { success: true, message: 'OTP send successfully' },
-        { status: 201 }
-      );
-    } else {
-      return NextResponse.json({ success: false, message: 'OTP send Failed' }, { status: 400 });
-    }
+    // Static OTP logic
+    return NextResponse.json(
+      { success: true, message: 'OTP sent successfully', otp: '111111' },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error('Somthing wents wrong:', error);
+    console.error('Something went wrong:', error);
     return NextResponse.json({ success: false, message: 'Internal Error' }, { status: 500 });
   }
 }
