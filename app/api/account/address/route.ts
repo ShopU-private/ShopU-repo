@@ -1,23 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { verifyToken } from '@/lib/auth';
+import { ShopUError } from '@/proxy/ShopUError';
+import { errorHandler } from '@/proxy/errorHandling';
 
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get('token')?.value;
 
     if (!token) {
-      return NextResponse.json(
-        { success: false, error: true, message: 'Need to login first' },
-        { status: 401 }
-      );
+      throw new ShopUError(401, "Login first")
     }
 
     const payload = verifyToken(token);
     const userId = payload.id;
 
     if (!userId) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+      throw new ShopUError(401, 'Invalid token')
     }
 
     const address = await prisma.userAddress.findMany({
@@ -26,8 +25,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ address });
   } catch (error) {
-    console.error('API ERROR at GET /api/account/address:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return errorHandler(error);
   }
 }
 
