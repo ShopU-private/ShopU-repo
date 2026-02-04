@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { verifyToken } from '@/lib/auth';
 import { ShopUError } from '@/proxy/ShopUError';
-import { errorHandler } from '@/proxy/errorHandling';
+import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
 
 export async function GET(req: NextRequest) {
   try {
@@ -23,9 +23,16 @@ export async function GET(req: NextRequest) {
       where: { userId },
     });
 
-    return NextResponse.json({ address });
+    if (!address) {
+      throw new ShopUError(401, 'Address not found')
+    }
+
+    return NextResponse.json(
+      { success: true, message: 'Address fetched successfully', address },
+      { status: 201 }
+    );
   } catch (error) {
-    return errorHandler(error);
+    return shopuErrorHandler(error);
   }
 }
 

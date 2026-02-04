@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { generateToken } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
+import { ShopUError } from '@/proxy/ShopUError';
+import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,7 +11,7 @@ export async function POST(request: NextRequest) {
 
     // Static OTP verification logic
     if (otp !== '111111') {
-      return NextResponse.json({ success: false, message: 'Invalid OTP' }, { status: 401 });
+      throw new ShopUError(401, 'Invalid OTP')
     }
 
     let user = await prisma.user.findUnique({ where: { phoneNumber } });
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
     });
 
     const response = NextResponse.json(
-      { success: true, message: 'OTP verified successfully', token },
+      { success: true, message: 'OTP verified successfully', user },
       { status: 201 }
     );
     response.cookies.set({
@@ -39,13 +41,12 @@ export async function POST(request: NextRequest) {
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: true,
+      sameSite: 'strict',
       maxAge: 30 * 24 * 24 * 60 * 1000,
     });
 
     return response;
   } catch (error) {
-    console.error('Error verifying OTP:', error);
-    return NextResponse.json({ success: false, message: 'Internal Error' }, { status: 500 });
+    return shopuErrorHandler(error)
   }
 }

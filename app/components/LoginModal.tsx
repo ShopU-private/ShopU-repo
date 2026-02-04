@@ -1,9 +1,11 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Phone, Lock } from 'lucide-react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import Logo from '../../public/Shop U Logo-03.jpg';
+import { useAppDispatch } from '@/store/redux/hook';
+import { verifyOtp } from '@/store/slices/authSlice';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -11,13 +13,28 @@ interface LoginModalProps {
   onPhoneChange?: (phone: string) => void;
 }
 
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, onPhoneChange }: LoginModalProps) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const dispatch = useAppDispatch();
+  const phoneInputRef = useRef<HTMLInputElement>(null);
+
+  // Reset modal state when it opens
+  useEffect(() => {
+    if (isOpen) {
+      setPhoneNumber('');
+      setOtp('');
+      setShowOtpInput(false);
+      setError('');
+      setResendTimer(0);
+      // Focus phone input after a short delay to ensure DOM is ready
+      setTimeout(() => phoneInputRef.current?.focus(), 100);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (resendTimer > 0) {
@@ -45,14 +62,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       const data = await response.json();
 
       if (data.success || data.sent) {
-        toast.success('OTP sent successfully!');
         setShowOtpInput(true);
         setResendTimer(30); // start cooldown
       } else {
         toast.error(data.message || 'Failed to send OTP');
       }
     } catch (err) {
-      toast.error('Something went wrong. Please try again.');
       console.error('Error sending OTP:', err);
     } finally {
       setLoading(false);
@@ -69,24 +84,16 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setError('');
 
     try {
-      const response = await fetch('/api/auth/login/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber, otp }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success('Login successful!');
+      const res = await dispatch(verifyOtp({ otp, phoneNumber })).unwrap();
+      if (res.success) {
+        onPhoneChange?.(phoneNumber);
         onClose();
-        window.location.href = '/';
       } else {
-        toast.error(data.message || 'Invalid OTP');
+        toast.error(res.message || 'Invalid OTP');
       }
     } catch (err) {
-      toast.error('Something went wrong. Please try again.');
       console.error('Error verifying OTP:', err);
+      toast.error('Failed to verify OTP');
     } finally {
       setLoading(false);
     }
@@ -134,6 +141,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 </span>
                 <span className="absolute left-12 text-gray-500">+91</span>
                 <input
+                  ref={phoneInputRef}
                   type="tel"
                   id="phone"
                   value={phoneNumber}
@@ -190,11 +198,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             <div className="flex justify-end">
               <button
                 onClick={handleResendOtp}
-                className={`text-md px-4 ${
-                  resendTimer > 0
-                    ? 'cursor-not-allowed text-gray-400'
-                    : 'text-primaryColor cursor-pointer'
-                }`}
+                className={`text-md px-4 ${resendTimer > 0
+                  ? 'cursor-not-allowed text-gray-400'
+                  : 'text-primaryColor cursor-pointer'
+                  }`}
               >
                 {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
               </button>

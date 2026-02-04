@@ -1,3 +1,5 @@
+import { ShopUError } from '@/proxy/ShopUError';
+import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
@@ -5,10 +7,7 @@ export async function POST(request: NextRequest) {
     const { phoneNumber } = await request.json();
 
     if (!phoneNumber) {
-      return NextResponse.json(
-        { success: false, message: 'Phone number is required' },
-        { status: 400 }
-      );
+      throw new ShopUError(401, 'Phone number is required')
     }
 
     // Static OTP logic
@@ -17,7 +16,6 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Something went wrong:', error);
-    return NextResponse.json({ success: false, message: 'Internal Error' }, { status: 500 });
+    return shopuErrorHandler(error)
   }
 }

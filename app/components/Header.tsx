@@ -20,13 +20,16 @@ import { useLocation } from '../context/LocationContext';
 import { useCartModal } from '../context/CartModalContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAppDispatch, useAppSelector } from '@/store/redux/hook';
+import { logoutUser } from '@/store/slices/authSlice';
+import toast from 'react-hot-toast';
 
 const Header = () => {
+  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState<number | null>(null);
   const router = useRouter();
@@ -36,7 +39,7 @@ const Header = () => {
     isLoadingLocation,
     setIsLoadingLocation,
     locationError,
-    setLocationError = () => {}, // Provide default empty function
+    setLocationError = () => { }, // Provide default empty function
   } = useLocation();
   const [phoneNumber, setPhoneNumber] = useState('');
   const { openCartModal } = useCartModal();
@@ -53,9 +56,9 @@ const Header = () => {
   const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastFetchRef = useRef<number>(0);
-  const hasCalled = useRef(false);
   const [postOffices, setPostOffices] = useState<any[]>([]);
   const [showSelectAddresses, setShowSelectAddresses] = useState(false);
+  const dispatch = useAppDispatch();
 
   const fetchCartCount = React.useCallback(async () => {
     const now = Date.now();
@@ -85,14 +88,10 @@ const Header = () => {
 
   // Check login status and fetch cart count
   const checkLoginStatus = useCallback(async () => {
-    if (hasCalled.current) return;
-    hasCalled.current = true;
-
     try {
       const res = await fetch('/api/account/me');
       const data = await res.json();
-      setIsLoggedIn(data.loggedIn);
-      setPhoneNumber(data.phoneNumber);
+      setPhoneNumber(data.phoneNumber || '');
       setIsAdmin(data.role?.toUpperCase() === 'ADMIN');
       if (data.loggedIn) {
         fetchCartCount();
@@ -100,11 +99,29 @@ const Header = () => {
         setCartCount(0);
       }
     } catch {
-      setIsLoggedIn(false);
+      setPhoneNumber('');
       setIsAdmin(false);
       setCartCount(0);
     }
   }, [fetchCartCount]);
+
+  // logout controller
+
+  async function handleLogout(e: { preventDefault: () => void; }) {
+    e.preventDefault();
+    try {
+      const res = await dispatch(logoutUser()).unwrap();
+      if (res.success) {
+        setIsAdmin(false);
+        setPhoneNumber('');
+        setCartCount(0);
+        setIsUserMenuOpen(false);
+        setIsMobileAccountMenuOpen(false);
+      }
+    } catch (error) {
+      toast.error(String(error));
+    }
+  }
 
   // Check login status when modal closes
   useEffect(() => {
@@ -317,7 +334,7 @@ const Header = () => {
             <Image
               src={Logo}
               alt="ShopU - Shop Unlimited with ShopU"
-              className="h-20 w-36 py-2 md:h-16 md:h-20"
+              className="h-20 w-36 py-2 md:h-20"
               width={400}
               height={100}
               priority
@@ -576,29 +593,7 @@ const Header = () => {
                     <a
                       href="#"
                       className="flex items-center gap-3 px-6 py-1 text-[0.85rem] text-gray-700 hover:bg-gray-50"
-                      onClick={async e => {
-                        e.preventDefault();
-
-                        try {
-                          const res = await fetch('/api/account/logout', {
-                            method: 'POST',
-                          });
-
-                          const data = await res.json();
-
-                          if (res.ok && data.success) {
-                            console.log('Logged out successfully');
-                            localStorage.removeItem('shop_u_cart_cache');
-                            setIsLoggedIn(false);
-                            setIsLoginModalOpen(false);
-                            window.location.href = '/';
-                          } else {
-                            console.error('Logout failed:', data.message);
-                          }
-                        } catch (err) {
-                          console.error('Error during logout:', err);
-                        }
-                      }}
+                      onClick={handleLogout}
                     >
                       Log Out
                     </a>
@@ -745,29 +740,7 @@ const Header = () => {
                       <a
                         href="#"
                         className="flex items-center gap-3 px-6 py-1 text-xs text-gray-700 hover:bg-gray-50"
-                        onClick={async e => {
-                          e.preventDefault();
-
-                          try {
-                            const res = await fetch('/api/account/logout', {
-                              method: 'POST',
-                            });
-
-                            const data = await res.json();
-
-                            if (res.ok && data.success) {
-                              console.log('Logged out successfully');
-                              localStorage.removeItem('shop_u_cart_cache');
-                              setIsLoggedIn(false);
-                              setIsLoginModalOpen(false);
-                              window.location.href = '/';
-                            } else {
-                              console.error('Logout failed:', data.message);
-                            }
-                          } catch (err) {
-                            console.error('Error during logout:', err);
-                          }
-                        }}
+                        onClick={handleLogout}
                       >
                         Log Out
                       </a>
@@ -921,7 +894,6 @@ const Header = () => {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onPhoneChange={value => {
-          console.log(value);
           setPhoneNumber(value);
         }}
       />
