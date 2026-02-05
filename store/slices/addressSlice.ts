@@ -1,7 +1,6 @@
-import { AddressState } from '@/types/types';
+import { Address, AddressState } from '@/types/types';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { Address } from 'cluster';
 import toast from 'react-hot-toast';
 
 // Fetch all addresses
