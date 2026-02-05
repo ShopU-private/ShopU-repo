@@ -3,20 +3,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { X, Search, Home, Briefcase, MoreHorizontal, MapPin, Crosshair } from 'lucide-react';
 import VectorMap, { MapRef } from '../components/VectorMap';
-
-type Address = {
-  id?: string;
-  fullName: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-  phoneNumber: string;
-  latitude?: number; // Added latitude
-  longitude?: number; // Added longitude
-};
+import { Address } from '@/types/types';
+import toast from 'react-hot-toast';
 
 type Props = {
   onCancel: () => void;
@@ -228,7 +216,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
 
     // Use watchPosition for more accurate real-time location
     let watchId: number;
-    let locationObtained = false;
+    const locationObtained = false;
 
     let bestAccuracy = Infinity;
     let stableCount = 0;
@@ -340,39 +328,25 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
 
     // Validate coordinates
     if (!formData.latitude || !formData.longitude) {
-      alert('Please select a location on the map or search for an address');
+      toast.error('Please select a location on the map or search for an address');
       return;
     }
 
-    try {
-      const url =
-        formMode === 'edit' && formData.id
-          ? `/api/account/address/${formData.id}`
-          : '/api/account/address';
-
-      const method = formMode === 'edit' ? 'PATCH' : 'POST';
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          ...formData,
-          addressType: selectedAddressType,
-          latitude: formData.latitude,
-          longitude: formData.longitude,
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        onSave(data.address || data);
-        onCancel();
-      } else {
-        console.error('Failed to save:', await res.text());
-      }
-    } catch (err) {
-      console.error('Error:', err);
+    // Validate required fields
+    if (
+      !formData.fullName ||
+      !formData.addressLine1 ||
+      !formData.city ||
+      !formData.state ||
+      !formData.postalCode ||
+      !formData.phoneNumber
+    ) {
+      toast.error('Please fill in all required fields');
+      return;
     }
+
+    // Just pass data to parent - Redux handles the API call
+    await onSave(formData);
   };
 
   return (

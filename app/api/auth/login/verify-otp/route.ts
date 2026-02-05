@@ -9,11 +9,6 @@ export async function POST(request: NextRequest) {
   try {
     const { phoneNumber, otp } = await request.json();
 
-    // Static OTP verification logic
-    if (otp !== '111111') {
-      throw new ShopUError(401, 'Invalid OTP')
-    }
-
     let user = await prisma.user.findUnique({ where: { phoneNumber } });
 
     if (!user) {
@@ -26,6 +21,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    if (otp !== '111111') {
+      throw new ShopUError(401, 'Invalid OTP');
+    }
+
     const token = generateToken({
       id: user.id,
       phoneNumber: user.phoneNumber,
@@ -33,7 +32,7 @@ export async function POST(request: NextRequest) {
     });
 
     const response = NextResponse.json(
-      { success: true, message: 'OTP verified successfully', user },
+      { success: true, message: 'Logged in successfully', user },
       { status: 201 }
     );
     response.cookies.set({
@@ -47,6 +46,6 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    return shopuErrorHandler(error)
+    return shopuErrorHandler(error);
   }
 }

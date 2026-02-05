@@ -22,7 +22,7 @@ export const CustomToaster = () => {
         },
       }}
     >
-      {(t) => (
+      {t => (
         <div
           style={{
             display: 'flex',
@@ -39,10 +39,10 @@ export const CustomToaster = () => {
               t.type === 'success'
                 ? '#317c80'
                 : t.type === 'error'
-                ? '#e93e40'
-                : t.type === 'loading'
-                ? '#6b7280'
-                : '#3b82f6'
+                  ? '#e93e40'
+                  : t.type === 'loading'
+                    ? '#6b7280'
+                    : '#3b82f6'
             }`,
             animation: t.visible
               ? 'toastEnter 0.3s cubic-bezier(0.21, 1.02, 0.73, 1) forwards'
@@ -96,14 +96,18 @@ export const CustomToaster = () => {
                 t.type === 'success'
                   ? '#317c80'
                   : t.type === 'error'
-                  ? '#e93e40'
-                  : t.type === 'loading'
-                  ? '#6b7280'
-                  : '#3b82f6',
+                    ? '#e93e40'
+                    : t.type === 'loading'
+                      ? '#6b7280'
+                      : '#3b82f6',
             }}
           >
-            {t.type === 'success' && <CheckCircle2 style={{ width: '20px', height: '20px', color: 'white' }} />}
-            {t.type === 'error' && <XCircle style={{ width: '20px', height: '20px', color: 'white' }} />}
+            {t.type === 'success' && (
+              <CheckCircle2 style={{ width: '20px', height: '20px', color: 'white' }} />
+            )}
+            {t.type === 'error' && (
+              <XCircle style={{ width: '20px', height: '20px', color: 'white' }} />
+            )}
             {t.type === 'loading' && (
               <Loader
                 style={{
@@ -150,11 +154,11 @@ export const CustomToaster = () => {
               transition: 'all 0.2s ease',
               padding: 0,
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={e => {
               e.currentTarget.style.background = '#f3f4f6';
               e.currentTarget.style.color = '#1f2937';
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={e => {
               e.currentTarget.style.background = 'transparent';
               e.currentTarget.style.color = '#6b7280';
             }}

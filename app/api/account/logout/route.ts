@@ -1,3 +1,4 @@
+import { prisma } from '@/lib/client';
 import { requireAuth } from '@/proxy/requireAuth';
 import { ShopUError } from '@/proxy/ShopUError';
 import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
@@ -7,13 +8,13 @@ export async function GET(req: NextRequest) {
   const auth = requireAuth(req);
 
   if (!auth.authenticated) {
-    return auth.response
+    return auth.response;
   }
 
-  const user = auth.user
+  const user = auth.user;
 
   if (!user) {
-    throw new ShopUError(401, 'Login with correct credentials')
+    throw new ShopUError(401, 'Login with correct credentials');
   }
 
   try {
@@ -31,6 +32,6 @@ export async function GET(req: NextRequest) {
 
     return response;
   } catch (error) {
-    return shopuErrorHandler(error)
+    return shopuErrorHandler(error);
   }
 }

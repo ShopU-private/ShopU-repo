@@ -4,19 +4,19 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 interface LocationType {
   address:
-  | string
-  | {
-    id: string;
-    fullName: string;
-    addressLine1: string;
-    addressLine2?: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    pincode?: string;
-    phoneNumber: string;
-    isDefault: boolean;
-  };
+    | string
+    | {
+        id: string;
+        fullName: string;
+        addressLine1: string;
+        addressLine2?: string;
+        city: string;
+        state: string;
+        postalCode: string;
+        pincode?: string;
+        phoneNumber: string;
+        isDefault: boolean;
+      };
   city?: string;
   state?: string;
   pincode?: string;
@@ -40,9 +40,9 @@ interface LocationContextType {
 
 const defaultContextValue: LocationContextType = {
   location: null,
-  setLocation: () => { },
+  setLocation: () => {},
   addressId: null,
-  setAddressId: () => { },
+  setAddressId: () => {},
 };
 
 const LocationContext = createContext<LocationContextType>(defaultContextValue);

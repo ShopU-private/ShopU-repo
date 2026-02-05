@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const { phoneNumber } = await request.json();
 
     if (!phoneNumber) {
-      throw new ShopUError(401, 'Phone number is required')
+      throw new ShopUError(401, 'Phone number is required');
     }
 
     // Static OTP logic
@@ -16,6 +16,6 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    return shopuErrorHandler(error)
+    return shopuErrorHandler(error);
   }
 }

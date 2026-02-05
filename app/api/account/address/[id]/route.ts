@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/client';
 import { requireAuth } from '@/proxy/requireAuth';
+import { ShopUError } from '@/proxy/ShopUError';
+import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -11,7 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const user = auth.user;
     if (!user) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      throw new ShopUError(401, 'Invalid credentials');
     }
 
     const { id } = await params;
@@ -21,13 +23,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     });
 
     if (!address || address.userId !== user.id) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      throw new ShopUError(401, 'Address not found');
     }
 
-    return NextResponse.json({ success: true, message: 'Fetched user details' }, { status: 200 });
+    return NextResponse.json(
+      { success: true, message: 'Fetched user details', address },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error('API ERROR at GET /api/account/address/[id]:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return shopuErrorHandler(error);
   }
 }
 
@@ -41,7 +45,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const user = auth.user;
     if (!user) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      throw new ShopUError(401, 'Invalid credentials');
     }
 
     const { id } = await params;
@@ -53,7 +57,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     });
 
     if (!existingAddress || existingAddress.userId !== user.id) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      throw new ShopUError(401, 'Address not found');
     }
 
     // Extract only allowed fields
@@ -90,10 +94,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       },
     });
 
-    return NextResponse.json({ address: updatedAddress });
+    return NextResponse.json(
+      { success: true, message: 'Address updated successfully', updatedAddress },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error('API ERROR at PATCH /api/account/address/[id]:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return shopuErrorHandler(error);
   }
 }
 
@@ -107,7 +113,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     const user = auth.user;
     if (!user) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      throw new ShopUError(401, 'Invalid credentials');
     }
 
     const { id } = await params;
@@ -118,16 +124,18 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     });
 
     if (!existingAddress || existingAddress.userId !== user.id) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      throw new ShopUError(401, 'Address not found');
     }
 
-    await prisma.userAddress.delete({
+    const deletedAddress = await prisma.userAddress.delete({
       where: { id },
     });
 
-    return NextResponse.json({ message: 'Address deleted' });
+    return NextResponse.json(
+      { success: true, message: 'Address deleted successfully', deletedAddress },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error('API ERROR at DELETE /api/account/address/[id]:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return shopuErrorHandler(error);
   }
 }

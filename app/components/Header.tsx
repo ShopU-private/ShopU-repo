@@ -25,7 +25,7 @@ import { logoutUser } from '@/store/slices/authSlice';
 import toast from 'react-hot-toast';
 
 const Header = () => {
-  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
+  const isLoggedIn = useAppSelector(state => state.auth.isLoggedIn);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -39,7 +39,7 @@ const Header = () => {
     isLoadingLocation,
     setIsLoadingLocation,
     locationError,
-    setLocationError = () => { }, // Provide default empty function
+    setLocationError = () => {}, // Provide default empty function
   } = useLocation();
   const [phoneNumber, setPhoneNumber] = useState('');
   const { openCartModal } = useCartModal();
@@ -107,7 +107,7 @@ const Header = () => {
 
   // logout controller
 
-  async function handleLogout(e: { preventDefault: () => void; }) {
+  async function handleLogout(e: { preventDefault: () => void }) {
     e.preventDefault();
     try {
       const res = await dispatch(logoutUser()).unwrap();

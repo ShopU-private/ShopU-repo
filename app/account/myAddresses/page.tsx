@@ -1,98 +1,65 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useEffect, Suspense, useState } from 'react';
 import AddAddress from '@/app/components/AddAddress';
-import { UserAddress } from '@prisma/client';
 import Navroute from '@/app/components/Navroute';
 import { Edit, Home, Loader, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
-
-// Define the Address type to match what AddAddress component expects
-type Address = {
-  id?: string;
-  fullName: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-  phoneNumber: string;
-};
+import { useAppDispatch, useAppSelector } from '@/store/redux/hook';
+import {
+  fetchAddresses,
+  deleteAddress,
+  addAddress,
+  updateAddress,
+} from '@/store/slices/addressSlice';
+import { Address } from '@/types/types';
 
 export default function AddressPage() {
-  const [loading, setLoading] = useState(true);
-  const [addresses, setAddresses] = useState<UserAddress[]>([]);
+  const dispatch = useAppDispatch();
+  const { addresses, loading } = useAppSelector(state => state.address);
+
   const [showForm, setShowForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-  const router = useRouter();
-  const fetchAddresses = async () => {
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    dispatch(fetchAddresses());
+  }, [dispatch]);
+
+  const handleSave = async (addressData: Address) => {
     try {
-      setLoading(true);
-      const res = await fetch('/api/account/address', {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      if (res.status === 401) {
-        router.push('/');
-        toast.error('Please login first.');
-        return;
+      if (editingAddress?.id) {
+        // Update existing address
+        await dispatch(
+          updateAddress({
+            id: editingAddress.id,
+            address: addressData,
+          })
+        ).unwrap();
+      } else {
+        // Add new address
+        await dispatch(addAddress(addressData)).unwrap();
       }
-
-      if (res.ok) {
-        const data = await res.json();
-        setAddresses(data.address || []);
-      }
+      // Close form and reset editing state on success
+      setShowForm(false);
+      setEditingAddress(null);
     } catch (error) {
-      console.error('Error fetching addresses:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error saving address:', error);
+      // Keep form open on error so user can retry
     }
   };
 
-  useEffect(() => {
-    fetchAddresses();
-  }, []);
-
-  const handleSave = () => {
-    fetchAddresses();
-    setShowForm(false);
-    setEditingAddress(null);
-  };
-
-  const handleEdit = (address: UserAddress) => {
-    const editableAddress: Address = {
-      id: address.id,
-      fullName: address.fullName,
-      addressLine1: address.addressLine1,
-      addressLine2: address.addressLine2 || undefined,
-      city: address.city,
-      state: address.state,
-      country: address.country,
-      postalCode: address.postalCode,
-      phoneNumber: address.phoneNumber,
-    };
-    setEditingAddress(editableAddress);
+  const handleEdit = (address: Address) => {
+    setEditingAddress(address);
     setShowForm(true);
   };
 
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
   const handleDelete = async (addressId: string) => {
+    if (!addressId) return;
+
     try {
-      setDeletingId(addressId); // Start loader
-      const res = await fetch(`/api/account/address/${addressId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      if (res.ok) {
-        toast.success('Address Deleted!');
-        fetchAddresses();
-      } else {
-        console.error('Failed to delete address');
-      }
+      setDeletingId(addressId);
+      await dispatch(deleteAddress(addressId)).unwrap();
     } catch (error) {
       console.error('Error deleting address:', error);
     } finally {
@@ -108,13 +75,14 @@ export default function AddressPage() {
           {/* Header */}
           <h2 className="text-primaryColor mb-4 text-lg font-semibold sm:mb-6 sm:text-xl">
             My <span className="text-secondaryColor">Addresses</span>
-            <hr className="bg-background1 mt-1 w-32 rounded border-2" />{' '}
+            <hr className="bg-background1 mt-1 w-32 rounded border-2" />
           </h2>
 
           {/* Add New Address */}
           <button
             onClick={() => {
               if (addresses.length >= 3) {
+                toast.error('You can only save up to 3 addresses.');
                 return;
               }
               setEditingAddress(null);
@@ -140,7 +108,7 @@ export default function AddressPage() {
             </div>
           ) : (
             <div className="mt-4 space-y-4">
-              {/* Address Card */}
+              {/* Address Cards */}
               {addresses.map(addr => (
                 <div
                   key={addr.id}
@@ -151,30 +119,36 @@ export default function AddressPage() {
                       <Home className="text-primaryColor" />
                     </div>
                     <div className="text-md">
-                      <span>
-                        {addr.fullName}, {addr.addressLine1}
-                        {addr.addressLine2 ? `, ${addr.addressLine2}` : ''} {addr.city},{' '}
-                        {addr.state},{' '}
-                      </span>
-                      <span>
-                        {addr.country} {addr.postalCode}
+                      <span className="font-medium">{addr.fullName}</span>
+                      <br />
+                      <span className="text-sm text-gray-600">
+                        {addr.addressLine1}
+                        {addr.addressLine2 ? `, ${addr.addressLine2}` : ''}, {addr.city},{' '}
+                        {addr.state}, {addr.country} {addr.postalCode}
                       </span>
                       <br />
-                      <span className="hidden sm:block">Phone: {addr.phoneNumber}</span>
+                      <span className="text-sm text-gray-600">Phone: +91 {addr.phoneNumber}</span>
+                      {addr.latitude && addr.longitude && (
+                        <span className="mt-1 block text-xs text-gray-400">
+                          📍 Lat: {addr.latitude.toFixed(4)}, Lng: {addr.longitude.toFixed(4)}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
                     <button
                       onClick={() => handleEdit(addr)}
-                      className="cursor-pointer text-sm text-blue-600"
+                      className="cursor-pointer text-sm text-blue-600 hover:text-blue-700"
+                      title="Edit address"
                     >
-                      <Edit className="h-5 w-5 text-gray-500" />
+                      <Edit className="h-5 w-5 text-gray-500 hover:text-blue-600" />
                     </button>
 
                     <button
-                      onClick={() => handleDelete(addr.id)}
+                      onClick={() => handleDelete(addr.id!)}
                       className="cursor-pointer text-gray-500 hover:text-red-500 disabled:opacity-60"
                       disabled={deletingId === addr.id}
+                      title="Delete address"
                     >
                       {deletingId === addr.id ? (
                         <Loader className="h-5 w-5 animate-spin text-red-500" />

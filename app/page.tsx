@@ -13,10 +13,12 @@ import EverydayEssentialsSection from './components/EverydayEssentialsSection';
 import FeatureSection from './components/FeatureSection';
 import PromoBanner from './components/Promobanner';
 import SmallScreenBanner from '@/components/SmallScreenBanner';
+import DevelopmentBanner from './components/DevelopmentBanner';
 
 export default function Home() {
   return (
     <>
+      <DevelopmentBanner />
       <ShopUCarousel />
       <HealthLayout />
       <DealOfTheWeek />
