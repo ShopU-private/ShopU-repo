@@ -3,21 +3,7 @@
 import ProductCard from '../components/ProductCard';
 import { useWishlist } from '../hooks/useWishlist';
 import useAddToCart from '../hooks/handleAddToCart';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  discount?: number;
-  stock: number;
-  packaging?: string;
-  rating?: number;
-  reviews?: number;
-  imageUrl?: string;
-  category?: string;
-  description?: string;
-}
+import { Product } from '@shopu/types-store/types';
 
 interface ProductGridClientProps {
   products: Product[];
@@ -53,7 +39,7 @@ export default function ProductGridClient({ products, isMobile = false }: Produc
                 toggleFavorite({
                   id: product.id,
                   name: product.name,
-                  image: product.imageUrl || '/product-placeholder.jpg',
+                  imageUrl: product.imageUrl || '/product-placeholder.jpg',
                   category: product.category || 'Product',
                 })
               }
@@ -69,7 +55,7 @@ export default function ProductGridClient({ products, isMobile = false }: Produc
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {products.slice(0, 20).map(product => (
-        <div key={product.id} className="max-w-[210px] min-w-[210px]">
+        <div key={product.id} className="max-w-52.5 min-w-52.5">
           <ProductCard
             product={{
               id: product.id,
@@ -90,7 +76,7 @@ export default function ProductGridClient({ products, isMobile = false }: Produc
               toggleFavorite({
                 id: product.id,
                 name: product.name,
-                image: product.imageUrl || '/product-placeholder.jpg',
+                imageUrl: product.imageUrl || '/product-placeholder.jpg',
                 category: product.category || 'Product',
               })
             }

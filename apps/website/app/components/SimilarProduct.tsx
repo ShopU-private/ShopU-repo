@@ -5,7 +5,7 @@ import ProductCard from './ProductCard';
 import { useWishlist } from '../hooks/useWishlist';
 import useAddToCart from '../hooks/handleAddToCart';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Product } from '../types/ProductTypes';
+import { Product } from '@shopu/types-store/types';
 
 interface SimilarProductsSectionProps {
   products: Product[];
@@ -42,7 +42,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
             {/* Left Arrow */}
             <button
               onClick={() => scroll('left')}
-              className="bg-background1 absolute top-1/2 left-[-15px] z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
+              className="bg-background1 absolute top-1/2 -left-3.75 z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
             >
               <ChevronLeft size={20} />
             </button>
@@ -53,7 +53,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
               className="no-scrollbar flex gap-4 overflow-x-auto scroll-smooth py-2"
             >
               {products.map(product => (
-                <div key={product.id} className="max-w-[210px] min-w-[210px]">
+                <div key={product.id} className="max-w-52.5 min-w-52.5">
                   <ProductCard
                     product={{
                       id: product.id,
@@ -74,7 +74,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
                       toggleFavorite({
                         id: product.id,
                         name: product.name,
-                        image: product.imageUrl || '/product-placeholder.jpg',
+                        imageUrl: product.imageUrl || '/product-placeholder.jpg',
                         category: product.category || 'Product',
                       })
                     }
@@ -88,7 +88,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
             {/* Right Arrow */}
             <button
               onClick={() => scroll('right')}
-              className="bg-background1 absolute top-1/2 right-[-10px] z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
+              className="bg-background1 absolute top-1/2 -right-2.5 z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
             >
               <ChevronRight size={20} />
             </button>
@@ -110,7 +110,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
               className="no-scrollbar flex gap-2 overflow-x-auto scroll-smooth py-2"
             >
               {products.map(product => (
-                <div key={product.id} className="max-w-[160px] min-w-[160px] flex-shrink-0">
+                <div key={product.id} className="max-w-40 min-w-40 shrink-0">
                   <ProductCard
                     product={{
                       id: product.id,
@@ -131,7 +131,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
                       toggleFavorite({
                         id: product.id,
                         name: product.name,
-                        image: product.imageUrl || '/product-placeholder.jpg',
+                        imageUrl: product.imageUrl || '/product-placeholder.jpg',
                         category: product.category || 'Product',
                       })
                     }

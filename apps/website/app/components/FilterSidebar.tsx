@@ -70,7 +70,7 @@ const Sidebar = () => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 flex-shrink-0 sm:block">
+      <aside className="hidden w-64 shrink-0 sm:block">
         {/* Price Filter */}
         <div>
           <h3 className="text-primaryColor mb-2 text-xl font-semibold">Filter By Price</h3>

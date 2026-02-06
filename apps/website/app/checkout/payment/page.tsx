@@ -24,14 +24,14 @@ interface RazorpayHandlerResponse {
 
 type Address = {
   id: string;
-  fullName: string;
-  addressLine1: string;
+  fullName?: string;
+  addressLine1?: string;
   addressLine2?: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-  phoneNumber: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  postalCode?: string;
+  phoneNumber?: string;
 };
 
 // Create a separate component that uses useSearchParams
@@ -311,6 +311,18 @@ function PaymentContent() {
     }
   };
 
+  const addressSummary = addressDetails
+    ? [
+      addressDetails.addressLine1,
+      addressDetails.addressLine2,
+      addressDetails.city,
+      addressDetails.state,
+      addressDetails.postalCode,
+    ]
+      .filter(Boolean)
+      .join(', ')
+    : '';
+
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -343,15 +355,15 @@ function PaymentContent() {
               <h2 className="mb-2 text-lg font-medium text-gray-800">Delivery Address</h2>
               {addressDetails ? (
                 <div className="flex items-start gap-3 rounded-lg border border-teal-100 bg-teal-50 p-4">
-                  <MapPin className="text-primaryColor mt-0.5 h-5 w-5 flex-shrink-0" />
+                  <MapPin className="text-primaryColor mt-0.5 h-5 w-5 shrink-0" />
                   <div>
-                    <p className="font-medium">{addressDetails?.fullName}</p>
+                    <p className="font-medium">{addressDetails?.fullName || 'Name unavailable'}</p>
                     <p className="text-sm text-gray-600">
-                      {addressDetails?.addressLine1}
-                      {addressDetails?.addressLine2 ? `, ${addressDetails.addressLine2}` : ''},{' '}
-                      {addressDetails?.city}, {addressDetails?.state} {addressDetails?.postalCode}
+                      {addressSummary || 'Address details unavailable'}
                     </p>
-                    <p className="text-sm text-gray-600">+91 {addressDetails?.phoneNumber}</p>
+                    <p className="text-sm text-gray-600">
+                      {addressDetails?.phoneNumber ? `+91 ${addressDetails.phoneNumber}` : 'N/A'}
+                    </p>
                   </div>
                 </div>
               ) : (

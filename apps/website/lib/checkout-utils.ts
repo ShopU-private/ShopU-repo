@@ -5,8 +5,8 @@
 type CartItem = {
   id: string;
   quantity: number;
-  product?: { id: string; price: number | string; name?: string };
-  medicine?: { id: string; price: number | string; name?: string };
+  product?: { id: string; price?: number | string; name?: string };
+  medicine?: { id: string; price?: number | string; name?: string };
   productId?: string;
   medicineId?: string;
   combinationId?: string;
@@ -29,7 +29,7 @@ export function validateCartItems(cartItems: CartItem[]): boolean {
     const hasValidQuantity =
       item.quantity && typeof item.quantity === 'number' && item.quantity > 0;
     // Validate price exists somewhere
-    const hasValidPrice = item.product?.price || item.medicine?.price;
+    const hasValidPrice = item.product?.price != null || item.medicine?.price != null;
 
     return hasValidRef && hasValidQuantity && hasValidPrice;
   });

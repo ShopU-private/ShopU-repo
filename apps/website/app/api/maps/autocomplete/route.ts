@@ -1,3 +1,4 @@
+import { envs } from '@shopu/config/config';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
@@ -8,7 +9,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Missing query' }, { status: 400 });
   }
 
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY;
+  const apiKey = envs.NEXT_PUBLIC_GOOGLE_MAP_API_KEY;
   const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
     query
   )}&key=${apiKey}`;

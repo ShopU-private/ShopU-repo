@@ -257,7 +257,7 @@ export default function AdminOrderDetailPage() {
         <ul className="divide-y">
           {order.orderItems.map(item => (
             <li key={item.id} className="flex flex-col p-6 sm:flex-row">
-              <div className="relative h-20 w-20 flex-shrink-0 rounded-md border bg-gray-100">
+              <div className="relative h-20 w-20 shrink-0 rounded-md border bg-gray-100">
                 {item.product?.productImage?.[0]?.url ? (
                   <Image
                     src={item.product.productImage[0].url}

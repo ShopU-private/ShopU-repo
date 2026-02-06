@@ -13,7 +13,6 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "@google/generative-ai": "^0.24.1",
-    "@reduxjs/toolkit": "^2.11.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@uploadthing/react": "^7.3.1",
     "axios": "^1.13.4",
@@ -37,6 +36,9 @@
   },
   "devDependencies": {
     "@shopu/prisma": "workspace:*",
+    "@shopu/config": "workspace:*",
+    "@shopu/types-store": "workspace:*",
+    "@shopu/redux-toolkit": "workspace:*",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

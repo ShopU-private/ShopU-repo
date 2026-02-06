@@ -45,11 +45,6 @@
   --secondaryColor: #e93e40;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-primaryColor: var(--primaryColor);
-  --color-secondaryColor: var(--secondaryColor);
-}
 
 @media (prefers-color-scheme: dark) {
   :root {

@@ -1,33 +1,8 @@
 'use client';
 
+import { CartItem } from '@shopu/types-store/types';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import toast from 'react-hot-toast';
-
-type Product = {
-  id: string;
-  name: string;
-  price: number | string;
-  imageUrl?: string;
-};
-
-type Medicine = {
-  id: string;
-  name: string;
-  price: number | string;
-  manufacturerName?: string;
-  packSizeLabel?: string;
-};
-
-type CartItem = {
-  id: string;
-  quantity: number;
-  product?: Product;
-  medicine?: Medicine;
-  productId?: string;
-  medicineId?: string;
-  combinationId?: string;
-  addedAt: string;
-};
 
 // Cache key for local storage
 const CART_CACHE_KEY = 'shop_u_cart_cache';

@@ -1,28 +1,7 @@
 'use client';
 
+import { Product, RawProduct, UseProductsOptions } from '@shopu/types-store/types';
 import { useState, useEffect } from 'react';
-import { Product } from '../types/ProductTypes';
-
-interface RawProduct {
-  id: string;
-  name: string;
-  description: string;
-  price: string | number;
-  stock?: number;
-  imageUrl?: string;
-  subCategory?: {
-    name: string;
-  };
-  originalPrice?: number;
-  packaging?: string;
-  discount?: number;
-}
-
-interface UseProductsOptions {
-  category?: string;
-  limit?: number;
-  page?: number;
-}
 
 export function useProducts(options: UseProductsOptions = {}) {
   const [products, setProducts] = useState<Product[]>([]);

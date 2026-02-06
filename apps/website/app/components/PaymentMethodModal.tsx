@@ -7,64 +7,16 @@ import { useCart } from '@/app/hooks/useCart';
 import { useLocation } from '@/app/context/LocationContext';
 import { VisaIcon, MastercardIcon, MaestroIcon, AmexIcon, UpiIcon } from './ui/PaymentIcons';
 import { mapPaymentStatusToOrderStatus } from '@/lib/payment-utils';
-
-interface PaymentMethodModalProps {
-  isOpen: boolean;
-  onCloseAction: () => void;
-  amount: number;
-  selectedAddressId?: string;
-}
+import { AddressDetails, PaymentMethodModalProps, RazorpayInstance, RazorpayOptions } from '@shopu/types-store/types';
 
 declare global {
   interface Window {
     Razorpay: {
-      new (options: RazorpayOptions): RazorpayInstance;
+      new(options: RazorpayOptions): RazorpayInstance;
     };
   }
 }
 
-interface RazorpayOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  prefill?: {
-    name?: string;
-    email?: string;
-    contact?: string;
-  };
-  notes?: Record<string, string>;
-  theme?: {
-    color?: string;
-  };
-  handler?: (response: RazorpayResponse) => void;
-  modal?: {
-    ondismiss?: () => void;
-  };
-}
-
-interface RazorpayResponse {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-}
-
-interface RazorpayInstance {
-  open(): void;
-}
-
-interface AddressDetails {
-  id: string;
-  fullName: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  pincode: string;
-  phoneNumber?: string;
-}
 export default function PaymentMethodModal({
   isOpen,
   onCloseAction,
@@ -418,6 +370,12 @@ export default function PaymentMethodModal({
     }
   };
 
+  const addressDetailsSummary = addressDetails
+    ? [addressDetails.fullName, addressDetails.addressLine1, addressDetails.city]
+      .filter(Boolean)
+      .join(', ')
+    : '';
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
@@ -450,27 +408,24 @@ export default function PaymentMethodModal({
 
           {/* Address Info */}
           <div
-            className={`border ${
-              location?.address || (selectedAddressId && addressDetails)
+            className={`border ${location?.address || (selectedAddressId && addressDetails)
                 ? 'border-green-100 bg-green-50'
                 : 'border-amber-100 bg-amber-50'
-            } mb-4 rounded-lg p-3`}
+              } mb-4 rounded-lg p-3`}
           >
             <div className="flex items-start gap-2">
               <MapPin
-                className={`h-5 w-5 ${
-                  location?.address || (selectedAddressId && addressDetails)
+                className={`h-5 w-5 ${location?.address || (selectedAddressId && addressDetails)
                     ? 'text-green-500'
                     : 'text-amber-500'
-                } mt-0.5`}
+                  } mt-0.5`}
               />
               <div>
                 <h4
-                  className={`text-sm font-medium ${
-                    location?.address || (selectedAddressId && addressDetails)
+                  className={`text-sm font-medium ${location?.address || (selectedAddressId && addressDetails)
                       ? 'text-green-700'
                       : 'text-amber-700'
-                  }`}
+                    }`}
                 >
                   {location?.address || (selectedAddressId && addressDetails)
                     ? 'Delivery address selected'
@@ -478,7 +433,7 @@ export default function PaymentMethodModal({
                 </h4>
                 {addressDetails ? (
                   <p className="mt-1 text-xs text-green-600">
-                    {addressDetails.fullName}, {addressDetails.addressLine1}, {addressDetails.city}
+                    {addressDetailsSummary || 'Address details unavailable'}
                   </p>
                 ) : location?.address ? (
                   <p className="mt-1 text-xs text-green-600">
@@ -580,11 +535,10 @@ export default function PaymentMethodModal({
           <button
             onClick={handlePaymentSelection}
             disabled={isProcessing || (!location?.address && !addressDetails)}
-            className={`flex w-full items-center justify-center rounded-lg py-3 font-medium transition-colors ${
-              (location?.address || addressDetails) && !isProcessing
+            className={`flex w-full items-center justify-center rounded-lg py-3 font-medium transition-colors ${(location?.address || addressDetails) && !isProcessing
                 ? 'bg-teal-600 text-white hover:bg-teal-700'
                 : 'cursor-not-allowed bg-gray-200 text-gray-500'
-            }`}
+              }`}
           >
             {isProcessing ? (
               <>

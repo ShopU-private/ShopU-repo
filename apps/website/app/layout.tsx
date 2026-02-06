@@ -6,7 +6,8 @@ import { CartModalProvider } from './context/CartModalContext';
 import CartModalWrapper from './components/CartModalWrapper';
 import Script from 'next/script';
 import { HeaderWrapper, FooterWrapper } from './components/Wrapper';
-import ReduxProvider from '@/store/provider';
+import ReduxProvider from '@/redux-provider/provider';
+import { envs } from '@shopu/config/config';
 import CustomToaster from './components/CustomToast';
 
 const karla = Karla({
@@ -51,7 +52,7 @@ export default function RootLayout({
           />
           {/* Google Maps Places API */}
           <script
-            src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&libraries=places`}
+            src={`https://maps.googleapis.com/maps/api/js?key=${envs.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&libraries=places`}
             async
             defer
           ></script>

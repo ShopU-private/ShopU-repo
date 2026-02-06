@@ -20,10 +20,11 @@ import { useLocation } from '../context/LocationContext';
 import { useCartModal } from '../context/CartModalContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '@/store/redux/hook';
-import { logoutUser, checkAuthStatus } from '@/store/slices/authSlice';
-import { getUserDetails } from '@/store/slices/userSlice';
+import { useAppDispatch, useAppSelector } from '@shopu/redux-toolkit/hook';
+import { logoutUser, checkAuthStatus } from '@shopu/redux-toolkit/authSlice';
+import { getUserDetails } from '@shopu/redux-toolkit/userSlice';
 import toast from 'react-hot-toast';
+import { PostOffice } from '@shopu/types-store/types';
 
 const Header = () => {
   const isLoggedIn = useAppSelector(state => state.auth.isLoggedIn);
@@ -56,9 +57,8 @@ const Header = () => {
   const [isMobileAccountMenuOpen, setIsMobileAccountMenuOpen] = useState(false);
 
   const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
-  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastFetchRef = useRef<number>(0);
-  const [postOffices, setPostOffices] = useState<any[]>([]);
+  const [postOffices, setPostOffices] = useState<PostOffice[]>([]);
   const [showSelectAddresses, setShowSelectAddresses] = useState(false);
   const dispatch = useAppDispatch();
 
@@ -116,7 +116,7 @@ const Header = () => {
   // Only check auth status once on mount
   useEffect(() => {
     checkLoginStatus();
-  }, []); // Empty dependency array - runs only once
+  }, [checkLoginStatus]); // Empty dependency array - runs only once
 
   // Check login status when modal closes (only if result changed)
   useEffect(() => {
@@ -526,7 +526,7 @@ const Header = () => {
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={toggleUserMenu}
-                className="text-primaryColor hover:text-primaryColor hidden items-center gap-2 rounded-lg border-2 border-solid px-1 py-2 transition-colors hover:bg-gray-50 md:flex"
+                className="text-primaryColor hover:text-(--primaryColor) hidden items-center gap-2 rounded-lg border-2 border-solid px-1 py-2 transition-colors hover:bg-gray-50 md:flex"
               >
                 <User className="h-5 w-5" />
                 <span className="text-md font-medium">Account</span>
@@ -599,7 +599,7 @@ const Header = () => {
           {/* Shopping Cart */}
           <button
             onClick={openCartModal}
-            className="hover:text-primaryColor relative mr-2 rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 md:mr-4"
+            className="hover:text-(--primaryColor) relative mr-2 rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-50 md:mr-4"
           >
             <ShoppingCart className="text-primaryColor h-7 w-7" />
             {isLoadingCart ? (
@@ -636,14 +636,14 @@ const Header = () => {
           >
             <button
               onClick={handleClick}
-              className="hover:text-primaryColor rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
+              className="hover:text-(--primaryColor) rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
             >
               All Products
             </button>
             {categories.map((category, index) => (
               <div key={index} className="relative">
                 <button
-                  className="hover:text-primaryColor rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
+                  className="hover:text-(--primaryColor) rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
                   onClick={() => handleCategoryClick(category.name)}
                 >
                   {category.name}

@@ -11,27 +11,7 @@ import { logCheckoutEvent, validateAddressId } from '@/lib/checkout-utils';
 import AddAddressForm from '../components/AddAddress';
 import Navroute from '../components/Navroute';
 import toast from 'react-hot-toast';
-
-type Address = {
-  id?: string;
-  fullName: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-  phoneNumber: string;
-};
-
-type Coupon = {
-  id: string;
-  name: string;
-  code: string;
-  discount: number;
-  maxUsage: number;
-  expiryDate: string;
-};
+import { Address, Coupon } from '@shopu/types-store/types';
 
 export default function CheckoutPage() {
   const { cartItems, isLoading } = useCart();
@@ -69,8 +49,8 @@ export default function CheckoutPage() {
           console.log('Failed to fetch address');
         }
         const json = await res.json();
-        console.log('address list:', json?.address || []);
-        setAddress(json?.address || []);
+        console.log('address list:', json?.addresses || []);
+        setAddress(json?.addresses || []);
       } catch (error) {
         console.error('Error fetching address:', error);
       } finally {
@@ -275,11 +255,10 @@ export default function CheckoutPage() {
                 {address.map(address => (
                   <div
                     key={address.id}
-                    className={`cursor-pointer rounded-lg border px-2 py-3 ${
-                      selectedAddressId === address.id
-                        ? 'border-[#7ECACE] bg-teal-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className={`cursor-pointer rounded-lg border px-2 py-3 ${selectedAddressId === address.id
+                      ? 'border-[#7ECACE] bg-teal-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                      }`}
                     onClick={() => setSelectedAddressId(address.id ?? '')}
                   >
                     <div className="flex items-center justify-between">
@@ -384,11 +363,10 @@ export default function CheckoutPage() {
                   <button
                     onClick={applyCoupon}
                     disabled={isApplyingCoupon || !couponCode.trim()}
-                    className={`rounded-lg px-4 py-2 font-medium ${
-                      isApplyingCoupon || !couponCode.trim()
-                        ? 'cursor-not-allowed bg-gray-300 text-gray-500'
-                        : 'bg-primaryColor text-white'
-                    }`}
+                    className={`rounded-lg px-4 py-2 font-medium ${isApplyingCoupon || !couponCode.trim()
+                      ? 'cursor-not-allowed bg-gray-300 text-gray-500'
+                      : 'bg-primaryColor text-white'
+                      }`}
                   >
                     {isApplyingCoupon ? <Loader className="h-4 w-4 animate-spin" /> : 'Apply'}
                   </button>
@@ -435,7 +413,7 @@ export default function CheckoutPage() {
               </p>
             </div>
 
-            <div className="flex hidden justify-between sm:flex">
+            <div className="hidden justify-between sm:flex">
               <Link
                 href="/"
                 className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-100"
@@ -443,11 +421,10 @@ export default function CheckoutPage() {
                 Continue Shopping
               </Link>
               <button
-                className={`rounded-lg ${
-                  !selectedAddressId || address.length === 0
-                    ? 'cursor-not-allowed bg-gray-400'
-                    : 'bg-background1'
-                } cursor-pointer px-6 py-2 text-white transition-transform duration-300 hover:scale-102`}
+                className={`rounded-lg ${!selectedAddressId || address.length === 0
+                  ? 'cursor-not-allowed bg-gray-400'
+                  : 'bg-background1'
+                  } cursor-pointer px-6 py-2 text-white transition-transform duration-300 hover:scale-102`}
                 onClick={handleProceedToPayment}
                 disabled={!selectedAddressId || address.length === 0}
               >
@@ -462,11 +439,10 @@ export default function CheckoutPage() {
                 Continue Shopping
               </Link>
               <button
-                className={`rounded-lg ${
-                  !selectedAddressId || address.length === 0
-                    ? 'cursor-not-allowed bg-gray-400'
-                    : 'bg-background1'
-                } cursor-pointer px-6 py-3 text-white transition-transform duration-300 hover:scale-102`}
+                className={`rounded-lg ${!selectedAddressId || address.length === 0
+                  ? 'cursor-not-allowed bg-gray-400'
+                  : 'bg-background1'
+                  } cursor-pointer px-6 py-3 text-white transition-transform duration-300 hover:scale-102`}
                 onClick={handleProceedToPayment}
                 disabled={!selectedAddressId || address.length === 0}
               >

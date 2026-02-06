@@ -65,7 +65,7 @@ const ShopUHealthComponent: React.FC = () => {
             {/* Scroll Arrows */}
             <button
               onClick={() => scroll('left')}
-              className="bg-background1 absolute top-1/2 left-[-15px] z-10 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md sm:flex"
+              className="bg-background1 absolute top-1/2 -left-3.75 z-10 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md sm:flex"
             >
               <ChevronLeft size={20} className="mr-1" />
             </button>
@@ -73,7 +73,7 @@ const ShopUHealthComponent: React.FC = () => {
             {loading ? (
               <div className="no-scrollbar flex gap-4 overflow-x-auto px-1">
                 {[...Array(5)].map((_, index) => (
-                  <div key={index} className="min-w-[210px] animate-pulse">
+                  <div key={index} className="min-w-52.5 animate-pulse">
                     <div className="mb-2 h-52 rounded-lg bg-gray-200"></div>
                     <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
                     <div className="h-4 w-1/2 rounded bg-gray-200"></div>
@@ -96,7 +96,7 @@ const ShopUHealthComponent: React.FC = () => {
                 {products
                   .filter(product => (product.discount ?? 0) >= 40)
                   .map(product => (
-                    <div key={product.id} className="max-w-[210px] min-w-[210px]">
+                    <div key={product.id} className="max-w-52.5 min-w-52.5">
                       <ProductCardWrapper
                         key={product.id}
                         product={product}
@@ -113,7 +113,7 @@ const ShopUHealthComponent: React.FC = () => {
             {/* Right Arrow */}
             <button
               onClick={() => scroll('right')}
-              className="bg-background1 absolute top-1/2 right-[-10px] z-10 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md sm:flex"
+              className="bg-background1 absolute top-1/2 -right-2.5 z-10 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md sm:flex"
             >
               <ChevronRight size={20} className="ml-1" />
             </button>
@@ -139,7 +139,7 @@ const ShopUHealthComponent: React.FC = () => {
           <div className="no-scrollbar flex gap-2 overflow-x-auto scroll-smooth py-1">
             {loading ? (
               [...Array(2)].map((_, index) => (
-                <div key={index} className="min-w-[170px] animate-pulse">
+                <div key={index} className="min-w-42.5 animate-pulse">
                   <div className="mb-2 h-52 rounded-lg bg-gray-200"></div>
                   <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
                   <div className="h-4 w-1/2 rounded bg-gray-200"></div>
@@ -157,7 +157,7 @@ const ShopUHealthComponent: React.FC = () => {
               products
                 .filter(product => (product.discount ?? 0) >= 40)
                 .map(product => (
-                  <div key={product.id} className="max-w-[160px] min-w-[160px] flex-shrink-0">
+                  <div key={product.id} className="max-w-40 min-w-40 shrink-0">
                     <ProductCardWrapper
                       key={product.id}
                       product={product}

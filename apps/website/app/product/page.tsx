@@ -4,21 +4,7 @@ import Navroute from '../components/Navroute';
 import Sidebar from '../components/FilterSidebar';
 import ProductGridClient from './ProductGridClient';
 import { prisma } from '@shopu/prisma/prismaClient';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  discount?: number;
-  stock: number;
-  packaging?: string;
-  rating?: number;
-  reviews?: number;
-  imageUrl?: string;
-  category?: string;
-  description?: string;
-}
+import { Product } from '@shopu/types-store/types';
 
 async function getProductsFromRedis(
   category?: string,
@@ -60,25 +46,28 @@ async function getProductsFromRedis(
     });
 
     // Map and add discount calculation
-    const productsWithDiscount: Product[] = products.map(product => {
-      const discount = (Number(product.id) % 30) + 10;
-      const originalPrice = Math.ceil(Number(product.price) * (100 / (100 - discount)));
+    const productsWithDiscount: Product[] = products
+      .filter((product): product is typeof products[number] & { price: number } => product.price != null)
+      .map(product => {
+        const price = Number(product.price);
+        const discount = (Number(product.id) % 30) + 10;
+        const originalPrice = Math.ceil(price * (100 / (100 - discount)));
 
-      return {
-        id: String(product.id),
-        name: product.name,
-        price: Number(product.price),
-        originalPrice,
-        discount,
-        stock: product.stock,
-        packaging: product.packaging || undefined,
-        rating: 4.5,
-        reviews: 100,
-        imageUrl: product.imageUrl,
-        category: product.subCategory?.category?.name,
-        description: product.description,
-      };
-    });
+        return {
+          id: String(product.id),
+          name: product.name,
+          price,
+          originalPrice,
+          discount,
+          stock: product.stock,
+          packaging: product.packaging || undefined,
+          rating: 4.5,
+          reviews: 100,
+          imageUrl: product.imageUrl,
+          category: product.subCategory?.category?.name,
+          description: product.description,
+        };
+      });
 
     // Store in Redis cache for 5 minutes
     console.log('Saving products to Redis cache');
@@ -91,14 +80,16 @@ async function getProductsFromRedis(
 }
 
 interface ProductPageProps {
-  searchParams: Promise<{ category?: string; minPrice?: string; maxPrice?: string }>;
+  searchParams?: { category?: string; minPrice?: string; maxPrice?: string };
 }
 
 async function ProductPageContent({ searchParams }: ProductPageProps) {
-  const params = await searchParams;
-  const category = params.category && params.category !== 'All' ? params.category : undefined;
-  const minPrice = params.minPrice ? Number(params.minPrice) : undefined;
-  const maxPrice = params.maxPrice ? Number(params.maxPrice) : undefined;
+  const category =
+    searchParams?.category && searchParams.category !== 'All'
+      ? searchParams.category
+      : undefined;
+  const minPrice = searchParams?.minPrice ? Number(searchParams.minPrice) : undefined;
+  const maxPrice = searchParams?.maxPrice ? Number(searchParams.maxPrice) : undefined;
 
   const products = await getProductsFromRedis(category, minPrice, maxPrice);
 

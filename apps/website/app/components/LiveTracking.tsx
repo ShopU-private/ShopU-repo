@@ -3,28 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Truck, Check, AlertCircle, Clock, Package, MapPin, Loader } from 'lucide-react';
 import OrderStatusUpdater from './OrderStatusUpdater';
-
-interface Scan {
-  scan_type: string;
-  scan_location: string;
-  scan_date: string;
-}
-
-interface TrackingStatus {
-  Status: string;
-  StatusDateTime: string;
-}
-
-interface TrackingData {
-  success: boolean;
-  ShipmentData?: Array<{
-    Shipment: {
-      Status?: TrackingStatus;
-      Scans?: Scan[];
-    };
-  }>;
-  error?: string;
-}
+import { TrackingData } from '@shopu/types-store/types';
 
 export default function LiveTracking({
   awb,
@@ -181,7 +160,7 @@ export default function LiveTracking({
         <div className="divide-y divide-gray-200">
           {scans.map((scan, idx) => (
             <div key={idx} className="flex items-start gap-3 p-4">
-              <div className="mt-1 flex-shrink-0">{getStatusIcon(scan.scan_type)}</div>
+              <div className="mt-1 shrink-0">{getStatusIcon(scan.scan_type)}</div>
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-gray-900">{scan.scan_type}</p>
                 <div className="mt-1 flex items-center text-sm text-gray-500">

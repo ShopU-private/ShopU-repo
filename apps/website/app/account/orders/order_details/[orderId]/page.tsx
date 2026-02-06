@@ -83,7 +83,7 @@ export default function OrderDetails() {
     if (orderId) {
       fetchOrder();
     }
-  }, [orderId]);
+  }, [orderId, router]);
 
   if (loading) {
     return (
@@ -295,7 +295,7 @@ export default function OrderDetails() {
                 <div key={index} className="relative flex items-start pb-18">
                   {!isLast && (
                     <div
-                      className={`absolute top-8 left-[22px] h-full w-1 ${
+                      className={`absolute top-8 left-5.5 h-full w-1 ${
                         isNextCompleted ? 'bg-green-600' : 'bg-background1'
                       }`}
                     />

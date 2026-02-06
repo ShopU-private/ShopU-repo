@@ -8,6 +8,8 @@ import { Text, TouchableOpacity, View, Image } from 'react-native';
 const Account = () => {
   const { setIsLoggedIn, setPhoneNumber } = useAuth();
   const router = useRouter();
+  const displayPhone = '+91 124567890';
+  const displayName = 'MD TAUSIF ALAM';
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
@@ -25,10 +27,10 @@ const Account = () => {
           </View>
 
           <View className="ml-3 flex-1">
-            <Text className="text-base font-medium text-white">+91 124567890</Text>
-            <Text className="mt-1 text-sm text-white">MD TAUSIF ALAM</Text>
+            <Text className="text-base font-medium text-white">{displayPhone}</Text>
+            <Text className="mt-1 text-sm text-white">{displayName}</Text>
           </View>
-          <TouchableOpacity className="pr-4">
+          <TouchableOpacity className="pr-4" accessibilityLabel="Edit profile">
             <Pencil size={22} color="#fff" />
           </TouchableOpacity>
         </View>

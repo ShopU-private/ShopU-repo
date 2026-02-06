@@ -45,3 +45,6 @@ coverage/
 .LSOverride
 
 /app/generated/prisma
+
+.turbo
+.dist

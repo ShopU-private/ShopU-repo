@@ -298,7 +298,7 @@ export default function AdminCustomersPage() {
   return (
     <div className="min-h-screen p-6">
       {error && (
-        <div className="mb-4 rounded border-1 border-red-400 bg-red-100 p-4 text-red-700">
+        <div className="mb-4 rounded border border-red-400 bg-red-100 p-4 text-red-700">
           {error}
           <button onClick={() => setError(null)} className="ml-2 text-red-800 hover:text-red-900">
             ×
@@ -329,7 +329,7 @@ export default function AdminCustomersPage() {
 
         {/* Stats Cards */}
         <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-4">
-          <div className="rounded-lg border-1 border-gray-300 bg-white p-6 shadow-sm">
+          <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Customers</p>
@@ -343,7 +343,7 @@ export default function AdminCustomersPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border-1 border-gray-300 bg-white p-6 shadow-sm">
+          <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Active Customers</p>
@@ -357,7 +357,7 @@ export default function AdminCustomersPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border-1 border-gray-300 bg-white p-6 shadow-sm">
+          <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">New This Month</p>
@@ -371,7 +371,7 @@ export default function AdminCustomersPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border-1 border-gray-300 bg-white p-6 shadow-sm">
+          <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
@@ -388,7 +388,7 @@ export default function AdminCustomersPage() {
       </div>
 
       {/* Filters and Search */}
-      <div className="mb-6 rounded-lg border-1 border-gray-300 bg-white p-6 shadow-sm">
+      <div className="mb-6 rounded-lg border border-gray-300 bg-white p-6 shadow-sm">
         <div className="mb-4 flex flex-col gap-4 md:flex-row">
           <div className="relative flex-1">
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
@@ -470,7 +470,7 @@ export default function AdminCustomersPage() {
       </div>
 
       {/* Customers Table */}
-      <div className="rounded-lg border-1 border-gray-300 bg-white shadow-sm">
+      <div className="rounded-lg border border-gray-300 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center">

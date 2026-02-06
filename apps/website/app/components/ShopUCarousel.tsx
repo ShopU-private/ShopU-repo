@@ -42,7 +42,7 @@ const ShopUCarousel = () => {
         {/* Main Carousel */}
         <div className="flex flex-col gap-5 py-2 lg:flex-row">
           {/* Carousel Banner */}
-          <div className="relative min-h-[250px] flex-3 overflow-hidden rounded-lg bg-gradient-to-br">
+          <div className="relative min-h-62.5 flex-3 overflow-hidden rounded-lg bg-linear-to-br">
             <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -116,7 +116,7 @@ const ShopUCarousel = () => {
 
       {/* Mobile Card View */}
       <div className="flex flex-col gap-2 sm:hidden">
-        <div className="relative min-h-[200px] flex-3 overflow-hidden rounded-lg bg-gradient-to-br">
+        <div className="relative min-h-50 flex-3 overflow-hidden rounded-lg bg-linear-to-br">
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -164,7 +164,7 @@ const ShopUCarousel = () => {
                 href="https://wa.me/+918235989891?text=Hello%2C%20I%20want%20to%20place%20an%20order."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primaryColor text-md flex w-34 items-center gap-1 rounded-full border border-white bg-white px-4 py-2 font-medium font-semibold shadow hover:shadow-lg"
+                className="text-primaryColor text-md flex w-34 items-center gap-1 rounded-full border border-white bg-white px-4 py-2 font-medium shadow hover:shadow-lg"
               >
                 <FaWhatsapp className="text-2xl" />
                 WhatsApp

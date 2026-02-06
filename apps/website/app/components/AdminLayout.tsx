@@ -48,12 +48,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         }
 
         const data = await res.json();
-        console.log('Auth data:', data.role);
+        const userRole = data.user?.role;
+        console.log('Auth data:', userRole);
 
-        if (data.role === 'ADMIN' || data.role === 'admin') {
+        if (userRole === 'ADMIN' || userRole === 'admin') {
           setIsAuthenticated(true);
         } else {
-          console.log('Not an admin user:', data.role);
+          console.log('Not an admin user:', userRole);
           router.push(`/login?returnUrl=${encodeURIComponent('/admin')}`);
           //  router.push(`/admin`);
         }
@@ -188,9 +189,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     {item.name}
                   </span>
                   <ChevronDown
-                    className={`h-4 w-4 text-gray-300 transition-transform ${
-                      openUsers ? 'rotate-180' : ''
-                    }`}
+                    className={`h-4 w-4 text-gray-300 transition-transform ${openUsers ? 'rotate-180' : ''
+                      }`}
                   />
                 </button>
                 {openUsers && (
@@ -199,9 +199,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       <Link
                         key={child.name}
                         href={child.href}
-                        className={`flex items-center rounded-md px-3 py-2 text-sm ${
-                          child.active ? 'bg-primaryColor text-white' : 'text-gray-300'
-                        }`}
+                        className={`flex items-center rounded-md px-3 py-2 text-sm ${child.active ? 'bg-primaryColor text-white' : 'text-gray-300'
+                          }`}
                       >
                         <span className="mr-2">{child.icon}</span>
                         {child.name}
@@ -214,9 +213,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${
-                  item.active ? 'bg-primaryColor text-white' : 'text-gray-300'
-                }`}
+                className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${item.active ? 'bg-primaryColor text-white' : 'text-gray-300'
+                  }`}
               >
                 <span className="mr-3">{item.icon}</span>
                 {item.name}
@@ -260,9 +258,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${
-                    item.active ? 'bg-teal-100 text-teal-900' : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${item.active ? 'bg-teal-100 text-teal-900' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <span className="mr-3">{item.icon}</span>

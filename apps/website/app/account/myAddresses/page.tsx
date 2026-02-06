@@ -5,14 +5,14 @@ import AddAddress from '@/app/components/AddAddress';
 import Navroute from '@/app/components/Navroute';
 import { Edit, Home, Loader, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useAppDispatch, useAppSelector } from '@/store/redux/hook';
+import { useAppDispatch, useAppSelector } from '@shopu/redux-toolkit/hook';
 import {
   fetchAddresses,
   deleteAddress,
   addAddress,
   updateAddress,
-} from '@/store/slices/addressSlice';
-import { Address } from '@/types/types';
+} from '@shopu/redux-toolkit/addressSlice';
+import { Address } from '@shopu/types-store/types';
 
 export default function AddressPage() {
   const dispatch = useAppDispatch();
@@ -67,6 +67,18 @@ export default function AddressPage() {
     }
   };
 
+  const formatAddress = (addr: Address) => {
+    const parts = [
+      addr.addressLine1,
+      addr.addressLine2,
+      addr.city,
+      addr.state,
+      addr.country,
+      addr.postalCode,
+    ].filter(Boolean);
+    return parts.length ? parts.join(', ') : 'Address details unavailable';
+  };
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Navroute />
@@ -109,56 +121,61 @@ export default function AddressPage() {
           ) : (
             <div className="mt-4 space-y-4">
               {/* Address Cards */}
-              {addresses.map(addr => (
-                <div
-                  key={addr.id}
-                  className="flex items-center justify-between gap-6 rounded-md bg-white px-6 py-4 shadow-sm shadow-gray-300"
-                >
-                  <div className="flex items-center gap-5 text-gray-800">
-                    <div>
-                      <Home className="text-primaryColor" />
-                    </div>
-                    <div className="text-md">
-                      <span className="font-medium">{addr.fullName}</span>
-                      <br />
-                      <span className="text-sm text-gray-600">
-                        {addr.addressLine1}
-                        {addr.addressLine2 ? `, ${addr.addressLine2}` : ''}, {addr.city},{' '}
-                        {addr.state}, {addr.country} {addr.postalCode}
-                      </span>
-                      <br />
-                      <span className="text-sm text-gray-600">Phone: +91 {addr.phoneNumber}</span>
-                      {addr.latitude && addr.longitude && (
-                        <span className="mt-1 block text-xs text-gray-400">
-                          📍 Lat: {addr.latitude.toFixed(4)}, Lng: {addr.longitude.toFixed(4)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-                    <button
-                      onClick={() => handleEdit(addr)}
-                      className="cursor-pointer text-sm text-blue-600 hover:text-blue-700"
-                      title="Edit address"
-                    >
-                      <Edit className="h-5 w-5 text-gray-500 hover:text-blue-600" />
-                    </button>
+              {addresses.map(addr => {
+                // Ensure addr is a valid Address object
+                if (!addr || typeof addr !== 'object') {
+                  return null;
+                }
 
-                    <button
-                      onClick={() => handleDelete(addr.id!)}
-                      className="cursor-pointer text-gray-500 hover:text-red-500 disabled:opacity-60"
-                      disabled={deletingId === addr.id}
-                      title="Delete address"
-                    >
-                      {deletingId === addr.id ? (
-                        <Loader className="h-5 w-5 animate-spin text-red-500" />
-                      ) : (
-                        <Trash2 className="h-5 w-5" />
-                      )}
-                    </button>
+                return (
+                  <div
+                    key={addr.id}
+                    className="flex items-center justify-between gap-6 rounded-md bg-white px-6 py-4 shadow-sm shadow-gray-300"
+                  >
+                    <div className="flex items-center gap-5 text-gray-800">
+                      <div>
+                        <Home className="text-primaryColor" />
+                      </div>
+                      <div className="text-md">
+                        <span className="font-medium">{addr.fullName || 'Unnamed recipient'}</span>
+                        <br />
+                        <span className="text-sm text-gray-600">{formatAddress(addr)}</span>
+                        <br />
+                        <span className="text-sm text-gray-600">
+                          Phone: {addr.phoneNumber ? `+91 ${addr.phoneNumber}` : 'N/A'}
+                        </span>
+                        {Number.isFinite(addr.latitude) && Number.isFinite(addr.longitude) && (
+                          <span className="mt-1 block text-xs text-gray-400">
+                            📍 Lat: {addr.latitude!.toFixed(4)}, Lng: {addr.longitude!.toFixed(4)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
+                      <button
+                        onClick={() => handleEdit(addr)}
+                        className="cursor-pointer text-sm text-blue-600 hover:text-blue-700"
+                        title="Edit address"
+                      >
+                        <Edit className="h-5 w-5 text-gray-500 hover:text-blue-600" />
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(addr.id!)}
+                        className="cursor-pointer text-gray-500 hover:text-red-500 disabled:opacity-60"
+                        disabled={deletingId === addr.id}
+                        title="Delete address"
+                      >
+                        {deletingId === addr.id ? (
+                          <Loader className="h-5 w-5 animate-spin text-red-500" />
+                        ) : (
+                          <Trash2 className="h-5 w-5" />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

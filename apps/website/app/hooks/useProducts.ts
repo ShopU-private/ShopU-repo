@@ -1,28 +1,7 @@
 'use client';
 
+import { Medicine, UseMedicinesOptions } from '@shopu/types-store/types';
 import { useState, useEffect } from 'react';
-
-interface Medicine {
-  stock: number;
-  imageUrl: string;
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  discount?: number;
-  rating?: number;
-  reviews?: number;
-  subtitle?: string;
-  manufacturerName?: string;
-  packSizeLabel?: string;
-  type?: string;
-  category?: string;
-}
-
-interface UseMedicinesOptions {
-  type?: string;
-  limit?: number;
-}
 
 export function useMedicines(options: UseMedicinesOptions = {}) {
   const [medicines, setMedicines] = useState<Medicine[]>([]);

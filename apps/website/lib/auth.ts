@@ -2,8 +2,9 @@ import { jwtDecode } from 'jwt-decode';
 import { prisma } from '@shopu/prisma/prismaClient';
 import { NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
+import { envs } from '@shopu/config/config';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = envs.JWT_SECRET || 'your-secret-key';
 
 // Define a proper TypeScript interface for the JWT payload
 interface TokenPayload {
@@ -85,6 +86,7 @@ export function isAdmin(req: NextRequest): boolean {
 // ✅ Utility: Get full user from token
 export async function getUserFromToken(token: string) {
   try {
+    if (!token || token.trim() === '') return null;
     const payload = jwtDecode<TokenPayload>(token);
 
     // Verify token hasn't expired

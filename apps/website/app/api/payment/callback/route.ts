@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { prisma } from '@shopu/prisma/prismaClient';
 import { verifyRazorpaySignature, mapPaymentStatusToOrderStatus } from '@/lib/payment-utils';
+import { envs } from '@shopu/config/config';
 
 export async function POST(req: NextRequest) {
   try {
@@ -85,7 +86,7 @@ export async function POST(req: NextRequest) {
       providerPaymentId &&
       status === 'SUCCESS'
     ) {
-      const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
+      const razorpaySecret = envs.RAZORPAY_KEY_SECRET;
 
       if (!razorpaySecret) {
         console.error('Razorpay secret key not found in environment');

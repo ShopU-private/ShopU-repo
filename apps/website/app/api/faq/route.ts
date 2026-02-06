@@ -1,4 +1,5 @@
 // app/api/contact/route.ts
+import { envs } from '@shopu/config/config';
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
@@ -12,15 +13,15 @@ export async function POST(req: NextRequest) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: process.env.SMTP_USER, // your Gmail address
-      pass: process.env.SMTP_PASS, // your Gmail App Password (not your real password)
+      user: envs.SMTP_USER, // your Gmail address
+      pass: envs.SMTP_PASS, // your Gmail App Password (not your real password)
     },
   });
 
   try {
     await transporter.sendMail({
-      from: `"Shop U Store Contact" <${process.env.SMTP_USER}>`,
-      to: process.env.CONTACT_RECEIVER, // who gets the message
+      from: `"Shop U Store Contact" <${envs.SMTP_USER}>`,
+      to: envs.CONTACT_RECEIVER, // who gets the message
       subject: subject,
       html: `
         <h2>New Message from ${name}</h2>

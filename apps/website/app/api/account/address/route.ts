@@ -18,10 +18,21 @@ export async function GET(req: NextRequest) {
       where: { userId },
     });
 
+    const normalizedAddresses = addresses.map(address => ({
+      ...address,
+      fullName: address.fullName ?? '',
+      addressLine1: address.addressLine1 ?? '',
+      city: address.city ?? '',
+      state: address.state ?? '',
+      country: address.country ?? '',
+      postalCode: address.postalCode ?? '',
+      phoneNumber: address.phoneNumber ?? '',
+    }));
+
     return NextResponse.json(
       {
         success: true,
-        addresses,
+        addresses: normalizedAddresses,
       },
       { status: 200 }
     );
@@ -43,6 +54,7 @@ export async function POST(req: NextRequest) {
     const {
       fullName,
       addressLine1,
+      addressLine2,
       city,
       state,
       country,
@@ -57,13 +69,14 @@ export async function POST(req: NextRequest) {
         userId,
         fullName,
         addressLine1,
+        addressLine2: addressLine2 || null,
         city,
         state,
         country,
         postalCode,
         phoneNumber,
-        latitude: latitude ? Number(latitude) : 0,
-        longitude: longitude ? Number(longitude) : 0,
+        latitude: latitude !== undefined && latitude !== null ? Number(latitude) : null,
+        longitude: longitude !== undefined && longitude !== null ? Number(longitude) : null,
         isDefault: false,
       },
     });

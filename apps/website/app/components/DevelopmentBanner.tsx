@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import Link from 'next/link';
 
@@ -8,10 +8,9 @@ export default function DevelopmentBanner() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const bannerDismissed = localStorage.getItem('devBannerDismissed');
-    if (!bannerDismissed) {
-      setIsVisible(true);
-    }
+    setIsVisible(!bannerDismissed);
   }, []);
 
   const handleClose = () => {
@@ -22,7 +21,7 @@ export default function DevelopmentBanner() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
         <button
           onClick={handleClose}

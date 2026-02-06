@@ -1,5 +1,5 @@
 
 
-> @shopu/prisma@1.0.0 build /home/ayush/code/shopu-monorepo/packages/prisma
+> @shopu/prisma@1.0.0 build /home/ayush/code/ShopU/packages/prisma
 > tsc -b
 

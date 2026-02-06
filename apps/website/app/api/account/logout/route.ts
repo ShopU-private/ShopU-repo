@@ -1,18 +1,31 @@
-import { NextResponse } from 'next/server';
+import { requireAuth } from '@/proxy/requireAuth';
+import { ShopUError } from '@/proxy/ShopUError';
 import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST() {
+export async function GET(req: NextRequest) {
+  const auth = requireAuth(req);
+
+  if (!auth.authenticated) {
+    return auth.response;
+  }
+
+  const user = auth.user;
+
+  if (!user) {
+    throw new ShopUError(401, 'Login with correct credentials');
+  }
+
   try {
-    const response = new NextResponse(null, { status: 204 });
+    const response = NextResponse.json({
+      success: true,
+      message: 'Logged out successfully',
+    });
 
-    // Clear auth cookie
-    response.cookies.set({
-      name: 'token',
-      value: '',
+    response.cookies.set('token', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      expires: new Date(0),
+      expires: new Date(0), // expire immediately
       path: '/',
     });
 

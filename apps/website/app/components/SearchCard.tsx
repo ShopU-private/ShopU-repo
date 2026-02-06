@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { SearchItem } from '../types/SearchItem';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
+import { SearchItem } from '@shopu/types-store/types';
 
 interface CardProps {
   item: SearchItem;

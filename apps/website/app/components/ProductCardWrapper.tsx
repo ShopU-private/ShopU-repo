@@ -1,27 +1,5 @@
+import { ProductCardWrapperProps } from '@shopu/types-store/types';
 import ProductCard from './ProductCard';
-
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  discount?: number;
-  stock: number;
-  packaging?: string;
-  rating?: number;
-  reviews?: number;
-  imageUrl?: string;
-  category?: string;
-  description?: string;
-};
-
-type ProductCardWrapperProps = {
-  product: Product;
-  favorites: Set<number | string>;
-  toggleFavorite: (item: { id: string; name: string; image: string; category: string }) => void;
-  handleAddToCart: (productId: string) => void;
-  addingProductId: number | string | null;
-};
 
 export default function ProductCardWrapper({
   product,

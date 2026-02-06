@@ -1,17 +1,11 @@
 'use client';
 
+import { Product } from '@shopu/types-store/types';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface WishlistItem {
   productId: number | string;
-}
-
-interface Product {
-  id: number | string;
-  name: string;
-  image: string;
-  category: string;
 }
 
 // Shared global store (singleton)
@@ -92,7 +86,7 @@ async function toggleFavoriteShared(product: Product) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: product.name,
-        image_url: product.image,
+        image_url: product.imageUrl,
         productId: product.id,
       }),
     });

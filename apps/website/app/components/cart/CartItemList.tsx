@@ -46,7 +46,7 @@ const CartItemRow = memo(
     return (
       <div key={item.id} className="flex h-24 items-center gap-3 border-b border-gray-100 p-4">
         {/* Product Image */}
-        <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
+        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-gray-50">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -78,7 +78,7 @@ const CartItemRow = memo(
           >
             <Minus size={15} />
           </button>
-          <span className="min-w-[2rem] border-gray-300 px-3 py-1 text-center text-sm">
+          <span className="min-w-8 border-gray-300 px-3 py-1 text-center text-sm">
             {String(item.quantity).padStart(2, '0')}
           </span>
           <button

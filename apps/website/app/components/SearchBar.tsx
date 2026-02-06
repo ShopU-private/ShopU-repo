@@ -1,7 +1,7 @@
 import { searchEventEmitter } from './SearchCard';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { SearchItem } from '../types/SearchItem';
 import { usePathname } from 'next/navigation';
+import { SearchItem } from '@shopu/types-store/types';
 
 type SearchResult = Array<SearchItem>;
 
@@ -26,7 +26,7 @@ export default function Searchbar() {
       3000
     );
     return () => clearInterval(interval);
-  }, []);
+  }, [placeholders.length]);
 
   const handleSearch = useCallback(
     async (query: string) => {
@@ -83,8 +83,10 @@ export default function Searchbar() {
   };
 
   useEffect(() => {
-    setSearchQuery('');
-    searchEventEmitter.emit([]);
+    return () => {
+      setSearchQuery('');
+      searchEventEmitter.emit([]);
+    };
   }, [pathname]);
 
   return (

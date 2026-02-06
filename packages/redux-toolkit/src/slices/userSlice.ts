@@ -1,40 +1,20 @@
-import { ShopUError } from "@/proxy/ShopUError";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { UserDetails, UserState } from "@shopu/types-store/types";
 import axios from "axios";
-import toast from "react-hot-toast";
 
-export interface UserDetails {
-  id: string;
-  name: string;
-  email: string;
-  phoneNumber: string;
-  role: string;
-}
 
-interface UserState {
-  userDetails: UserDetails | null;
-  loading: boolean;
-  error: string | null;
-}
-
-export const getUserDetails = createAsyncThunk('/account/me', async () => {
+export const getUserDetails = createAsyncThunk('/account/me', async (_, { rejectWithValue }) => {
   try {
-    const promise = axios.get('/api/account/me', {
+    const response = await axios.get('/api/account/me', {
       withCredentials: true
     });
-    const message = (await promise).data.message;
 
-    toast.promise(promise, {
-      loading: 'Fetching account details',
-      success: message,
-      error: message
-    })
-
-    const response = await promise;
     return response.data.userDetails;
   } catch (error) {
-    toast.error(String(error))
-    throw new ShopUError(500, String(error))
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue(error.response?.data.message || 'Failed to fetch account details')
+    }
+    return rejectWithValue('An error occured')
   }
 })
 

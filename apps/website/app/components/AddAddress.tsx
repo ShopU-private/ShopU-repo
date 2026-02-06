@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { X, Search, Home, Briefcase, MoreHorizontal, MapPin, Crosshair } from 'lucide-react';
 import VectorMap, { MapRef } from '../components/VectorMap';
-import { Address } from '@/types/types';
+import { Address } from '@shopu/types-store/types';
 import toast from 'react-hot-toast';
 
 type Props = {
@@ -23,6 +23,9 @@ type AddressComponent = {
   short_name: string;
   types: string[];
 };
+
+const hasValidCoords = (address?: Address | null) =>
+  Number.isFinite(address?.latitude) && Number.isFinite(address?.longitude);
 
 export default function AddAddressForm({ onCancel, onSave, formMode, initialData }: Props) {
   const mapRef = useRef<MapRef>(null);
@@ -58,13 +61,13 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
       setSearchLocation(initialData.addressLine1 || '');
 
       // Update map if coordinates exist
-      if (initialData.latitude && initialData.longitude && mapRef.current) {
+      if (hasValidCoords(initialData) && mapRef.current) {
         mapRef.current.updateLocation(
-          initialData.latitude,
-          initialData.longitude,
+          initialData.latitude!,
+          initialData.longitude!,
           initialData.addressLine1
         );
-        setSelectedCoords({ lat: initialData.latitude, lng: initialData.longitude });
+        setSelectedCoords({ lat: initialData.latitude!, lng: initialData.longitude! });
       }
     }
   }, [formMode, initialData]);
@@ -133,7 +136,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
         }));
 
         // Update map location
-        if (latitude && longitude && mapRef.current) {
+        if (latitude !== undefined && longitude !== undefined && Number.isFinite(latitude) && Number.isFinite(longitude) && mapRef.current) {
           mapRef.current.updateLocation(latitude, longitude, description);
           setSelectedCoords({ lat: latitude, lng: longitude });
         }
@@ -215,14 +218,16 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     setResults([]); // Clear search results
 
     // Use watchPosition for more accurate real-time location
-    let watchId: number;
-    const locationObtained = false;
+    let watchId: number | undefined;
+    let locationLocked = false;
+    let lastCoords: { lat: number; lng: number } | null = null;
 
     let bestAccuracy = Infinity;
     let stableCount = 0;
 
     const processLocation = async (position: GeolocationPosition) => {
       const { latitude, longitude, accuracy } = position.coords;
+      lastCoords = { lat: latitude, lng: longitude };
 
       console.log('GPS update:', accuracy + 'm');
 
@@ -247,7 +252,10 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
       if (accuracy <= 20 || stableCount >= 3) {
         console.log('✅ Exact location locked:', accuracy + 'm');
 
-        navigator.geolocation.clearWatch(watchId);
+        if (watchId) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+        locationLocked = true;
         setGettingLocation(false);
 
         // Reverse geocode to get address
@@ -295,19 +303,17 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     };
 
     // Try to get current position first (faster)
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        processLocation(position);
-      },
-      initialError => {
-        // If getCurrentPosition fails, try watchPosition for continuous updates
-        console.log('getCurrentPosition failed, trying watchPosition...', initialError.message);
-        watchId = navigator.geolocation.watchPosition(processLocation, handleError, options);
+    const startWatchWithTimeout = () => {
+      watchId = navigator.geolocation.watchPosition(processLocation, handleError, options);
 
-        // Auto-clear watch after 20 seconds if no success
-        setTimeout(() => {
-          if (watchId && !locationObtained) {
-            navigator.geolocation.clearWatch(watchId);
+      // Auto-clear watch after 20 seconds if no stable accuracy
+      setTimeout(() => {
+        if (watchId && !locationLocked) {
+          navigator.geolocation.clearWatch(watchId);
+          setGettingLocation(false);
+          if (lastCoords) {
+            reverseGeocode(lastCoords.lat, lastCoords.lng);
+          } else {
             handleError({
               code: 3,
               message: 'Timeout',
@@ -316,7 +322,23 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
               TIMEOUT: 3,
             } as GeolocationPositionError);
           }
-        }, 20000);
+        }
+      }, 20000);
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const { accuracy } = position.coords;
+        processLocation(position);
+
+        if (accuracy > 20) {
+          startWatchWithTimeout();
+        }
+      },
+      initialError => {
+        // If getCurrentPosition fails, try watchPosition for continuous updates
+        console.log('getCurrentPosition failed, trying watchPosition...', initialError.message);
+        startWatchWithTimeout();
       },
       options
     );
@@ -327,7 +349,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
     e.preventDefault();
 
     // Validate coordinates
-    if (!formData.latitude || !formData.longitude) {
+    if (!hasValidCoords(formData)) {
       toast.error('Please select a location on the map or search for an address');
       return;
     }
@@ -354,7 +376,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
       <div className="flex h-[90vh] w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-2xl">
         {/* Left Map / Search Section */}
         <div className="relative hidden flex-1 bg-gray-100 md:flex">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50">
+          <div className="absolute inset-0 bg-linear-to-br from-blue-50 to-green-50">
             {/* Search Bar */}
             <div className="absolute top-4 right-4 left-4 z-20">
               <div className="relative rounded-xl bg-white p-3 shadow-lg">
@@ -397,7 +419,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
             </div>
 
             {/* Map Component */}
-            <div className="flex h-[500px] w-full items-center justify-center rounded-xl shadow">
+            <div className="flex h-125 w-full items-center justify-center rounded-xl shadow">
               <VectorMap ref={mapRef} onLocationChange={handleMapLocationChange} />
             </div>
 
@@ -409,7 +431,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                   type="button"
                   onClick={getCurrentLocation}
                   disabled={gettingLocation}
-                  className="mt-2 flex w-50 items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-green-500 p-2 text-white shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
+                  className="mt-2 flex w-50 items-center justify-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-green-500 p-2 text-white shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {gettingLocation ? (
                     <>
@@ -446,7 +468,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
         {/* Right Form Section - Rest remains same */}
         <form onSubmit={handleSubmit} className="flex max-w-md flex-1 flex-col bg-white">
           {/* Header */}
-          <div className="bg-primaryColor flex items-center justify-between border-b border-gray-300 px-6 py-3">
+          <div className="bg-background1 flex items-center justify-between border-b border-gray-300 px-6 py-3">
             <div>
               <h2 className="text-xl font-semibold text-white">
                 {formMode === 'edit' ? 'Edit Address' : 'Add Address'}
@@ -474,11 +496,10 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                     key={type}
                     type="button"
                     onClick={() => setSelectedAddressType(type as 'home' | 'work' | 'other')}
-                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-all ${
-                      selectedAddressType === type
+                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-all ${selectedAddressType === type
                         ? 'border-primaryColor text-primaryColor bg-teal-50'
                         : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                    }`}
+                      }`}
                   >
                     {type === 'home' && <Home className="h-4 w-4" />}
                     {type === 'work' && <Briefcase className="h-4 w-4" />}
@@ -535,12 +556,12 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
             </div>
 
             {/* Coordinates Display in Form */}
-            {formData.latitude && formData.longitude && (
+            {hasValidCoords(formData) && (
               <div className="mb-4 rounded-lg bg-teal-50 px-3 py-2">
                 <div className="text-sm text-teal-800">
                   <div className="font-medium">Selected Location:</div>
                   <div className="mt-1 text-xs">
-                    Lat: {formData.latitude.toFixed(6)}, Lng: {formData.longitude.toFixed(6)}
+                    Lat: {formData.latitude!.toFixed(6)}, Lng: {formData.longitude!.toFixed(6)}
                   </div>
                 </div>
               </div>
@@ -577,14 +598,13 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
           <div className="border-t border-gray-300 px-6 py-4">
             <button
               type="submit"
-              disabled={!formData.latitude || !formData.longitude}
-              className="bg-primaryColor w-full rounded-xl py-4 font-medium text-white shadow-lg transition disabled:cursor-not-allowed disabled:bg-gray-400"
+              disabled={!hasValidCoords(formData)}
+              className="bg-background1 w-full rounded-xl py-4 font-medium text-white shadow-lg transition disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               Continue
-              {!formData.latitude ||
-                (!formData.longitude && (
-                  <span className="mt-1 block text-xs">Select location first</span>
-                ))}
+              {!hasValidCoords(formData) && (
+                <span className="mt-1 block text-xs">Select location first</span>
+              )}
             </button>
           </div>
         </form>

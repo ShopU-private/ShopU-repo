@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { prisma } from '@shopu/prisma/prismaClient';
 import { mapPaymentStatusToOrderStatus } from '@/lib/payment-utils';
+import { envs } from '@shopu/config/config';
 
 export async function POST(req: NextRequest) {
   try {
@@ -47,8 +48,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Get the Razorpay key ID from environment variables
-    const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
-    const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+    const razorpayKeyId = envs.RAZORPAY_KEY_ID;
+    const razorpayKeySecret = envs.RAZORPAY_KEY_SECRET;
 
     if (!razorpayKeyId || !razorpayKeySecret) {
       console.error('Razorpay environment variables are not set');

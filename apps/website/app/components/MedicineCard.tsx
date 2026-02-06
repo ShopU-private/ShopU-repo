@@ -1,18 +1,7 @@
 //card for testing
 
+import { Medicine, MedicineCardProps } from '@shopu/types-store/types';
 import React, { useState } from 'react';
-
-interface Medicine {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-}
-
-interface MedicineCardProps {
-  medicine: Medicine;
-}
 
 const MedicineCard: React.FC<MedicineCardProps> = ({ medicine }) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);

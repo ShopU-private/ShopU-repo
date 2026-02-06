@@ -1,10 +1,10 @@
 'use client'
 
-import { useAppDispatch, useAppSelector } from "@/store/redux/hook"
-import { clearUserDetails, getUserDetails } from "@/store/slices/userSlice";
+import { useAppDispatch, useAppSelector } from "@shopu/redux-toolkit/hook"
+import { clearUserDetails, getUserDetails } from "@shopu/redux-toolkit/userSlice";
 import { useEffect } from "react";
 
-export default function UserDetails() {
+export default function CheckSlice() {
   const dispatch = useAppDispatch();
   const userProfile = useAppSelector((state) => state.user.userDetails)
   console.log(userProfile);

@@ -16,12 +16,13 @@ const RightSideDealCard = () => {
 
   if (error || products.length === 0)
     return (
-      <div className="flex hidden w-64 animate-pulse items-center justify-center rounded-xl bg-gray-200 p-6 lg:flex">
+      <div className="hidden w-64 animate-pulse items-center justify-center rounded-xl bg-gray-200 p-6 lg:flex">
         <p className="text-center">No Special offer products available.</p>
       </div>
     );
 
   const product = products[0];
+  const productImage = product.imageUrl || '/Paracetamol.jpg';
 
   return (
     <div className="relative hidden w-64 flex-col items-center space-y-3 rounded-xl bg-gray-100 px-6 py-4 text-center shadow lg:flex">
@@ -37,7 +38,7 @@ const RightSideDealCard = () => {
 
       {/* Product Image */}
       <Image
-        src={product.imageUrl}
+        src={productImage}
         alt={product.name}
         width={144}
         height={144}

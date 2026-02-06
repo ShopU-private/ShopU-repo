@@ -4,8 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Phone } from 'lucide-react';
 import Image from 'next/image';
 import Logo from '../../public/Shop U Logo-03.jpg';
-import { useAppDispatch } from '@/store/redux/hook';
-import { verifyOtp } from '@/store/slices/authSlice';
+import { useAppDispatch } from '@shopu/redux-toolkit/hook';
+import { verifyOtp } from '@shopu/redux-toolkit/authSlice';
 
 interface LoginModalProps {
   isOpen: boolean;

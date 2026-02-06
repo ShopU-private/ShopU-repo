@@ -12,11 +12,13 @@ export default function AddCouponForm({ onSuccess }: { onSuccess: () => void }) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const normalizedCode = form.code.trim().toUpperCase();
     const res = await fetch('/api/coupons', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...form,
+        code: normalizedCode,
         discount: Number(form.discount),
         maxUsage: Number(form.maxUsage),
       }),

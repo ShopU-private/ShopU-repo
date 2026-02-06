@@ -298,7 +298,7 @@ export default function AdminDashboard() {
           {statCards.map((card, index) => (
             <div
               key={index}
-              className="rounded-lg border-1 border-gray-300 bg-white px-6 py-4 shadow-sm"
+              className="rounded-lg border border-gray-300 bg-white px-6 py-4 shadow-sm"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -326,7 +326,7 @@ export default function AdminDashboard() {
         <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="flex justify-between gap-4">
             {/* Recent Orders */}
-            <div className="w-full rounded-lg border-1 border-gray-300 bg-white shadow-sm">
+            <div className="w-full rounded-lg border border-gray-300 bg-white shadow-sm">
               <div className="flex items-center justify-between px-6 py-4">
                 <div>
                   <h2 className="flex items-center gap-2 text-xl">
@@ -347,7 +347,7 @@ export default function AdminDashboard() {
                 <div className="min-w-full divide-y divide-gray-200">
                   <div className="px-6 py-2">
                     {recentOrders.map(order => (
-                      <div key={order.id} className="mb-4 rounded-lg border-1 border-gray-300">
+                      <div key={order.id} className="mb-4 rounded-lg border border-gray-300">
                         <div className="flex items-center justify-between px-4 py-2">
                           <div>
                             <div className="flex items-center justify-between gap-2">
@@ -413,7 +413,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Order Status Pie Chart */}
-          <div className="rounded-lg border-1 border-gray-300 bg-white p-6 shadow-sm">
+          <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-sm">
             <h3 className="mb-4 text-lg font-semibold text-gray-900">Order Status</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -458,7 +458,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Sales Overview Chart */}
-          <div className="rounded-lg border-1 border-gray-300 bg-white p-6 shadow-sm">
+          <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-sm">
             <h3 className="mb-4 text-lg font-semibold text-gray-900">Sales Overview</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">

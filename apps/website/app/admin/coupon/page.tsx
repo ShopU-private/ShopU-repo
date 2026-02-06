@@ -31,7 +31,9 @@ export default function CouponsPage() {
   };
 
   useEffect(() => {
-    fetchCoupons();
+    (async () => {
+      await fetchCoupons();
+    })();
   }, []);
 
   return (

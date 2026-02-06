@@ -2,14 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import SearchCard, { searchEventEmitter } from '../components/SearchCard';
-import { SearchItem } from '../types/SearchItem';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Searchbar from '../components/SearchBar';
+import { SearchItem } from '@shopu/types-store/types';
 
 export default function SearchbarResultPage() {
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [searchCache, setSearchCache] = useState<{ [key: string]: SearchItem[] }>({});
   const [searchResults, setSearchResults] = useState<SearchItem[]>([]);
   const router = useRouter();
 
@@ -22,20 +21,14 @@ export default function SearchbarResultPage() {
     };
   }, []);
 
-  useEffect(() => {
-    const cacheKeys = Object.keys(searchCache);
-    if (cacheKeys.length > 50) {
-      // Limit cache to last 50 searches
-      const newCache = { ...searchCache };
-      delete newCache[cacheKeys[0]];
-      setSearchCache(newCache);
-    }
-  }, [searchCache]);
+  const handleSearch = (results: SearchItem[]) => {
+    setSearchResults(results);
+  };
 
   // subscribe to search results
   useEffect(() => {
     const unsubscribe = searchEventEmitter.subscribe((results: SearchItem[]) => {
-      setSearchResults(results);
+      handleSearch(results);
     });
     return () => {
       unsubscribe();

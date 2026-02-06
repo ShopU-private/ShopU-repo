@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import Image from 'next/image';
 
 const brandData = [
@@ -16,7 +15,7 @@ const BrandSection = () => {
   return (
     <>
       {/* Desktop card view */}
-      <div className="justify-cente flex hidden bg-white px-4 py-2 sm:block">
+      <div className="justify-cente flex bg-white px-4 py-2 sm:block">
         <section className="mx-auto w-[90%] max-w-7xl py-2">
           <div className="w-36">
             <h2 className="text-primaryColor text-xl font-semibold">
@@ -59,7 +58,7 @@ const BrandSection = () => {
             {brandData.map(category => (
               <div
                 key={category.id}
-                className="max-w-[85px] min-w-[85px] flex-shrink-0 rounded-lg bg-white px-4 py-2 shadow-sm"
+                className="max-w-21.25 min-w-21.25 shrink-0 rounded-lg bg-white px-4 py-2 shadow-sm"
               >
                 <Image
                   src={category.image}

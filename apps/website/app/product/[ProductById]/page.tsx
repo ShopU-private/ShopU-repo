@@ -9,7 +9,7 @@ import { Heart, Loader, Share2 } from 'lucide-react';
 import SimilarProductsSection from '@/app/components/SimilarProduct';
 import useAddToCart from '@/app/hooks/handleAddToCart';
 import { useWishlist } from '@/app/hooks/useWishlist';
-import { Product } from '@/app/types/ProductTypes';
+import { Product } from '@shopu/types-store/types';
 
 interface PackOption {
   quantity: number;
@@ -118,7 +118,7 @@ export default function ProductDetailPage() {
                           toggleFavorite({
                             id: product.id,
                             name: product.name,
-                            image: product.imageUrl || '/product-placeholder.jpg',
+                            imageUrl: product.imageUrl || '/product-placeholder.jpg',
                             category: product.category || 'Product',
                           })
                         }
@@ -289,7 +289,7 @@ export default function ProductDetailPage() {
                       toggleFavorite({
                         id: product.id,
                         name: product.name,
-                        image: product.imageUrl || '/product-placeholder.jpg',
+                        imageUrl: product.imageUrl || '/product-placeholder.jpg',
                         category: product.category || 'Product',
                       })
                     }

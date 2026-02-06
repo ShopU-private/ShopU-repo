@@ -3,7 +3,6 @@ import { config } from 'dotenv';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { Prisma } from '@prisma/client/extension';
 
 // Getting the DATABASE_URL from the env through dotenv package
 const __filename = fileURLToPath(import.meta.url);

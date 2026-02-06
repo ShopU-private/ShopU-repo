@@ -64,7 +64,7 @@ const SpecialOffers = () => {
             </div>
           </div>
           {/* Moov Cream */}
-          <div className="flex h-64 items-center justify-between rounded-xl bg-gradient-to-r from-[#6A1B6A] to-[#E72386] px-10 py-6 text-white transition-transform duration-400 hover:scale-102">
+          <div className="flex h-64 items-center justify-between rounded-xl bg-linear-to-r from-[#6A1B6A] to-[#E72386] px-10 py-6 text-white transition-transform duration-400 hover:scale-102">
             <div>
               <h3 className="mb-2 text-2xl font-semibold">
                 Moov Fast Pain
@@ -118,7 +118,7 @@ const SpecialOffers = () => {
         <div className="no-scrollbar flex gap-6 overflow-x-auto scroll-smooth md:grid md:grid-cols-2">
           {/* Covid Pack */}
           <div
-            className="bg-background flex h-50 min-w-[100%] flex-shrink-0 rounded-lg bg-cover bg-right p-6 md:min-w-0"
+            className="bg-background flex h-50 min-w-full shrink-0 rounded-lg bg-cover bg-right p-6 md:min-w-0"
             style={{ backgroundImage: `url('/covid.jpg')` }}
           >
             <div>
@@ -131,7 +131,7 @@ const SpecialOffers = () => {
           </div>
 
           {/* Moov Cream */}
-          <div className="flex h-50 min-w-[100%] flex-shrink-0 items-center justify-between rounded-xl bg-gradient-to-r from-[#6A1B6A] to-[#E72386] p-6 text-white md:min-w-0">
+          <div className="flex h-50 min-w-full shrink-0 items-center justify-between rounded-xl bg-linear-to-r from-[#6A1B6A] to-[#E72386] p-6 text-white md:min-w-0">
             <div className="">
               <h3 className="mb-2 text-lg font-semibold">
                 Moov Fast Pain

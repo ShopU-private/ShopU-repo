@@ -2,16 +2,8 @@ import React from 'react';
 import { Heart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Product } from '../types/ProductTypes';
 import toast from 'react-hot-toast';
-
-interface ProductCardProps {
-  product: Product;
-  isFavorite: boolean;
-  onToggleFavorite: (product: Product) => void;
-  onAddToCart: (product: Product) => void;
-  isAdding: boolean;
-}
+import { ProductCardProps } from '@shopu/types-store/types';
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
@@ -28,7 +20,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <>
       {/* Desktop view */}
-      <div className="group flex hidden h-84 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:block">
+      <div className="group flex h-84 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:block">
         {/* Product Image */}
         <div className="relative h-42 w-full">
           <div onClick={handleclick}>
@@ -65,11 +57,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Product Info */}
-        <div className="flex flex-grow flex-col px-3 py-2">
+        <div className="flex grow flex-col px-3 py-2">
           <p className="text-xs font-medium text-red-500">
             End In <span className="font-semibold text-[#317C80]">05:02:12</span>
           </p>
-          <h3 className="line-clamp-2 min-h-[3rem] text-sm font-medium text-gray-900 transition-colors group-hover:text-teal-600">
+          <h3 className="line-clamp-2 min-h-12 text-sm font-medium text-gray-900 transition-colors group-hover:text-teal-600">
             {product.name.length > 40 ? `${product.name.slice(0, 40)}...` : product.name}
           </h3>
           <p className="mb-1 text-xs text-gray-500">{product.packaging}</p>
@@ -153,11 +145,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Product Info */}
-        <div className="flex flex-grow flex-col px-2">
+        <div className="flex grow flex-col px-2">
           <p className="text-xs font-medium text-red-500">
             End In <span className="font-semibold text-[#317C80]">05:02:12</span>
           </p>
-          <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-900 sm:min-h-[3rem]">
+          <h3 className="line-clamp-2 min-h-10 text-sm font-medium text-gray-900 sm:min-h-12">
             {product.name.length > 40 ? `${product.name.slice(0, 40)}...` : product.name}
           </h3>
           <p className="mb-1 text-xs text-gray-500">{product.packaging}</p>

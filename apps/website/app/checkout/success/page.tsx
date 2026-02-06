@@ -66,7 +66,7 @@ function OrderSuccessContent() {
               )}
 
               {/* Desktop view */}
-              <div className="flex hidden w-full items-center justify-center gap-8 text-sm text-white sm:flex">
+              <div className="hidden w-full items-center justify-center gap-8 text-sm text-white sm:flex">
                 <Link
                   href="/"
                   className="bg-background1 inline-flex cursor-pointer items-center gap-1 rounded-lg p-3 transition-all hover:scale-102"

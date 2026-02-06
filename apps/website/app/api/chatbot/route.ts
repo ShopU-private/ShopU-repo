@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+import { envs } from '@shopu/config/config';
 
 // Initialize the Google Generative AI with API key
-const apiKey = process.env.GEMINI_API_KEY;
+const apiKey = envs.GEMINI_API_KEY;
 
 if (!apiKey) {
   throw new Error('Missing Gemini API key - please set GEMINI_API_KEY environment variable');

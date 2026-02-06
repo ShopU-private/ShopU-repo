@@ -1,6 +1,7 @@
 /**
  * Utility functions for payment processing
  */
+import { envs } from '@shopu/config/config';
 import crypto from 'crypto';
 
 /**
@@ -141,8 +142,8 @@ export function validatePaymentAmount(
  * @returns Boolean indicating if the configuration is valid
  */
 export function isRazorpayConfigValid(): boolean {
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const keyId = envs.RAZORPAY_KEY_ID;
+  const keySecret = envs.RAZORPAY_KEY_SECRET;
 
   return Boolean(keyId && keySecret && keyId.length > 0 && keySecret.length > 0);
 }

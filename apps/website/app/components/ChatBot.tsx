@@ -33,9 +33,10 @@ const ChatBot: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!message.trim()) return;
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) return;
 
-    const userMessage = { content: message, role: 'user' as const };
+    const userMessage = { content: trimmedMessage, role: 'user' as const };
     setMessages(prev => [...prev, userMessage]);
     setMessage('');
     setIsLoading(true);
@@ -46,7 +47,7 @@ const ChatBot: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message: trimmedMessage }),
       });
 
       if (!response.ok) {
@@ -137,16 +138,14 @@ const ChatBot: React.FC = () => {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`mb-3 ${
-                  msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'
-                }`}
+                className={`mb-3 ${msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'
+                  }`}
               >
                 <div
-                  className={`max-w-[80%] rounded-lg px-3 py-2 ${
-                    msg.role === 'user'
+                  className={`max-w-[80%] rounded-lg px-3 py-2 ${msg.role === 'user'
                       ? 'bg-teal-600 text-white'
                       : 'border border-gray-200 bg-white text-gray-800'
-                  }`}
+                    }`}
                 >
                   {msg.content}
                 </div>
