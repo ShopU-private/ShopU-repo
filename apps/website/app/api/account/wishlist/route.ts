@@ -1,33 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
-import { verifyToken } from '@/lib/auth';
+import { requireAuth } from '@/proxy/requireAuth';
+import { ShopUError } from '@/proxy/ShopUError';
+import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
+import { getAuthUserId } from '@/lib/auth';
 
 // Add product to wishlist
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { name, image_url, productId } = body;
-
-  const token = req.cookies.get('token')?.value;
-
-  if (!token) {
-    return NextResponse.json(
-      { success: false, error: true, message: 'Please login first' },
-      { status: 401 }
-    );
-  }
-
-  //Decode token and get userId
-  const payload = verifyToken(token);
-  const userId = payload.id;
-
-  if (!name || !image_url || !productId) {
-    return NextResponse.json(
-      { success: false, error: true, message: 'Missing required fields' },
-      { status: 400 }
-    );
-  }
-
   try {
+    const userId = getAuthUserId(req);
+
+    const body = await req.json();
+    const { name, image_url, productId } = body;
+
+    const requiredFields = { name, image_url, productId };
+    let missingFields: string[] | null = null;
+
+    for (const key in requiredFields) {
+      if (!requiredFields[key as keyof typeof requiredFields]) {
+        (missingFields ??= []).push(key);
+      }
+    }
+
+    if (missingFields) {
+      throw new ShopUError(400, `Missing required fields: ${missingFields.join(', ')}`);
+    }
+
     const existing = await prisma.wishlist.findFirst({
       where: {
         productId,
@@ -36,10 +34,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existing) {
-      return NextResponse.json(
-        { success: false, error: true, message: 'Already in wishlist' },
-        { status: 400 }
-      );
+      throw new ShopUError(400, 'Already exists in wishlist');
     }
 
     const item = await prisma.wishlist.create({
@@ -51,35 +46,23 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    if (!item) {
+      throw new ShopUError(404, 'Fail to add in wishlist')
+    }
+
     return NextResponse.json(
-      { success: true, error: false, message: 'Added to wishlist', data: item },
+      { success: true, message: 'Added to wishlist', item },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error adding to wishlist:', error);
-    return NextResponse.json(
-      { success: false, error: true, message: 'Something went wrong' },
-      { status: 500 }
-    );
+    return shopuErrorHandler(error)
   }
 }
 
 //Get products
 export async function GET(req: NextRequest) {
   try {
-    //Get token from cookies
-    const token = req.cookies.get('token')?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: true, message: 'Please login first' },
-        { status: 401 }
-      );
-    }
-
-    //Decode token and get userId
-    const payload = verifyToken(token);
-    const userId = payload.id;
+    const userId = getAuthUserId(req);
 
     //Query wishlist for the specific user
     const items = await prisma.wishlist.findMany({
@@ -108,41 +91,37 @@ export async function GET(req: NextRequest) {
       stock: item.product?.stock ?? 0,
     }));
 
-    return NextResponse.json(response, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching wishlist:', error);
     return NextResponse.json(
-      { success: false, error: true, message: 'Failed to fetch wishlist' },
-      { status: 500 }
-    );
+      { success: true, message: 'Wishlist fetched', response },
+      { status: 200 }
+    )
+
+  } catch (error) {
+    return shopuErrorHandler(error);
   }
 }
 
 //Delete product to wishlist
 export async function DELETE(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const productId = searchParams.get('productId');
-
-  if (!productId) {
-    return NextResponse.json(
-      { success: false, error: true, message: 'Product ID is required' },
-      { status: 400 }
-    );
-  }
-
-  const token = req.cookies.get('token')?.value;
-
-  if (!token) {
-    return NextResponse.json(
-      { success: false, error: true, message: 'Unauthorized' },
-      { status: 401 }
-    );
-  }
-
-  const payload = verifyToken(token);
-  const userId = payload?.id;
-
   try {
+    const auth = requireAuth(req);
+    if (!auth.authenticated) {
+      return auth.response
+    }
+
+    const user = auth.user;
+    if (!user) {
+      throw new ShopUError(404, 'Failed to fetch the user')
+    }
+
+    const userId = user?.id;
+
+    const { searchParams } = new URL(req.url);
+    const productId = searchParams.get('productId');
+
+    if (!productId) {
+      throw new ShopUError(400, 'Product ID not found')
+    }
     const deletedItem = await prisma.wishlist.deleteMany({
       where: {
         productId,
@@ -151,21 +130,14 @@ export async function DELETE(req: NextRequest) {
     });
 
     if (deletedItem.count === 0) {
-      return NextResponse.json(
-        { success: false, error: true, message: 'Item not found in wishlist' },
-        { status: 404 }
-      );
+      throw new ShopUError(404, 'Item not found in the wishlist');
     }
 
     return NextResponse.json(
-      { success: true, error: false, message: 'Removed from wishlist' },
+      { success: true, message: 'Removed from wishlist' },
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error removing from wishlist:', error);
-    return NextResponse.json(
-      { success: false, error: true, message: 'Failed to remove item' },
-      { status: 500 }
-    );
+    return shopuErrorHandler(error);
   }
 }

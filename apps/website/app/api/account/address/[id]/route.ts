@@ -6,7 +6,7 @@ import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const auth = requireAuth(req);
@@ -15,7 +15,7 @@ export async function GET(
     const user = auth.user;
     if (!user) throw new ShopUError(401, 'Invalid credentials');
 
-    const { id } = await params;
+    const { id } = params;
 
     const address = await prisma.userAddress.findUnique({ where: { id } });
 
@@ -35,7 +35,7 @@ export async function GET(
 // Update address
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const auth = requireAuth(req);
@@ -44,7 +44,7 @@ export async function PATCH(
     const user = auth.user;
     if (!user) throw new ShopUError(401, 'Invalid credentials');
 
-    const { id } = await params;
+    const { id } = params;
     const body = await req.json();
 
     const existingAddress = await prisma.userAddress.findUnique({ where: { id } });
@@ -72,7 +72,7 @@ export async function PATCH(
     });
 
     return NextResponse.json(
-      { success: true, updatedAddress },
+      { success: true, message: 'Address updated successfully', updatedAddress },
       { status: 200 }
     );
   } catch (error) {
@@ -83,7 +83,7 @@ export async function PATCH(
 // Delete address
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const auth = requireAuth(req);
@@ -92,7 +92,7 @@ export async function DELETE(
     const user = auth.user;
     if (!user) throw new ShopUError(401, 'Invalid credentials');
 
-    const { id } = await params;
+    const { id } = params;
 
     const existingAddress = await prisma.userAddress.findUnique({ where: { id } });
 

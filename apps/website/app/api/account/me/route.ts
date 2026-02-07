@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
-import { requireAuth } from '@/proxy/requireAuth';
 import { ShopUError } from '@/proxy/ShopUError';
 import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
+import { getAuthUserId } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    const auth = requireAuth(req);
-    if (!auth.authenticated) {
-      return auth.response;
-    }
+    const userId = getAuthUserId(req);
 
-    const userId = auth.user?.id;
     if (!userId) {
       throw new ShopUError(401, 'Invalid token');
     }
@@ -35,6 +31,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         success: true,
+        message: 'User details fetched successfully',
         user: userDetails,
       },
       { status: 200 }

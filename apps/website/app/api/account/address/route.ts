@@ -2,17 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
 import { ShopUError } from '@/proxy/ShopUError';
 import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
-import { requireAuth } from '@/proxy/requireAuth';
+import { getAuthUserId } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    const auth = requireAuth(req);
-    if (!auth.authenticated) return auth.response;
-
-    const userId = auth.user?.id;
-    if (!userId) {
-      throw new ShopUError(401, 'Invalid token');
-    }
+    const userId = getAuthUserId(req);
 
     const addresses = await prisma.userAddress.findMany({
       where: { userId },
@@ -32,6 +26,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         success: true,
+        message: 'Address fetched successfully',
         addresses: normalizedAddresses,
       },
       { status: 200 }
@@ -43,14 +38,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const auth = requireAuth(req);
-    if (!auth.authenticated) return auth.response;
-
-    const userId = auth.user?.id;
-    if (!userId) {
-      throw new ShopUError(401, 'Invalid token');
-    }
-
+    const userId = getAuthUserId(req);
     const {
       fullName,
       addressLine1,
@@ -63,6 +51,19 @@ export async function POST(req: NextRequest) {
       latitude,
       longitude,
     } = await req.json();
+
+    const requiredFields = { fullName, addressLine1, city, state, country, postalCode, phoneNumber, latitude, longitude };
+    let missingFields: string[] | null = null;
+
+    for (const key in requiredFields) {
+      if (!requiredFields[key as keyof typeof requiredFields]) {
+        (missingFields ??= []).push(key)
+      }
+    }
+
+    if (missingFields?.length) {
+      throw new ShopUError(401, `Missing fields required: ${missingFields.join(', ')}`)
+    }
 
     const newAddress = await prisma.userAddress.create({
       data: {
