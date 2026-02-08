@@ -7,7 +7,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     address: addressReducer,
-    user: userReducer
+    user: userReducer,
   },
 });
 

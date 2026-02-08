@@ -42,7 +42,7 @@ const Header = () => {
     isLoadingLocation,
     setIsLoadingLocation,
     locationError,
-    setLocationError = () => { }, // Provide default empty function
+    setLocationError = () => {}, // Provide default empty function
   } = useLocation();
   const [phoneNumber, setPhoneNumber] = useState('');
   const { openCartModal } = useCartModal();
@@ -312,7 +312,7 @@ const Header = () => {
   return (
     <header className="bg-white shadow-lg">
       {/* Main Navbar */}
-      <div className="border-b border-gray-100 bg-white px-4 xl:fixed xl:top-0 xl:left-0 xl:z-50 xl:w-full">
+      <div className="border-b border-gray-100 bg-white px-4 xl:fixed xl:left-0 xl:top-0 xl:z-50 xl:w-full">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-8">
           {/* Logo */}
           <div className="hidden cursor-pointer px-4 md:block">
@@ -371,7 +371,7 @@ const Header = () => {
             {isLocationOpen && (
               <div
                 ref={locationRef}
-                className="absolute top-full left-0 z-50 mt-2 w-80 rounded-xl border border-gray-200 bg-white p-4 shadow-xl"
+                className="absolute left-0 top-full z-50 mt-2 w-80 rounded-xl border border-gray-200 bg-white p-4 shadow-xl"
               >
                 <div className="space-y-3">
                   {isLoadingLocation ? (
@@ -536,7 +536,7 @@ const Header = () => {
               </button>
 
               {isUserMenuOpen && (
-                <div className="absolute top-full right-0 z-50 mt-2 w-48 rounded-xl border border-gray-200 bg-white py-2 shadow-xl">
+                <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-gray-200 bg-white py-2 shadow-xl">
                   <div className="border-b border-gray-100 px-6 py-2">
                     <p className="font-medium text-gray-700">My Account</p>
                     <p className="text-sm text-gray-600">{phoneNumber}</p>
@@ -603,11 +603,11 @@ const Header = () => {
           >
             <ShoppingCart className="text-primaryColor h-7 w-7" />
             {isLoadingCart ? (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center">
                 <Loader className="h-3 w-3 animate-spin text-teal-600" />
               </span>
             ) : cartCount > 0 ? (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
                 {cartCount > 99 ? '99+' : cartCount}
               </span>
             ) : null}
@@ -615,14 +615,14 @@ const Header = () => {
         </div>
 
         {/* Mobile Search */}
-        <div className="mt-4 mb-2 md:hidden">
+        <div className="mb-2 mt-4 md:hidden">
           <div className="relative" onClick={handleSearch}>
             <input
               type="text"
               placeholder="Search essentials, groceries and more..."
-              className="focus:ring-primaryColor w-full rounded-xl border border-gray-200 px-4 py-3 pl-12 text-sm focus:border-teal-500 focus:ring-2 focus:outline-none"
+              className="focus:ring-primaryColor w-full rounded-xl border border-gray-200 px-4 py-3 pl-12 text-sm focus:border-teal-500 focus:outline-none focus:ring-2"
             />
-            <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
           </div>
         </div>
       </div>
@@ -636,14 +636,14 @@ const Header = () => {
           >
             <button
               onClick={handleClick}
-              className="hover:text-(--primaryColor) rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
+              className="hover:text-(--primaryColor) whitespace-nowrap rounded-lg px-3 py-1.5 text-[15px] text-white transition-all hover:bg-white hover:shadow-sm"
             >
               All Products
             </button>
             {categories.map((category, index) => (
               <div key={index} className="relative">
                 <button
-                  className="hover:text-(--primaryColor) rounded-lg px-3 py-1.5 text-[15px] whitespace-nowrap text-white transition-all hover:bg-white hover:shadow-sm"
+                  className="hover:text-(--primaryColor) whitespace-nowrap rounded-lg px-3 py-1.5 text-[15px] text-white transition-all hover:bg-white hover:shadow-sm"
                   onClick={() => handleCategoryClick(category.name)}
                 >
                   {category.name}
@@ -854,7 +854,7 @@ const Header = () => {
 
               {/* Categories */}
               <div className="border-t pt-3">
-                <p className="mb-2 text-xs font-semibold tracking-wider text-gray-700 uppercase">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
                   Categories
                 </p>
                 <div className="grid grid-cols-2 gap-2">

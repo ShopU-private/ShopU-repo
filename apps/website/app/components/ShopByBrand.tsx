@@ -28,7 +28,7 @@ const BrandSection = () => {
             {brandData.map(category => (
               <div
                 key={category.id}
-                className="group bg-background flex items-center justify-center rounded-lg px-6 py-14"
+                className="bg-background group flex items-center justify-center rounded-lg px-6 py-14"
               >
                 <Image
                   src={category.image}
@@ -54,7 +54,7 @@ const BrandSection = () => {
             </h2>
           </div>
           {/* Horizontal Scrollable Brand List */}
-          <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto scroll-smooth p-1 whitespace-nowrap">
+          <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto scroll-smooth whitespace-nowrap p-1">
             {brandData.map(category => (
               <div
                 key={category.id}
@@ -65,7 +65,7 @@ const BrandSection = () => {
                   alt={category.name}
                   width={80}
                   height={80}
-                  className="mx-auto h-18 w-auto object-contain"
+                  className="h-18 mx-auto w-auto object-contain"
                 />
               </div>
             ))}

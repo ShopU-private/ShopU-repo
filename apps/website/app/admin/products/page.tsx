@@ -486,7 +486,7 @@ export default function AdminProductsPage() {
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Type</label>
               <select
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 value={selectedType}
                 onChange={e => setSelectedType(e.target.value)}
               >
@@ -503,7 +503,7 @@ export default function AdminProductsPage() {
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Manufacturer</label>
               <select
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 value={selectedManufacturer}
                 onChange={e => setSelectedManufacturer(e.target.value)}
               >
@@ -520,7 +520,7 @@ export default function AdminProductsPage() {
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Stock Status</label>
               <select
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 value={selectedStockStatus}
                 onChange={e => setSelectedStockStatus(e.target.value)}
               >
@@ -542,7 +542,7 @@ export default function AdminProductsPage() {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full rounded-md border border-gray-300 py-2 pr-3 pl-10 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
@@ -586,7 +586,7 @@ export default function AdminProductsPage() {
               <input
                 type="text"
                 placeholder="Search..."
-                className="rounded-md border border-gray-300 px-3 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                className="rounded-md border border-gray-300 px-3 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 value={tableSearchQuery}
                 onChange={e => setTableSearchQuery(e.target.value)}
               />
@@ -597,22 +597,22 @@ export default function AdminProductsPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Image
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Product Name
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Description
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Price
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Stock
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Actions
                   </th>
                 </tr>
@@ -639,7 +639,7 @@ export default function AdminProductsPage() {
                 ) : (
                   filteredProducts.slice(0, entriesPerPage).map(product => (
                     <tr key={product.id} className="hover:bg-gray-50">
-                      <td className="p-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap p-4">
                         <div className="h-10 w-10 overflow-hidden rounded-md bg-white">
                           {product?.imageUrl ? (
                             <div className="relative h-10 w-10">
@@ -657,31 +657,31 @@ export default function AdminProductsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="p-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap p-4">
                         <div className="text-sm font-medium text-gray-900">
                           {product.name.length > 40
                             ? `${product.name.slice(0, 40)}...`
                             : product.name}
                         </div>
                       </td>
-                      <td className="p-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap p-4">
                         <div className="text-sm text-gray-900">
                           {product.description.length > 40
                             ? `${product.description.slice(0, 40)}...`
                             : product.description}
                         </div>
                       </td>
-                      <td className="p-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap p-4">
                         <div className="text-sm text-gray-900">
                           ₹{Number(product.price).toFixed(2)}
                         </div>
                       </td>
-                      <td className="p-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap p-4">
                         <div className={`text-sm ${getStockClassName(product.stock)}`}>
                           {getStockStatus(product.stock)} ({product.stock})
                         </div>
                       </td>
-                      <td className="p-4 text-sm whitespace-nowrap">
+                      <td className="whitespace-nowrap p-4 text-sm">
                         <div className="flex space-x-4">
                           <button
                             onClick={() => openEditDialog(product)}
@@ -711,7 +711,7 @@ export default function AdminProductsPage() {
 
       {/* Modal */}
       {isAddDialogOpen && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 bg-opacity-50 backdrop-blur-sm">
           <div className="no-scrollbar max-h-[90vh] w-full max-w-2xl items-center overflow-y-auto rounded-lg bg-white p-8">
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">
@@ -1087,7 +1087,7 @@ export default function AdminProductsPage() {
       {error && <div className="mb-4 rounded-md bg-red-100 p-4 text-red-700">{error}</div>}
 
       {isAddSubCategoryDialogOpen && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 bg-opacity-50 backdrop-blur-sm">
           <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-lg bg-white p-8">
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">Add New Subcategory</h2>

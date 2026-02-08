@@ -313,14 +313,14 @@ function PaymentContent() {
 
   const addressSummary = addressDetails
     ? [
-      addressDetails.addressLine1,
-      addressDetails.addressLine2,
-      addressDetails.city,
-      addressDetails.state,
-      addressDetails.postalCode,
-    ]
-      .filter(Boolean)
-      .join(', ')
+        addressDetails.addressLine1,
+        addressDetails.addressLine2,
+        addressDetails.city,
+        addressDetails.state,
+        addressDetails.postalCode,
+      ]
+        .filter(Boolean)
+        .join(', ')
     : '';
 
   if (isLoading) {

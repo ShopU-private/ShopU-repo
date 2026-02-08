@@ -62,7 +62,7 @@ export default function ContactPage() {
         <div>
           <h2 className="text-primaryColor mb-8 text-xl font-semibold">
             Frequently Asked <span className="text-secondaryColor">Questions</span>
-            <hr className="bg-background1 mt-2 h-1 w-70 rounded border-0" />
+            <hr className="bg-background1 w-70 mt-2 h-1 rounded border-0" />
           </h2>
         </div>
         <div className="lg:flex lg:items-start lg:gap-10">

@@ -1,7 +1,6 @@
 'use client';
 import ChatBot from './components/ChatBot';
 import HealthLayout from './components/ShopUHealthLayout';
-import React from 'react';
 import ShopUCarousel from './components/ShopUCarousel';
 import DealOfTheWeek from './components/DealsOfTheWeek';
 import ShopUSpecialOffers from './components/SpecialOffer';
@@ -13,12 +12,10 @@ import EverydayEssentialsSection from './components/EverydayEssentialsSection';
 import FeatureSection from './components/FeatureSection';
 import PromoBanner from './components/Promobanner';
 import SmallScreenBanner from '@/components/SmallScreenBanner';
-import DevelopmentBanner from './components/DevelopmentBanner';
 
 export default function Home() {
   return (
     <>
-      <DevelopmentBanner />
       <ShopUCarousel />
       <HealthLayout />
       <DealOfTheWeek />

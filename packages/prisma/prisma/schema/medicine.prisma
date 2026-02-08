@@ -1,0 +1,88 @@
+model Medicine {
+  id                String   @id @default(cuid())
+  name              String
+  slug              String   @unique
+  price             Decimal  @db.Decimal(10, 2)
+  compareAtPrice    Decimal? @map("compare_at_price") @db.Decimal(10, 2)
+  stock             Int      @default(0)
+  isDiscontinued    Boolean  @default(false) @map("is_discontinued")
+  isPrescriptionReq Boolean  @default(true) @map("is_prescription_required")
+  imageUrl          String?  @map("image_url")
+
+  // Basic Information
+  manufacturerName String  @map("manufacturer_name")
+  type             String // Tablet, Capsule, Syrup, etc.
+  packSizeLabel    String  @map("pack_size_label")
+  packageDetail    String? @map("package_detail")
+  package          String?
+  productForm      String? @map("product_form")
+
+  // Composition
+  saltComposition String? @map("salt_composition") @db.Text
+  composition1    String? @db.Text
+  composition2    String? @db.Text
+
+  // Medical Information
+  introduction String? @db.Text
+  benefits     String? @db.Text
+  description  String? @db.Text
+  primaryUse   String? @map("primary_use") @db.Text
+  howItWorks   String? @map("how_it_works") @db.Text
+  keyBenefits  String? @map("key_benefits") @db.Text
+
+  // Usage Instructions
+  howToUse         String? @map("how_to_use") @db.Text
+  directionsForUse String? @map("directions_for_use") @db.Text
+  ifMiss           String? @map("if_miss") @db.Text
+  storage          String? @db.Text
+
+  // Safety & Side Effects
+  safetyAdvise     String? @map("safety_advise") @db.Text
+  commonSideEffect String? @map("common_side_effect") @db.Text
+
+  // Interactions
+  alcoholInteraction   String? @map("alcohol_interaction") @db.Text
+  pregnancyInteraction String? @map("pregnancy_interaction") @db.Text
+  lactationInteraction String? @map("lactation_interaction") @db.Text
+  drivingInteraction   String? @map("driving_interaction") @db.Text
+  kidneyInteraction    String? @map("kidney_interaction") @db.Text
+  liverInteraction     String? @map("liver_interaction") @db.Text
+  interaction          String? @db.Text
+
+  // Additional Details
+  factBox             String? @map("fact_box") @db.Text
+  useOf               String? @map("use_of") @db.Text
+  manufacturerAddress String? @map("manufacturer_address") @db.Text
+  countryOfOrigin     String? @map("country_of_origin")
+  manufacturerDetails String? @map("manufacturer_details") @db.Text
+  marketerDetails     String? @map("marketer_details") @db.Text
+  expiration          String?
+  reference           String? @db.Text
+  qa                  String? @map("q_a") @db.Text
+
+  // Metrics
+  viewCount   Int      @default(0) @map("view_count")
+  salesCount  Int      @default(0) @map("sales_count")
+  avgRating   Decimal? @default(0) @map("avg_rating") @db.Decimal(3, 2)
+  reviewCount Int      @default(0) @map("review_count")
+
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  reviews    Review[]
+  wishlists  Wishlist[]
+
+  @@index([slug])
+  @@index([name])
+  @@index([manufacturerName])
+  @@index([type])
+  @@index([isDiscontinued])
+  @@index([isPrescriptionReq])
+  @@index([price])
+  @@index([salesCount])
+  @@map("medicines")
+}

@@ -1,0 +1,98 @@
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique @map("order_number") // Human-readable order number
+  userId        String      @map("user_id")
+  addressId     String      @map("address_id")
+  status        OrderStatus @default(PENDING)
+  paymentMethod String      @map("payment_method")
+
+  // Pricing
+  subtotal     Decimal @db.Decimal(10, 2)
+  discount     Decimal @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  tax          Decimal @default(0) @db.Decimal(10, 2)
+  shippingCost Decimal @default(0) @map("shipping_cost") @db.Decimal(10, 2)
+  total        Decimal @map("total_amount") @db.Decimal(10, 2)
+
+  // Coupon
+  couponId   String? @map("coupon_id")
+  couponCode String? @map("coupon_code")
+
+  // Tracking
+  trackingNumber String? @map("tracking_number")
+  carrier        String?
+
+  // Notes
+  customerNotes String? @map("customer_notes") @db.Text
+  internalNotes String? @map("internal_notes") @db.Text
+
+  // Timestamps
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  confirmedAt DateTime? @map("confirmed_at")
+  shippedAt   DateTime? @map("shipped_at")
+  deliveredAt DateTime? @map("delivered_at")
+  cancelledAt DateTime? @map("cancelled_at")
+
+  // Relations
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  address       UserAddress          @relation(fields: [addressId], references: [id], onDelete: Restrict)
+  coupon        Coupon?              @relation(fields: [couponId], references: [id])
+  orderItems    OrderItem[]
+  payments      Payment[]
+  statusHistory OrderStatusHistory[]
+
+  @@index([userId])
+  @@index([addressId])
+  @@index([orderNumber])
+  @@index([status])
+  @@index([createdAt])
+  @@index([couponId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id            String  @id @default(cuid())
+  orderId       String  @map("order_id")
+  productId     String? @map("product_id")
+  medicineId    String? @map("medicine_id")
+  combinationId String? @map("combination_id")
+
+  // Item details (snapshot at time of order)
+  name     String
+  sku      String?
+  quantity Int
+  price    Decimal @db.Decimal(10, 2) // Unit price
+  discount Decimal @default(0) @db.Decimal(10, 2)
+  tax      Decimal @default(0) @db.Decimal(10, 2)
+  total    Decimal @db.Decimal(10, 2) // Total for this line item
+
+  status OrderStatus @default(PENDING)
+  reason String?     @db.Text // Cancellation/return reason
+
+  // Relations
+  order       Order                      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product?                   @relation(fields: [productId], references: [id], onDelete: SetNull)
+  medicine    Medicine?                  @relation(fields: [medicineId], references: [id], onDelete: SetNull)
+  combination ProductVariantCombination? @relation(fields: [combinationId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([medicineId])
+  @@index([status])
+  @@map("order_items")
+}
+
+model OrderStatusHistory {
+  id        String      @id @default(cuid())
+  orderId   String      @map("order_id")
+  status    OrderStatus
+  notes     String?     @db.Text
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([createdAt])
+  @@map("order_status_history")
+}

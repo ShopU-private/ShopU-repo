@@ -25,11 +25,7 @@ const Home = () => {
         <NewArrivalProduct />
         <HairAndSkinProducts />
         <View className="m-auto mt-4 w-[95%] rounded-xl">
-          <Image
-            source={images.secondMainImage}
-            className="h-49.75 w-full"
-            resizeMode="contain"
-          />
+          <Image source={images.secondMainImage} className="h-49.75 w-full" resizeMode="contain" />
         </View>
         <EveryDayMedicines />
         <TravelEssentials />

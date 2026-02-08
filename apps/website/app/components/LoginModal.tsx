@@ -86,30 +86,33 @@ export default function LoginModal({ isOpen, onClose, onPhoneChange }: LoginModa
     }
   };
 
-  const handleVerifyOtp = useCallback(async (fullOtp: string) => {
-    if (loading) return;
+  const handleVerifyOtp = useCallback(
+    async (fullOtp: string) => {
+      if (loading) return;
 
-    setLoading(true);
-    setError('');
+      setLoading(true);
+      setError('');
 
-    try {
-      const res = await dispatch(verifyOtp({ otp: fullOtp, phoneNumber })).unwrap();
+      try {
+        const res = await dispatch(verifyOtp({ otp: fullOtp, phoneNumber })).unwrap();
 
-      if (res.success) {
-        // Clear OTP digits immediately after success
+        if (res.success) {
+          // Clear OTP digits immediately after success
+          setOtpDigits(Array(6).fill(''));
+          setStep('PHONE'); // Reset step to prevent re-trigger
+          onPhoneChange?.(phoneNumber);
+          onClose();
+        }
+      } catch {
+        setError('Invalid OTP, try again');
         setOtpDigits(Array(6).fill(''));
-        setStep('PHONE'); // Reset step to prevent re-trigger
-        onPhoneChange?.(phoneNumber);
-        onClose();
+        otpRefs.current[0]?.focus();
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      setError('Invalid OTP, try again');
-      setOtpDigits(Array(6).fill(''));
-      otpRefs.current[0]?.focus();
-    } finally {
-      setLoading(false);
-    }
-  }, [loading, dispatch, phoneNumber, onPhoneChange, onClose]);
+    },
+    [loading, dispatch, phoneNumber, onPhoneChange, onClose]
+  );
 
   useEffect(() => {
     if (step !== 'OTP') return;
@@ -160,7 +163,7 @@ export default function LoginModal({ isOpen, onClose, onPhoneChange }: LoginModa
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
         >
           <X className="h-6 w-6" />
         </button>
@@ -190,7 +193,7 @@ export default function LoginModal({ isOpen, onClose, onPhoneChange }: LoginModa
                 onChange={e => setPhoneNumber(e.target.value)}
                 disabled={loading}
                 placeholder="Enter phone number"
-                className="focus:ring-primaryColor w-full rounded-xl border border-gray-300 py-3 pr-4 pl-24 focus:ring-2"
+                className="focus:ring-primaryColor w-full rounded-xl border border-gray-300 py-3 pl-24 pr-4 focus:ring-2"
               />
             </div>
 
@@ -242,10 +245,11 @@ export default function LoginModal({ isOpen, onClose, onPhoneChange }: LoginModa
               <button
                 onClick={handleResendOtp}
                 disabled={resendTimer > 0}
-                className={`text-md px-4 ${resendTimer > 0
-                  ? 'cursor-not-allowed text-gray-400'
-                  : 'text-primaryColor cursor-pointer'
-                  }`}
+                className={`text-md px-4 ${
+                  resendTimer > 0
+                    ? 'cursor-not-allowed text-gray-400'
+                    : 'text-primaryColor cursor-pointer'
+                }`}
               >
                 {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
               </button>

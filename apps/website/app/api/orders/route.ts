@@ -1,21 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
+import { requireAuth } from '@/proxy/requireAuth';
 import { verifyToken } from '@/lib/auth';
 
 // POST - Create a new order
 export async function POST(req: NextRequest) {
   try {
-    // 1. Authenticate user
-    const token = req.cookies.get('token')?.value;
-    if (!token) {
+    const auth = requireAuth(req);
+    if (!auth.authenticated) {
+      return auth.response
+    }
+
+    const user = auth.user;
+    const userId = user?.id;
+
+    if (!userId) {
       return NextResponse.json(
-        { success: false, error: 'Please login to continue shopping' },
+        { success: false, error: 'User ID is required' },
         { status: 401 }
       );
     }
-
-    const payload = verifyToken(token);
-    const userId = payload.id;
 
     // 2. Parse request body - now with more flexible address handling
     const { address, totalAmount, paymentMethod = 'PENDING', items } = await req.json();
@@ -63,7 +67,7 @@ export async function POST(req: NextRequest) {
           data: {
             userId,
             fullName: fullName || 'Delivery Address',
-            phoneNumber: phoneNumber || payload.phoneNumber || 'Unknown',
+            phoneNumber: phoneNumber || user?.phoneNumber || 'Unknown',
             addressLine1:
               addressLine1 || (typeof address === 'string' ? address : 'Address Line 1'),
             addressLine2: address.addressLine2 || null,
@@ -102,7 +106,9 @@ export async function POST(req: NextRequest) {
           addressId: addressId,
           status: 'PENDING',
           paymentMethod,
-          totalAmount: parseFloat(totalAmount.toString()),
+          orderNumber: `ORD-${Date.now()}`,
+          subtotal: totalAmount,
+          total: totalAmount,
         },
         include: {
           orderItems: true,
@@ -118,6 +124,7 @@ export async function POST(req: NextRequest) {
             combinationId?: string;
             quantity: number;
             price: number;
+            name?: string;
           }) => ({
             orderId: order.id,
             productId: item.productId || null,
@@ -125,6 +132,8 @@ export async function POST(req: NextRequest) {
             quantity: item.quantity,
             price: parseFloat(item.price.toString()),
             status: 'PENDING',
+            name: item.name || 'Product',
+            total: item.quantity * parseFloat(item.price.toString()),
           })
         ),
       });

@@ -112,7 +112,7 @@ export default function ProductDetailPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-20">
                     <h2 className="text-xl font-semibold">{product.name}</h2>
-                    <div className="mt-2 mr-4 flex items-center justify-between gap-8">
+                    <div className="mr-4 mt-2 flex items-center justify-between gap-8">
                       <button
                         onClick={() =>
                           toggleFavorite({
@@ -154,7 +154,7 @@ export default function ProductDetailPage() {
                   </div>
 
                   <div className="w-[90%] pb-2">
-                    <p className="mt-4 mb-2 text-sm font-medium">Select Pack Sizes :</p>
+                    <p className="mb-2 mt-4 text-sm font-medium">Select Pack Sizes :</p>
                     <div className="flex grid-cols-2 gap-3 space-x-4 overflow-x-auto sm:grid sm:grid-cols-4 sm:space-x-0">
                       {packOptions.map((pack, index) => (
                         <div
@@ -220,7 +220,7 @@ export default function ProductDetailPage() {
                       handleAddToCart(productId, quantity);
                     }}
                     disabled={addingProductId === productId}
-                    className="bg-primaryColor flex w-52 items-center justify-center gap-2 rounded py-3 font-medium text-white transition-transform duration-300 hover:scale-102"
+                    className="bg-primaryColor hover:scale-102 flex w-52 items-center justify-center gap-2 rounded py-3 font-medium text-white transition-transform duration-300"
                   >
                     {addingProductId === productId ? (
                       <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
@@ -264,13 +264,13 @@ export default function ProductDetailPage() {
                 {product.directionsForUse && (
                   <section className="mb-6">
                     <h2 className="mb-2 text-xl font-semibold">Directions for Use</h2>
-                    <p className="pl-4 whitespace-pre-line">{product.directionsForUse}</p>
+                    <p className="whitespace-pre-line pl-4">{product.directionsForUse}</p>
                   </section>
                 )}
                 {product.safetyInformation && (
                   <section>
                     <h2 className="mb-2 text-xl font-semibold">Safety Information</h2>
-                    <p className="pl-4 whitespace-pre-line">{product.safetyInformation}</p>
+                    <p className="whitespace-pre-line pl-4">{product.safetyInformation}</p>
                   </section>
                 )}
               </div>
@@ -334,7 +334,7 @@ export default function ProductDetailPage() {
                   </div>
 
                   <div className="w-full pb-2">
-                    <p className="mt-4 mb-2 text-sm font-medium">Select Pack Sizes :</p>
+                    <p className="mb-2 mt-4 text-sm font-medium">Select Pack Sizes :</p>
                     <div className="overflow-x-0 flex grid-cols-4 gap-2">
                       {packOptions.map((pack, index) => (
                         <div
@@ -392,7 +392,7 @@ export default function ProductDetailPage() {
                       handleAddToCart(productId, quantity);
                     }}
                     disabled={addingProductId === productId}
-                    className="flex w-52 items-center justify-center gap-2 rounded bg-[#317C80] py-3 font-medium text-white transition-transform duration-300 hover:scale-102"
+                    className="hover:scale-102 flex w-52 items-center justify-center gap-2 rounded bg-[#317C80] py-3 font-medium text-white transition-transform duration-300"
                   >
                     {addingProductId === productId ? (
                       <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>

@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
-import { verifyToken } from '@/lib/auth';
+import { getAuthUserId } from '@/lib/auth';
+import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
 
 // GET - get the total number of items in the user's cart
 export async function GET(req: NextRequest) {
   try {
-    const token = req.cookies.get('token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ success: false, error: 'Please login first' }, { status: 401 });
-    }
-
-    const payload = verifyToken(token);
-
-    const userId = payload.id;
+    const userId = getAuthUserId(req);
 
     // Count total items in cart (sum of quantities)
     const cartItems = await prisma.cartItem.findMany({
@@ -24,18 +17,17 @@ export async function GET(req: NextRequest) {
     const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
     const uniqueItemCount = cartItems.length;
 
-    return NextResponse.json({
-      success: true,
-      count: {
-        items: itemCount,
-        uniqueItems: uniqueItemCount,
-      },
-    });
-  } catch (error) {
-    console.error('[GET /api/cart/count]', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to get cart count' },
-      { status: 500 }
+      {
+        success: true,
+        count: {
+          items: itemCount,
+          uniqueItems: uniqueItemCount,
+        },
+      },
+      { status: 200 }
     );
+  } catch (error) {
+    return shopuErrorHandler(error);
   }
 }

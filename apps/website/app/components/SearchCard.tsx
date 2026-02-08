@@ -45,7 +45,7 @@ const SearchCard: React.FC<CardProps> = ({ item }) => {
 
   return (
     <div className="overflow-hidden rounded-lg bg-white px-4 py-3 shadow-md transition-shadow duration-300 hover:shadow-lg">
-      <span className="mb-3 inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-500 capitalize">
+      <span className="mb-3 inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold capitalize text-gray-500">
         {item.type}
       </span>
 

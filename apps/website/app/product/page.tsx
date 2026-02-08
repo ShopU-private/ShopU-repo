@@ -47,7 +47,9 @@ async function getProductsFromRedis(
 
     // Map and add discount calculation
     const productsWithDiscount: Product[] = products
-      .filter((product): product is typeof products[number] & { price: number } => product.price != null)
+      .filter(
+        (product): product is (typeof products)[number] & { price: number } => product.price != null
+      )
       .map(product => {
         const price = Number(product.price);
         const discount = (Number(product.id) % 30) + 10;
@@ -85,9 +87,7 @@ interface ProductPageProps {
 
 async function ProductPageContent({ searchParams }: ProductPageProps) {
   const category =
-    searchParams?.category && searchParams.category !== 'All'
-      ? searchParams.category
-      : undefined;
+    searchParams?.category && searchParams.category !== 'All' ? searchParams.category : undefined;
   const minPrice = searchParams?.minPrice ? Number(searchParams.minPrice) : undefined;
   const maxPrice = searchParams?.maxPrice ? Number(searchParams.maxPrice) : undefined;
 
@@ -117,7 +117,7 @@ async function ProductPageContent({ searchParams }: ProductPageProps) {
                 You searched for:{' '}
                 <span className="text-primaryColor text-lg capitalize">{category || 'All'}</span>
               </div>
-              <select className="rounded bg-white py-2 pr-8 pl-4 text-sm shadow outline-none">
+              <select className="rounded bg-white py-2 pl-4 pr-8 text-sm shadow outline-none">
                 <option>Default Sorting</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>

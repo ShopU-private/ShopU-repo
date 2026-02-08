@@ -74,7 +74,7 @@ const LoginPage = () => {
         >
           <View className="w-[90%] items-center">
             <Text className="font-KarlaSemiBold text-[29px]">India&apos;s last minute app</Text>
-            <Text className="mb-4 font-KarlaMedium text-[18px] text-primary-bold">
+            <Text className="font-KarlaMedium text-primary-bold mb-4 text-[18px]">
               Log in or Sign up
             </Text>
 
@@ -87,14 +87,14 @@ const LoginPage = () => {
             />
 
             <TouchableOpacity
-              className="mb-2.5 rounded-lg bg-primary-bold px-20 py-3.25"
+              className="bg-primary-bold py-3.25 mb-2.5 rounded-lg px-20"
               onPress={handleSubmit}
             >
               <Text className="font-KarlaMedium text-[14px] text-white">Generate OTP</Text>
             </TouchableOpacity>
 
             <View className="mb-1.25 h-0.5 w-full bg-[#EDEDED]" />
-            <Text className="text-center font-KarlaRegular text-[12px]">
+            <Text className="font-KarlaRegular text-center text-[12px]">
               By continuing, you agree to our Terms of Services & Privacy Policy
             </Text>
           </View>

@@ -104,7 +104,7 @@ export default function Searchbar() {
 
           {/* searching spinner */}
           {isSearching && (
-            <div className="absolute top-1/2 right-3 -translate-y-1/2 transform">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 transform">
               <div className="border-primaryColor h-5 w-5 animate-spin rounded-full border-b-2"></div>
             </div>
           )}
@@ -112,7 +112,7 @@ export default function Searchbar() {
           {searchQuery && (
             <button
               onClick={clearSearch}
-              className="absolute top-1/2 right-4 -translate-y-1/2 transform text-gray-600 hover:text-gray-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 transform text-gray-600 hover:text-gray-600"
             >
               ✕
             </button>
@@ -133,7 +133,7 @@ export default function Searchbar() {
 
           {/* searching spinner */}
           {isSearching && (
-            <div className="absolute top-1/2 right-4 -translate-y-1/2 transform">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 transform">
               <div className="border-primaryColor h-5 w-5 animate-spin rounded-full border-b-2"></div>
             </div>
           )}
@@ -141,7 +141,7 @@ export default function Searchbar() {
           {searchQuery && (
             <button
               onClick={clearSearch}
-              className="absolute top-1/2 right-5 -translate-y-1/2 transform text-gray-600 hover:text-gray-600"
+              className="absolute right-5 top-1/2 -translate-y-1/2 transform text-gray-600 hover:text-gray-600"
             >
               ✕
             </button>

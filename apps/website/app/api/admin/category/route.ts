@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const { name } = parsed.data;
 
     if (!name) {
-      throw new ShopUError(400, 'Name is required')
+      throw new ShopUError(400, 'Name is required');
     }
 
     const existing = await prisma.category.findFirst({
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     const newCategory = await prisma.category.create({ data: { name } });
 
     if (!newCategory) {
-      throw new ShopUError(401, 'Failed to creare category')
+      throw new ShopUError(401, 'Failed to creare category');
     }
 
     return NextResponse.json(

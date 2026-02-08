@@ -161,7 +161,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Mobile menu button */}
-      <div className="fixed top-0 left-0 z-40 w-full bg-white p-4 shadow-sm lg:hidden">
+      <div className="fixed left-0 top-0 z-40 w-full bg-white p-4 shadow-sm lg:hidden">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="rounded-md p-2 text-gray-500 hover:bg-gray-100"
@@ -189,18 +189,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     {item.name}
                   </span>
                   <ChevronDown
-                    className={`h-4 w-4 text-gray-300 transition-transform ${openUsers ? 'rotate-180' : ''
-                      }`}
+                    className={`h-4 w-4 text-gray-300 transition-transform ${
+                      openUsers ? 'rotate-180' : ''
+                    }`}
                   />
                 </button>
                 {openUsers && (
-                  <div className="mt-1 ml-6 space-y-1">
+                  <div className="ml-6 mt-1 space-y-1">
                     {item.children.map(child => (
                       <Link
                         key={child.name}
                         href={child.href}
-                        className={`flex items-center rounded-md px-3 py-2 text-sm ${child.active ? 'bg-primaryColor text-white' : 'text-gray-300'
-                          }`}
+                        className={`flex items-center rounded-md px-3 py-2 text-sm ${
+                          child.active ? 'bg-primaryColor text-white' : 'text-gray-300'
+                        }`}
                       >
                         <span className="mr-2">{child.icon}</span>
                         {child.name}
@@ -213,8 +215,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${item.active ? 'bg-primaryColor text-white' : 'text-gray-300'
-                  }`}
+                className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${
+                  item.active ? 'bg-primaryColor text-white' : 'text-gray-300'
+                }`}
               >
                 <span className="mr-3">{item.icon}</span>
                 {item.name}
@@ -238,7 +241,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-30 lg:hidden">
           <div
-            className="bg-opacity-75 fixed inset-0 bg-gray-600"
+            className="fixed inset-0 bg-gray-600 bg-opacity-75"
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
@@ -258,8 +261,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${item.active ? 'bg-teal-100 text-teal-900' : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                  className={`flex items-center rounded-md px-4 py-2 text-sm font-medium ${
+                    item.active ? 'bg-teal-100 text-teal-900' : 'text-gray-700 hover:bg-gray-100'
+                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <span className="mr-3">{item.icon}</span>

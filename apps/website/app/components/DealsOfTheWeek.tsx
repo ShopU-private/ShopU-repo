@@ -173,17 +173,17 @@ const DealOfTheWeek = () => {
           <div key={product.id} className="rounded-lg">
             <div className="flex gap-4 sm:flex-row">
               <div className="relative">
-                <div className="flex h-70 w-65 items-center justify-center bg-white">
+                <div className="h-70 w-65 flex items-center justify-center bg-white">
                   <Image
                     src={product.imageUrl}
                     alt="Sirum logo"
                     width={400}
                     height={300}
-                    className="w-full p-4 transition-transform duration-300 hover:scale-102"
+                    className="hover:scale-102 w-full p-4 transition-transform duration-300"
                   />
                 </div>
                 {product.isOnSale && (
-                  <span className="bg-background2 absolute top-3 left-3 rounded-lg px-2.5 py-0.5 text-xs text-white">
+                  <span className="bg-background2 absolute left-3 top-3 rounded-lg px-2.5 py-0.5 text-xs text-white">
                     Sale
                   </span>
                 )}
@@ -239,7 +239,7 @@ const DealOfTheWeek = () => {
                   />
                 </div>
                 {product.isOnSale && (
-                  <span className="bg-background2 absolute top-3 left-3 rounded-lg px-2.5 py-0.5 text-xs text-white">
+                  <span className="bg-background2 absolute left-3 top-3 rounded-lg px-2.5 py-0.5 text-xs text-white">
                     Sale
                   </span>
                 )}

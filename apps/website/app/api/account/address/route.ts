@@ -52,17 +52,27 @@ export async function POST(req: NextRequest) {
       longitude,
     } = await req.json();
 
-    const requiredFields = { fullName, addressLine1, city, state, country, postalCode, phoneNumber, latitude, longitude };
+    const requiredFields = {
+      fullName,
+      addressLine1,
+      city,
+      state,
+      country,
+      postalCode,
+      phoneNumber,
+      latitude,
+      longitude,
+    };
     let missingFields: string[] | null = null;
 
     for (const key in requiredFields) {
       if (!requiredFields[key as keyof typeof requiredFields]) {
-        (missingFields ??= []).push(key)
+        (missingFields ??= []).push(key);
       }
     }
 
     if (missingFields?.length) {
-      throw new ShopUError(401, `Missing fields required: ${missingFields.join(', ')}`)
+      throw new ShopUError(401, `Missing fields required: ${missingFields.join(', ')}`);
     }
 
     const newAddress = await prisma.userAddress.create({

@@ -391,8 +391,6 @@ importers:
         specifier: ^7.3.0
         version: 7.3.0(@types/react@19.2.2)(react-dom@19.2.3(react@19.2.4))(react@19.2.4)(typescript@5.9.2)
 
-  packages/redux-context: {}
-
   packages/redux-toolkit:
     dependencies:
       '@reduxjs/toolkit':

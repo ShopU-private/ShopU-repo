@@ -10,7 +10,7 @@ export const fetchAddresses = createAsyncThunk(
       const response = await axios.get('/api/account/address', {
         withCredentials: true,
       });
-      return response.data.addresses || []
+      return response.data.addresses || [];
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return rejectWithValue(error.response?.data.message || 'Failed to fetch address');
@@ -79,8 +79,8 @@ const initialState: AddressState = {
   addresses: [],
   error: null,
   loading: false,
-  selectedAddressId: null
-}
+  selectedAddressId: null,
+};
 
 const addressSlice = createSlice({
   name: 'address',

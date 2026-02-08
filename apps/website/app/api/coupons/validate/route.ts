@@ -17,14 +17,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ valid: false, message: 'Coupon expired' }, { status: 400 });
     }
 
-    if (coupon.maxUsage <= 0) {
+    if ('usageLimit' in coupon && typeof coupon.usageLimit === 'number' && coupon.usageLimit <= 0) {
       return NextResponse.json(
         { valid: false, message: 'Coupon usage limit reached' },
         { status: 400 }
       );
     }
 
-    const discountAmount = (orderAmount * coupon.discount) / 100;
+    const discountAmount = (orderAmount * Number(coupon.discountValue)) / (coupon.discountType === 'percentage' ? 100 : 1);
     const finalAmount = orderAmount - discountAmount;
 
     return NextResponse.json({

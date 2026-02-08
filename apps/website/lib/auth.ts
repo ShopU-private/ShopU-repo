@@ -117,4 +117,3 @@ export function getAuthUserId(req: NextRequest): string {
 
   return user.id;
 }
-

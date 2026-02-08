@@ -34,14 +34,15 @@ export const CustomToaster = () => {
             maxWidth: '420px',
             minWidth: '300px',
             width: 'auto',
-            borderLeft: `4px solid ${t.type === 'success'
+            borderLeft: `4px solid ${
+              t.type === 'success'
                 ? '#317c80'
                 : t.type === 'error'
                   ? '#e93e40'
                   : t.type === 'loading'
                     ? '#6b7280'
                     : '#3b82f6'
-              }`,
+            }`,
             animation: t.visible
               ? 'toastEnter 0.3s cubic-bezier(0.21, 1.02, 0.73, 1) forwards'
               : 'toastExit 0.2s ease-out forwards',

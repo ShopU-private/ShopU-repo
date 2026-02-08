@@ -56,7 +56,7 @@ const ShopUHealthComponent: React.FC = () => {
               Super Saver <span className="text-secondaryColor">Up to 50% off</span>
               <hr className="bg-background1 mt-1 h-1 rounded border-0" />
             </h2>
-            <button className="bg-background1 flex cursor-pointer rounded py-2 pr-2 pl-3 text-sm font-medium text-white">
+            <button className="bg-background1 flex cursor-pointer rounded py-2 pl-3 pr-2 text-sm font-medium text-white">
               View All <ChevronRight size={20} />
             </button>
           </div>
@@ -65,7 +65,7 @@ const ShopUHealthComponent: React.FC = () => {
             {/* Scroll Arrows */}
             <button
               onClick={() => scroll('left')}
-              className="bg-background1 absolute top-1/2 -left-3.75 z-10 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md sm:flex"
+              className="bg-background1 -left-3.75 absolute top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md sm:flex"
             >
               <ChevronLeft size={20} className="mr-1" />
             </button>
@@ -113,7 +113,7 @@ const ShopUHealthComponent: React.FC = () => {
             {/* Right Arrow */}
             <button
               onClick={() => scroll('right')}
-              className="bg-background1 absolute top-1/2 -right-2.5 z-10 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md sm:flex"
+              className="bg-background1 absolute -right-2.5 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md sm:flex"
             >
               <ChevronRight size={20} className="ml-1" />
             </button>
@@ -157,7 +157,7 @@ const ShopUHealthComponent: React.FC = () => {
               products
                 .filter(product => (product.discount ?? 0) >= 40)
                 .map(product => (
-                  <div key={product.id} className="max-w-40 min-w-40 shrink-0">
+                  <div key={product.id} className="min-w-40 max-w-40 shrink-0">
                     <ProductCardWrapper
                       key={product.id}
                       product={product}

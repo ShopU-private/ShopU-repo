@@ -12,7 +12,6 @@ interface ProductResponse {
 
 export async function GET(req: NextRequest) {
   try {
-
     // Read query params
     const { searchParams } = new URL(req.url);
     const limit = Math.max(1, Number(searchParams.get('limit') || '20'));

@@ -351,9 +351,9 @@ export default function AdminDashboard() {
                         <div className="flex items-center justify-between px-4 py-2">
                           <div>
                             <div className="flex items-center justify-between gap-2">
-                              <p className="text-md font-medium whitespace-nowrap">ORD-001</p>
+                              <p className="text-md whitespace-nowrap font-medium">ORD-001</p>
                               <p
-                                className={`inline-flex rounded-full px-2 py-0.5 text-xs leading-5 font-semibold ${
+                                className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold leading-5 ${
                                   order.status === 'DELIVERED'
                                     ? 'bg-green-100 text-green-800'
                                     : order.status === 'PROCESSING'
@@ -372,13 +372,13 @@ export default function AdminDashboard() {
                             </div>
 
                             <div>
-                              <p className="py-1 text-sm whitespace-nowrap text-gray-600">
+                              <p className="whitespace-nowrap py-1 text-sm text-gray-600">
                                 {order.user?.name || 'Unknown Customer'}
                               </p>
                             </div>
 
                             <div className="flex items-center text-sm">
-                              <p className="font-medium whitespace-nowrap text-blue-600">
+                              <p className="whitespace-nowrap font-medium text-blue-600">
                                 <Link
                                   href={`/admin/orders/${order.id}`}
                                   className="hover:underline"
@@ -386,7 +386,7 @@ export default function AdminDashboard() {
                                   #{order.id.slice(-6)}
                                 </Link>
                               </p>
-                              <p className="px-2 whitespace-nowrap text-gray-500">
+                              <p className="whitespace-nowrap px-2 text-gray-500">
                                 {new Date(order.createdAt).toLocaleDateString()}
                               </p>
                             </div>

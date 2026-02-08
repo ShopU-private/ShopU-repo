@@ -69,7 +69,7 @@ const ChatBot: React.FC = () => {
   };
 
   return (
-    <div className="fixed right-5 bottom-5 z-50">
+    <div className="fixed bottom-5 right-5 z-50">
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -109,7 +109,7 @@ const ChatBot: React.FC = () => {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="absolute right-0 bottom-16 flex h-96 w-80 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl sm:w-96">
+        <div className="absolute bottom-16 right-0 flex h-96 w-80 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl sm:w-96">
           {/* Chat Header */}
           <div className="flex items-center bg-teal-600 px-4 py-3 text-white">
             <div className="mr-3">
@@ -138,14 +138,16 @@ const ChatBot: React.FC = () => {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`mb-3 ${msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'
-                  }`}
+                className={`mb-3 ${
+                  msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'
+                }`}
               >
                 <div
-                  className={`max-w-[80%] rounded-lg px-3 py-2 ${msg.role === 'user'
+                  className={`max-w-[80%] rounded-lg px-3 py-2 ${
+                    msg.role === 'user'
                       ? 'bg-teal-600 text-white'
                       : 'border border-gray-200 bg-white text-gray-800'
-                    }`}
+                  }`}
                 >
                   {msg.content}
                 </div>

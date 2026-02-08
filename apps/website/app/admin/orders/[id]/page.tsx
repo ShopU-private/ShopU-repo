@@ -193,7 +193,7 @@ export default function AdminOrderDetailPage() {
               <p className="text-sm text-gray-600">{order.user.phoneNumber || 'N/A'}</p>
             </div>
           ) : (
-            <p className="text-sm text-gray-500 italic">Customer data not available</p>
+            <p className="text-sm italic text-gray-500">Customer data not available</p>
           )}
         </div>
 
@@ -210,7 +210,7 @@ export default function AdminOrderDetailPage() {
               </p>
             </div>
           ) : (
-            <p className="text-gray-500 italic">Address not available</p>
+            <p className="italic text-gray-500">Address not available</p>
           )}
         </div>
 

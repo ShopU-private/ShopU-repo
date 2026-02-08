@@ -1,0 +1,23 @@
+model CartItem {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  productId     String?  @map("product_id")
+  medicineId    String?  @map("medicine_id")
+  combinationId String?  @map("combination_id")
+  quantity      Int      @default(1)
+  price         Decimal? @db.Decimal(10, 2) // Snapshot price at time of adding
+  addedAt       DateTime @default(now()) @map("added_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product  Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  medicine Medicine? @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@unique([userId, medicineId])
+  @@index([userId])
+  @@index([productId])
+  @@index([medicineId])
+  @@map("cart_items")
+}

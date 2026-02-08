@@ -101,7 +101,7 @@ export default function WishlistPage() {
             <div className="hidden overflow-x-auto px-10 sm:block">
               <h2 className="text-primaryColor mb-4 text-xl font-semibold">
                 Wish<span className="text-secondaryColor">list</span>
-                <hr className="bg-background1 mt-1 h-1 w-22 rounded border-0" />
+                <hr className="bg-background1 w-22 mt-1 h-1 rounded border-0" />
               </h2>
               <table className="min-w-full border-separate border-spacing-y-4">
                 <thead>
@@ -169,7 +169,7 @@ export default function WishlistPage() {
                             handleAddToCart(item.productId);
                           }}
                           disabled={addingProductId === item.productId}
-                          className="hover:bg-opacity-90 bg-background1 cursor-pointer rounded px-4 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
+                          className="bg-background1 cursor-pointer rounded px-4 py-1 text-sm text-white hover:bg-opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {addingProductId === item.productId ? 'Adding..' : 'ADD'}
                         </button>
@@ -253,7 +253,7 @@ export default function WishlistPage() {
                         handleAddToCart(item.productId);
                       }}
                       disabled={addingProductId === item.productId}
-                      className="hover:bg-opacity-90 bg-background1 rounded px-4 py-1 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
+                      className="bg-background1 rounded px-4 py-1 text-sm text-white hover:bg-opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {addingProductId === item.productId ? 'Adding...' : 'ADD'}
                     </button>

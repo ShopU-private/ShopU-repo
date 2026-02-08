@@ -57,13 +57,13 @@ const ProductCardDesign: React.FC<ProductCardProps> = ({ product }) => {
         <Text className={`${productCardDesignStyle.textCommonDesign} line-through`}>
           ₹{product.mrp}
         </Text>
-        <Text className="font-RobotoRegular text-[11px] text-primary-semiBold">
+        <Text className="font-RobotoRegular text-primary-semiBold text-[11px]">
           {product.discount}
         </Text>
       </View>
       <View className="flex flex-row items-center justify-between">
-        <Text className="font-RobotoMedium text-[18px] text-primary-bold">₹{product.price}</Text>
-        <TouchableOpacity className="rounded-md bg-primary-bold px-5 py-2">
+        <Text className="font-RobotoMedium text-primary-bold text-[18px]">₹{product.price}</Text>
+        <TouchableOpacity className="bg-primary-bold rounded-md px-5 py-2">
           <Text className="font-RobotoMedium text-white">Add</Text>
         </TouchableOpacity>
       </View>

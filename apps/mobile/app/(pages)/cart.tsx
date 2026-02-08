@@ -8,9 +8,9 @@ const Cart = () => {
       <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
         <CartScreen />
       </ScrollView>
-      <View className="mb-10 flex-row items-center justify-between bg-white px-6 py-4 ">
+      <View className="mb-10 flex-row items-center justify-between bg-white px-6 py-4">
         <View>
-          <Text className="text-gray-800 text-2xl font-bold">₹1,600</Text>
+          <Text className="text-2xl font-bold text-gray-800">₹1,600</Text>
           <Text className="text-sm text-[#666666]">Bill Amount</Text>
         </View>
 

@@ -87,7 +87,7 @@ const Welcome = () => {
             <Text className="font-KarlaRegular text-[16px]">Skip</Text>
           </TouchableOpacity>
         </View>
-        <View className="absolute bottom-12 right-10 rounded-full bg-primary-bold p-3">
+        <View className="bg-primary-bold absolute bottom-12 right-10 rounded-full p-3">
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() =>

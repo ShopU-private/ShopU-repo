@@ -27,12 +27,12 @@ const RightSideDealCard = () => {
   return (
     <div className="relative hidden w-64 flex-col items-center space-y-3 rounded-xl bg-gray-100 px-6 py-4 text-center shadow lg:flex">
       {/* Top Badge */}
-      <div className="text-secondaryColor absolute top-3 left-4 text-xl font-semibold">
+      <div className="text-secondaryColor absolute left-4 top-3 text-xl font-semibold">
         Special Deal
       </div>
 
       {/* Discount Badge */}
-      <div className="bg-background2 absolute top-0 right-0 rounded-tr-xl rounded-bl-2xl px-3 py-1 text-sm font-bold text-white">
+      <div className="bg-background2 absolute right-0 top-0 rounded-bl-2xl rounded-tr-xl px-3 py-1 text-sm font-bold text-white">
         {product.discount}% <br /> OFF
       </div>
 

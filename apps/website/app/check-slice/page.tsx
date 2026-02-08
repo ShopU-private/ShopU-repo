@@ -1,20 +1,20 @@
-'use client'
+'use client';
 
-import { useAppDispatch, useAppSelector } from "@shopu/redux-toolkit/hook"
-import { clearUserDetails, getUserDetails } from "@shopu/redux-toolkit/userSlice";
-import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from '@shopu/redux-toolkit/hook';
+import { clearUserDetails, getUserDetails } from '@shopu/redux-toolkit/userSlice';
+import { useEffect } from 'react';
 
 export default function CheckSlice() {
   const dispatch = useAppDispatch();
-  const userProfile = useAppSelector((state) => state.user.userDetails)
+  const userProfile = useAppSelector(state => state.user.userDetails);
   console.log(userProfile);
 
   useEffect(() => {
-    dispatch(getUserDetails())
-  }, [dispatch])
+    dispatch(getUserDetails());
+  }, [dispatch]);
 
   function handleDelete() {
-    dispatch(clearUserDetails())
+    dispatch(clearUserDetails());
   }
   return (
     <div>
@@ -23,8 +23,8 @@ export default function CheckSlice() {
           <div>{userProfile.phoneNumber}</div>
         </div>
       )}
-      
+
       <button onClick={handleDelete}>Clear details</button>
     </div>
-  )
+  );
 }

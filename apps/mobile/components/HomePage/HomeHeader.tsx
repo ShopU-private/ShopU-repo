@@ -43,7 +43,7 @@ export const HomeHeader = () => {
     <View className="flex gap-5">
       <SafeAreaView className="mb-[10px] flex w-full flex-row items-center justify-between">
         <View className="ml-[20px] flex flex-shrink-0 items-start">
-          <Text className="mb-[5px] font-RobotoSemiBold text-[22px] text-[#F3F3F3]">Hi, User</Text>
+          <Text className="font-RobotoSemiBold mb-[5px] text-[22px] text-[#F3F3F3]">Hi, User</Text>
           <Text className="font-RobotoRegular text-[14px] text-[#F3F3F3]">Welcome to ShopU</Text>
         </View>
         <View className="mr-[20px] flex flex-shrink-0 flex-row gap-10">

@@ -102,7 +102,7 @@ export default function OrdersPage() {
         ) : (
           <>
             {/* Desktop Table View */}
-            <div className="hidden px-13 sm:block">
+            <div className="px-13 hidden sm:block">
               <h2 className="text-primaryColor mb-4 text-xl font-semibold">
                 Order <span className="text-secondaryColor">List</span>
                 <hr className="bg-background1 mt-1 h-1 w-24 rounded border-0" />

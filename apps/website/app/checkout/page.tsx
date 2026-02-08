@@ -255,10 +255,11 @@ export default function CheckoutPage() {
                 {address.map(address => (
                   <div
                     key={address.id}
-                    className={`cursor-pointer rounded-lg border px-2 py-3 ${selectedAddressId === address.id
-                      ? 'border-[#7ECACE] bg-teal-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                    className={`cursor-pointer rounded-lg border px-2 py-3 ${
+                      selectedAddressId === address.id
+                        ? 'border-[#7ECACE] bg-teal-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
                     onClick={() => setSelectedAddressId(address.id ?? '')}
                   >
                     <div className="flex items-center justify-between">
@@ -357,16 +358,17 @@ export default function CheckoutPage() {
                       setCouponCode(e.target.value.toUpperCase());
                       setCouponError('');
                     }}
-                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-[#7ECACE] focus:ring-1 focus:ring-[#7ECACE] focus:outline-none"
+                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-[#7ECACE] focus:outline-none focus:ring-1 focus:ring-[#7ECACE]"
                     disabled={isApplyingCoupon}
                   />
                   <button
                     onClick={applyCoupon}
                     disabled={isApplyingCoupon || !couponCode.trim()}
-                    className={`rounded-lg px-4 py-2 font-medium ${isApplyingCoupon || !couponCode.trim()
-                      ? 'cursor-not-allowed bg-gray-300 text-gray-500'
-                      : 'bg-primaryColor text-white'
-                      }`}
+                    className={`rounded-lg px-4 py-2 font-medium ${
+                      isApplyingCoupon || !couponCode.trim()
+                        ? 'cursor-not-allowed bg-gray-300 text-gray-500'
+                        : 'bg-primaryColor text-white'
+                    }`}
                   >
                     {isApplyingCoupon ? <Loader className="h-4 w-4 animate-spin" /> : 'Apply'}
                   </button>
@@ -421,10 +423,11 @@ export default function CheckoutPage() {
                 Continue Shopping
               </Link>
               <button
-                className={`rounded-lg ${!selectedAddressId || address.length === 0
-                  ? 'cursor-not-allowed bg-gray-400'
-                  : 'bg-background1'
-                  } cursor-pointer px-6 py-2 text-white transition-transform duration-300 hover:scale-102`}
+                className={`rounded-lg ${
+                  !selectedAddressId || address.length === 0
+                    ? 'cursor-not-allowed bg-gray-400'
+                    : 'bg-background1'
+                } hover:scale-102 cursor-pointer px-6 py-2 text-white transition-transform duration-300`}
                 onClick={handleProceedToPayment}
                 disabled={!selectedAddressId || address.length === 0}
               >
@@ -439,10 +442,11 @@ export default function CheckoutPage() {
                 Continue Shopping
               </Link>
               <button
-                className={`rounded-lg ${!selectedAddressId || address.length === 0
-                  ? 'cursor-not-allowed bg-gray-400'
-                  : 'bg-background1'
-                  } cursor-pointer px-6 py-3 text-white transition-transform duration-300 hover:scale-102`}
+                className={`rounded-lg ${
+                  !selectedAddressId || address.length === 0
+                    ? 'cursor-not-allowed bg-gray-400'
+                    : 'bg-background1'
+                } hover:scale-102 cursor-pointer px-6 py-3 text-white transition-transform duration-300`}
                 onClick={handleProceedToPayment}
                 disabled={!selectedAddressId || address.length === 0}
               >

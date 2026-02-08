@@ -42,7 +42,7 @@ const ShopUCarousel = () => {
         {/* Main Carousel */}
         <div className="flex flex-col gap-5 py-2 lg:flex-row">
           {/* Carousel Banner */}
-          <div className="relative min-h-62.5 flex-3 overflow-hidden rounded-lg bg-linear-to-br">
+          <div className="min-h-62.5 flex-3 bg-linear-to-br relative overflow-hidden rounded-lg">
             <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -54,7 +54,7 @@ const ShopUCarousel = () => {
                     alt={slide.title}
                     width={720}
                     height={400}
-                    className="max-h-88 w-full object-cover md:max-h-110"
+                    className="max-h-88 md:max-h-110 w-full object-cover"
                     priority
                   />
                 </div>
@@ -80,7 +80,7 @@ const ShopUCarousel = () => {
         </div>
 
         {/* WhatsApp Banner */}
-        <div className="bg-background1 flex h-40 w-full flex-col items-center justify-between rounded-lg px-4 py-4 text-white sm:flex-row md:h-46 md:px-14">
+        <div className="bg-background1 md:h-46 flex h-40 w-full flex-col items-center justify-between rounded-lg px-4 py-4 text-white sm:flex-row md:px-14">
           {/* Left: Logo & Text */}
           <div className="flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row md:gap-10">
             {/* Logo */}
@@ -116,7 +116,7 @@ const ShopUCarousel = () => {
 
       {/* Mobile Card View */}
       <div className="flex flex-col gap-2 sm:hidden">
-        <div className="relative min-h-50 flex-3 overflow-hidden rounded-lg bg-linear-to-br">
+        <div className="min-h-50 flex-3 bg-linear-to-br relative overflow-hidden rounded-lg">
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -164,7 +164,7 @@ const ShopUCarousel = () => {
                 href="https://wa.me/+918235989891?text=Hello%2C%20I%20want%20to%20place%20an%20order."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primaryColor text-md flex w-34 items-center gap-1 rounded-full border border-white bg-white px-4 py-2 font-medium shadow hover:shadow-lg"
+                className="text-primaryColor text-md w-34 flex items-center gap-1 rounded-full border border-white bg-white px-4 py-2 font-medium shadow hover:shadow-lg"
               >
                 <FaWhatsapp className="text-2xl" />
                 WhatsApp

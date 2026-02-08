@@ -95,7 +95,7 @@ const ColdAndCoughProducts = () => {
           <Text className="font-KarlaBold text-lg">Cold & Cough Products</Text>
         </View>
         <TouchableOpacity className="flex flex-row items-center gap-2">
-          <Text className="font-KarlaRegular text-[14px] text-primary-bold">View All</Text>
+          <Text className="font-KarlaRegular text-primary-bold text-[14px]">View All</Text>
           <Icon name="caret-right" size={20} color={'#317C80'} />
         </TouchableOpacity>
       </View>

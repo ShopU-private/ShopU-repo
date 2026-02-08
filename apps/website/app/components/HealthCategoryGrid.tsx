@@ -28,14 +28,14 @@ const HealthCategoryGrid: React.FC<Props> = ({ healthCategories }) => {
           <hr className="bg-background1 mt-1 h-1 rounded border-0" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 pt-8 pb-10 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 lg:grid-cols-7">
+        <div className="grid grid-cols-2 gap-4 pb-10 pt-8 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 lg:grid-cols-7">
           {healthCategories.map(category => (
             <div
               key={category.id}
               className="group cursor-pointer items-center rounded-lg"
               onClick={handleclick}
             >
-              <div className="mb-1 flex justify-center transition-transform duration-300 group-hover:scale-102 sm:mb-2">
+              <div className="group-hover:scale-102 mb-1 flex justify-center transition-transform duration-300 sm:mb-2">
                 <Image
                   src={category.image}
                   alt={category.name}
@@ -62,15 +62,15 @@ const HealthCategoryGrid: React.FC<Props> = ({ healthCategories }) => {
               <div
                 key={category.id}
                 onClick={handleclick}
-                className="group min-w-22.5 shrink-0 cursor-pointer items-center gap-2 rounded-lg"
+                className="min-w-22.5 group shrink-0 cursor-pointer items-center gap-2 rounded-lg"
               >
-                <div className="mb-1 flex justify-center transition-transform duration-300 group-hover:scale-102">
+                <div className="group-hover:scale-102 mb-1 flex justify-center transition-transform duration-300">
                   <Image
                     src={category.image}
                     alt={category.name}
                     width={80}
                     height={80}
-                    className="h-20 w-21 rounded-lg object-cover"
+                    className="w-21 h-20 rounded-lg object-cover"
                   />
                 </div>
 

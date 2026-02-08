@@ -2,7 +2,7 @@ export interface AuthState {
   loading: boolean;
   user: unknown;
   isLoggedIn: boolean;
-  error: string | null
+  error: string | null;
 }
 
 export interface Address {
@@ -144,7 +144,7 @@ export interface Medicine {
   rating?: number;
   reviews?: number;
   category?: string;
-  stock?: number
+  stock?: number;
 }
 
 export interface MedicineCardProps {
@@ -219,19 +219,19 @@ export type ProductCardWrapperProps = {
 
 export interface LocationType {
   address:
-  | string
-  | {
-    id: string;
-    fullName: string;
-    addressLine1: string;
-    addressLine2?: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    pincode?: string;
-    phoneNumber: string;
-    isDefault: boolean;
-  };
+    | string
+    | {
+        id: string;
+        fullName: string;
+        addressLine1: string;
+        addressLine2?: string;
+        city: string;
+        state: string;
+        postalCode: string;
+        pincode?: string;
+        phoneNumber: string;
+        isDefault: boolean;
+      };
   city?: string;
   state?: string;
   pincode?: string;

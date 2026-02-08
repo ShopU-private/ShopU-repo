@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
-import { requireAuth } from '@/proxy/requireAuth';
 import { ShopUError } from '@/proxy/ShopUError';
 import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
 import { getAuthUserId } from '@/lib/auth';
@@ -47,7 +46,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!item) {
-      throw new ShopUError(404, 'Fail to add in wishlist')
+      throw new ShopUError(404, 'Fail to add in wishlist');
     }
 
     return NextResponse.json(
@@ -55,7 +54,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    return shopuErrorHandler(error)
+    return shopuErrorHandler(error);
   }
 }
 
@@ -94,8 +93,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       { success: true, message: 'Wishlist fetched', response },
       { status: 200 }
-    )
-
+    );
   } catch (error) {
     return shopuErrorHandler(error);
   }
@@ -104,23 +102,13 @@ export async function GET(req: NextRequest) {
 //Delete product to wishlist
 export async function DELETE(req: NextRequest) {
   try {
-    const auth = requireAuth(req);
-    if (!auth.authenticated) {
-      return auth.response
-    }
-
-    const user = auth.user;
-    if (!user) {
-      throw new ShopUError(404, 'Failed to fetch the user')
-    }
-
-    const userId = user?.id;
+    const userId = getAuthUserId(req);
 
     const { searchParams } = new URL(req.url);
     const productId = searchParams.get('productId');
 
     if (!productId) {
-      throw new ShopUError(400, 'Product ID not found')
+      throw new ShopUError(400, 'Product ID not found');
     }
     const deletedItem = await prisma.wishlist.deleteMany({
       where: {
@@ -133,10 +121,7 @@ export async function DELETE(req: NextRequest) {
       throw new ShopUError(404, 'Item not found in the wishlist');
     }
 
-    return NextResponse.json(
-      { success: true, message: 'Removed from wishlist' },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, message: 'Removed from wishlist' }, { status: 200 });
   } catch (error) {
     return shopuErrorHandler(error);
   }

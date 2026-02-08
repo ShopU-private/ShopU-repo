@@ -240,7 +240,7 @@ export default function OrderDetails() {
         <div>
           <h4 className="mb-8 px-20 text-xl font-semibold">Customer Details</h4>
           <div className="bg-background1">
-            <div className="text-md mx-auto flex max-w-7xl flex-wrap justify-around gap-16 rounded px-18 py-8 text-white">
+            <div className="text-md px-18 mx-auto flex max-w-7xl flex-wrap justify-around gap-16 rounded py-8 text-white">
               <div className="flex items-center space-x-2">
                 <User className="h-5 w-5" />
                 <span>{order.user.name}</span>
@@ -284,7 +284,7 @@ export default function OrderDetails() {
             </button>
           </div>
 
-          <div className="relative mt-16 ml-10">
+          <div className="relative ml-10 mt-16">
             {steps.map((step, index) => {
               const isCompleted = index <= currentStepIndex;
               const isNextCompleted = index + 1 <= currentStepIndex;
@@ -292,10 +292,10 @@ export default function OrderDetails() {
               const isPending = step.label === 'Confirmed' && order.status === 'PENDING';
 
               return (
-                <div key={index} className="relative flex items-start pb-18">
+                <div key={index} className="pb-18 relative flex items-start">
                   {!isLast && (
                     <div
-                      className={`absolute top-8 left-5.5 h-full w-1 ${
+                      className={`left-5.5 absolute top-8 h-full w-1 ${
                         isNextCompleted ? 'bg-green-600' : 'bg-background1'
                       }`}
                     />
@@ -321,7 +321,7 @@ export default function OrderDetails() {
                     >
                       {isPending ? 'Pending' : step.label}
                     </p>
-                    <p className="text-sm whitespace-pre-line text-gray-500">Step {index + 1}</p>
+                    <p className="whitespace-pre-line text-sm text-gray-500">Step {index + 1}</p>
                   </div>
                 </div>
               );

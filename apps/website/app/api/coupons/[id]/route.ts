@@ -1,28 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
 import { isAdmin } from '@/lib/auth';
+import { ShopUError } from '@/proxy/ShopUError';
+import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!isAdmin(request)) {
-    return NextResponse.json(
-      { success: false, error: true, message: 'Unauthorized' },
-      { status: 401 }
-    );
-  }
-
   try {
+    if (!isAdmin(request)) {
+      throw new ShopUError(404, 'Unauthorized access');
+    }
     const { id } = await params;
 
-    await prisma.coupon.delete({
+    const deletedCoupon = await prisma.coupon.delete({
       where: { id },
     });
 
-    return NextResponse.json({ message: 'Coupon deleted successfully' });
+    if (!deletedCoupon) {
+      throw new ShopUError(401, 'Failed to delete the coupon');
+    }
+
+    return NextResponse.json(
+      { success: true, message: 'Coupon deleted successfully' },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error('Error deleting coupon:', error);
-    return NextResponse.json({ error: 'Failed to delete coupon' }, { status: 500 });
+    return shopuErrorHandler(error);
   }
 }

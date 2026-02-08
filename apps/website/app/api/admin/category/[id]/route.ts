@@ -5,12 +5,15 @@ import { isAdmin } from '@/lib/auth';
 import { prisma } from '@shopu/prisma/prismaClient';
 import { ShopUError } from '@/proxy/ShopUError';
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     if (!isAdmin(request)) {
-      throw new ShopUError(401, "Admin account is required");
+      throw new ShopUError(401, 'Admin account is required');
     }
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 });

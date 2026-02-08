@@ -59,7 +59,7 @@ const orders: Order[] = [
 
 export default function PastOrders() {
   const renderItem = ({ item }: { item: Order }) => (
-    <View className="mb-3 rounded-xl border border-gray bg-white p-4 shadow-md">
+    <View className="border-gray mb-3 rounded-xl border bg-white p-4 shadow-md">
       {/* Top Row */}
       <View className="flex-row gap-6">
         <Image source={item.image} className="h-20 w-20" resizeMode="contain" />
@@ -67,7 +67,7 @@ export default function PastOrders() {
         {/* Right side */}
         <View className="flex-1">
           <View className="flex-row items-center justify-between">
-            <Text className="w-56 font-RobotoRegular text-[15px] font-medium">{item.title}</Text>
+            <Text className="font-RobotoRegular w-56 text-[15px] font-medium">{item.title}</Text>
             <TouchableOpacity>
               <MaterialIcons name="more-vert" size={22} color="gray" />
             </TouchableOpacity>
@@ -75,7 +75,7 @@ export default function PastOrders() {
 
           <Text className="mt-2 text-[12px] text-[#666666]">{item.info}</Text>
           <View className="flex-row items-center justify-between">
-            <Text className="text-gray-500 mt-1 text-[12px] font-medium">
+            <Text className="mt-1 text-[12px] font-medium text-gray-500">
               Order ID: {item.orderId}
             </Text>
             <Text className="mr-5 mt-1 text-[16px] font-bold text-teal-700">₹{item.price}</Text>
@@ -85,8 +85,8 @@ export default function PastOrders() {
 
       {/* Footer Row */}
       <View className="mt-4 flex-row items-center justify-between">
-        <View className="flex-row  items-center justify-center gap-6">
-          <Text className="text-gray-500 text-[12px] font-semibold">{item.date}</Text>
+        <View className="flex-row items-center justify-center gap-6">
+          <Text className="text-[12px] font-semibold text-gray-500">{item.date}</Text>
 
           <Text
             className={`text-[12px] font-medium ${
@@ -107,10 +107,10 @@ export default function PastOrders() {
   );
 
   return (
-    <View className="bg-gray-100 flex-1 px-4 pt-4">
+    <View className="flex-1 bg-gray-100 px-4 pt-4">
       <View className="mb-2 flex-row justify-center">
         <TouchableOpacity className="mb-2 rounded-l-md bg-[#EDEDED] px-6 py-3">
-          <Text className="text-gray-700 text-[13px] font-semibold">UPCOMING</Text>
+          <Text className="text-[13px] font-semibold text-gray-700">UPCOMING</Text>
         </TouchableOpacity>
         <TouchableOpacity className="mb-2 rounded-r-md bg-[#317C80] px-6 py-3">
           <Text className="text-[13px] font-semibold text-white">PAST ORDER</Text>

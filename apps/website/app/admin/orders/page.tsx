@@ -161,22 +161,22 @@ export default function AdminOrdersPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Order ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Customer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Actions
                   </th>
                 </tr>
@@ -192,29 +192,29 @@ export default function AdminOrdersPage() {
                 ) : (
                   orders.map(order => (
                     <tr key={order.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-blue-600">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-blue-600">
                         <Link href={`/admin/orders/${order.id}`} className="hover:underline">
                           #{order.id.slice(-6)}
                         </Link>
                       </td>
-                      <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                         {formatDate(order.createdAt)}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         <div>{order.user.name}</div>
                         <div className="text-xs text-gray-500">{order.user.email}</div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
                         ₹{Number(order.totalAmount).toFixed(2)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-6 py-4">
                         <OrderStatusUpdater
                           orderId={order.id}
                           currentStatus={order.status}
                           onStatusChange={newStatus => handleStatusChange(order.id, newStatus)}
                         />
                       </td>
-                      <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                         <Link
                           href={`/admin/orders/${order.id}`}
                           className="text-teal-600 hover:text-teal-900"

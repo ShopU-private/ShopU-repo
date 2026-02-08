@@ -34,21 +34,21 @@ export default function AddCouponForm({ onSuccess }: { onSuccess: () => void }) 
       <h3 className="mb-4 text-lg font-medium">Add New Coupon</h3>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 md:grid-cols-5">
         <input
-          className="rounded border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Coupon Name"
           value={form.name}
           onChange={e => setForm({ ...form, name: e.target.value })}
           required
         />
         <input
-          className="rounded border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Coupon Code"
           value={form.code}
           onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })}
           required
         />
         <input
-          className="rounded border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Discount %"
           type="number"
           value={form.discount}
@@ -56,7 +56,7 @@ export default function AddCouponForm({ onSuccess }: { onSuccess: () => void }) 
           required
         />
         <input
-          className="rounded border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Max Usage"
           type="number"
           value={form.maxUsage}
@@ -64,7 +64,7 @@ export default function AddCouponForm({ onSuccess }: { onSuccess: () => void }) 
           required
         />
         <input
-          className="rounded border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="date"
           value={form.expiryDate}
           onChange={e => setForm({ ...form, expiryDate: e.target.value })}

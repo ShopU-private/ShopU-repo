@@ -128,7 +128,7 @@ export default function Navroute() {
               <li>/</li>
               <li>
                 {idx === crumbs.length - 1 ? (
-                  <span className="font-medium text-black capitalize">{crumb.name}</span>
+                  <span className="font-medium capitalize text-black">{crumb.name}</span>
                 ) : (
                   <Link href={crumb.href} className="capitalize hover:underline">
                     {crumb.name}
@@ -154,11 +154,11 @@ export default function Navroute() {
             <button onClick={openCartModal} className="relative mr-2 rounded-lg p-2.5">
               <ShoppingCart className="h-6 w-6 text-white" />
               {isLoadingCart ? (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center">
                   <Loader className="h-3 w-3 animate-spin text-white" />
                 </span>
               ) : cartCount > 0 ? (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               ) : null}
@@ -178,7 +178,7 @@ export default function Navroute() {
                 <li>/</li>
                 <li>
                   {idx === crumbs.length - 1 ? (
-                    <span className="font-medium text-black capitalize">{crumb.name}</span>
+                    <span className="font-medium capitalize text-black">{crumb.name}</span>
                   ) : (
                     <Link href={crumb.href} className="capitalize hover:underline">
                       {crumb.name}

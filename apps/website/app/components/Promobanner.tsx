@@ -9,9 +9,9 @@ const PromoBanner = () => {
       {/* Desktop card view */}
       <div className="mx-auto grid w-[90%] max-w-7xl grid-cols-2 gap-6 px-4 py-10 sm:grid md:grid-cols-3">
         {/* Card 1 - Hair Supplement */}
-        <div className="flex h-56 items-center justify-between rounded-xl bg-[#FFEAE6] p-4 transition-transform duration-400 hover:scale-102 md:p-6">
+        <div className="duration-400 hover:scale-102 flex h-56 items-center justify-between rounded-xl bg-[#FFEAE6] p-4 transition-transform md:p-6">
           <div className="flex flex-col p-4 pt-6 text-[#993A26]">
-            <h2 className="text-3xl leading-none font-black">Hair</h2>
+            <h2 className="text-3xl font-black leading-none">Hair</h2>
             <span className="mb-2 text-lg font-bold">Supplement</span>
             <hr className="mb-1 h-0.5 bg-black" />
             <p className="mb-2 text-sm text-black">With Folic Acid, Iron & Vitamin E</p>
@@ -25,12 +25,12 @@ const PromoBanner = () => {
         </div>
 
         {/* Card 2 - Banner Image Only */}
-        <div className="bg-background relative h-56 overflow-hidden rounded-xl transition-transform duration-400 hover:scale-102">
+        <div className="bg-background duration-400 hover:scale-102 relative h-56 overflow-hidden rounded-xl transition-transform">
           <Image src="/banner1.jpg" alt="Banner" fill className="object-cover" />
         </div>
 
         {/* Card 3 - Image Only */}
-        <div className="bg-background relative hidden h-56 overflow-hidden rounded-xl transition-transform duration-400 hover:scale-102 md:grid">
+        <div className="bg-background duration-400 hover:scale-102 relative hidden h-56 overflow-hidden rounded-xl transition-transform md:grid">
           <Image src="/image.png" alt="Banner" fill className="object-cover" />
         </div>
       </div>
@@ -41,7 +41,7 @@ const PromoBanner = () => {
           {/* Card 1 - Hair Supplement */}
           <div className="flex w-full shrink-0 snap-start items-center justify-between rounded-xl bg-[#FFEAE6] p-4">
             <div className="flex flex-col p-2 text-[#993A26]">
-              <h2 className="text-2xl leading-none font-black">Hair</h2>
+              <h2 className="text-2xl font-black leading-none">Hair</h2>
               <span className="text-md mb-1 font-bold">Supplement</span>
               <hr className="mb-1 h-0.5 bg-black" />
               <p className="mb-2 text-sm text-black">With Folic Acid, Iron & Vitamin E</p>

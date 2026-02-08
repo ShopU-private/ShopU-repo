@@ -1,0 +1,62 @@
+model VariantType {
+  id          String  @id @default(cuid())
+  name        String // e.g., "Size", "Color", "Flavor"
+  displayName String? @map("display_name")
+  productId   String  @map("product_id")
+
+  // Relations
+  product Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  values  VariantValue[]
+
+  @@index([productId])
+  @@map("variant_types")
+}
+
+model VariantValue {
+  id            String  @id @default(cuid())
+  value         String // e.g., "Red", "Large", "100ml"
+  displayValue  String? @map("display_value")
+  variantTypeId String  @map("variant_type_id")
+
+  // Relations
+  variantType       VariantType        @relation(fields: [variantTypeId], references: [id], onDelete: Cascade)
+  combinationValues CombinationValue[]
+
+  @@index([variantTypeId])
+  @@map("variant_values")
+}
+
+model ProductVariantCombination {
+  id             String   @id @default(cuid())
+  productId      String   @map("product_id")
+  sku            String?  @unique
+  price          Decimal  @db.Decimal(10, 2)
+  compareAtPrice Decimal? @map("compare_at_price") @db.Decimal(10, 2)
+  stock          Int      @default(0)
+  imageUrl       String?  @map("image_url")
+  isActive       Boolean  @default(true) @map("is_active")
+
+  // Relations
+  product    Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  values     CombinationValue[]
+  orderItems OrderItem[]
+
+  @@index([productId])
+  @@index([isActive])
+  @@map("product_variant_combinations")
+}
+
+model CombinationValue {
+  id             String @id @default(cuid())
+  combinationId  String @map("combination_id")
+  variantValueId String @map("variant_value_id")
+
+  // Relations
+  combination  ProductVariantCombination @relation(fields: [combinationId], references: [id], onDelete: Cascade)
+  variantValue VariantValue              @relation(fields: [variantValueId], references: [id], onDelete: Restrict)
+
+  @@unique([combinationId, variantValueId])
+  @@index([combinationId])
+  @@index([variantValueId])
+  @@map("combination_values")
+}

@@ -62,7 +62,7 @@ const sampleData = [
 
 const WishList = () => {
   const renderItem = ({ item }: { item: any }) => (
-    <View className="mx-3 my-1.5 flex-row items-center rounded-xl border border-gray bg-white p-2 shadow-md">
+    <View className="border-gray mx-3 my-1.5 flex-row items-center rounded-xl border bg-white p-2 shadow-md">
       <View className="p-2">
         <Image source={item.image} className="h-24 w-24" resizeMode="contain" />
       </View>
@@ -71,17 +71,17 @@ const WishList = () => {
         <Text className="text-md font-RobotoRegular" numberOfLines={2}>
           {item.name}
         </Text>
-        <Text className="my-1 font-RobotoRegular text-[11px] text-[#666666]">{item.subtitle}</Text>
+        <Text className="font-RobotoRegular my-1 text-[11px] text-[#666666]">{item.subtitle}</Text>
         <View className="flex-row items-center">
           <Text className="text-xl font-medium text-[#317C80]">₹{item.price}</Text>
-          <Text className="ml-2 font-RobotoRegular text-[11px] text-[#666666] line-through">
+          <Text className="font-RobotoRegular ml-2 text-[11px] text-[#666666] line-through">
             MRP ₹{item.mrp}
           </Text>
           <Text className="ml-2 text-xs text-green-600">{item.discount}% OFF</Text>
         </View>
       </View>
 
-      <View className="items-end p-4 ">
+      <View className="items-end p-4">
         <TouchableOpacity className="mb-6">
           <Trash2 size={22} color="gray" />
         </TouchableOpacity>

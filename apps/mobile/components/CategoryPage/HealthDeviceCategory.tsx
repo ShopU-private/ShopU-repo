@@ -53,13 +53,13 @@ const HealthDeviceCategory = () => {
   return (
     <View className="m-auto mt-4 w-[95%]">
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text className="ml-3 font-RobotoMedium text-[20px] text-primary-bold">Health Device</Text>
+        <Text className="font-RobotoMedium text-primary-bold ml-3 text-[20px]">Health Device</Text>
         <View className="mt-4 flex flex-row flex-wrap">
           {healthCareData &&
             healthCareData.map((item, index) => (
               <View key={index} className="mb-4 w-[25%] px-1">
                 <TouchableOpacity activeOpacity={0.8} className="flex items-center gap-2">
-                  <View className="rounded-3xl border border-gray bg-white p-5">
+                  <View className="border-gray rounded-3xl border bg-white p-5">
                     <Image source={item.image} className="h-[45px] w-[45px]" />
                   </View>
                   <Text className="text-center text-[12px]">{item.title}</Text>

@@ -39,11 +39,11 @@ const PersonalCareSection = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-primaryColor mb-4 text-xl font-semibold sm:text-xl">
             Personal <span className="text-secondaryColor">Care</span>
-            <hr className="bg-background1 mt-1 h-1 w-34 rounded border-0" />{' '}
+            <hr className="bg-background1 w-34 mt-1 h-1 rounded border-0" />{' '}
           </h2>
           <button
             onClick={handleCardClick}
-            className="bg-background1 flex cursor-pointer rounded py-2 pr-2 pl-3 text-sm font-medium text-white"
+            className="bg-background1 flex cursor-pointer rounded py-2 pl-3 pr-2 text-sm font-medium text-white"
           >
             View All <ChevronRight size={20} />
           </button>
@@ -52,7 +52,7 @@ const PersonalCareSection = () => {
         <div className="relative">
           <button
             onClick={() => scroll('left')}
-            className="bg-background1 absolute top-1/2 -left-3.75 z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
+            className="bg-background1 -left-3.75 absolute top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
           >
             <ChevronLeft size={20} className="mr-1" />
           </button>
@@ -94,7 +94,7 @@ const PersonalCareSection = () => {
           {/* Right Scroll Button */}
           <button
             onClick={() => scroll('right')}
-            className="bg-background1 absolute top-1/2 -right-2.5 z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
+            className="bg-background1 absolute -right-2.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
           >
             <ChevronRight size={20} className="ml-1" />
           </button>
@@ -107,7 +107,7 @@ const PersonalCareSection = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-primaryColor mb-4 text-lg font-medium">
             Personal <span className="text-secondaryColor">Care</span>
-            <hr className="bg-background1 mt-1 w-30 rounded border-2" />{' '}
+            <hr className="bg-background1 w-30 mt-1 rounded border-2" />{' '}
           </h2>
 
           <button
@@ -136,7 +136,7 @@ const PersonalCareSection = () => {
             <div className="py-8 text-center text-gray-500">No personal care available.</div>
           ) : (
             products.map(product => (
-              <div key={product.id} className="max-w-40 min-w-40 shrink-0">
+              <div key={product.id} className="min-w-40 max-w-40 shrink-0">
                 <ProductCardWrapper
                   key={product.id}
                   product={product}

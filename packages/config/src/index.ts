@@ -12,7 +12,6 @@ if (isNodeRuntime) {
   });
 }
 
-
 export const envs = {
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
@@ -27,5 +26,5 @@ export const envs = {
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASS: process.env.SMTP_PASS,
   CONTACT_RECEIVER: process.env.CONTACT_RECEIVER,
-  JWT_SECRET: process.env.JWT_SECRET
-}
+  JWT_SECRET: process.env.JWT_SECRET,
+};

@@ -5,7 +5,7 @@ import { images } from '@/constants';
 const ReferAndEarn = () => {
   return (
     <SafeAreaView className="m-auto mb-4 mt-4 w-[95%]">
-      <View className="flex flex-row items-center justify-around rounded-xl bg-primary-bold p-4">
+      <View className="bg-primary-bold flex flex-row items-center justify-around rounded-xl p-4">
         <View>
           <Text className="font-PoppinsSemiBold text-[20px] text-white">Refer and Earn $25</Text>
           <Text className="font-PoppinsRegular text-[12px] text-white">Your buddy get $10</Text>

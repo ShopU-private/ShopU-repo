@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
 import { isAdmin } from '@/lib/auth';
 
-type UserWhereInput = NonNullable<
-  Parameters<typeof prisma.user.findMany>[0]
->['where'];
+type UserWhereInput = NonNullable<Parameters<typeof prisma.user.findMany>[0]>['where'];
 
 export async function POST(req: NextRequest) {
   try {

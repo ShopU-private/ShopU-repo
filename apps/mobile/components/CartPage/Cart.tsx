@@ -50,12 +50,12 @@ export default function CartScreen() {
     <ScrollView className="flex-1 bg-white px-4 py-3">
       {/* Product List */}
       {products.map(item => (
-        <View key={item.id} className="flex-row items-center border-b border-gray py-3">
+        <View key={item.id} className="border-gray flex-row items-center border-b py-3">
           <Image source={item.image} className="h-24 w-24 rounded-lg" resizeMode="contain" />
 
           <View className="ml-4 flex-1">
             <View className="flex-row items-center justify-between">
-              <Text className="w-56 font-RobotoRegular text-[15px] font-medium" numberOfLines={2}>
+              <Text className="font-RobotoRegular w-56 text-[15px] font-medium" numberOfLines={2}>
                 {item.title}
               </Text>
 
@@ -64,28 +64,28 @@ export default function CartScreen() {
                 <Trash2 size={22} color="#999" />
               </TouchableOpacity>
             </View>
-            <Text className="my-1 font-RobotoRegular text-[11px] text-[#666666]">
+            <Text className="font-RobotoRegular my-1 text-[11px] text-[#666666]">
               {item.subtitle}
             </Text>
 
             <View className="mt-1 flex-row items-center justify-between gap-4">
               <View className="mt-1 flex-row items-center gap-2">
                 <Text className="text-xl font-medium text-[#317C80]">₹{item.price}</Text>
-                <Text className=" font-RobotoRegular text-[11px] text-[#666666] line-through">
+                <Text className="font-RobotoRegular text-[11px] text-[#666666] line-through">
                   MRP ₹{item.mrp}
                 </Text>
-                <Text className=" text-xs text-green-600">{item.off}</Text>
+                <Text className="text-xs text-green-600">{item.off}</Text>
               </View>
 
               {/* Quantity Control */}
               <View className="mt-2 flex-row items-center px-2">
-                <TouchableOpacity className="border-gray-300 rounded-full border p-1">
+                <TouchableOpacity className="rounded-full border border-gray-300 p-1">
                   <Minus size={16} color="#333" />
                 </TouchableOpacity>
 
-                <Text className="text-gray-800 mx-3 font-semibold">{item.qty}</Text>
+                <Text className="mx-3 font-semibold text-gray-800">{item.qty}</Text>
 
-                <TouchableOpacity className="border-gray-300 rounded-full border p-1">
+                <TouchableOpacity className="rounded-full border border-gray-300 p-1">
                   <Plus size={16} color="#333" />
                 </TouchableOpacity>
               </View>

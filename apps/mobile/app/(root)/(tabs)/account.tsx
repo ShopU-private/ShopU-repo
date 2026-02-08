@@ -23,7 +23,7 @@ const Account = () => {
       <View className="mb-5 rounded-2xl bg-[#317C80] p-4">
         <View className="flex-row items-center">
           <View className="rounded-full bg-white p-2.5">
-            <Image source={images.Profile} className="h-10 w-9 " />
+            <Image source={images.Profile} className="h-10 w-9" />
           </View>
 
           <View className="ml-3 flex-1">
@@ -44,8 +44,8 @@ const Account = () => {
             </View>
 
             <View className="ml-3">
-              <Text className="text-gray-800 text-[15px] font-medium">My Address</Text>
-              <Text className="mt-0.5 font-RobotoRegular text-sm text-[#666666]">
+              <Text className="text-[15px] font-medium text-gray-800">My Address</Text>
+              <Text className="font-RobotoRegular mt-0.5 text-sm text-[#666666]">
                 Make changes to your address
               </Text>
             </View>
@@ -60,8 +60,8 @@ const Account = () => {
             </View>
 
             <View className="ml-3">
-              <Text className="text-gray-800 text-[15px] font-medium">Payment Method</Text>
-              <Text className="mt-0.5 font-RobotoRegular text-sm text-[#666666]">
+              <Text className="text-[15px] font-medium text-gray-800">Payment Method</Text>
+              <Text className="font-RobotoRegular mt-0.5 text-sm text-[#666666]">
                 Choose Your Payment Method
               </Text>
             </View>
@@ -76,8 +76,8 @@ const Account = () => {
             </View>
 
             <View className="ml-3">
-              <Text className="text-gray-800 text-[15px] font-medium">FAQ & Help</Text>
-              <Text className="mt-0.5 font-RobotoRegular text-sm text-[#666666]">
+              <Text className="text-[15px] font-medium text-gray-800">FAQ & Help</Text>
+              <Text className="font-RobotoRegular mt-0.5 text-sm text-[#666666]">
                 quick answers to your common questions
               </Text>
             </View>
@@ -95,8 +95,8 @@ const Account = () => {
             </View>
 
             <View className="ml-3">
-              <Text className="text-gray-800 text-[15px] font-medium">Log out</Text>
-              <Text className="mt-0.5 font-RobotoRegular text-sm text-[#666666]">
+              <Text className="text-[15px] font-medium text-gray-800">Log out</Text>
+              <Text className="font-RobotoRegular mt-0.5 text-sm text-[#666666]">
                 Further secure your account for safety
               </Text>
             </View>
@@ -105,7 +105,7 @@ const Account = () => {
         </TouchableOpacity>
       </View>
 
-      <Text className="text-md text-gray-700 mb-2 ml-1 font-semibold">More</Text>
+      <Text className="text-md mb-2 ml-1 font-semibold text-gray-700">More</Text>
       <View className="rounded-xl bg-white py-2 shadow-md">
         <TouchableOpacity className="flex-row items-center justify-between p-4">
           <View className="flex-row items-center">
@@ -114,8 +114,8 @@ const Account = () => {
             </View>
 
             <View className="ml-3">
-              <Text className="text-gray-800 text-[15px] font-medium">Customer Support</Text>
-              <Text className="mt-0.5 font-RobotoRegular text-sm text-[#666666]">
+              <Text className="text-[15px] font-medium text-gray-800">Customer Support</Text>
+              <Text className="font-RobotoRegular mt-0.5 text-sm text-[#666666]">
                 We’re here to help! Choose a support option.
               </Text>
             </View>
@@ -130,8 +130,8 @@ const Account = () => {
             </View>
 
             <View className="ml-3">
-              <Text className="text-gray-800 text-[15px] font-medium">About App</Text>
-              <Text className="mt-0.5 font-RobotoRegular text-sm text-[#666666]">
+              <Text className="text-[15px] font-medium text-gray-800">About App</Text>
+              <Text className="font-RobotoRegular mt-0.5 text-sm text-[#666666]">
                 Get to know more about us and what we do.
               </Text>
             </View>

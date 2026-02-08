@@ -1,23 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
-import { verifyToken } from '@/lib/auth';
-import { requireAuth } from '@/proxy/requireAuth';
 import { ShopUError } from '@/proxy/ShopUError';
 import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
+import { getAuthUserId } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    const auth = requireAuth(req);
-    if (!auth.authenticated) {
-      return auth.response
-    }
-
-    const user = auth.user;
-    if (!user) {
-      throw new ShopUError(404, 'Failed to fetch the user')
-    }
-
-    const userId = user?.id;
+    const userId = getAuthUserId(req);
 
     const cartItems = await prisma.cartItem.findMany({
       where: { userId },
@@ -53,20 +42,111 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    return shopuErrorHandler(error)
+    return shopuErrorHandler(error);
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const auth = requireAuth(req);
-    if (!auth.authenticated) {
-      return auth.response
+    const userId = getAuthUserId(req);
+    const { productId, medicineId, quantity = 1 } = await req.json();
+
+    if (!productId && !medicineId) {
+      throw new ShopUError(400, 'Product ID or Medicine ID is required');
     }
 
-    const user = auth.user;
-    const userId = user?.id;
+    if (productId && medicineId) {
+      throw new ShopUError(400, 'Cannot add both Medicine ID and Product ID at once');
+    }
+
+    if (quantity <= 0) {
+      throw new ShopUError(400, 'Item quantity should be greater than 0');
+    }
+
+    if (productId) {
+      const exists = await prisma.product.findUnique({
+        where: { id: productId },
+        select: { id: true },
+      });
+      if (!exists) {
+        throw new ShopUError(404, 'Product not found');
+      }
+    }
+
+    if (medicineId) {
+      const exists = await prisma.medicine.findUnique({
+        where: { id: medicineId },
+        select: { id: true },
+      });
+      if (!exists) {
+        throw new ShopUError(404, 'Medicine not found');
+      }
+    }
+
+    const existingItem = await prisma.cartItem.findFirst({
+      where: {
+        userId,
+        productId: productId ?? undefined,
+        medicineId: medicineId ?? undefined,
+      },
+    });
+
+    const cartItem = existingItem
+      ? await prisma.cartItem.update({
+          where: { id: existingItem.id },
+          data: {
+            quantity: { increment: quantity },
+          },
+          include: {
+            product: productId
+              ? { select: { id: true, name: true, price: true, imageUrl: true } }
+              : undefined,
+            medicine: medicineId
+              ? {
+                  select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                    manufacturerName: true,
+                    packSizeLabel: true,
+                  },
+                }
+              : undefined,
+          },
+        })
+      : await prisma.cartItem.create({
+          data: {
+            userId,
+            productId: productId ?? null,
+            medicineId: medicineId ?? null,
+            quantity,
+          },
+          include: {
+            product: productId
+              ? { select: { id: true, name: true, price: true, imageUrl: true } }
+              : undefined,
+            medicine: medicineId
+              ? {
+                  select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                    manufacturerName: true,
+                    packSizeLabel: true,
+                  },
+                }
+              : undefined,
+          },
+        });
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Item added to cart',
+        cartItem,
+      },
+      { status: existingItem ? 200 : 201 }
+    );
   } catch (error) {
-    return shopuErrorHandler(error)
+    return shopuErrorHandler(error);
   }
 }

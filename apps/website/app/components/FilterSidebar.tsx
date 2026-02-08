@@ -121,7 +121,7 @@ const Sidebar = () => {
                 <span className="text-2xl">{openCategory === category.id ? '-' : '+'}</span>
               </div>
               {openCategory === category.id && category.subCategories.length > 0 && (
-                <ul className="mt-1 ml-4 space-y-1 px-3">
+                <ul className="ml-4 mt-1 space-y-1 px-3">
                   {category.subCategories.map(sub => (
                     <li
                       key={sub.id}

@@ -234,7 +234,7 @@ export default function AdminReportsPage() {
             <select
               value={filters.reportType}
               onChange={e => handleFilterChange('reportType', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
               <option value="Sales Report">Sales Report</option>
               <option value="Revenue Report">Revenue Report</option>
@@ -248,7 +248,7 @@ export default function AdminReportsPage() {
             <select
               value={filters.timePeriod}
               onChange={e => handleFilterChange('timePeriod', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
               <option value="This Month">This Month</option>
               <option value="Last Month">Last Month</option>
@@ -264,7 +264,7 @@ export default function AdminReportsPage() {
             <select
               value={filters.warehouse}
               onChange={e => handleFilterChange('warehouse', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
               <option value="All Warehouses">All Warehouses</option>
               <option value="Main Warehouse">Main Warehouse</option>
@@ -278,7 +278,7 @@ export default function AdminReportsPage() {
             <select
               value={filters.groupBy}
               onChange={e => handleFilterChange('groupBy', e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
               <option value="Day">Day</option>
               <option value="Week">Week</option>
@@ -296,7 +296,7 @@ export default function AdminReportsPage() {
                 type="date"
                 value={filters.startDate}
                 onChange={e => handleFilterChange('startDate', e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>
             <div>
@@ -305,7 +305,7 @@ export default function AdminReportsPage() {
                 type="date"
                 value={filters.endDate}
                 onChange={e => handleFilterChange('endDate', e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>
           </div>

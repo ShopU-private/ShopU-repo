@@ -13,177 +13,42 @@
 [1m[38;2;173;127;168m▲ Next.js 16.1.6[39m[22m (Turbopack)
 
 [37m[1m [22m[39m Creating an optimized production build ...
-[32m[1m✓[22m[39m Compiled successfully in 6.0s
-[?25l[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[?25h[?25l[37m[1m [22m[39m Finished TypeScript in 5.8s  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Finished TypeScript in 5.8s    [32m[1m✓[22m[39m Finished TypeScript in 5.8s 
-[?25l[37m[1m [22m[39m Collecting page data using 15 workers  [36m.[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m..[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m...[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m.[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m..[39m[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: ⚙️  enable debug logging with { debug: true }
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+[32m[1m✓[22m[39m Compiled successfully in 7.5s
+[?25l[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[?25h[?25l[37m[1m [22m[39m Finished TypeScript in 6.0s  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Finished TypeScript in 6.0s    [32m[1m✓[22m[39m Finished TypeScript in 6.0s 
+[?25l[37m[1m [22m[39m Collecting page data using 15 workers  [36m.[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m..[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m...[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m.[39m[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m..[39m[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
 [dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m...[39m[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: ⚙️  enable debug logging with { debug: true }
+[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  suppress all logs with { quiet: true }
 [dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: ⚙️  suppress all logs with { quiet: true }
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  enable debug logging with { debug: true }
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
-[dotenv@17.2.3] injecting env (11) from ../../.env -- tip: ⚙️  suppress all logs with { quiet: true }
-[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m...[39m[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: ⚙️  override existing env vars with { override: true }
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: ⚙️  override existing env vars with { override: true }
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: ⚙️  override existing env vars with { override: true }
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: ⚙️  enable debug logging with { debug: true }
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
-[dotenv@17.2.3] injecting env (0) from ../../packages/prisma/.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-[2K[1G[?25h[37m[1m [22m[39m Collecting page data using 15 workers in 1654.1ms    [32m[1m✓[22m[39m Collecting page data using 15 workers in 1654.1ms 
-[?25l[37m[1m [22m[39m Generating static pages using 15 workers (0/65)  [36m[    ][39m(node:377086) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
-In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
-
-To prepare for this change:
-- If you want the current behavior, explicitly use 'sslmode=verify-full'
-- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
-
-See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
-(Use `node --trace-warnings ...` to show where the warning was created)
-[33mfalse[39m
-[33mfalse[39m
-[33mfalse[39m
-[33mfalse[39m
-[33mfalse[39m
-[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (28/65)  [36m[=   ][39m[33mfalse[39m
-[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (51/65)  [36m[==  ][39m[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (51/65)  [36m[=== ][39m[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (51/65)  [36m[ ===][39m[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (51/65)  [36m[  ==][39m[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (51/65)  [36m[   =][39m[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (51/65)  [36m[    ][39m[33mfalse[39m
-[1mnull[22m
-[33mfalse[39m
-[33mfalse[39m
-[dotenv@17.2.3] injecting env (0) from ../../.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
-[33mfalse[39m
-[33mfalse[39m
-[33mfalse[39m
-[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (52/65)  [36m[   =][39m[33mfalse[39m
-[33mfalse[39m
-[33mfalse[39m
-[33mfalse[39m
-[dotenv@17.2.3] injecting env (0) from ../../packages/prisma/.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
-[33mfalse[39m
-[33mfalse[39m
-[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (64/65)  [36m[  ==][39m[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (64/65)  [36m[ ===][39m[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (64/65)  [36m[====][39m[2K[1G[37m[1m [22m[39m Generating static pages using 15 workers (64/65)  [36m[=== ][39mSaving products to Redis cache
-[33mfalse[39m
-[2K[1G[?25h[32m[1m✓[22m[39m Generating static pages using 15 workers (65/65) in 2.4s
-[?25l[37m[1m [22m[39m Finalizing page optimization  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Finalizing page optimization in 4.4ms    [32m[1m✓[22m[39m Finalizing page optimization in 4.4ms 
-
-[4mRoute (app)[24m                                                         [4mRevalidate[24m  [4mExpire[24m
-┌ ○ /
-├ ○ /_not-found
-├ ○ /account
-├ ○ /account/faq
-├ ○ /account/myAddresses
-├ ○ /account/orders
-├ ƒ /account/orders/order_details/[orderId]
-├ ○ /account/wishlist
-├ ○ /admin
-├ ○ /admin/coupon
-├ ○ /admin/customers
-├ ○ /admin/orders
-├ ƒ /admin/orders/[id]
-├ ○ /admin/products
-├ ○ /admin/reports
-├ ƒ /api/account/address
-├ ƒ /api/account/address/[id]
-├ ƒ /api/account/delete-account
-├ ƒ /api/account/logout
-├ ƒ /api/account/me
-├ ƒ /api/account/orders
-├ ƒ /api/account/orders/[id]
-├ ƒ /api/account/orders/[id]/status
-├ ƒ /api/account/wishlist
-├ ƒ /api/admin/category
-├ ƒ /api/admin/category/[id]
-├ ƒ /api/admin/customers
-├ ƒ /api/admin/customers/[id]
-├ ƒ /api/admin/customers/export
-├ ƒ /api/admin/customers/stats
-├ ƒ /api/admin/orders
-├ ƒ /api/admin/orders/[id]
-├ ƒ /api/admin/orders/[id]/items/[itemId]/status
-├ ƒ /api/admin/orders/[id]/status
-├ ƒ /api/admin/products
-├ ƒ /api/admin/products/[productsId]
-├ ƒ /api/admin/products/[productsId]/combinations
-├ ƒ /api/admin/products/[productsId]/combinations/[combinationId]
-├ ƒ /api/admin/products/[productsId]/variant-types
-├ ƒ /api/admin/products/[productsId]/variant-types/[variantTypeId]
-├ ƒ /api/admin/products/[productsId]/variant-values
-├ ƒ /api/admin/reports/download
-├ ƒ /api/admin/reports/revenue-category
-├ ƒ /api/admin/reports/sales-trend
-├ ƒ /api/admin/reports/top-products
-├ ƒ /api/admin/subcategory
-├ ƒ /api/admin/subcategory/[id]
-├ ƒ /api/auth/login/send-otp
-├ ƒ /api/auth/login/verify-otp
-├ ƒ /api/cart
-├ ƒ /api/cart/[id]
-├ ƒ /api/cart/clear
-├ ƒ /api/cart/count
-├ ƒ /api/chatbot
-├ ƒ /api/coupons
-├ ƒ /api/coupons/[id]
-├ ƒ /api/coupons/validate
-├ ƒ /api/faq
-├ ƒ /api/get-medicine
-├ ƒ /api/maps/autocomplete
-├ ƒ /api/maps/details
-├ ƒ /api/orders
-├ ƒ /api/orders/[orderId]
-├ ƒ /api/orders/status
-├ ƒ /api/payment
-├ ƒ /api/payment/callback
-├ ƒ /api/payment/razorpay
-├ ƒ /api/products
-├ ƒ /api/products/[id]
-├ ○ /api/products/category                                                  1h      1y
-├ ƒ /api/products/featured
-├ ƒ /api/products/search
-├ ƒ /api/uploadthing
-├ ○ /check-slice
-├ ○ /checkout
-├ ○ /checkout/payment
-├ ○ /checkout/success
-├ ○ /pages/cancellation
-├ ○ /pages/privacy
-├ ○ /pages/shipping
-├ ○ /pages/terms
-├ ○ /product
-├ ƒ /product/[ProductById]
-├ ○ /search
-└ ○ /unauthorized
-
-
-○  (Static)   prerendered as static content
-ƒ  (Dynamic)  server-rendered on demand
-
-[?25h
+[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+Error: Missing Gemini API key - please set GEMINI_API_KEY environment variable
+    at module evaluation (.next/server/chunks/5e669_next_dist_esm_build_templates_app-route_ebf29781.js:1:18158)
+    at instantiateModule (.next/server/chunks/[turbopack]_runtime.js:740:9)
+    at instantiateRuntimeModule (.next/server/chunks/[turbopack]_runtime.js:768:12)
+    at getOrInstantiateRuntimeModule (.next/server/chunks/[turbopack]_runtime.js:781:12)
+    at Object.m (.next/server/chunks/[turbopack]_runtime.js:790:18)
+    at Object.<anonymous> (.next/server/app/api/chatbot/route.js:6:3)
+[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m.[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m..[39m[2K[1G[?25h
+[?25l [36m.[39m [2K[1G[?25h> Build error occurred
+[?25l [36m.[39m [2K[1G[?25hError: Failed to collect page data for /api/chatbot
+    at [3mignore-listed frames[23m {
+  type: [32m'Error'[39m
+}
+[?25l [36m.[39m [?25h[41m[30m ELIFECYCLE [39m[49m [31mCommand failed with exit code 1.[39m

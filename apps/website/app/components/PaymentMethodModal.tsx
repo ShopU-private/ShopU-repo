@@ -7,12 +7,17 @@ import { useCart } from '@/app/hooks/useCart';
 import { useLocation } from '@/app/context/LocationContext';
 import { VisaIcon, MastercardIcon, MaestroIcon, AmexIcon, UpiIcon } from './ui/PaymentIcons';
 import { mapPaymentStatusToOrderStatus } from '@/lib/payment-utils';
-import { AddressDetails, PaymentMethodModalProps, RazorpayInstance, RazorpayOptions } from '@shopu/types-store/types';
+import {
+  AddressDetails,
+  PaymentMethodModalProps,
+  RazorpayInstance,
+  RazorpayOptions,
+} from '@shopu/types-store/types';
 
 declare global {
   interface Window {
     Razorpay: {
-      new(options: RazorpayOptions): RazorpayInstance;
+      new (options: RazorpayOptions): RazorpayInstance;
     };
   }
 }
@@ -372,8 +377,8 @@ export default function PaymentMethodModal({
 
   const addressDetailsSummary = addressDetails
     ? [addressDetails.fullName, addressDetails.addressLine1, addressDetails.city]
-      .filter(Boolean)
-      .join(', ')
+        .filter(Boolean)
+        .join(', ')
     : '';
 
   return (
@@ -389,7 +394,7 @@ export default function PaymentMethodModal({
         <div className="relative border-b border-gray-200 p-4">
           <button
             onClick={onCloseAction}
-            className="absolute top-3 right-3 p-1 text-gray-500 hover:text-gray-700"
+            className="absolute right-3 top-3 p-1 text-gray-500 hover:text-gray-700"
             disabled={isProcessing}
           >
             <X className="h-5 w-5" />
@@ -408,24 +413,27 @@ export default function PaymentMethodModal({
 
           {/* Address Info */}
           <div
-            className={`border ${location?.address || (selectedAddressId && addressDetails)
+            className={`border ${
+              location?.address || (selectedAddressId && addressDetails)
                 ? 'border-green-100 bg-green-50'
                 : 'border-amber-100 bg-amber-50'
-              } mb-4 rounded-lg p-3`}
+            } mb-4 rounded-lg p-3`}
           >
             <div className="flex items-start gap-2">
               <MapPin
-                className={`h-5 w-5 ${location?.address || (selectedAddressId && addressDetails)
+                className={`h-5 w-5 ${
+                  location?.address || (selectedAddressId && addressDetails)
                     ? 'text-green-500'
                     : 'text-amber-500'
-                  } mt-0.5`}
+                } mt-0.5`}
               />
               <div>
                 <h4
-                  className={`text-sm font-medium ${location?.address || (selectedAddressId && addressDetails)
+                  className={`text-sm font-medium ${
+                    location?.address || (selectedAddressId && addressDetails)
                       ? 'text-green-700'
                       : 'text-amber-700'
-                    }`}
+                  }`}
                 >
                   {location?.address || (selectedAddressId && addressDetails)
                     ? 'Delivery address selected'
@@ -535,10 +543,11 @@ export default function PaymentMethodModal({
           <button
             onClick={handlePaymentSelection}
             disabled={isProcessing || (!location?.address && !addressDetails)}
-            className={`flex w-full items-center justify-center rounded-lg py-3 font-medium transition-colors ${(location?.address || addressDetails) && !isProcessing
+            className={`flex w-full items-center justify-center rounded-lg py-3 font-medium transition-colors ${
+              (location?.address || addressDetails) && !isProcessing
                 ? 'bg-teal-600 text-white hover:bg-teal-700'
                 : 'cursor-not-allowed bg-gray-200 text-gray-500'
-              }`}
+            }`}
           >
             {isProcessing ? (
               <>

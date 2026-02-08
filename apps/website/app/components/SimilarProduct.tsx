@@ -42,7 +42,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
             {/* Left Arrow */}
             <button
               onClick={() => scroll('left')}
-              className="bg-background1 absolute top-1/2 -left-3.75 z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
+              className="bg-background1 -left-3.75 absolute top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
             >
               <ChevronLeft size={20} />
             </button>
@@ -88,7 +88,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
             {/* Right Arrow */}
             <button
               onClick={() => scroll('right')}
-              className="bg-background1 absolute top-1/2 -right-2.5 z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
+              className="bg-background1 absolute -right-2.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full text-white shadow-md"
             >
               <ChevronRight size={20} />
             </button>
@@ -110,7 +110,7 @@ const SimilarProductsSection: React.FC<SimilarProductsSectionProps> = ({ product
               className="no-scrollbar flex gap-2 overflow-x-auto scroll-smooth py-2"
             >
               {products.map(product => (
-                <div key={product.id} className="max-w-40 min-w-40 shrink-0">
+                <div key={product.id} className="min-w-40 max-w-40 shrink-0">
                   <ProductCard
                     product={{
                       id: product.id,

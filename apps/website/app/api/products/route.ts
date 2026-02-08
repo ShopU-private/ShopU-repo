@@ -3,9 +3,7 @@ export const revalidate = 300;
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
 
-type ProductWhereInput = NonNullable<
-  Parameters<typeof prisma.product.findMany>[0]
->['where'];
+type ProductWhereInput = NonNullable<Parameters<typeof prisma.product.findMany>[0]>['where'];
 
 export async function GET(req: NextRequest) {
   try {

@@ -1,20 +1,23 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AuthState, VerifyOtpData } from "@shopu/types-store/types";
-import axios from "axios";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AuthState, VerifyOtpData } from '@shopu/types-store/types';
+import axios from 'axios';
 
-export const verifyOtp = createAsyncThunk('/api/verify-otp', async (data: VerifyOtpData, { rejectWithValue }) => {
-  try {
-    const response = await axios.post('/api/auth/login/verify-otp', data, {
-      withCredentials: true
-    });
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to verify OTP');
+export const verifyOtp = createAsyncThunk(
+  '/api/verify-otp',
+  async (data: VerifyOtpData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post('/api/auth/login/verify-otp', data, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data?.message || 'Failed to verify OTP');
+      }
+      return rejectWithValue('An error occured');
     }
-    return rejectWithValue('An error occured');
   }
-});
+);
 
 export const logoutUser = createAsyncThunk('/auth/logout', async (_, { rejectWithValue }) => {
   try {
@@ -28,60 +31,62 @@ export const logoutUser = createAsyncThunk('/auth/logout', async (_, { rejectWit
   }
 });
 
-export const checkAuthStatus = createAsyncThunk('/auth/check-status', async (_, { rejectWithValue }) => {
-  try {
-    const response = await axios.get('/api/account/me', {
-      withCredentials: true
-    });
+export const checkAuthStatus = createAsyncThunk(
+  '/auth/check-status',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get('/api/account/me', {
+        withCredentials: true,
+      });
 
-    if (response.data.success && response.data.user) {
-      return {
-        loggedIn: true,
-        id: response.data.user.id,
-        name: response.data.user.name,
-        email: response.data.user.email,
-        phoneNumber: response.data.user.phoneNumber,
-        role: response.data.user.role,
-        userDetails: response.data.user
-      };
-    }
-    return {
-      loggedIn: false,
-      userDetails: null
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      if (response.data.success && response.data.user) {
+        return {
+          loggedIn: true,
+          id: response.data.user.id,
+          name: response.data.user.name,
+          email: response.data.user.email,
+          phoneNumber: response.data.user.phoneNumber,
+          role: response.data.user.role,
+          userDetails: response.data.user,
+        };
+      }
       return {
         loggedIn: false,
-        userDetails: null
+        userDetails: null,
       };
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        return {
+          loggedIn: false,
+          userDetails: null,
+        };
+      }
+      return rejectWithValue('Failed to check auth status');
     }
-    return rejectWithValue('Failed to check auth status');
   }
-});
-
+);
 
 const initialState: AuthState = {
   loading: false,
   user: null,
   isLoggedIn: false,
-  error: null
-}
+  error: null,
+};
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    clearAuth: (state) => {
+    clearAuth: state => {
       state.loading = false;
       state.user = null;
       state.isLoggedIn = false;
       state.error = null;
-    }
+    },
   },
-  extraReducers: (builders) => {
+  extraReducers: builders => {
     builders
-      .addCase(verifyOtp.pending, (state) => {
+      .addCase(verifyOtp.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -92,7 +97,7 @@ const authSlice = createSlice({
             phoneNumber: action.payload.user.phoneNumber,
             role: action.payload.user.role,
             name: action.payload.user.name || '',
-            email: action.payload.user.email || ''
+            email: action.payload.user.email || '',
           };
           state.isLoggedIn = true;
         }
@@ -105,13 +110,13 @@ const authSlice = createSlice({
         state.user = null;
         state.error = (action.payload as string) || 'Failed to verify the OTP';
       })
-      .addCase(logoutUser.fulfilled, (state) => {
+      .addCase(logoutUser.fulfilled, state => {
         state.error = null;
         state.isLoggedIn = false;
         state.loading = false;
         state.user = null;
       })
-      .addCase(checkAuthStatus.pending, (state) => {
+      .addCase(checkAuthStatus.pending, state => {
         state.loading = true;
       })
       .addCase(checkAuthStatus.fulfilled, (state, action) => {
@@ -131,12 +136,12 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = null;
       })
-      .addCase(checkAuthStatus.rejected, (state) => {
+      .addCase(checkAuthStatus.rejected, state => {
         state.isLoggedIn = false;
         state.user = null;
         state.loading = false;
-      })
-  }
+      });
+  },
 });
 
 export const { clearAuth } = authSlice.actions;

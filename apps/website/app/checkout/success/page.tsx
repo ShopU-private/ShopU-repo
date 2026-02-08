@@ -69,7 +69,7 @@ function OrderSuccessContent() {
               <div className="hidden w-full items-center justify-center gap-8 text-sm text-white sm:flex">
                 <Link
                   href="/"
-                  className="bg-background1 inline-flex cursor-pointer items-center gap-1 rounded-lg p-3 transition-all hover:scale-102"
+                  className="bg-background1 hover:scale-102 inline-flex cursor-pointer items-center gap-1 rounded-lg p-3 transition-all"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Return to Home
@@ -78,7 +78,7 @@ function OrderSuccessContent() {
                 {orderId && (
                   <button
                     onClick={() => handleCardClick(orderId)}
-                    className="bg-background1 inline-flex cursor-pointer items-center gap-2 rounded-lg p-3 transition-all hover:scale-102"
+                    className="bg-background1 hover:scale-102 inline-flex cursor-pointer items-center gap-2 rounded-lg p-3 transition-all"
                   >
                     Check Order Status
                   </button>

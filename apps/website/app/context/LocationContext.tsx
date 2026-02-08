@@ -5,9 +5,9 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 const defaultContextValue: LocationContextType = {
   location: null,
-  setLocation: () => { },
+  setLocation: () => {},
   addressId: null,
-  setAddressId: () => { },
+  setAddressId: () => {},
 };
 
 const LocationContext = createContext<LocationContextType>(defaultContextValue);

@@ -1,59 +1,69 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@shopu/prisma/prismaClient';
-import { verifyToken } from '@/lib/auth';
+import { getAuthUserId } from '@/lib/auth';
+import { ShopUError } from '@/proxy/ShopUError';
+import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
 
 // PUT - update cart item quantity
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: cartItemId } = await params;
-    const token = req.cookies.get('token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ success: false, error: 'Please login first' }, { status: 401 });
-    }
-
-    const payload = verifyToken(token);
-    const userId = payload.id;
+    const userId = getAuthUserId(req);
 
     const { quantity } = await req.json();
 
-    if (typeof quantity !== 'number' || quantity < 1) {
-      return NextResponse.json(
-        { success: false, error: 'Quantity must be a positive number' },
-        { status: 400 }
-      );
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      throw new ShopUError(400, 'Quantity must be a positive integer');
     }
 
     // Find the cart item and check if it belongs to the user
-    const cartItem = await prisma.cartItem.findMany({
+    const cartItem = await prisma.cartItem.findFirst({
       where: {
         id: cartItemId,
         userId,
       },
-      include: {
-        medicine: true,
-        product: true,
-      },
     });
 
     if (!cartItem) {
-      return NextResponse.json({ success: false, error: 'Cart item not found' }, { status: 404 });
+      throw new ShopUError(404, 'Cart item not found');
     }
 
     // Update the cart item quantity
     const updatedCartItem = await prisma.cartItem.update({
       where: { id: cartItemId },
       data: { quantity },
-      include: { product: true, medicine: true },
+      select: {
+        id: true,
+        quantity: true,
+        productId: true,
+        medicineId: true,
+        addedAt: true,
+        product: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            imageUrl: true,
+          },
+        },
+        medicine: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            manufacturerName: true,
+            packSizeLabel: true,
+          },
+        },
+      },
     });
 
-    return NextResponse.json({ success: true, cartItem: updatedCartItem });
-  } catch (error) {
-    console.error('[PUT /api/cart/[id]]', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update cart item' },
-      { status: 500 }
+      { success: true, message: 'Cart item updated', cartItem: updatedCartItem },
+      { status: 200 }
     );
+  } catch (error) {
+    return shopuErrorHandler(error);
   }
 }
 
@@ -61,14 +71,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: cartItemId } = await params;
-    const token = req.cookies.get('token')?.value;
+    const userId = getAuthUserId(req);
 
-    if (!token) {
-      return NextResponse.json({ success: false, error: 'Please login first' }, { status: 401 });
-    }
-
-    const payload = verifyToken(token);
-    const userId = payload.id;
     // Verify the cart item belongs to the user
     const cartItem = await prisma.cartItem.findFirst({
       where: {
@@ -78,7 +82,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     });
 
     if (!cartItem) {
-      return NextResponse.json({ success: false, error: 'Cart item not found' }, { status: 404 });
+      throw new ShopUError(404, 'Cart item not found');
     }
 
     // Delete the cart item
@@ -86,12 +90,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       where: { id: cartItemId },
     });
 
-    return NextResponse.json({ success: true, message: 'Item removed from cart' });
+    return NextResponse.json({ success: true, message: 'Item removed from cart' }, { status: 200 });
   } catch (error) {
-    console.error('[DELETE /api/cart/[id]]', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to remove item from cart' },
-      { status: 500 }
-    );
+    return shopuErrorHandler(error);
   }
 }

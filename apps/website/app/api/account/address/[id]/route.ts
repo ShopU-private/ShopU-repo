@@ -4,10 +4,7 @@ import { requireAuth } from '@/proxy/requireAuth';
 import { ShopUError } from '@/proxy/ShopUError';
 import { shopuErrorHandler } from '@/proxy/shopuErrorHandling';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = requireAuth(req);
     if (!auth.authenticated) return auth.response;
@@ -15,7 +12,7 @@ export async function GET(
     const user = auth.user;
     if (!user) throw new ShopUError(401, 'Invalid credentials');
 
-    const { id } = params;
+    const { id } = await params;
 
     const address = await prisma.userAddress.findUnique({ where: { id } });
 
@@ -23,20 +20,14 @@ export async function GET(
       throw new ShopUError(404, 'Address not found');
     }
 
-    return NextResponse.json(
-      { success: true, address },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, address }, { status: 200 });
   } catch (error) {
     return shopuErrorHandler(error);
   }
 }
 
 // Update address
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = requireAuth(req);
     if (!auth.authenticated) return auth.response;
@@ -44,7 +35,7 @@ export async function PATCH(
     const user = auth.user;
     if (!user) throw new ShopUError(401, 'Invalid credentials');
 
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     const existingAddress = await prisma.userAddress.findUnique({ where: { id } });
@@ -81,10 +72,7 @@ export async function PATCH(
 }
 
 // Delete address
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = requireAuth(req);
     if (!auth.authenticated) return auth.response;
@@ -92,7 +80,7 @@ export async function DELETE(
     const user = auth.user;
     if (!user) throw new ShopUError(401, 'Invalid credentials');
 
-    const { id } = params;
+    const { id } = await params;
 
     const existingAddress = await prisma.userAddress.findUnique({ where: { id } });
 

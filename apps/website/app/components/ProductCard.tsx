@@ -20,9 +20,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <>
       {/* Desktop view */}
-      <div className="group flex h-84 flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:block">
+      <div className="h-84 group flex flex-col gap-4 overflow-hidden rounded-lg bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-lg sm:block">
         {/* Product Image */}
-        <div className="relative h-42 w-full">
+        <div className="h-42 relative w-full">
           <div onClick={handleclick}>
             <Image
               src={product.imageUrl || '/pediasure.png'}
@@ -35,7 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           {Number(product.stock) <= 5 && (
-            <div className="absolute top-1 left-2 rounded-lg p-1 text-[13px] font-bold">
+            <div className="absolute left-2 top-1 rounded-lg p-1 text-[13px] font-bold">
               <span
                 className={
                   Number(product.stock) === 0 ? 'text-secondaryColor' : 'text-secondaryColor'
@@ -48,7 +48,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
           <button
             onClick={() => onToggleFavorite(product)}
-            className="absolute top-0 right-2 hidden rounded-full bg-white p-1.5 shadow-md transition-colors group-hover:flex hover:bg-gray-50"
+            className="absolute right-2 top-0 hidden rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50 group-hover:flex"
           >
             <Heart
               className={`h-5 w-5 ${isFavorite ? 'fill-current text-red-500' : 'text-gray-400'}`}
@@ -123,7 +123,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           {Number(product.stock) <= 5 && (
-            <div className="absolute top-0 left-1 rounded-lg p-1 text-xs font-bold">
+            <div className="absolute left-1 top-0 rounded-lg p-1 text-xs font-bold">
               <span
                 className={
                   Number(product.stock) === 0 ? 'text-secondaryColor' : 'text-secondaryColor'
@@ -136,7 +136,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
           <button
             onClick={() => onToggleFavorite(product)}
-            className="absolute top-0 right-2 rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50"
+            className="absolute right-2 top-0 rounded-full bg-white p-1.5 shadow-md transition-colors hover:bg-gray-50"
           >
             <Heart
               className={`h-5 w-5 ${isFavorite ? 'fill-current text-red-500' : 'text-gray-400'}`}

@@ -36,12 +36,11 @@ export default function DevelopmentBanner() {
             <span className="text-3xl">🚧</span>
           </div>
 
-          <h2 className="mb-2 text-xl font-bold text-gray-800">
-            Website Under Development
-          </h2>
+          <h2 className="mb-2 text-xl font-bold text-gray-800">Website Under Development</h2>
 
           <p className="mb-6 text-sm text-gray-600">
-            Our website is currently being built. For the best experience, download our app from the Play Store!
+            Our website is currently being built. For the best experience, download our app from the
+            Play Store!
           </p>
 
           <Link

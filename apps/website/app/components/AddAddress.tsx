@@ -136,7 +136,13 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
         }));
 
         // Update map location
-        if (latitude !== undefined && longitude !== undefined && Number.isFinite(latitude) && Number.isFinite(longitude) && mapRef.current) {
+        if (
+          latitude !== undefined &&
+          longitude !== undefined &&
+          Number.isFinite(latitude) &&
+          Number.isFinite(longitude) &&
+          mapRef.current
+        ) {
           mapRef.current.updateLocation(latitude, longitude, description);
           setSelectedCoords({ lat: latitude, lng: longitude });
         }
@@ -376,9 +382,9 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
       <div className="flex h-[90vh] w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-2xl">
         {/* Left Map / Search Section */}
         <div className="relative hidden flex-1 bg-gray-100 md:flex">
-          <div className="absolute inset-0 bg-linear-to-br from-blue-50 to-green-50">
+          <div className="bg-linear-to-br absolute inset-0 from-blue-50 to-green-50">
             {/* Search Bar */}
-            <div className="absolute top-4 right-4 left-4 z-20">
+            <div className="absolute left-4 right-4 top-4 z-20">
               <div className="relative rounded-xl bg-white p-3 shadow-lg">
                 <div className="flex items-center gap-3">
                   <Search className="h-5 w-5 text-gray-400" />
@@ -400,7 +406,7 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
 
                 {/* Suggestions */}
                 {results.length > 0 && (
-                  <div className="absolute top-full right-0 left-0 z-30 mt-2 max-h-60 overflow-y-auto rounded-xl border bg-white shadow-lg">
+                  <div className="absolute left-0 right-0 top-full z-30 mt-2 max-h-60 overflow-y-auto rounded-xl border bg-white shadow-lg">
                     {results.map(r => (
                       <div
                         key={r.place_id}
@@ -419,19 +425,19 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
             </div>
 
             {/* Map Component */}
-            <div className="flex h-125 w-full items-center justify-center rounded-xl shadow">
+            <div className="h-125 flex w-full items-center justify-center rounded-xl shadow">
               <VectorMap ref={mapRef} onLocationChange={handleMapLocationChange} />
             </div>
 
             {/* Map Instructions */}
-            <div className="absolute right-4 bottom-2 left-4">
+            <div className="absolute bottom-2 left-4 right-4">
               <div className="mb-4 flex items-end justify-between gap-10">
                 {/* Use Current Location Button */}
                 <button
                   type="button"
                   onClick={getCurrentLocation}
                   disabled={gettingLocation}
-                  className="mt-2 flex w-50 items-center justify-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-green-500 p-2 text-white shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-50 bg-linear-to-r mt-2 flex items-center justify-center gap-2 rounded-md from-teal-600 to-green-500 p-2 text-white shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {gettingLocation ? (
                     <>
@@ -496,10 +502,11 @@ export default function AddAddressForm({ onCancel, onSave, formMode, initialData
                     key={type}
                     type="button"
                     onClick={() => setSelectedAddressType(type as 'home' | 'work' | 'other')}
-                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-all ${selectedAddressType === type
+                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-all ${
+                      selectedAddressType === type
                         ? 'border-primaryColor text-primaryColor bg-teal-50'
                         : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                      }`}
+                    }`}
                   >
                     {type === 'home' && <Home className="h-4 w-4" />}
                     {type === 'work' && <Briefcase className="h-4 w-4" />}

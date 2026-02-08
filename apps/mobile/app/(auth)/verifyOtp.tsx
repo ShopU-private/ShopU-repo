@@ -207,12 +207,12 @@ const VerifyOTP = () => {
           keyboardShouldPersistTaps="handled"
         >
           <View className="mb-8 items-center">
-            <Image source={images.verifyOtpImages} className="mb-6 h-59.25 w-57" />
-            <Text className="mb-2 text-center font-KarlaBold text-[24px]">OTP Verification</Text>
+            <Image source={images.verifyOtpImages} className="h-59.25 w-57 mb-6" />
+            <Text className="font-KarlaBold mb-2 text-center text-[24px]">OTP Verification</Text>
             <View className="items-center">
-              <Text className="text-gray-600 text-center font-KarlaRegular text-[14px]">
+              <Text className="font-KarlaRegular text-center text-[14px] text-gray-600">
                 Enter the OTP sent to{' '}
-                <Text className="font-KarlaBold text-[14px] text-primary-bold">
+                <Text className="font-KarlaBold text-primary-bold text-[14px]">
                   +91 {phoneNumber}
                 </Text>
               </Text>
@@ -227,7 +227,7 @@ const VerifyOTP = () => {
                   ref={el => {
                     inputs.current[index] = el;
                   }}
-                  className={`h-13.75 w-11.25 rounded-lg border text-center font-KarlaBold text-[18px] ${
+                  className={`h-13.75 w-11.25 font-KarlaBold rounded-lg border text-center text-[18px] ${
                     digit ? 'border-primary-bold bg-primary-light/20' : 'border-gray-300'
                   } ${isLoading ? 'opacity-50' : ''}`}
                   keyboardType="number-pad"
@@ -254,7 +254,7 @@ const VerifyOTP = () => {
               disabled={isLoading || otp.join('').length !== OTP_LENGTH}
             >
               <Text
-                className={`text-center font-KarlaMedium text-[16px] ${
+                className={`font-KarlaMedium text-center text-[16px] ${
                   isLoading || otp.join('').length !== OTP_LENGTH ? 'text-gray-500' : 'text-white'
                 }`}
               >
@@ -263,7 +263,7 @@ const VerifyOTP = () => {
             </TouchableOpacity>
 
             <View className="mb-4 flex-row items-center">
-              <Text className="text-gray-600 font-KarlaRegular text-[14px]">
+              <Text className="font-KarlaRegular text-[14px] text-gray-600">
                 Didn&apos;t receive OTP?{' '}
               </Text>
               <TouchableOpacity onPress={handleResendOTP} disabled={!canResend || isLoading}>
@@ -278,7 +278,7 @@ const VerifyOTP = () => {
             </View>
 
             <TouchableOpacity onPress={handleGoBack} disabled={isLoading} className="mb-4">
-              <Text className="text-gray-600 font-KarlaRegular text-[14px] underline">
+              <Text className="font-KarlaRegular text-[14px] text-gray-600 underline">
                 Change Phone Number
               </Text>
             </TouchableOpacity>

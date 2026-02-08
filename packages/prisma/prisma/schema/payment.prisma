@@ -1,0 +1,34 @@
+model Payment {
+  id                String          @id @default(cuid())
+  orderId           String          @map("order_id")
+  userId            String          @map("user_id")
+  amount            Decimal         @db.Decimal(10, 2)
+  currency          String          @default("INR")
+  status            PaymentStatus   @default(PENDING)
+  provider          PaymentProvider
+  providerPaymentId String?         @unique @map("provider_payment_id")
+  providerOrderId   String?         @map("provider_order_id")
+
+  // Payment metadata
+  method       String? // card, upi, netbanking, wallet
+  metadata     Json?
+  errorCode    String? @map("error_code")
+  errorMessage String? @map("error_message") @db.Text
+
+  // Timestamps
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  completedAt DateTime? @map("completed_at")
+  failedAt    DateTime? @map("failed_at")
+
+  // Relations
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([status])
+  @@index([providerPaymentId])
+  @@index([createdAt])
+  @@map("payments")
+}
