@@ -1,54 +1,0 @@
-
-
-> website@0.1.0 build /home/ayush/code/ShopU/apps/website
-> next build
-
-[33m[1m⚠[22m[39m Warning: Next.js inferred your workspace root, but it may not be correct.
- We detected multiple lockfiles and selected the directory of /home/ayush/code/ShopU/pnpm-lock.yaml as the root directory.
- To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
-   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
- Detected additional lockfiles: 
-   * /home/ayush/code/ShopU/apps/website/package-lock.json
-
-[1m[38;2;173;127;168m▲ Next.js 16.1.6[39m[22m (Turbopack)
-
-[37m[1m [22m[39m Creating an optimized production build ...
-[32m[1m✓[22m[39m Compiled successfully in 7.5s
-[?25l[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[?25h[?25l[37m[1m [22m[39m Finished TypeScript in 6.0s  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Finished TypeScript in 6.0s    [32m[1m✓[22m[39m Finished TypeScript in 6.0s 
-[?25l[37m[1m [22m[39m Collecting page data using 15 workers  [36m.[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m..[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m...[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m.[39m[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
-[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m..[39m[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
-[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m...[39m[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: ⚙️  enable debug logging with { debug: true }
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  suppress all logs with { quiet: true }
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
-Error: Missing Gemini API key - please set GEMINI_API_KEY environment variable
-    at module evaluation (.next/server/chunks/5e669_next_dist_esm_build_templates_app-route_ebf29781.js:1:18158)
-    at instantiateModule (.next/server/chunks/[turbopack]_runtime.js:740:9)
-    at instantiateRuntimeModule (.next/server/chunks/[turbopack]_runtime.js:768:12)
-    at getOrInstantiateRuntimeModule (.next/server/chunks/[turbopack]_runtime.js:781:12)
-    at Object.m (.next/server/chunks/[turbopack]_runtime.js:790:18)
-    at Object.<anonymous> (.next/server/app/api/chatbot/route.js:6:3)
-[dotenv@17.2.3] injecting env (0) from ../../../.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
-[dotenv@17.2.3] injecting env (1) from ../../packages/prisma/.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
-[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m.[39m[2K[1G[37m[1m [22m[39m Collecting page data using 15 workers  [36m..[39m[2K[1G[?25h
-[?25l [36m.[39m [2K[1G[?25h> Build error occurred
-[?25l [36m.[39m [2K[1G[?25hError: Failed to collect page data for /api/chatbot
-    at [3mignore-listed frames[23m {
-  type: [32m'Error'[39m
-}
-[?25l [36m.[39m [?25h[41m[30m ELIFECYCLE [39m[49m [31mCommand failed with exit code 1.[39m
